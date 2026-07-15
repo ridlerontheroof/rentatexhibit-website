@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import rateLimit from "express-rate-limit";
 import { eq } from "drizzle-orm";
 import { CreateLeadBody, CreateLeadResponse } from "@workspace/api-zod";
 import { db, leadsTable } from "@workspace/db";
@@ -6,7 +7,19 @@ import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
 
 const router: IRouter = Router();
 
-router.post("/leads", async (req, res) => {
+// Every accepted lead triggers two outbound emails (leasing team + prospect),
+// so this endpoint is an attractive spam/abuse vector. Throttle submissions per
+// client IP to keep an attacker from flooding the leasing inbox or turning the
+// app into a spam cannon aimed at arbitrary third-party addresses.
+const leadLimiter = rateLimit({
+  windowMs: 60_000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many submissions. Please try again in a minute." },
+});
+
+router.post("/leads", leadLimiter, async (req, res) => {
   const parsed = CreateLeadBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid submission" });
