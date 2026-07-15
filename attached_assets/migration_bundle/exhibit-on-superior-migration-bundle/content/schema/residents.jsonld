@@ -1,0 +1,134 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.rentatexhibit.com#website",
+      "name": "Exhibit On Superior",
+      "url": "https://www.rentatexhibit.com",
+      "publisher": {
+        "@id": "https://www.rentatexhibit.com#organization"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.rentatexhibit.com#organization",
+      "name": "Highland Management LLC",
+      "url": "https://www.rentatexhibit.com",
+      "email": "exhibit@highlandptrs.com",
+      "telephone": "312-450-0635"
+    },
+    {
+      "@type": "ApartmentComplex",
+      "@id": "https://www.rentatexhibit.com#apartmentcomplex",
+      "name": "Exhibit On Superior",
+      "url": "https://www.rentatexhibit.com",
+      "description": "Exhibit On Superior is a River North apartment community at 165 W Superior St in Chicago with studio, one, two, and three-bedroom apartments, full-building amenities, on-site retail, and quick access to downtown neighborhoods.",
+      "telephone": "312-450-0635",
+      "email": "exhibit@highlandptrs.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "165 W Superior St",
+        "addressLocality": "Chicago",
+        "addressRegion": "IL",
+        "postalCode": "60654",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "41.8953945",
+        "longitude": "-87.6335254"
+      },
+      "hasMap": "https://www.google.com/maps?cid=15240815771270963454",
+      "tourBookingPage": "https://www.rentatexhibit.com/schedule-a-tour",
+      "petsAllowed": "Cats and dogs are welcome; confirm current pet fees, limits, and policy details with the leasing team.",
+      "sameAs": [
+        "https://www.facebook.com/exhibitonsuperior",
+        "https://www.instagram.com/exhibitonsuperior",
+        "https://www.youtube.com/@ExhibitonSuperior"
+      ],
+      "amenityFeature": [
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Full-floor amenity deck"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Fitness center"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Lap pool"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Outdoor hot tub"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Dog spa"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Work and meeting rooms"
+        }
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.rentatexhibit.com/residents#webpage",
+      "url": "https://www.rentatexhibit.com/residents",
+      "name": "Resident Resources | Exhibit On Superior",
+      "description": "Resident resource page for Exhibit On Superior. Replace prior resident portal links with the current AppFolio resident portal once confirmed.",
+      "isPartOf": {
+        "@id": "https://www.rentatexhibit.com#website"
+      },
+      "about": {
+        "@id": "https://www.rentatexhibit.com#apartmentcomplex"
+      },
+      "breadcrumb": {
+        "@id": "https://www.rentatexhibit.com/residents#breadcrumb"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Exhibit On Superior",
+          "item": "https://www.rentatexhibit.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Residents",
+          "item": "https://www.rentatexhibit.com/residents"
+        }
+      ],
+      "@id": "https://www.rentatexhibit.com/residents#breadcrumb"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Where should residents log in?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use the current AppFolio resident portal URL once Highland confirms the exact destination."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who should residents contact?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Residents can contact Exhibit On Superior at exhibit@highlandptrs.com or 312-450-0635."
+          }
+        }
+      ],
+      "@id": "https://www.rentatexhibit.com/residents#faq"
+    }
+  ]
+}

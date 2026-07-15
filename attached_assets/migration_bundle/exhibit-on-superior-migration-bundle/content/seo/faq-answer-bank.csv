@@ -1,0 +1,35 @@
+page_slug,question,answer,intent,must_be_visible_on_page
+/,Where is Exhibit On Superior located?,"Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654 in the River North area.",AEO / long-tail search / renter decision support,yes
+/,What apartment sizes are available at Exhibit On Superior?,"The community offers studio, one, two, and three-bedroom apartment homes. Current availability is maintained through Highland Management LLC.",AEO / long-tail search / renter decision support,yes
+/,How do I check current availability?,Use the Available Units link to view current Exhibit On Superior availability: https://www.highlandptrs.com/chicago-availability?search=exhibit.,AEO / long-tail search / renter decision support,yes
+/floor-plans,Does Exhibit On Superior have studio apartments?,"Yes. Exhibit On Superior includes studio floor plan options along with one, two, and three-bedroom homes.",AEO / long-tail search / renter decision support,yes
+/floor-plans,Where can I see available units?,Current availability is handled through Highland Management LLC at https://www.highlandptrs.com/chicago-availability?search=exhibit.,AEO / long-tail search / renter decision support,yes
+/floor-plans,Where do I apply?,Applications should use the AppFolio Apply Now link: https://highlandrealestatepartners.appfolio.com/apply/9ccea374-8cca-48fa-8f86-4aff06b01f03/start?source=Website.,AEO / long-tail search / renter decision support,yes
+/photo-gallery,What can I see in the Exhibit On Superior photo gallery?,"The gallery includes apartment interiors, amenity spaces, city views, pool and fitness areas, lounges, and shared community spaces.",AEO / long-tail search / renter decision support,yes
+/photo-gallery,Can I tour the community virtually?,Yes. Use the Virtual Tour page for Matterport and video tour content.,AEO / long-tail search / renter decision support,yes
+/virtual-tour,Does Exhibit On Superior offer virtual tours?,Yes. The virtual tour page includes video and Matterport tour embeds for apartment and amenity previews.,AEO / long-tail search / renter decision support,yes
+/virtual-tour,Can I still schedule an in-person tour?,Yes. Prospects can contact the leasing team by phone or email to schedule a tour.,AEO / long-tail search / renter decision support,yes
+/amenities,What amenities does Exhibit On Superior offer?,"Amenities include a full-floor amenity deck, fitness center, pool, hot tub, lounge spaces, work rooms, dog spa, grilling stations, fire pits, and outdoor areas.",AEO / long-tail search / renter decision support,yes
+/amenities,Does Exhibit On Superior have on-site retail?,"Yes. The property content references on-site retail and wellness options including fitness, food, and spa services.",AEO / long-tail search / renter decision support,yes
+/pet-friendly,Is Exhibit On Superior pet-friendly?,Yes. Exhibit On Superior markets pet-friendly living for cats and dogs.,AEO / long-tail search / renter decision support,yes
+/pet-friendly,Are there pet amenities?,The amenities content includes a dog spa and gated outdoor dog walk.,AEO / long-tail search / renter decision support,yes
+/pet-friendly,Should renters confirm current pet rules?,"Yes. Pet fees, limits, and breed policies should be confirmed with the leasing team before applying.",AEO / long-tail search / renter decision support,yes
+/neighborhood,What neighborhood is Exhibit On Superior in?,Exhibit On Superior is in River North in Chicago.,AEO / long-tail search / renter decision support,yes
+/neighborhood,What is nearby?,"The property content highlights cafes, restaurants, shops, parks, the Chicago River, West Loop, Old Town, and Fulton Market.",AEO / long-tail search / renter decision support,yes
+/artist-in-residence,What is the Artist-in-Residence program?,"It is a community program that connects Exhibit On Superior residents with local art, music, events, and creative experiences.",AEO / long-tail search / renter decision support,yes
+/artist-in-residence,Should the program page stay on the new site?,"Yes, if Highland plans to continue or accurately describe the program. Otherwise, revise the copy before launch.",AEO / long-tail search / renter decision support,yes
+/contact-us,What is the email for Exhibit On Superior?,The contact email is exhibit@highlandptrs.com.,AEO / long-tail search / renter decision support,yes
+/contact-us,What is the phone number for Exhibit On Superior?,The phone number is 312-450-0635.,AEO / long-tail search / renter decision support,yes
+/contact-us,What is the address?,"The address is 165 W Superior St, Chicago, IL 60654.",AEO / long-tail search / renter decision support,yes
+/map-directions,What is the address for Exhibit On Superior?,"Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654.",AEO / long-tail search / renter decision support,yes
+/map-directions,Is there a map link?,Yes. The rebuild should link to the Google map destination: https://www.google.com/maps?cid=15240815771270963454.,AEO / long-tail search / renter decision support,yes
+/residents,Where should residents log in?,Use the current AppFolio resident portal URL once Highland confirms the exact destination.,AEO / long-tail search / renter decision support,yes
+/residents,Who should residents contact?,Residents can contact Exhibit On Superior at exhibit@highlandptrs.com or 312-450-0635.,AEO / long-tail search / renter decision support,yes
+/schedule-a-tour,How do I schedule a tour?,Email exhibit@highlandptrs.com or call 312-450-0635 to schedule a tour.,AEO / long-tail search / renter decision support,yes
+/schedule-a-tour,Can I tour online first?,Yes. The Virtual Tour page includes video and Matterport previews.,AEO / long-tail search / renter decision support,yes
+/reviews,Where should review content come from?,"Use a current, verifiable review source such as the Google Business Profile or Highland's chosen reputation platform.",AEO / long-tail search / renter decision support,yes
+/reviews,Should old review widgets be kept?,No. The prior review widget should be replaced with Highland's current review source.,AEO / long-tail search / renter decision support,yes
+/available-units,Where can I see current availability?,Use Highland's availability page: https://www.highlandptrs.com/chicago-availability?search=exhibit.,AEO / long-tail search / renter decision support,yes
+/available-units,Is availability shown directly on the rebuilt site?,The recommended setup is to link out to Highland's current availability page so pricing and units stay accurate.,AEO / long-tail search / renter decision support,yes
+/apply,Where do I apply for Exhibit On Superior?,Use the AppFolio application page: https://highlandrealestatepartners.appfolio.com/apply/9ccea374-8cca-48fa-8f86-4aff06b01f03/start?source=Website.,AEO / long-tail search / renter decision support,yes
+/apply,Should Apply Now point to available units?,"No. Apply Now should point to the dedicated AppFolio application link, while Available Units should point to Highland's availability page.",AEO / long-tail search / renter decision support,yes

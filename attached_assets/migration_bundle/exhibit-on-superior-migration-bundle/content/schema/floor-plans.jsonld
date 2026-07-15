@@ -1,0 +1,142 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.rentatexhibit.com#website",
+      "name": "Exhibit On Superior",
+      "url": "https://www.rentatexhibit.com",
+      "publisher": {
+        "@id": "https://www.rentatexhibit.com#organization"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.rentatexhibit.com#organization",
+      "name": "Highland Management LLC",
+      "url": "https://www.rentatexhibit.com",
+      "email": "exhibit@highlandptrs.com",
+      "telephone": "312-450-0635"
+    },
+    {
+      "@type": "ApartmentComplex",
+      "@id": "https://www.rentatexhibit.com#apartmentcomplex",
+      "name": "Exhibit On Superior",
+      "url": "https://www.rentatexhibit.com",
+      "description": "Exhibit On Superior is a River North apartment community at 165 W Superior St in Chicago with studio, one, two, and three-bedroom apartments, full-building amenities, on-site retail, and quick access to downtown neighborhoods.",
+      "telephone": "312-450-0635",
+      "email": "exhibit@highlandptrs.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "165 W Superior St",
+        "addressLocality": "Chicago",
+        "addressRegion": "IL",
+        "postalCode": "60654",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "41.8953945",
+        "longitude": "-87.6335254"
+      },
+      "hasMap": "https://www.google.com/maps?cid=15240815771270963454",
+      "tourBookingPage": "https://www.rentatexhibit.com/schedule-a-tour",
+      "petsAllowed": "Cats and dogs are welcome; confirm current pet fees, limits, and policy details with the leasing team.",
+      "sameAs": [
+        "https://www.facebook.com/exhibitonsuperior",
+        "https://www.instagram.com/exhibitonsuperior",
+        "https://www.youtube.com/@ExhibitonSuperior"
+      ],
+      "amenityFeature": [
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Full-floor amenity deck"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Fitness center"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Lap pool"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Outdoor hot tub"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Dog spa"
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Work and meeting rooms"
+        }
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.rentatexhibit.com/floor-plans#webpage",
+      "url": "https://www.rentatexhibit.com/floor-plans",
+      "name": "Studio, 1, 2 & 3 Bedroom Floor Plans | Exhibit On Superior",
+      "description": "Review studio, one, two, and three-bedroom floor plan content for Exhibit On Superior in River North Chicago, then check current availability through Highland.",
+      "isPartOf": {
+        "@id": "https://www.rentatexhibit.com#website"
+      },
+      "about": {
+        "@id": "https://www.rentatexhibit.com#apartmentcomplex"
+      },
+      "breadcrumb": {
+        "@id": "https://www.rentatexhibit.com/floor-plans#breadcrumb"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Exhibit On Superior",
+          "item": "https://www.rentatexhibit.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Floor Plans",
+          "item": "https://www.rentatexhibit.com/floor-plans"
+        }
+      ],
+      "@id": "https://www.rentatexhibit.com/floor-plans#breadcrumb"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does Exhibit On Superior have studio apartments?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Exhibit On Superior includes studio floor plan options along with one, two, and three-bedroom homes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where can I see available units?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Current availability is handled through Highland Management LLC at https://www.highlandptrs.com/chicago-availability?search=exhibit."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where do I apply?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Applications should use the AppFolio Apply Now link: https://highlandrealestatepartners.appfolio.com/apply/9ccea374-8cca-48fa-8f86-4aff06b01f03/start?source=Website."
+          }
+        }
+      ],
+      "@id": "https://www.rentatexhibit.com/floor-plans#faq"
+    }
+  ]
+}

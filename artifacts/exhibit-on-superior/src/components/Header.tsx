@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { Link } from 'wouter';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
+const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
+
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [floorPlansOpen, setFloorPlansOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
+  const navLink = 'text-sm uppercase tracking-wider hover:text-primary transition-colors';
+  const dropLink = 'block px-4 py-2 text-sm uppercase tracking-wider hover:bg-muted transition-colors';
 
   return (
     <header className="bg-white border-b border-border sticky top-0 z-50">
@@ -13,79 +18,89 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <img
-              src="/images/assets/images/image-001-exhibit-on-superior-logo-color-a7pvg4.png"
+              src="/images/image-001-exhibit-on-superior-logo-color-a7pvg4.png"
               alt="Exhibit On Superior"
               className="h-12 w-auto"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            <Link href="/" className="text-sm uppercase tracking-wider hover:text-primary transition-colors">
-              Home
-            </Link>
-            
-            {/* Floor Plans Dropdown */}
-            <div 
+          <nav className="hidden lg:flex items-center gap-6">
+            <Link href="/floor-plans" className={navLink}>Floor Plans</Link>
+
+            {/* Photo Gallery dropdown */}
+            <div
               className="relative"
-              onMouseEnter={() => setFloorPlansOpen(true)}
-              onMouseLeave={() => setFloorPlansOpen(false)}
+              onMouseEnter={() => setOpenMenu('gallery')}
+              onMouseLeave={() => setOpenMenu(null)}
             >
-              <button className="text-sm uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1">
-                Floor Plans
+              <Link href="/photo-gallery" className={`${navLink} flex items-center gap-1`}>
+                Photo Gallery
                 <ChevronDown className="w-4 h-4" />
-              </button>
-              {floorPlansOpen && (
-                <div className="absolute top-full left-0 mt-2 bg-white border border-border shadow-lg min-w-[200px] py-2">
-                  <Link 
-                    href="/floor-plans" 
-                    className="block px-4 py-2 text-sm hover:bg-muted transition-colors"
-                  >
-                    All Floor Plans
-                  </Link>
-                  <Link 
-                    href="/floor-plans#studio" 
-                    className="block px-4 py-2 text-sm hover:bg-muted transition-colors"
-                  >
-                    Studio
-                  </Link>
-                  <Link 
-                    href="/floor-plans#one-bed" 
-                    className="block px-4 py-2 text-sm hover:bg-muted transition-colors"
-                  >
-                    One Bedroom
-                  </Link>
-                  <Link 
-                    href="/floor-plans#two-bed" 
-                    className="block px-4 py-2 text-sm hover:bg-muted transition-colors"
-                  >
-                    Two Bedroom
-                  </Link>
+              </Link>
+              {openMenu === 'gallery' && (
+                <div className="absolute top-full left-0 pt-2">
+                  <div className="bg-white border border-border shadow-lg min-w-[200px] py-2">
+                    <Link href="/virtual-tour" className={dropLink}>Virtual Tour</Link>
+                  </div>
                 </div>
               )}
             </div>
 
-            <Link href="/photo-gallery" className="text-sm uppercase tracking-wider hover:text-primary transition-colors">
-              Gallery
-            </Link>
-            <Link href="/virtual-tour" className="text-sm uppercase tracking-wider hover:text-primary transition-colors">
-              Virtual Tour
-            </Link>
-            <Link href="/amenities" className="text-sm uppercase tracking-wider hover:text-primary transition-colors">
-              Amenities
-            </Link>
-            <Link href="/neighborhood" className="text-sm uppercase tracking-wider hover:text-primary transition-colors">
-              Neighborhood
-            </Link>
-            <Link href="/contact" className="text-sm uppercase tracking-wider hover:text-primary transition-colors">
-              Contact
-            </Link>
+            {/* Amenities dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setOpenMenu('amenities')}
+              onMouseLeave={() => setOpenMenu(null)}
+            >
+              <Link href="/amenities" className={`${navLink} flex items-center gap-1`}>
+                Amenities
+                <ChevronDown className="w-4 h-4" />
+              </Link>
+              {openMenu === 'amenities' && (
+                <div className="absolute top-full left-0 pt-2">
+                  <div className="bg-white border border-border shadow-lg min-w-[200px] py-2">
+                    <Link href="/pet-friendly" className={dropLink}>Pet Friendly</Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Link href="/neighborhood" className={navLink}>Neighborhood</Link>
+            <Link href="/artist-in-residence" className={navLink}>Artist-in-Residence</Link>
+
+            {/* Contact Us dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setOpenMenu('contact')}
+              onMouseLeave={() => setOpenMenu(null)}
+            >
+              <Link href="/contact-us" className={`${navLink} flex items-center gap-1`}>
+                Contact Us
+                <ChevronDown className="w-4 h-4" />
+              </Link>
+              {openMenu === 'contact' && (
+                <div className="absolute top-full right-0 pt-2">
+                  <div className="bg-white border border-border shadow-lg min-w-[220px] py-2">
+                    <Link href="/map-directions" className={dropLink}>Map + Directions</Link>
+                    <Link href="/residents" className={dropLink}>Residents</Link>
+                    <Link href="/schedule-a-tour" className={dropLink}>Schedule a Tour</Link>
+                    <Link href="/reviews" className={dropLink}>Reviews</Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
 
-          {/* CTA Button - Desktop */}
-          <Link href="/schedule-a-tour" className="hidden lg:block btn-gold-outline">
-            Schedule Tour
-          </Link>
+          {/* CTA Buttons - Desktop */}
+          <div className="hidden lg:flex items-center gap-4">
+            <a href={AVAILABILITY_URL} target="_blank" rel="noopener noreferrer" className={`${navLink} font-semibold`}>
+              Available Units
+            </a>
+            <a href={AVAILABILITY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-sm">
+              Apply Now
+            </a>
+          </div>
 
           {/* Mobile Menu Button */}
           <button
@@ -99,32 +114,29 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <nav className="lg:hidden py-4 border-t border-border">
-            <div className="flex flex-col gap-4">
-              <Link href="/" className="text-sm uppercase tracking-wider py-2">
-                Home
-              </Link>
-              <Link href="/floor-plans" className="text-sm uppercase tracking-wider py-2">
-                Floor Plans
-              </Link>
-              <Link href="/photo-gallery" className="text-sm uppercase tracking-wider py-2">
-                Gallery
-              </Link>
-              <Link href="/virtual-tour" className="text-sm uppercase tracking-wider py-2">
-                Virtual Tour
-              </Link>
-              <Link href="/amenities" className="text-sm uppercase tracking-wider py-2">
-                Amenities
-              </Link>
-              <Link href="/neighborhood" className="text-sm uppercase tracking-wider py-2">
-                Neighborhood
-              </Link>
-              <Link href="/contact" className="text-sm uppercase tracking-wider py-2">
-                Contact
-              </Link>
-              <Link href="/schedule-a-tour" className="btn-gold-outline inline-block text-center mt-2">
-                Schedule Tour
-              </Link>
+          <nav className="lg:hidden py-4 border-t border-border overflow-y-auto max-h-[calc(100vh-80px)]">
+            <div className="flex flex-col gap-4" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/floor-plans" className="text-sm uppercase tracking-wider py-2">Floor Plans</Link>
+              <Link href="/photo-gallery" className="text-sm uppercase tracking-wider py-2">Photo Gallery</Link>
+              <Link href="/virtual-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Virtual Tour</Link>
+              <Link href="/amenities" className="text-sm uppercase tracking-wider py-2">Amenities</Link>
+              <Link href="/pet-friendly" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Pet Friendly</Link>
+              <Link href="/neighborhood" className="text-sm uppercase tracking-wider py-2">Neighborhood</Link>
+              <Link href="/artist-in-residence" className="text-sm uppercase tracking-wider py-2">Artist-in-Residence</Link>
+              <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
+              <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
+              <Link href="/residents" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Residents</Link>
+              <Link href="/schedule-a-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</Link>
+              <Link href="/reviews" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Reviews</Link>
+
+              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
+                <a href={AVAILABILITY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-center">
+                  Available Units
+                </a>
+                <a href={AVAILABILITY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-center">
+                  Apply Now
+                </a>
+              </div>
             </div>
           </nav>
         )}

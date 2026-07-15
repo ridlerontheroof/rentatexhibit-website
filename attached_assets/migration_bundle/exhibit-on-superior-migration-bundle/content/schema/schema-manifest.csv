@@ -1,0 +1,16 @@
+page_slug,schema_file,types_included
+/,content/schema/home.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/floor-plans,content/schema/floor-plans.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/photo-gallery,content/schema/photo-gallery.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/virtual-tour,content/schema/virtual-tour.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/amenities,content/schema/amenities.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/pet-friendly,content/schema/pet-friendly.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/neighborhood,content/schema/neighborhood.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/artist-in-residence,content/schema/artist-in-residence.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/contact-us,content/schema/contact-us.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/map-directions,content/schema/map-directions.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/residents,content/schema/residents.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/schedule-a-tour,content/schema/schedule-a-tour.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/reviews,content/schema/reviews.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/available-units,content/schema/available-units.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist
+/apply,content/schema/apply.jsonld,WebSite; Organization; ApartmentComplex; WebPage; BreadcrumbList; FAQPage when FAQs exist

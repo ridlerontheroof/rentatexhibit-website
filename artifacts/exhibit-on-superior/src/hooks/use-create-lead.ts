@@ -1,28 +1,33 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
-interface LeadData {
+export interface CreateLeadPayload {
+  type: 'contact' | 'tour';
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
   message?: string;
-  moveInDate?: string;
-  bedrooms?: string;
-  source?: string;
+  preferredDate?: string;
 }
 
-interface LeadResponse {
-  id: string;
-  success: boolean;
+export interface LeadResponse {
+  id: number;
+  type: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  message: string | null;
+  preferredDate: string | null;
+  createdAt: string;
 }
 
-const createLead = async (data: LeadData): Promise<LeadResponse> => {
-  const response = await fetch('/api/leads', {
+const createLead = async (data: CreateLeadPayload): Promise<LeadResponse> => {
+  const response = await fetch(`${import.meta.env.BASE_URL}api/leads`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include',
     body: JSON.stringify(data),
   });
 
@@ -33,13 +38,7 @@ const createLead = async (data: LeadData): Promise<LeadResponse> => {
   return response.json();
 };
 
-export const useCreateLead = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
+export const useCreateLead = () =>
+  useMutation({
     mutationFn: createLead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
-    },
   });
-};

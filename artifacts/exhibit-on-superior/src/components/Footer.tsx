@@ -9,16 +9,21 @@ export function Footer() {
           {/* Logo & Address */}
           <div>
             <img
-              src="/images/assets/images/image-001-exhibit-on-superior-logo-color-a7pvg4.png"
+              src="/images/image-001-exhibit-on-superior-logo-color-a7pvg4.png"
               alt="Exhibit On Superior"
               className="h-10 w-auto mb-4"
             />
             <div className="flex items-start gap-2 text-sm mb-2">
               <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
               <div>
-                30 W. Superior St.<br />
+                165 W Superior St<br />
                 Chicago, IL 60654
               </div>
+            </div>
+            <div className="mt-4 flex gap-4">
+              <a href="https://www.facebook.com/exhibitonsuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Facebook</a>
+              <a href="https://www.instagram.com/exhibitonsuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Instagram</a>
+              <a href="https://www.youtube.com/@ExhibitonSuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">YouTube</a>
             </div>
           </div>
 
@@ -109,7 +114,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <Link href="/contact" className="btn-gold-outline inline-block mt-4">
+                <Link href="/contact-us" className="btn-gold-outline inline-block mt-4">
                   Contact Us
                 </Link>
               </li>
@@ -118,12 +123,17 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/20 mt-8 pt-8 text-center text-sm">
-          <p className="mb-2">
+        <div className="border-t border-white/20 mt-8 pt-8 text-center text-sm flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="mb-2 md:mb-0">
             Managed by <span className="text-primary">Highland Management LLC</span>
           </p>
+          <div className="flex items-center gap-4 text-white/60">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <span>|</span>
+            <Link href="/accessibility-statement" className="hover:text-white transition-colors">Accessibility Statement</Link>
+          </div>
           <p className="text-white/60">
-            &copy; {new Date().getFullYear()} Exhibit On Superior. All rights reserved.
+            Copyright &copy; 2026 Highland Management LLC
           </p>
         </div>
       </div>

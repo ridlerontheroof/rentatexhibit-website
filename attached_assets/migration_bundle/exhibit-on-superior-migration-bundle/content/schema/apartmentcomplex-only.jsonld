@@ -1,0 +1,57 @@
+{
+  "@context": "https://schema.org",
+  "@type": "ApartmentComplex",
+  "@id": "https://www.rentatexhibit.com#apartmentcomplex",
+  "name": "Exhibit On Superior",
+  "url": "https://www.rentatexhibit.com",
+  "description": "Exhibit On Superior is a River North apartment community at 165 W Superior St in Chicago with studio, one, two, and three-bedroom apartments, full-building amenities, on-site retail, and quick access to downtown neighborhoods.",
+  "telephone": "312-450-0635",
+  "email": "exhibit@highlandptrs.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "165 W Superior St",
+    "addressLocality": "Chicago",
+    "addressRegion": "IL",
+    "postalCode": "60654",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "41.8953945",
+    "longitude": "-87.6335254"
+  },
+  "hasMap": "https://www.google.com/maps?cid=15240815771270963454",
+  "tourBookingPage": "https://www.rentatexhibit.com/schedule-a-tour",
+  "petsAllowed": "Cats and dogs are welcome; confirm current pet fees, limits, and policy details with the leasing team.",
+  "sameAs": [
+    "https://www.facebook.com/exhibitonsuperior",
+    "https://www.instagram.com/exhibitonsuperior",
+    "https://www.youtube.com/@ExhibitonSuperior"
+  ],
+  "amenityFeature": [
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Full-floor amenity deck"
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Fitness center"
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Lap pool"
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Outdoor hot tub"
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Dog spa"
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Work and meeting rooms"
+    }
+  ]
+}

@@ -1,85 +1,100 @@
 import { PageHero } from '../components/PageHero';
+import { Link } from 'wouter';
+import { Helmet } from 'react-helmet-async';
 
 export function VirtualTour() {
   return (
-    <div>
-      <PageHero
-        image="/images/assets/images/image-074-game-area-with-arcade-games-and-wall-scrabble-ej.jpg"
-        alt="Virtual Tour | Exhibit On Superior in Chicago, Illinois"
-        title="Virtual Tour"
-        subtitle="Experience Exhibit from Anywhere"
-      />
+    <>
+      <Helmet>
+        <title>Virtual Tours | Exhibit On Superior Apartments Chicago</title>
+        <meta name="description" content="Take a virtual tour of Exhibit On Superior apartments and amenities in River North Chicago with video and Matterport tour embeds." />
+      </Helmet>
+      <div>
+        <PageHero
+          image="/images/image-074-game-area-with-arcade-games-and-wall-scrabble-ej.jpg"
+          alt="Virtual Tour | Exhibit On Superior in Chicago, Illinois"
+          title="See Yourself Here"
+          subtitle="Virtual Tour"
+        />
 
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-12">
-            <span className="eyebrow">Immersive Experience</span>
-            <h2 className="section-title mb-6">Explore Our Community</h2>
-            <p className="text-lg leading-relaxed">
-              Take a 360-degree virtual tour of Exhibit on Superior and explore our stunning apartments, amenities, and common areas from the comfort of your home.
-            </p>
-          </div>
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-12">
+              <p className="text-lg leading-relaxed mb-6">
+                Take a virtual tour of Exhibit On Superior in Chicago, Illinois. Our virtual tour is the next best thing to seeing it in person. See more of our amenities and in-home features by visiting us in person, or by heading to our Photo Gallery page for a more detailed look at our community. Reach out to our friendly leasing staff to schedule your tour today.
+              </p>
+              <div className="flex justify-center gap-4">
+                <Link href="/photo-gallery" className="btn-gold-outline inline-block">
+                  Photo Gallery
+                </Link>
+                <Link href="/contact-us" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
+                  Contact Us
+                </Link>
+              </div>
+            </div>
 
-          {/* Matterport Embed */}
-          <div className="aspect-video bg-muted mb-12 border border-border">
-            <iframe
-              src="https://my.matterport.com/show/?m=example"
-              className="w-full h-full"
-              allowFullScreen
-              allow="xr-spatial-tracking"
-              title="Virtual Tour of Exhibit On Superior"
-            />
-          </div>
-
-          {/* Video Tours */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <div>
-              <h3 className="text-2xl uppercase tracking-wider mb-4">Amenity Walkthrough</h3>
-              <div className="aspect-video bg-muted border border-border">
+            {/* Video Tours */}
+            <div className="mb-12">
+              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Life at Exhibit On Superior</h3>
+              <div className="aspect-video bg-black border border-border">
                 <iframe
-                  src="https://player.vimeo.com/video/example1"
+                  src="https://player.vimeo.com/video/968009600?rel=0"
                   className="w-full h-full"
                   allowFullScreen
-                  title="Amenity Walkthrough"
+                  title="Life at Exhibit On Superior"
                 />
               </div>
             </div>
-            <div>
-              <h3 className="text-2xl uppercase tracking-wider mb-4">Model Apartment Tour</h3>
-              <div className="aspect-video bg-muted border border-border">
+
+            {/* Matterport Embeds */}
+            <div className="mb-12">
+              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Exhibit 2104</h3>
+              <div className="aspect-video bg-black border border-border">
                 <iframe
-                  src="https://player.vimeo.com/video/example2"
+                  src="https://my.matterport.com/show/?m=773kQcHxLnz"
                   className="w-full h-full"
                   allowFullScreen
-                  title="Model Apartment Tour"
+                  allow="xr-spatial-tracking"
+                  title="Virtual Tour of Exhibit 2104"
                 />
               </div>
             </div>
-          </div>
 
-          {/* SightMap Interactive Floor Plans */}
-          <div className="mb-12">
-            <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Interactive Floor Plans</h3>
-            <div className="aspect-video bg-muted border border-border">
-              <iframe
-                src="https://sightmap.com/embed/example"
-                className="w-full h-full"
-                allowFullScreen
-                title="Interactive Floor Plans"
-              />
+            <div className="mb-12">
+              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Exhibit 605</h3>
+              <div className="aspect-video bg-black border border-border">
+                <iframe
+                  src="https://my.matterport.com/show/?m=kthJKtuPTJ4"
+                  className="w-full h-full"
+                  allowFullScreen
+                  allow="xr-spatial-tracking"
+                  title="Virtual Tour of Exhibit 605"
+                />
+              </div>
+            </div>
+
+            <div className="mb-12">
+              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Amenities at Exhibit On Superior</h3>
+              <div className="aspect-video bg-black border border-border">
+                <iframe
+                  src="https://my.matterport.com/show/?m=CiWCwCJuZ9c"
+                  className="w-full h-full"
+                  allowFullScreen
+                  allow="xr-spatial-tracking"
+                  title="Virtual Tour of Amenities"
+                />
+              </div>
+            </div>
+
+            <div className="text-center mt-16">
+              <h2 className="section-title mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+              <Link href="/contact-us" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
+                Contact Us
+              </Link>
             </div>
           </div>
-
-          <div className="text-center">
-            <p className="text-lg mb-6">
-              Ready to see it in person? Schedule a tour with our leasing team.
-            </p>
-            <a href="/schedule-a-tour" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
-              Schedule Your Tour
-            </a>
-          </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }

@@ -1,0 +1,10 @@
+item,old_vendor,new_destination,status
+Available units,Prior PMS site widget,https://www.highlandptrs.com/chicago-availability?search=exhibit,configured in bundle
+Application,RealPage-era apply page,https://highlandrealestatepartners.appfolio.com/apply/9ccea374-8cca-48fa-8f86-4aff06b01f03/start?source=Website,configured in bundle
+Contact forms,G5 lead forms,exhibit@highlandptrs.com,replace with host-native forms notifying this email
+Schedule a tour,Knock/G5 scheduling,mailto:exhibit@highlandptrs.com,temporary email CTA; replace with AppFolio/Acuity/Calendly if desired
+Resident portal,LoftLiving/RealPage-era login,TBD AppFolio resident portal URL,needs Highland confirmation
+Reviews,Chatmeter widget,Google Business Profile or Highland reputation widget,needs selected review provider
+Analytics,Old GTM/GA/Facebook IDs,Highland analytics IDs,do not carry over old IDs without confirming ownership
+Cookie consent,Old OneTrust domain script,New host/cookie-consent configuration,replace if using tracking scripts
+Virtual tours,Vimeo/Matterport embeds,Existing public Vimeo/Matterport URLs,retained in content

@@ -1,256 +1,164 @@
 import { PageHero } from '../components/PageHero';
-import { Waves, Dumbbell, Wifi, Music, Users, Coffee, Car, Package, Wind, Shield, Clock, Sparkles } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'wouter';
 
 export function Amenities() {
   return (
-    <div>
-      <PageHero
-        image="/images/assets/images/image-075-20170601-0036-z1fw1i.jpg"
-        alt="Amenities | Exhibit On Superior in Chicago, Illinois"
-        title="Amenities"
-        subtitle="Luxury Living Elevated"
-      />
+    <>
+      <Helmet>
+        <title>Amenities | Exhibit On Superior River North Apartments</title>
+        <meta name="description" content="Explore Exhibit On Superior amenities, including a full-floor amenity deck, fitness center, pool, lounges, work areas, dog spa, and on-site lifestyle retail." />
+      </Helmet>
+      <div>
+        <PageHero
+          image="/images/image-075-20170601-0036-z1fw1i.jpg"
+          alt="Amenities | Exhibit On Superior in Chicago, Illinois"
+          title="Endless opportunities Your urban playground"
+          subtitle="Amenities"
+        />
 
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-4xl text-center">
-          <span className="eyebrow">World-Class Features</span>
-          <h2 className="section-title mb-6">Everything You Need, All in One Place</h2>
-          <p className="text-lg leading-relaxed">
-            Exhibit on Superior offers an unparalleled collection of resort-style amenities designed to enhance your lifestyle. From fitness and wellness to entertainment and work spaces, every detail has been thoughtfully curated.
-          </p>
-        </div>
-      </section>
-
-      {/* Featured Amenity Images */}
-      <section className="py-12 px-4 bg-muted">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <img
-              src="/images/assets/images/image-009-34-southeast-levwhc.jpg"
-              alt="City view at Exhibit On Superior in Chicago, Illinois"
-              className="w-full h-[400px] object-cover"
-            />
-            <img
-              src="/images/assets/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg"
-              alt="Well-furnished modern apartment at Exhibit On Superior in Chicago, Illinois"
-              className="w-full h-[400px] object-cover"
-            />
-            <img
-              src="/images/assets/images/image-076-012417-5680-yegi2f.jpg"
-              alt="Kitchen with stainless-steel hardware and appliances at Exhibit On Superior in Chicago, Illinois"
-              className="w-full h-[400px] object-cover"
-            />
-            <img
-              src="/images/assets/images/image-077-20170808-0721-c60hfw.jpg"
-              alt="Poolside lounge seating at Exhibit On Superior in Chicago, Illinois"
-              className="w-full h-[400px] object-cover"
-            />
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-4xl text-center">
+            <p className="text-lg leading-relaxed mb-6">
+              At Exhibit on Superior, we want to expand your living space beyond your apartment. So, we’ve created what feels like your own private clubhouse, where every amenity is a masterpiece designed to inspire, energize, and elevate your lifestyle. From sunrise spin sessions to sunset sauna detoxes, our wellness offerings are stacked and ready to match your pace.
+            </p>
+            <p className="text-lg leading-relaxed mb-6">
+              Whether you're soaking in the skyline from our full-floor amenity deck, powering through a workout in the professional-grade fitness center, or relaxing in the cozy tech lounge, each space is crafted to spark creativity, connection, and comfort.
+            </p>
+            <p className="text-lg leading-relaxed">
+              At Exhibit, we believe in living beyond the expected. Let your imagination run wild, follow your whims, and redefine what home can be. Welcome to a life lived outside the box.
+            </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Amenity Categories */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Recreation */}
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Waves className="w-8 h-8" />
+        {/* Featured Amenity Images */}
+        <section className="py-12 px-4 bg-muted">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              <div className="relative h-[350px] overflow-hidden group">
+                <img
+                  src="/images/image-009-34-southeast-levwhc.jpg"
+                  alt="Views for days"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-end p-6">
+                  <h3 className="text-white text-2xl uppercase tracking-wider">Views for days</h3>
+                </div>
               </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Outdoor Pool & Deck</h3>
-              <p className="text-sm">
-                Full-floor rooftop amenity deck with heated outdoor lap pool, sundeck, fire pits, grilling stations, and panoramic city views.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Dumbbell className="w-8 h-8" />
+              <div className="relative h-[350px] overflow-hidden group">
+                <img
+                  src="/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg"
+                  alt="Cozy comfort"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-end p-6">
+                  <h3 className="text-white text-2xl uppercase tracking-wider">Cozy comfort</h3>
+                </div>
               </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Fitness Center</h3>
-              <p className="text-sm">
-                State-of-the-art fitness center with cardio equipment, free weights, yoga studio, and on-demand training programs.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Music className="w-8 h-8" />
+              <div className="relative h-[350px] overflow-hidden group">
+                <img
+                  src="/images/image-011-20170808-0713-n8k48b.jpg"
+                  alt="Sun Soaked Vibes"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-end p-6">
+                  <h3 className="text-white text-2xl uppercase tracking-wider">Sun Soaked Vibes</h3>
+                </div>
               </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Music Studio</h3>
-              <p className="text-sm">
-                Private soundproof music studio for residents to practice instruments, record, or jam with friends.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Users className="w-8 h-8" />
+              <div className="relative h-[350px] overflow-hidden group">
+                <img
+                  src="/images/image-012-012417-6415-hgfghu.jpg"
+                  alt="Sweat Session"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-end p-6">
+                  <h3 className="text-white text-2xl uppercase tracking-wider">Sweat Session</h3>
+                </div>
               </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Resident Lounge</h3>
-              <p className="text-sm">
-                Expansive resident lounge with fireplace, big-screen TV, game tables, and comfortable seating for entertaining guests.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Wifi className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Co-Working Spaces</h3>
-              <p className="text-sm">
-                Professional co-working areas with high-speed WiFi, charging stations, private conference rooms, and collaboration zones.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Coffee className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Coffee Bar</h3>
-              <p className="text-sm">
-                Complimentary coffee bar in the lobby with premium espresso, tea, and refreshments available daily.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Car className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Parking Garage</h3>
-              <p className="text-sm">
-                Secure attached parking garage with reserved and valet options, plus electric vehicle charging stations.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Package className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Package Service</h3>
-              <p className="text-sm">
-                24/7 package receiving and secure storage with text notifications when deliveries arrive.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Wind className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Sauna</h3>
-              <p className="text-sm">
-                Relaxing sauna for post-workout recovery and wellness rituals.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Shield className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">24/7 Security</h3>
-              <p className="text-sm">
-                Controlled access entry, security cameras, and on-site management for peace of mind.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Clock className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Concierge Services</h3>
-              <p className="text-sm">
-                Professional concierge team available to assist with reservations, recommendations, and day-to-day needs.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary mb-4">
-                <Sparkles className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl uppercase tracking-wider mb-3">Resident Events</h3>
-              <p className="text-sm">
-                Regular community events, happy hours, and activities to connect with neighbors and build friendships.
-              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* In-Unit Features */}
-      <section className="py-16 px-4 bg-dark-section">
-        <div className="container mx-auto max-w-4xl">
-          <span className="eyebrow">In Every Apartment</span>
-          <h2 className="section-title text-white mb-12">Premium In-Unit Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Floor-to-ceiling windows with stunning city views</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Quartz countertops and modern cabinetry</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Stainless steel Energy Star appliances</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>In-unit washer and dryer</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Designer plank flooring throughout</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Walk-in closets with custom shelving</span>
-              </li>
-            </ul>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Spa-inspired bathrooms with soaking tubs</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Smart home technology and keyless entry</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Central heating and air conditioning</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>High-speed internet ready</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Private balconies available in select units</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>USB charging outlets</span>
-              </li>
-            </ul>
+        {/* Features & Amenities Lists */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div>
+                <h3 className="text-2xl uppercase tracking-wider mb-6">Apartment Features</h3>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Dramatic Floor-to-Ceiling Windows</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private Balconies</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Panoramic Views Of The Chicago Skyline</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Driftwood Plank Floors Throughout</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Energy Saving Stainless-Steel Appliances</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Front Control Gas Range And Oven</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Garbage Disposal</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>In-Home Washer/Dryer</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Modern Kitchen Cabinetry With Decorative Hardware</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Quartz Countertops</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Tiled Backsplash</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Undermount Sinks</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Sleek Modern Fixtures</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Closet Organizers In Select Units</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Double Vanities In Select Units</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Subway Tile Bath Surround</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Wired For 1GB</span></li>
+                </ul>
+                <Link href="/photo-gallery" className="btn-gold-outline inline-block">
+                  View Photo Gallery
+                </Link>
+              </div>
+              
+              <div>
+                <h3 className="text-2xl uppercase tracking-wider mb-6">Community Amenities</h3>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Full Floor Amenity Deck Overlooking The City And Private Park</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Fitness Center With Two Private Training Rooms</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Cardio Equipment And Spin Bikes</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Boxing Simulator</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Free Weights</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Tech Lounge With Charging Station And Kitchen</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Lounge With Fireplace And Big Screen TV</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Game Area With Arcade Games And Wall Scrabble</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private Work And Meeting Rooms</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Library Nook</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private Dining Room And Party Suite</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Reading And Charging Alcoves</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Sauna And Wet Lounge Leading To Outdoor Deck</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>75' Lap Pool</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Outdoor Hot Tub</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Four Grilling Stations</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Four Fire Pits</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Doggie Spa And Lounge</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Gated Outdoor Dog Walk</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private Park With One Of A Kind Sculpture From Internationally Acclaimed Sculptor Pal Svensson</span></li>
+                </ul>
+                <Link href="/photo-gallery" className="btn-gold-outline inline-block">
+                  View Photo Gallery
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-3xl text-center">
-          <h2 className="section-title mb-6">Experience the Difference</h2>
-          <p className="text-lg leading-relaxed mb-8">
-            See these exceptional amenities for yourself. Schedule a tour and discover why Exhibit on Superior sets the standard for luxury living.
-          </p>
-          <a href="/schedule-a-tour" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
-            Schedule Your Tour
-          </a>
-        </div>
-      </section>
-    </div>
+        {/* Discover Beauty Section */}
+        <section className="py-16 px-4 bg-dark-section">
+          <div className="container mx-auto max-w-4xl text-center text-white">
+            <h2 className="section-title text-white mb-6">Discover the Beauty Of Being at Home</h2>
+            <p className="text-lg leading-relaxed mb-6">
+              Home is more than just where you live, it’s where you thrive. Whether you're fueling up, working out, or winding down, everything you need to feel your best is just steps away.Start your day with an energizing workout at CycleBar or Club Pilates, then grab your favorite coffee and a sweet treat from Goddess and the Baker, all within the building. Reset and recharge with a session at LaPerior Foot Spa or challenge yourself at Train Moment for a next level fitness experience.
+            </p>
+            <p className="text-lg leading-relaxed mb-12">
+              From wellness to indulgence, our on-site retail and lifestyle options bring everyday convenience right to your doorstep. Live well without the hassle, without the commute, and always on your terms. Because convenience isn’t an extra, it’s a way of life at Exhibit on Superior.
+            </p>
+            
+            <h2 className="section-title text-white mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+            <Link href="/contact-us" className="btn-gold-outline inline-block">
+              Contact Us
+            </Link>
+          </div>
+        </section>
+      </div>
+    </>
   );
 }

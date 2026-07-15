@@ -21,7 +21,7 @@ export function SideRail() {
         <Calendar className="w-5 h-5" />
       </Link>
       <Link
-        href="/contact"
+        href="/contact-us"
         className="bg-primary text-white p-3 hover:bg-primary/90 transition-colors shadow-lg"
         aria-label="Contact us"
         title="Contact Us"

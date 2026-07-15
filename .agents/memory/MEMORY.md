@@ -1,0 +1,2 @@
+- [Cloning a live site from screenshots + migration bundle](site-clone-from-bundle.md) — how to faithfully reproduce a Wix/leasing site using extracted screenshots as pixel spec and a content bundle as source of truth.
+- [Design-subagent correction-pass pattern](design-subagent-correction-pass.md) — first build subagent produces fidelity defects; run a second scoped "correction" subagent, then verify claims yourself.
