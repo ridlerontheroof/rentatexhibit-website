@@ -129,8 +129,13 @@ function buildRawMessage(lead: LeadNotification): string {
  *
  * This is best-effort: any failure is logged and swallowed so that a mail
  * outage never blocks or fails the underlying lead insert.
+ *
+ * Returns `true` when the notification was sent successfully and `false`
+ * otherwise, so the caller can record whether the leasing team was notified.
  */
-export async function sendLeadNotification(lead: LeadNotification): Promise<void> {
+export async function sendLeadNotification(
+  lead: LeadNotification,
+): Promise<boolean> {
   try {
     const connectors = new ReplitConnectors();
     const raw = buildRawMessage(lead);
@@ -150,14 +155,16 @@ export async function sendLeadNotification(lead: LeadNotification): Promise<void
         { status: response.status, detail: detail.slice(0, 500) },
         "Failed to send lead notification email",
       );
-      return;
+      return false;
     }
 
     logger.info(
       { leasingInbox: LEASING_INBOX_EMAIL, leadType: lead.type },
       "Sent lead notification email",
     );
+    return true;
   } catch (err) {
     logger.error({ err }, "Error sending lead notification email");
+    return false;
   }
 }

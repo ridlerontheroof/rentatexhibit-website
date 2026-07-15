@@ -12,6 +12,10 @@ export const leadsTable = pgTable("leads", {
   message: text("message"),
   preferredDate: text("preferred_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  // Stamped once the leasing team has been successfully notified about this
+  // lead. Stays null when the notification email failed to send, so un-notified
+  // leads can be audited and manually followed up on.
+  notifiedAt: timestamp("notified_at"),
 });
 
 export const insertLeadSchema = createInsertSchema(leadsTable).omit({

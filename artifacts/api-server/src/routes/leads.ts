@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { eq } from "drizzle-orm";
 import { CreateLeadBody, CreateLeadResponse } from "@workspace/api-zod";
 import { db, leadsTable } from "@workspace/db";
 import { sendLeadNotification } from "../lib/email";
@@ -43,7 +44,8 @@ router.post("/leads", async (req, res) => {
 
     // Notify the leasing team out-of-band. This is intentionally not awaited
     // and never throws, so a mail failure cannot affect the saved lead or the
-    // response already sent to the visitor.
+    // response already sent to the visitor. When the send succeeds we stamp
+    // notifiedAt on the lead so the team can audit which leads slipped through.
     void sendLeadNotification({
       type: row.type,
       firstName: row.firstName,
@@ -53,6 +55,19 @@ router.post("/leads", async (req, res) => {
       message: row.message,
       preferredDate: row.preferredDate,
       createdAt: row.createdAt,
+    }).then(async (sent) => {
+      if (!sent) return;
+      try {
+        await db
+          .update(leadsTable)
+          .set({ notifiedAt: new Date() })
+          .where(eq(leadsTable.id, row.id));
+      } catch (err) {
+        req.log.error(
+          { err, leadId: row.id },
+          "Sent lead notification but failed to stamp notifiedAt",
+        );
+      }
     });
   } catch (err) {
     req.log.error({ err }, "Failed to persist lead");
