@@ -13,7 +13,6 @@ export interface LeadInput {
   firstName: string;
   /** @minLength 1 */
   lastName: string;
-  /** @minLength 3 */
   email: string;
   /** @minLength 1 */
   phone: string;

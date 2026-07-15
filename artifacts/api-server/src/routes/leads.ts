@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { CreateLeadBody, CreateLeadResponse } from "@workspace/api-zod";
 import { db, leadsTable } from "@workspace/db";
+import { sendLeadNotification } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -39,6 +40,20 @@ router.post("/leads", async (req, res) => {
     });
 
     res.status(201).json(data);
+
+    // Notify the leasing team out-of-band. This is intentionally not awaited
+    // and never throws, so a mail failure cannot affect the saved lead or the
+    // response already sent to the visitor.
+    void sendLeadNotification({
+      type: row.type,
+      firstName: row.firstName,
+      lastName: row.lastName,
+      email: row.email,
+      phone: row.phone,
+      message: row.message,
+      preferredDate: row.preferredDate,
+      createdAt: row.createdAt,
+    });
   } catch (err) {
     req.log.error({ err }, "Failed to persist lead");
     res.status(500).json({ error: "Could not save your submission. Please try again." });

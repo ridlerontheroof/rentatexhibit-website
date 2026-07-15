@@ -22,8 +22,6 @@ export const HealthCheckResponse = zod.object({
  */
 
 
-export const createLeadBodyEmailMin = 3;
-
 
 
 
@@ -31,7 +29,7 @@ export const CreateLeadBody = zod.object({
   "type": zod.enum(['contact', 'tour']),
   "firstName": zod.string().min(1),
   "lastName": zod.string().min(1),
-  "email": zod.string().min(createLeadBodyEmailMin),
+  "email": zod.string().email(),
   "phone": zod.string().min(1),
   "message": zod.string().optional(),
   "preferredDate": zod.string().optional()

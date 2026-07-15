@@ -116,7 +116,7 @@ components:
           minLength: 1
         email:
           type: string
-          minLength: 3
+          format: email
         phone:
           type: string
           minLength: 1
