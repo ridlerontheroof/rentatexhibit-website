@@ -129,6 +129,12 @@ export function ContactUs() {
                   </div>
                 )}
 
+                {createLead.isError && (
+                  <div className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive" role="alert">
+                    Something went wrong and your message couldn't be sent. Please check your connection and try again.
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>

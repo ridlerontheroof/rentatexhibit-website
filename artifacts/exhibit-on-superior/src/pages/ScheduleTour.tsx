@@ -119,6 +119,12 @@ export function ScheduleTour() {
                 <div className="bg-muted p-8 border border-border">
                   <h2 className="text-2xl uppercase tracking-wider mb-6">Request a Tour</h2>
 
+                  {createLead.isError && (
+                    <div className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive" role="alert">
+                      Something went wrong and your tour request couldn't be sent. Please check your connection and try again.
+                    </div>
+                  )}
+
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
