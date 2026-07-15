@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Exhibit On Superior"
+version = "1.0.0"
+id = "artifacts/exhibit-on-superior"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25383
+
+[services.development]
+run = "pnpm --filter @workspace/exhibit-on-superior run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/exhibit-on-superior", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/exhibit-on-superior/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25383"
+BASE_PATH = "/"
