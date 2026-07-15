@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
 import { CreateLeadBody, CreateLeadResponse } from "@workspace/api-zod";
 import { db, leadsTable } from "@workspace/db";
-import { sendLeadNotification } from "../lib/email";
+import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -42,11 +42,8 @@ router.post("/leads", async (req, res) => {
 
     res.status(201).json(data);
 
-    // Notify the leasing team out-of-band. This is intentionally not awaited
-    // and never throws, so a mail failure cannot affect the saved lead or the
-    // response already sent to the visitor. When the send succeeds we stamp
-    // notifiedAt on the lead so the team can audit which leads slipped through.
-    void sendLeadNotification({
+    // response already sent to the visitor.
+    const leadForEmail = {
       type: row.type,
       firstName: row.firstName,
       lastName: row.lastName,
@@ -55,7 +52,13 @@ router.post("/leads", async (req, res) => {
       message: row.message,
       preferredDate: row.preferredDate,
       createdAt: row.createdAt,
-    }).then(async (sent) => {
+    };
+
+    // Notify the leasing team out-of-band. This is intentionally not awaited
+    // and never throws, so a mail failure cannot affect the saved lead or the
+    // response already sent to the visitor. When the send succeeds we stamp
+    // notifiedAt on the lead so the team can audit which leads slipped through.
+    void sendLeadNotification(leadForEmail).then(async (sent) => {
       if (!sent) return;
       try {
         await db
@@ -69,6 +72,10 @@ router.post("/leads", async (req, res) => {
         );
       }
     });
+
+    // Acknowledge the prospect out-of-band as well. Also fire-and-forget so a
+    // mail failure cannot affect the saved lead or the response already sent.
+    void sendProspectConfirmation(leadForEmail);
   } catch (err) {
     req.log.error({ err }, "Failed to persist lead");
     res.status(500).json({ error: "Could not save your submission. Please try again." });
