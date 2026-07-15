@@ -20,19 +20,26 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary Submit a contact or tour request
  */
+export const createLeadBodyFirstNameMax = 100;
 
+export const createLeadBodyLastNameMax = 100;
 
+export const createLeadBodyPhoneMax = 30;
+
+export const createLeadBodyMessageMax = 2000;
+
+export const createLeadBodyPreferredDateMax = 50;
 
 
 
 export const CreateLeadBody = zod.object({
   "type": zod.enum(['contact', 'tour']),
-  "firstName": zod.string().min(1),
-  "lastName": zod.string().min(1),
+  "firstName": zod.string().min(1).max(createLeadBodyFirstNameMax),
+  "lastName": zod.string().min(1).max(createLeadBodyLastNameMax),
   "email": zod.string().email(),
-  "phone": zod.string().min(1),
-  "message": zod.string().optional(),
-  "preferredDate": zod.string().optional()
+  "phone": zod.string().min(1).max(createLeadBodyPhoneMax),
+  "message": zod.string().max(createLeadBodyMessageMax).optional(),
+  "preferredDate": zod.string().max(createLeadBodyPreferredDateMax).optional()
 })
 
 export const CreateLeadResponse = zod.object({

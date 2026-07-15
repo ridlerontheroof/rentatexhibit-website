@@ -45,14 +45,25 @@ export const LeadInputType = {
 
 export interface LeadInput {
   type: LeadInputType;
-  /** @minLength 1 */
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
   firstName: string;
-  /** @minLength 1 */
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
   lastName: string;
   email: string;
-  /** @minLength 1 */
+  /**
+     * @minLength 1
+     * @maxLength 30
+     */
   phone: string;
+  /** @maxLength 2000 */
   message?: string;
+  /** @maxLength 50 */
   preferredDate?: string;
 }
 

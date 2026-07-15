@@ -111,16 +111,21 @@ components:
         firstName:
           type: string
           minLength: 1
+          maxLength: 100
         lastName:
           type: string
           minLength: 1
+          maxLength: 100
         email:
           type: string
           format: email
         phone:
           type: string
           minLength: 1
+          maxLength: 30
         message:
           type: string
+          maxLength: 2000
         preferredDate:
           type: string
+          maxLength: 50
