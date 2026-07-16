@@ -307,13 +307,70 @@ export function PlanLightbox({
     };
   }, [mouseDragging, clampPan]);
 
+  // Keyboard zoom: step scale around the viewer centre, reusing the shared
+  // pinch state and clampPanTranslation bounds (matches the wheel-zoom math
+  // with the cursor at the centre, where tx' = ratio * tx).
+  const KEY_ZOOM_STEP = 1.25;
+  const KEY_PAN_STEP = 60;
+
+  const keyboardZoom = useCallback(
+    (dir: 1 | -1) => {
+      clearZoomExitTimer();
+      setZoomed(false);
+      setZoomPhase('idle');
+      setPinch((p) => {
+        const scale = Math.min(
+          4,
+          Math.max(1, dir === 1 ? p.scale * KEY_ZOOM_STEP : p.scale / KEY_ZOOM_STEP),
+        );
+        if (scale <= 1) return { scale: 1, tx: 0, ty: 0 };
+        const ratio = scale / p.scale;
+        return { scale, ...clampPan(p.tx * ratio, p.ty * ratio, scale, 0) };
+      });
+    },
+    [clampPan, clearZoomExitTimer],
+  );
+
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
       if (!group) return;
-      if (e.key === 'ArrowLeft') onNavigate(-1);
-      else if (e.key === 'ArrowRight') onNavigate(1);
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        keyboardZoom(1);
+        return;
+      }
+      if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        keyboardZoom(-1);
+        return;
+      }
+      if (e.key === '0') {
+        e.preventDefault();
+        clearZoomExitTimer();
+        setZoomed(false);
+        setZoomPhase('idle');
+        resetPinch();
+        return;
+      }
+      if (e.key.startsWith('Arrow')) {
+        // While pinch-zoomed in, arrows pan the plan instead of navigating.
+        if (pinch.scale > 1.01) {
+          e.preventDefault();
+          const dx = e.key === 'ArrowLeft' ? KEY_PAN_STEP : e.key === 'ArrowRight' ? -KEY_PAN_STEP : 0;
+          const dy = e.key === 'ArrowUp' ? KEY_PAN_STEP : e.key === 'ArrowDown' ? -KEY_PAN_STEP : 0;
+          setPinch((p) => ({ ...p, ...clampPan(p.tx + dx, p.ty + dy, p.scale, 0) }));
+          return;
+        }
+        if (zoomed) return; // scroll-zoom mode: let the browser scroll the viewer
+        if (e.key === 'ArrowLeft') onNavigate(-1);
+        else if (e.key === 'ArrowRight') onNavigate(1);
+      }
     },
-    [group, onNavigate],
+    [group, onNavigate, keyboardZoom, clampPan, resetPinch, clearZoomExitTimer, pinch.scale, zoomed],
   );
 
   useEffect(() => {
@@ -507,6 +564,16 @@ export function PlanLightbox({
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
+        onEscapeKeyDown={(e) => {
+          // First Escape while zoomed resets to fit; a second Escape closes.
+          if (pinch.scale > 1.01 || zoomed) {
+            e.preventDefault();
+            clearZoomExitTimer();
+            setZoomed(false);
+            setZoomPhase('idle');
+            resetPinch();
+          }
+        }}
         className="max-w-none w-screen h-screen max-h-screen supports-[height:100svh]:h-[100svh] supports-[height:100svh]:max-h-[100svh] supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:max-h-[100dvh] translate-x-[-50%] translate-y-[-50%] gap-0 border-0 bg-[#111] p-0 sm:rounded-none"
       >
         <DialogTitle className="sr-only">
@@ -514,7 +581,8 @@ export function PlanLightbox({
         </DialogTitle>
         <DialogDescription className="sr-only">
           {sqftLabel}. Use the left and right arrow keys or swipe to move between floor plans. Press
-          Escape to close.
+          plus or minus to zoom, 0 to reset, and the arrow keys to pan while zoomed. Press Escape to
+          close.
         </DialogDescription>
 
         <div className="flex h-screen supports-[height:100svh]:h-[100svh] supports-[height:100dvh]:h-[100dvh] flex-col lg:grid lg:h-screen lg:grid-cols-[1fr_360px] lg:grid-rows-1">
