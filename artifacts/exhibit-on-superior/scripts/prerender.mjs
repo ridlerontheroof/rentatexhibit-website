@@ -141,6 +141,64 @@ for (const routePath of seoPaths) {
   await fs.writeFile(outPath, page, 'utf8');
 }
 
+// Post-build guard: re-read every written page from disk and cross-check its
+// injected LCP preload against its OWN rendered body. A template/injection bug
+// (e.g. a page shipping the home hero's hint, or a leftover template hint on a
+// page with no eager AVIF image) fails the build loudly.
+{
+  const problems = [];
+  for (const routePath of seoPaths) {
+    const outPath =
+      routePath === '/'
+        ? path.join(publicDir, 'index.html')
+        : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
+    const page = await fs.readFile(outPath, 'utf8');
+
+    // Split head/body so we compare the head's hint to the body's markup only.
+    const headEnd = page.indexOf('</head>');
+    if (headEnd === -1) {
+      problems.push(`${routePath}: no </head> found in output.`);
+      continue;
+    }
+    const headHtml = page.slice(0, headEnd);
+    const bodyHtml = page.slice(headEnd);
+
+    // Expected hint: derived from this page's own body markup.
+    const expected = extractLcpPreload(bodyHtml);
+
+    // Actual hint(s): imagesrcset preloads present in the head.
+    const actualLinks = (headHtml.match(/<link\b[^>]*rel="preload"[^>]*>/gi) ?? []).filter((tag) =>
+      /\bimagesrcset="/i.test(tag),
+    );
+
+    if (expected) {
+      if (actualLinks.length !== 1) {
+        problems.push(
+          `${routePath}: expected exactly 1 imagesrcset preload, found ${actualLinks.length}.`,
+        );
+      } else if (actualLinks[0] !== expected) {
+        problems.push(
+          `${routePath}: preload does not match the page's own eager <picture>.\n` +
+            `    head has: ${actualLinks[0]}\n` +
+            `    expected: ${expected}`,
+        );
+      }
+    } else if (actualLinks.length) {
+      problems.push(
+        `${routePath}: has no eager AVIF <picture> but head carries ${actualLinks.length} ` +
+          `imagesrcset preload(s) (stale/leftover template hint): ${actualLinks[0]}`,
+      );
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: LCP preload verification failed on ${problems.length} page(s):\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`LCP preload verified on ${seoPaths.length} pages.`);
+}
+
 // Sitemap: indexable pages only (noindex pages excluded). Redirect routes such
 // as /available-units are absent from PAGE_SEO, so they're excluded by design.
 const today = new Date().toISOString().slice(0, 10);
