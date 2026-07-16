@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Seo } from '../components/Seo';
+import { trackLead } from '../lib/analytics';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 
@@ -53,6 +54,7 @@ export function ContactUs() {
       },
       {
         onSuccess: () => {
+          trackLead('contact');
           setSubmitted(true);
           reset();
           setTimeout(() => setSubmitted(false), 5000);

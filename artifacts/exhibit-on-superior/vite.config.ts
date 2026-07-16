@@ -1,7 +1,44 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+
+/**
+ * Search-engine verification: injects <meta name="google-site-verification">
+ * and/or <meta name="msvalidate.01"> (Bing) into <head> when the matching env
+ * vars are set. Runs via transformIndexHtml, so the tags land in the built
+ * index.html *before* the prerender step copies it as the per-route template —
+ * no hand-editing of built output, and every prerendered page carries them.
+ */
+function siteVerificationTags(): Plugin {
+  return {
+    name: 'site-verification-tags',
+    transformIndexHtml() {
+      const tags = [];
+      if (process.env.VITE_GOOGLE_SITE_VERIFICATION) {
+        tags.push({
+          tag: 'meta',
+          attrs: {
+            name: 'google-site-verification',
+            content: process.env.VITE_GOOGLE_SITE_VERIFICATION,
+          },
+          injectTo: 'head' as const,
+        });
+      }
+      if (process.env.VITE_BING_SITE_VERIFICATION) {
+        tags.push({
+          tag: 'meta',
+          attrs: {
+            name: 'msvalidate.01',
+            content: process.env.VITE_BING_SITE_VERIFICATION,
+          },
+          injectTo: 'head' as const,
+        });
+      }
+      return tags;
+    },
+  };
+}
 
 import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
 
@@ -32,6 +69,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    siteVerificationTags(),
     runtimeErrorOverlay(),
     ...(process.env.NODE_ENV !== 'production' &&
     process.env.REPL_ID !== undefined

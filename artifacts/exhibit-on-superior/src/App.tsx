@@ -1,6 +1,7 @@
 import { Route, Switch, useLocation } from 'wouter';
 import { lazy, Suspense, useEffect, type ComponentType } from 'react';
 import { Layout } from './components/Layout';
+import { initAnalytics, trackPageView } from './lib/analytics';
 import { APPLY_URL, AVAILABILITY_URL } from './data/seo';
 import { routes } from './routes';
 
@@ -50,9 +51,22 @@ const LEGACY_REDIRECTS: Record<string, string> = {
   '/apartments/il/chicago/magellan-rewards': '/',
 };
 
+/** GA4: init once, then report a page_view on load and every SPA navigation. */
+function AnalyticsTracker() {
+  const [location] = useLocation();
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+  useEffect(() => {
+    trackPageView(location);
+  }, [location]);
+  return null;
+}
+
 function App() {
   return (
     <Layout>
+      <AnalyticsTracker />
       <Suspense fallback={<div className="min-h-[60vh]" aria-hidden="true" />}>
         <Switch>
           {lazyRoutes.map(({ path, Component }) => (
