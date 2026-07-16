@@ -1,5 +1,6 @@
 import { ReplitConnectors } from "@replit/connectors-sdk";
 import { logger } from "./logger";
+import { allowProspectConfirmation } from "./emailThrottle";
 
 /**
  * The leasing inbox that should be notified whenever a new lead comes in.
@@ -213,6 +214,13 @@ function buildProspectConfirmationMessage(lead: LeadNotification): string {
  * outage never blocks or fails the underlying lead insert.
  */
 export async function sendProspectConfirmation(lead: LeadNotification): Promise<void> {
+  // Distributed abuse defense: the per-IP limit on the route can be bypassed by
+  // rotating IPs, so cap confirmations per recipient and globally before we send
+  // anything to the attacker-supplied address. See emailThrottle for details.
+  if (!allowProspectConfirmation(lead.email)) {
+    return;
+  }
+
   try {
     const connectors = new ReplitConnectors();
     const raw = buildProspectConfirmationMessage(lead);
