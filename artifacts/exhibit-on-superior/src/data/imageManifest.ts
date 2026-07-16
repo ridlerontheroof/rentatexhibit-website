@@ -20,6 +20,11 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
     "height": 621,
     "variants": [
       {
+        "src": "/images/exhibit-logo-320w.webp",
+        "avif": "/images/exhibit-logo-320w.avif",
+        "w": 320
+      },
+      {
         "src": "/images/exhibit-logo-800w.webp",
         "avif": "/images/exhibit-logo-800w.avif",
         "w": 800
@@ -40,6 +45,11 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
     "width": 1805,
     "height": 621,
     "variants": [
+      {
+        "src": "/images/image-001-exhibit-on-superior-logo-color-a7pvg4-320w.webp",
+        "avif": "/images/image-001-exhibit-on-superior-logo-color-a7pvg4-320w.avif",
+        "w": 320
+      },
       {
         "src": "/images/image-001-exhibit-on-superior-logo-color-a7pvg4-800w.webp",
         "avif": "/images/image-001-exhibit-on-superior-logo-color-a7pvg4-800w.avif",

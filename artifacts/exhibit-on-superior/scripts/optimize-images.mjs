@@ -40,6 +40,12 @@ const AVIF_QUALITY_FLOOR = 30;
 // Responsive rungs. The largest rung also caps the "full" WebP — nothing on
 // the site renders wider than ~2000 CSS px.
 const WIDTHS = [800, 1280, 2000];
+// Extra small rungs for images that render far below the smallest global rung
+// (e.g. the header/footer logo displays at ~140 CSS px, so a 320w rung covers
+// 2x-DPR phones at a fraction of the 800w file size). Applied to any stem
+// matching one of these patterns.
+const SMALL_RUNG_PATTERNS = [/logo/i];
+const SMALL_WIDTHS = [320];
 
 const files = (await fs.readdir(imagesDir)).filter((f) => /\.(jpe?g|png)$/i.test(f)).sort();
 
@@ -54,9 +60,10 @@ for (const file of files) {
 
   // Rungs strictly below the source width, plus the source width itself capped
   // at the largest rung (nothing renders wider than that).
-  const rungs = [...new Set([...WIDTHS.filter((w) => w < width), Math.min(width, WIDTHS[WIDTHS.length - 1])])].sort(
-    (a, b) => a - b,
-  );
+  const baseWidths = SMALL_RUNG_PATTERNS.some((re) => re.test(stem)) ? [...SMALL_WIDTHS, ...WIDTHS] : WIDTHS;
+  const rungs = [
+    ...new Set([...baseWidths.filter((w) => w < width), Math.min(width, WIDTHS[WIDTHS.length - 1])]),
+  ].sort((a, b) => a - b);
 
   const variants = [];
   for (const target of rungs) {
