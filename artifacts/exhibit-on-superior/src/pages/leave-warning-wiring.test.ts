@@ -70,6 +70,20 @@ function mockLeadSubmitOk() {
   );
 }
 
+// A failed lead POST (non-ok response), so the mutation errors out: the error
+// banner shows, the form keeps its values, and the guard must stay ON.
+function mockLeadSubmitFail() {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => ({
+      ok: false,
+      status: 500,
+      json: async () => ({ error: 'Internal Server Error' }),
+      text: async () => 'Internal Server Error',
+    }))
+  );
+}
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
@@ -127,5 +141,61 @@ describe('leave-warning wiring', () => {
     );
 
     expect(guardIsOn()).toBe(false);
+  });
+
+  it('ContactUs: guard stays ON when the submit fails, so the visitor cannot silently lose their message', async () => {
+    mockLeadSubmitFail();
+    renderPage(ContactUs);
+
+    setField('firstName', 'Ada');
+    setField('lastName', 'Lovelace');
+    setField('email', 'ada@example.com');
+    setField('phone', '3124500635');
+    setField('message', 'I would like more information about availability.');
+    expect(guardIsOn()).toBe(true);
+
+    submitForm();
+
+    // The error banner confirms the mutation settled in the error state
+    // (isPending is false again), which is exactly when a regression could
+    // wrongly disarm the guard.
+    await waitFor(() =>
+      expect(document.body.textContent).toContain(
+        "your message couldn't be sent"
+      )
+    );
+
+    // Form still holds the visitor's info…
+    expect(
+      (document.getElementById('email') as HTMLInputElement).value
+    ).toBe('ada@example.com');
+    // …so the leave warning must still be armed.
+    expect(guardIsOn()).toBe(true);
+  });
+
+  it('ScheduleTour: guard stays ON when the submit fails, so the visitor cannot silently lose their request', async () => {
+    mockLeadSubmitFail();
+    renderPage(ScheduleTour);
+
+    setField('firstName', 'Grace');
+    setField('lastName', 'Hopper');
+    setField('email', 'grace@example.com');
+    setField('phone', '3124500635');
+    setField('moveInDate', '2026-09-01');
+    setField('bedrooms', '1 Bedroom');
+    expect(guardIsOn()).toBe(true);
+
+    submitForm();
+
+    await waitFor(() =>
+      expect(document.body.textContent).toContain(
+        "your tour request couldn't be sent"
+      )
+    );
+
+    expect(
+      (document.getElementById('email') as HTMLInputElement).value
+    ).toBe('grace@example.com');
+    expect(guardIsOn()).toBe(true);
   });
 });
