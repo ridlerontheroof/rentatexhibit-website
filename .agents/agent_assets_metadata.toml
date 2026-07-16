@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "e__h18h7c3vby6osg_GkY"
+uri = "file://artifacts/exhibit-on-superior/public/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg"
+type = "image"
+title = "Current shared-link thumbnail (og:image)"
