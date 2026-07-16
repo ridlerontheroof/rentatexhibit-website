@@ -227,7 +227,7 @@ export function ScheduleTour() {
                         {...register('moveInDate')}
                         aria-invalid={errors.moveInDate ? true : undefined}
                         aria-describedby={errors.moveInDate ? 'moveInDate-error' : undefined}
-                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                        className="w-full appearance-none px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                       />
                       {errors.moveInDate && (
                         <p id="moveInDate-error" role="alert" className="text-destructive text-xs mt-1">
