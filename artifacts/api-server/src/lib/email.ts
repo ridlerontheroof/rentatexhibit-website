@@ -94,7 +94,7 @@ function buildRawMessage(lead: LeadNotification): string {
   const headers = [
     `To: ${LEASING_INBOX_EMAIL}`,
     // Let the leasing team reply straight back to the prospect.
-    `Reply-To: ${encodeHeader(fullName)} <${lead.email}>`,
+    `Reply-To: ${encodeHeader(fullName)} <${sanitizeHeaderValue(lead.email)}>`,
     `Subject: ${encodeHeader(subject)}`,
     "MIME-Version: 1.0",
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
