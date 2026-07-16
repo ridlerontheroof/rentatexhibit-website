@@ -230,3 +230,45 @@ export function groupMatchesQuery(g: PlanGroup, query: string): boolean {
   ].join(' ');
   return haystack.includes(q);
 }
+
+/** Structural filter state (bedroom categories, floor bands, sqft range). */
+export interface GroupFilterState {
+  categories: Set<Category>;
+  bands: Set<string>;
+  sqft: [number, number];
+}
+
+/** Match a group against the combined category / floor-band / sqft-range filter. */
+export function groupMatchesFilters(g: PlanGroup, filters: GroupFilterState): boolean {
+  if (filters.categories.size > 0 && !filters.categories.has(g.category)) return false;
+  if (filters.bands.size > 0 && !g.bands.some((b) => filters.bands.has(b.id))) return false;
+  // sqft ranges overlap if the group's [min, max] intersects the filter's [lo, hi].
+  if (g.sqftMax < filters.sqft[0] || g.sqftMin > filters.sqft[1]) return false;
+  return true;
+}
+
+/** Apply the free-text query and the combined filter together. */
+export function filterGroups(
+  groups: PlanGroup[],
+  search: string,
+  filters: GroupFilterState,
+): PlanGroup[] {
+  return groups.filter((g) => groupMatchesQuery(g, search) && groupMatchesFilters(g, filters));
+}
+
+/**
+ * Step to the next position within a filtered list, wrapping around at both
+ * ends. Returns the current index unchanged when there is nothing to navigate.
+ */
+export function nextPosition(current: number, dir: -1 | 1, total: number): number {
+  if (total <= 0 || current < 0) return current;
+  return (current + dir + total) % total;
+}
+
+/**
+ * Resolve a deep-linked `?plan=` id: returns the id when it matches an existing
+ * group, otherwise null (unknown / missing ids are ignored).
+ */
+export function resolveDeepLink(groups: PlanGroup[], id: string | null): string | null {
+  return id && groups.some((g) => g.id === id) ? id : null;
+}

@@ -17,7 +17,9 @@ import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFil
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import {
   planGroups,
-  groupMatchesQuery,
+  filterGroups,
+  nextPosition,
+  resolveDeepLink,
   SQFT_MIN,
   SQFT_MAX,
   type Category,
@@ -89,13 +91,7 @@ export function FloorPlans() {
   const [variantIndex, setVariantIndex] = useState(0);
 
   const filtered = useMemo(() => {
-    const result = planGroups.filter((g) => {
-      if (!groupMatchesQuery(g, search)) return false;
-      if (filters.categories.size > 0 && !filters.categories.has(g.category)) return false;
-      if (filters.bands.size > 0 && !g.bands.some((b) => filters.bands.has(b.id))) return false;
-      if (g.sqftMax < filters.sqft[0] || g.sqftMin > filters.sqft[1]) return false;
-      return true;
-    });
+    const result = filterGroups(planGroups, search, filters);
 
     const byCategory = (g: PlanGroup) =>
       ['studio', 'convertible', '1br', '2br', '3br'].indexOf(g.category);
@@ -119,8 +115,8 @@ export function FloorPlans() {
 
   // Deep-link: open from URL on load.
   useEffect(() => {
-    const id = readPlanFromUrl();
-    if (id && planGroups.some((g) => g.id === id)) {
+    const id = resolveDeepLink(planGroups, readPlanFromUrl());
+    if (id) {
       setOpenId(id);
       setVariantIndex(0);
     }
@@ -143,7 +139,7 @@ export function FloorPlans() {
 
   const handleNavigate = (dir: -1 | 1) => {
     if (openPosition < 0 || filtered.length === 0) return;
-    const next = (openPosition + dir + filtered.length) % filtered.length;
+    const next = nextPosition(openPosition, dir, filtered.length);
     const nextGroup = filtered[next];
     setOpenId(nextGroup.id);
     setVariantIndex(0);
