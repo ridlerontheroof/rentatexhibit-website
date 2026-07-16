@@ -142,3 +142,31 @@ export function trackLead(
 
   window.gtag('event', 'generate_lead', params);
 }
+
+/**
+ * Report a click on a high-intent outbound CTA (Apply Now / View Availability
+ * on RentCafe). Same attribution model as trackLead — page path, referring
+ * page, and stored UTM params; never any PII.
+ *
+ * - link_type: 'apply' | 'availability'
+ * - link_url: the outbound destination
+ * - cta_location: where the CTA lives (e.g. 'nav', 'floor_plans', 'redirect')
+ */
+export function trackOutboundClick(
+  linkType: 'apply' | 'availability',
+  linkUrl: string,
+  ctaLocation: string
+): void {
+  if (!analyticsEnabled() || !window.gtag) return;
+
+  const params: Record<string, string> = {
+    link_type: linkType,
+    link_url: linkUrl,
+    cta_location: ctaLocation,
+    page_path: currentPath ?? window.location.pathname,
+    ...getStoredUtmParams(),
+  };
+  if (previousPath) params.referring_page = previousPath;
+
+  window.gtag('event', 'outbound_click', params);
+}

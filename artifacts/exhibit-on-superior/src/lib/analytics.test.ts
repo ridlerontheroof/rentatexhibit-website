@@ -130,6 +130,61 @@ describe('trackLead payload whitelist (no PII)', () => {
   });
 });
 
+describe('trackOutboundClick payload whitelist (no PII)', () => {
+  const ALLOWED_OUTBOUND_KEYS = new Set([
+    'link_type',
+    'link_url',
+    'cta_location',
+    'page_path',
+    'referring_page',
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_term',
+    'utm_content',
+  ]);
+
+  function lastOutboundParams(): Record<string, unknown> {
+    const call = [...gtagSpy.mock.calls]
+      .reverse()
+      .find((args) => args[0] === 'event' && args[1] === 'outbound_click');
+    expect(call, 'expected an outbound_click event').toBeDefined();
+    return call![2] as Record<string, unknown>;
+  }
+
+  it('sends only whitelisted keys with page path and UTM attribution', async () => {
+    const analytics = await loadAnalytics('/?utm_source=google&utm_medium=cpc');
+    analytics.trackPageView('/');
+    analytics.trackPageView('/floor-plans');
+    analytics.trackOutboundClick('apply', 'https://example.com/apply', 'nav');
+
+    const params = lastOutboundParams();
+    for (const key of Object.keys(params)) {
+      expect(ALLOWED_OUTBOUND_KEYS.has(key), `unexpected gtag param "${key}"`).toBe(true);
+      expect(key).not.toMatch(PII_KEY_PATTERN);
+      expect(typeof params[key]).toBe('string');
+    }
+    expect(params.link_type).toBe('apply');
+    expect(params.link_url).toBe('https://example.com/apply');
+    expect(params.cta_location).toBe('nav');
+    expect(params.page_path).toBe('/floor-plans');
+    expect(params.referring_page).toBe('/');
+    expect(params.utm_source).toBe('google');
+    expect(params.utm_medium).toBe('cpc');
+  });
+
+  it('sends availability clicks with the current page path', async () => {
+    const analytics = await loadAnalytics();
+    analytics.trackPageView('/floor-plans');
+    analytics.trackOutboundClick('availability', 'https://example.com/units', 'plan_lightbox');
+
+    const params = lastOutboundParams();
+    expect(params.link_type).toBe('availability');
+    expect(params.cta_location).toBe('plan_lightbox');
+    expect(params.page_path).toBe('/floor-plans');
+  });
+});
+
 describe('UTM capture and persistence across SPA navigation', () => {
   it('captures utm params from the landing URL and attaches them to leads after navigation', async () => {
     const analytics = await loadAnalytics(

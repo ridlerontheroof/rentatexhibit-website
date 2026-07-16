@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { Link } from 'wouter';
 import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
 import { clampPanTranslation } from '../../lib/panBounds';
+import { trackOutboundClick } from '../../lib/analytics';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
 
@@ -625,6 +626,7 @@ export function PlanLightbox({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-gold-outline flex min-h-11 shrink-0 items-center bg-primary px-4 text-center text-xs text-white hover:bg-primary/90"
+                  onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'plan_lightbox')}
                 >
                   Check Availability
                 </a>
@@ -718,6 +720,7 @@ export function PlanLightbox({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold-outline hidden bg-primary text-center text-white hover:bg-primary/90 lg:block"
+                onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'plan_lightbox')}
               >
                 Check Availability
               </a>

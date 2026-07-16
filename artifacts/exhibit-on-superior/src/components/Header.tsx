@@ -3,6 +3,7 @@ import type { FocusEvent, KeyboardEvent } from 'react';
 import { Link } from 'wouter';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { AVAILABILITY_URL, APPLY_URL } from '../data/seo';
+import { trackOutboundClick } from '../lib/analytics';
 
 const navLink = 'text-sm uppercase tracking-wider hover:text-primary transition-colors';
 const dropLink =
@@ -142,6 +143,7 @@ export function Header() {
               target="_blank"
               rel="noopener noreferrer"
               className={`${navLink} font-semibold`}
+              onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'nav')}
             >
               Available Units
             </a>
@@ -150,6 +152,7 @@ export function Header() {
               target="_blank"
               rel="noopener noreferrer"
               className="btn-gold-outline text-sm"
+              onClick={() => trackOutboundClick('apply', APPLY_URL, 'nav')}
             >
               Apply Now
             </a>
@@ -189,10 +192,10 @@ export function Header() {
               <Link href="/reviews" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Reviews</Link>
 
               <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
-                <a href={AVAILABILITY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-center">
+                <a href={AVAILABILITY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-center" onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'mobile_nav')}>
                   Available Units
                 </a>
-                <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-center">
+                <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-center" onClick={() => trackOutboundClick('apply', APPLY_URL, 'mobile_nav')}>
                   Apply Now
                 </a>
               </div>

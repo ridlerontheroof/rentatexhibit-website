@@ -18,6 +18,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../c
 import { PlanCard } from '../components/floor-plans/PlanCard';
 import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFilters';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
+import { trackOutboundClick } from '../lib/analytics';
 import {
   planGroups,
   filterGroups,
@@ -313,6 +314,7 @@ export function FloorPlans() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold-outline border-white bg-primary text-white hover:bg-primary/90"
+                onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'floor_plans_cta')}
               >
                 Check Availability
               </a>

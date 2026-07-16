@@ -1,7 +1,7 @@
 import { Route, Switch, useLocation } from 'wouter';
 import { lazy, Suspense, useEffect, type ComponentType } from 'react';
 import { Layout } from './components/Layout';
-import { initAnalytics, trackPageView } from './lib/analytics';
+import { initAnalytics, trackPageView, trackOutboundClick } from './lib/analytics';
 import { APPLY_URL, AVAILABILITY_URL } from './data/seo';
 import { routes } from './routes';
 
@@ -25,6 +25,13 @@ function Redirect({ to }: { to: string }) {
   const [, setLocation] = useLocation();
   useEffect(() => {
     if (/^https?:\/\//i.test(to)) {
+      // Outbound CTA reached via an internal redirect route (/apply,
+      // /available-units, legacy URLs) — attribute it before leaving the SPA.
+      if (to === APPLY_URL) {
+        trackOutboundClick('apply', to, 'redirect');
+      } else if (to === AVAILABILITY_URL) {
+        trackOutboundClick('availability', to, 'redirect');
+      }
       window.location.replace(to);
     } else {
       setLocation(to, { replace: true });
