@@ -198,6 +198,81 @@ describe('floor-plan image files', () => {
     expect(bad, `corrupted or empty floor-plan images: ${bad.join(', ')}`).toEqual([]);
   });
 
+  /** Parse pixel dimensions from a WebP header (VP8 / VP8L / VP8X). */
+  function readWebpDimensions(buf: Buffer): { width: number; height: number } | null {
+    if (
+      buf.length < 30 ||
+      buf.toString('ascii', 0, 4) !== 'RIFF' ||
+      buf.toString('ascii', 8, 12) !== 'WEBP'
+    ) {
+      return null;
+    }
+    const fourcc = buf.toString('ascii', 12, 16);
+    if (fourcc === 'VP8 ') {
+      // Lossy: frame tag at 20, sync code 9D 01 2A, then 14-bit width/height.
+      if (buf[23] === 0x9d && buf[24] === 0x01 && buf[25] === 0x2a) {
+        return { width: buf.readUInt16LE(26) & 0x3fff, height: buf.readUInt16LE(28) & 0x3fff };
+      }
+      return null;
+    }
+    if (fourcc === 'VP8L') {
+      if (buf[20] !== 0x2f) return null; // signature byte
+      const bits = buf.readUInt32LE(21);
+      return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+    }
+    if (fourcc === 'VP8X') {
+      // 24-bit little-endian canvas width/height minus one at offsets 24 and 27.
+      const width = 1 + (buf[24] | (buf[25] << 8) | (buf[26] << 16));
+      const height = 1 + (buf[27] | (buf[28] << 8) | (buf[29] << 16));
+      return { width, height };
+    }
+    return null;
+  }
+
+  it('every image stays under its byte budget for its pixel size', () => {
+    // Guards against a bloated re-export silently shipping — mirrors the
+    // bytes-per-pixel + hard-cap approach in siteImages.test.ts. Floor-plan
+    // renderings are line art, so they compress far better than photos: the
+    // current worst offender sits around 0.055 B/px. A 0.15 B/px budget leaves
+    // ~3x headroom for normal re-exports while catching order-of-magnitude
+    // regressions.
+    const BYTES_PER_PIXEL_BUDGET = 0.15; // all floor-plan images are WebP line art
+    const MIN_BUDGET_BYTES = 30 * 1024; // container/metadata floor for tiny images
+    const HARD_CAP_BYTES = 512 * 1024; // largest zoom today is ~233KB; >512KB is a mistake
+
+    const fmtKB = (bytes: number) => `${(bytes / 1024).toFixed(1)}KB`;
+    const over: string[] = [];
+    let checked = 0;
+
+    for (const p of plans) {
+      for (const key of ['thumb', 'detail', 'zoom'] as const) {
+        const file = basename(p.images[key]);
+        const path = join(IMG_DIR, file);
+        if (!existsSync(path)) continue; // missing files are reported by an earlier test
+        checked += 1;
+        const buf = readFileSync(path);
+        const dims = readWebpDimensions(buf);
+        if (!dims) {
+          over.push(`${file} (could not read dimensions to compute budget)`);
+          continue;
+        }
+        const budget = Math.min(
+          HARD_CAP_BYTES,
+          Math.max(MIN_BUDGET_BYTES, Math.ceil(dims.width * dims.height * BYTES_PER_PIXEL_BUDGET)),
+        );
+        if (buf.length > budget) {
+          over.push(
+            `${file} is ${fmtKB(buf.length)}, over its ${fmtKB(budget)} budget ` +
+              `(${dims.width}x${dims.height} webp @ ${BYTES_PER_PIXEL_BUDGET} B/px, hard cap ${fmtKB(HARD_CAP_BYTES)})`,
+          );
+        }
+      }
+    }
+
+    expect(checked).toBeGreaterThan(100); // sanity: 35 plans x 3 variants
+    expect(over, `oversized floor-plan images:\n${over.join('\n')}`).toEqual([]);
+  });
+
   it('no orphan image files exist that no plan references', () => {
     const referenced = new Set(
       plans.flatMap((p) => [p.images.thumb, p.images.detail, p.images.zoom].map((s) => basename(s))),
