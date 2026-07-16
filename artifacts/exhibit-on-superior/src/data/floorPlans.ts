@@ -231,8 +231,9 @@ export function unitNumbersForGroup(g: PlanGroup): string[] {
 
 /**
  * Match a group against a free-text query. Numeric tokens match the unit line,
- * a floor number, or a full apartment unit number (e.g. "3002"). Non-numeric
- * text matches the type label, "unit N" phrasing, or a floor-band label.
+ * a floor number, or an apartment unit number — short forms are zero-padded to
+ * the 4-digit unit-number form ("203" is treated as "0203"). Non-numeric text
+ * matches the type label, "unit N" phrasing, or a floor-band label.
  */
 export function groupMatchesQuery(g: PlanGroup, query: string): boolean {
   const q = query.trim().toLowerCase();
@@ -243,7 +244,9 @@ export function groupMatchesQuery(g: PlanGroup, query: string): boolean {
     const unitNumbers = new Set(unitNumbersForGroup(g));
     return tokens.every((tok) => {
       const n = parseInt(tok, 10);
-      return g.unit === n || g.floors.includes(n) || unitNumbers.has(tok);
+      // Unit numbers are always 4 digits (pad2 floor + pad2 line), so a shorter
+      // numeric query is zero-padded to that form: "203" -> "0203".
+      return g.unit === n || g.floors.includes(n) || unitNumbers.has(tok.padStart(4, '0'));
     });
   }
   // Text search across type label + "unit N" + floor labels

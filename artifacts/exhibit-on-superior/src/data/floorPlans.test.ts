@@ -147,6 +147,13 @@ describe('groupMatchesQuery', () => {
     expect(groupMatchesQuery(g, '9905')).toBe(false);
   });
 
+  it('treats a short numeric query as a zero-padded unit number (203 -> 0203)', () => {
+    const g = makeGroup({ unit: 3, floors: [2] });
+    expect(groupMatchesQuery(g, '203')).toBe(true);
+    // still matches the fully padded form
+    expect(groupMatchesQuery(g, '0203')).toBe(true);
+  });
+
   it('text query matches the type label (case-insensitive)', () => {
     const g = makeGroup({ typeLabel: 'Jr. Convertible', category: 'convertible' });
     expect(groupMatchesQuery(g, 'convertible')).toBe(true);
