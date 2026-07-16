@@ -58,6 +58,32 @@ const LEGACY_REDIRECTS: Record<string, string> = {
   '/apartments/il/chicago/magellan-rewards': '/',
 };
 
+/**
+ * SPA navigations preserve the previous page's scroll position by default —
+ * reset to the top on every route change (unless navigating to an in-page anchor).
+ */
+function ScrollToTop() {
+  const [location] = useLocation();
+  useEffect(() => {
+    // Track back/forward navigations: the browser restores the previous scroll
+    // position for those, and we must not override it.
+    const onPopState = () => {
+      isPopNavigation = true;
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+  useEffect(() => {
+    const wasPop = isPopNavigation;
+    isPopNavigation = false;
+    if (!wasPop && !window.location.hash) {
+      window.scrollTo(0, 0);
+    }
+  }, [location]);
+  return null;
+}
+let isPopNavigation = false;
+
 /** GA4: init once, then report a page_view on load and every SPA navigation. */
 function AnalyticsTracker() {
   const [location] = useLocation();
@@ -74,6 +100,7 @@ function App() {
   return (
     <Layout>
       <AnalyticsTracker />
+      <ScrollToTop />
       <Suspense fallback={<div className="min-h-[60vh]" aria-hidden="true" />}>
         <Switch>
           {lazyRoutes.map(({ path, Component }) => (
