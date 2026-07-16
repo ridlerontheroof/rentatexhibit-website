@@ -3,6 +3,7 @@ import type { FocusEvent, KeyboardEvent } from 'react';
 import { Link } from 'wouter';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { AVAILABILITY_URL, APPLY_URL } from '../data/seo';
+import { SmartImg } from './SmartImg';
 import { trackOutboundClick } from '../lib/analytics';
 
 const navLink = 'text-sm uppercase tracking-wider hover:text-primary transition-colors';
@@ -91,9 +92,16 @@ export function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0" aria-label="Exhibit On Superior home">
-            <img
+            {/* SmartImg (not a plain <img>) matters here: a plain eager <img>
+                makes React 19's SSR auto-emit a high-priority preload for the
+                heavy original PNG on every prerendered page. Inside SmartImg's
+                <picture>, the browser fetches only a small WebP/AVIF variant
+                and no PNG preload is emitted. */}
+            <SmartImg
               src="/images/image-001-exhibit-on-superior-logo-color-a7pvg4.png"
               alt="Exhibit On Superior"
+              sizes="140px"
+              loading="eager"
               className="h-12 w-auto"
             />
           </Link>
