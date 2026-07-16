@@ -3,10 +3,10 @@
 ## Project Overview
 
 A property-listing web app for "Exhibit on Superior" (a residential apartment property). It consists of:
-- A React frontend (artifacts/exhibit-on-superior) serving property pages, a contact form, and a tour-scheduling form.
-- An Express 5 API server (artifacts/api-server) that accepts lead submissions, persists them to PostgreSQL via Drizzle ORM, and sends email notifications via the Replit Google-Mail connector.
+- A React frontend (`artifacts/exhibit-on-superior`) serving property pages, a contact form, and a tour-scheduling form.
+- An Express 5 API server (`artifacts/api-server`) that accepts lead submissions, persists them to PostgreSQL via Drizzle ORM, and sends email notifications via the Replit Google-Mail connector.
 - No authentication layer — the API is intentionally public to support anonymous visitor form submissions.
-- Deployed on Replit (not yet deployed at time of scan).
+- Deployed publicly on Replit autoscale: https://exhibit-on-superior.replit.app
 
 Tech stack: Node.js 24, TypeScript 5, Express 5, PostgreSQL, Drizzle ORM, Zod validation, pino logging, Replit Connectors SDK for Gmail.
 
@@ -21,7 +21,7 @@ Tech stack: Node.js 24, TypeScript 5, Express 5, PostgreSQL, Drizzle ORM, Zod va
 
 - **Browser → API** — the POST `/api/leads` endpoint is unauthenticated and publicly reachable. All input must be treated as untrusted.
 - **API → PostgreSQL** — parameterized queries via Drizzle ORM. Direct injection is mitigated.
-- **API → Gmail (via Replit Connectors)** — email content is built from user-supplied input. Header injection is mitigated; the connector itself is trusted infrastructure.
+- **API → Gmail (via Replit Connectors)** — email content is built from user-supplied input. Header injection is mitigated by `sanitizeHeaderValue`; HTML injection mitigated by `escapeHtml`; the connector itself is trusted infrastructure.
 - **Public vs. authenticated** — there is no authenticated surface; all routes are public.
 
 ## Scan Anchors
@@ -35,19 +35,21 @@ Tech stack: Node.js 24, TypeScript 5, Express 5, PostgreSQL, Drizzle ORM, Zod va
 
 ### Denial of Service / Email Abuse
 
-The POST `/api/leads` endpoint has no rate limiting. An attacker can submit unlimited requests. Each submission triggers two outbound emails: one to the leasing team's inbox and one to the email address provided in the form body. Because the `email` field accepts any valid RFC 5322 address, an attacker can direct confirmation emails at any third-party inbox, effectively using the app as an email spam cannon. This risks getting the leasing team's Gmail account suspended and can be used to harass third parties.
+The POST `/api/leads` endpoint has rate limiting (5 requests/minute per client IP via `express-rate-limit`). However, IP-based throttling does not prevent a distributed attacker with multiple IPs (cloud VMs, residential proxies) from submitting many requests. Each submission triggers two outbound emails: one to the leasing team's inbox and one to the address provided in the form body. An attacker can direct confirmation emails at any third-party inbox, effectively using the app as an email spam cannon.
 
-**Required guarantee:** Rate limiting MUST be applied to POST `/api/leads` (e.g., per-IP, max 5 requests/minute). The message/name/phone fields MUST have maximum-length constraints to prevent payload abuse.
+**Current state:** Partially mitigated (IP rate limiting reduces single-IP abuse). Residual risk from distributed senders remains.
+
+**Required guarantee:** A CAPTCHA or global outbound email cap (beyond per-IP throttling) is needed to fully address distributed email abuse. The `message`/`name`/`phone` fields have max-length constraints (Zod), which prevents large payload abuse.
 
 ### Information Disclosure
 
-The CORS configuration (`app.use(cors())`) defaults to `Access-Control-Allow-Origin: *`. This allows any webpage to make cross-origin requests to the API without restriction. For a fully public endpoint this has limited direct impact, but it prevents CORS from being used as a defense-in-depth control in the future.
+The CORS configuration (`app.use(cors({ origin: process.env.ALLOWED_ORIGIN ?? "..." }))`) defaults to the known production frontend origin. However, the `ALLOWED_ORIGIN` environment variable is accepted without validation — if set to `*`, the server responds with a wildcard CORS header.
 
-**Required guarantee:** CORS SHOULD be restricted to the known frontend origin(s) in production.
+**Required guarantee:** `ALLOWED_ORIGIN` SHOULD be validated at startup to reject wildcards or malformed values.
 
 ### Tampering / Injection
 
-Email header injection is mitigated by `sanitizeHeaderValue` and `encodeHeader`. SQL injection is mitigated by Drizzle ORM parameterized queries. Input types are validated by Zod on every request. No path traversal or template injection surfaces are present in production routes.
+Email header injection is mitigated by `sanitizeHeaderValue` and `encodeHeader`. HTML injection in email bodies is mitigated by `escapeHtml`. SQL injection is mitigated by Drizzle ORM parameterized queries. Input types are validated by Zod on every request. No path traversal or template injection surfaces are present in production routes.
 
 ### Spoofing
 
