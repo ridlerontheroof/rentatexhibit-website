@@ -26,10 +26,52 @@ export function PlanLightbox({
   const [zoomed, setZoomed] = useState(false);
   const touchStartX = useRef<number | null>(null);
 
+  // Mobile bottom-sheet drag state. Snap points are expressed in dvh.
+  const SHEET_COLLAPSED = 40;
+  const SHEET_EXPANDED = 85;
+  const [sheetSnap, setSheetSnap] = useState<number>(SHEET_COLLAPSED);
+  const [dragHeightPx, setDragHeightPx] = useState<number | null>(null);
+  const dragRef = useRef<{ startY: number; startHeightPx: number } | null>(null);
+
   // Reset zoom whenever the shown plan changes.
   useEffect(() => {
     setZoomed(false);
   }, [group?.id, variantIndex]);
+
+  // Collapse the sheet when a different plan group is opened.
+  useEffect(() => {
+    setSheetSnap(SHEET_COLLAPSED);
+    setDragHeightPx(null);
+    dragRef.current = null;
+  }, [group?.id]);
+
+  const viewportH = () =>
+    typeof window !== 'undefined' ? window.innerHeight : 800;
+
+  const onSheetDragStart = (e: React.TouchEvent) => {
+    const startHeightPx =
+      dragHeightPx ?? (sheetSnap / 100) * viewportH();
+    dragRef.current = { startY: e.touches[0].clientY, startHeightPx };
+  };
+  const onSheetDragMove = (e: React.TouchEvent) => {
+    if (!dragRef.current) return;
+    const dy = dragRef.current.startY - e.touches[0].clientY;
+    const vh = viewportH();
+    const next = Math.min(
+      (SHEET_EXPANDED / 100) * vh,
+      Math.max((SHEET_COLLAPSED / 100) * vh * 0.6, dragRef.current.startHeightPx + dy),
+    );
+    setDragHeightPx(next);
+  };
+  const onSheetDragEnd = () => {
+    if (!dragRef.current) return;
+    const vh = viewportH();
+    const currentPx = dragHeightPx ?? (sheetSnap / 100) * vh;
+    const midpointPx = ((SHEET_COLLAPSED + SHEET_EXPANDED) / 2 / 100) * vh;
+    setSheetSnap(currentPx >= midpointPx ? SHEET_EXPANDED : SHEET_COLLAPSED);
+    setDragHeightPx(null);
+    dragRef.current = null;
+  };
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -134,10 +176,36 @@ export function PlanLightbox({
           </div>
 
           {/* Details panel */}
-          <aside className="flex max-h-[40vh] min-h-0 shrink-0 flex-col overflow-y-auto bg-white supports-[height:100svh]:max-h-[40svh] supports-[height:100dvh]:max-h-[40dvh] lg:max-h-none lg:shrink">
-            {/* Mobile compact summary + primary CTA, pinned at the top of the sheet */}
-            <div className="sticky top-0 z-10 border-b border-border bg-white px-4 pb-3 pt-2 shadow-sm lg:hidden">
-              <div aria-hidden className="mx-auto mb-2 h-1 w-10 rounded-full bg-border" />
+          <aside
+            className={`flex min-h-0 shrink-0 flex-col overflow-y-auto bg-white h-[var(--sheet-h)] max-h-[var(--sheet-h)] lg:h-auto lg:max-h-none lg:shrink ${
+              dragHeightPx === null ? 'transition-[height,max-height] duration-300 ease-out' : ''
+            }`}
+            style={
+              {
+                '--sheet-h':
+                  dragHeightPx !== null ? `${dragHeightPx}px` : `${sheetSnap}dvh`,
+              } as React.CSSProperties
+            }
+          >
+            {/* Mobile compact summary + primary CTA, pinned at the top of the sheet.
+                Also acts as the drag handle for expanding/collapsing the sheet. */}
+            <div
+              className="sticky top-0 z-10 touch-none border-b border-border bg-white px-4 pb-3 pt-2 shadow-sm lg:hidden"
+              onTouchStart={onSheetDragStart}
+              onTouchMove={onSheetDragMove}
+              onTouchEnd={onSheetDragEnd}
+              onTouchCancel={onSheetDragEnd}
+            >
+              <button
+                type="button"
+                aria-label={sheetSnap === SHEET_EXPANDED ? 'Collapse details' : 'Expand details'}
+                onClick={() =>
+                  setSheetSnap((s) => (s === SHEET_EXPANDED ? SHEET_COLLAPSED : SHEET_EXPANDED))
+                }
+                className="mx-auto -mt-1 mb-1 flex h-6 w-full items-center justify-center"
+              >
+                <span aria-hidden className="h-1 w-10 rounded-full bg-border" />
+              </button>
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-[2px] text-primary">
