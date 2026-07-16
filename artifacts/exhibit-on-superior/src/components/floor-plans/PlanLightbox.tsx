@@ -534,16 +534,16 @@ export function PlanLightbox({
                 key={variant.id}
                 src={zoomed || pinchZoomed ? variant.images.zoom : variant.images.detail}
                 alt={`${variant.typeLabel} floor plan, Unit ${variant.unit}, floors ${variant.floorLabel}, ${sqftLabel}`}
-                onClick={() => {
+                onClick={(e) => {
                   if (suppressClick.current) {
                     suppressClick.current = false;
                     return;
                   }
-                  if (pinchZoomed) {
-                    resetPinch();
-                  } else {
-                    animateZoomToggle();
-                  }
+                  // Route clicks through the shared tap handler so desktop
+                  // double-click zooms toward the cursor (matching mobile
+                  // double-tap) while a lone click still toggles zoom mode.
+                  const container = viewerRef.current ?? (e.currentTarget as HTMLElement);
+                  handleTap(e.clientX, e.clientY, container);
                 }}
                 draggable={false}
                 className={
