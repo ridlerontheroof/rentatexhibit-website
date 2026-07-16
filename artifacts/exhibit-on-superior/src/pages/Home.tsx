@@ -33,10 +33,10 @@ export function Home() {
               Sleek Design for Modern Living Chicago Apartments
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/schedule-a-tour" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90">
+              <Link href="/schedule-a-tour" className="btn-gold-outline bg-black/50 text-white border-primary hover:bg-black/70">
                 Schedule a Tour
               </Link>
-              <Link href="/floor-plans" className="btn-gold-outline">
+              <Link href="/floor-plans" className="btn-gold-outline bg-black/50 text-white hover:bg-black/70">
                 View Floor Plans
               </Link>
             </div>
