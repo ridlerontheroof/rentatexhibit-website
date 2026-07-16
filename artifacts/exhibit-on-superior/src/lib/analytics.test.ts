@@ -18,6 +18,7 @@ const ALLOWED_LEAD_KEYS = new Set([
   'page_path',
   'referring_page',
   'floor_plan_preference',
+  'transport_type',
   'utm_source',
   'utm_medium',
   'utm_campaign',
@@ -81,6 +82,8 @@ describe('trackLead payload whitelist (no PII)', () => {
     }
     expect(params.form_type).toBe('contact');
     expect(params.page_path).toBe('/contact');
+    // Beacon transport so the conversion survives immediate tab close/navigation.
+    expect(params.transport_type).toBe('beacon');
   });
 
   it('sends only whitelisted keys for a tour lead with a floor-plan preference', async () => {

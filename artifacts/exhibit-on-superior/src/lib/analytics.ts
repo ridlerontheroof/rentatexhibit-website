@@ -140,7 +140,9 @@ export function trackLead(
     params.floor_plan_preference = attribution.floorPlanPreference;
   }
 
-  window.gtag('event', 'generate_lead', params);
+  // Sent with beacon transport so the conversion survives an immediate tab
+  // close or navigation right after Submit (same rationale as outbound_click).
+  window.gtag('event', 'generate_lead', { ...params, transport_type: 'beacon' });
 }
 
 /**
