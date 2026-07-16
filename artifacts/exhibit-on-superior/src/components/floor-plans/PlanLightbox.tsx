@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dia
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { Link } from 'wouter';
 import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
-import { clampPanTranslation } from '../../lib/panBounds';
+import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
 import { trackOutboundClick } from '../../lib/analytics';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
@@ -377,21 +377,24 @@ export function PlanLightbox({
       const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
       const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
       // Keep the image point that was under the pinch midpoint anchored under
-      // the fingers. With transform-origin center, a screen point p maps to
-      // p = center + t + s * q (q = image-space offset from centre), so the
-      // translation that keeps q under the current midpoint is:
-      //   t = mid - center - (s / s0) * (startMid - center - t0)
+      // the fingers (see anchorPinchTranslation in lib/panBounds.ts).
       const viewer = viewerRef.current;
       const rect = viewer?.getBoundingClientRect();
       const cx = rect ? rect.left + rect.width / 2 : 0;
       const cy = rect ? rect.top + rect.height / 2 : 0;
-      const ratio = scale / g.startScale;
-      const clamped = clampPan(
-        scale <= 1 ? 0 : midX - cx - ratio * (g.startMidX - cx - g.startTx),
-        scale <= 1 ? 0 : midY - cy - ratio * (g.startMidY - cy - g.startTy),
+      const anchored = anchorPinchTranslation(
+        midX,
+        midY,
+        g.startMidX,
+        g.startMidY,
+        cx,
+        cy,
         scale,
-        PAN_RUBBER_PX,
+        g.startScale,
+        g.startTx,
+        g.startTy,
       );
+      const clamped = clampPan(anchored.tx, anchored.ty, scale, PAN_RUBBER_PX);
       setPinch({ scale, ...clamped });
     } else if (g.mode === 'pan' && e.touches.length === 1) {
       const touch = e.touches[0];

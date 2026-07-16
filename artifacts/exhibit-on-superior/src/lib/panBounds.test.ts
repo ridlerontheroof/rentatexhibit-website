@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clampPanTranslation } from './panBounds';
+import { anchorPinchTranslation, clampPanTranslation } from './panBounds';
 
 // Phone-sized viewer: 390x700, fitted image 358x500 (object-contain inside padding).
 const IMG_W = 358;
@@ -54,5 +54,97 @@ describe('clampPanTranslation', () => {
     const r = clampPanTranslation(999, 999, 2, IMG_W, IMG_H, 1000, 400);
     expect(r.tx).toBe(0);
     expect(r.ty).toBe((IMG_H * 2 - 400) / 2);
+  });
+});
+
+describe('anchorPinchTranslation', () => {
+  // Container centre used by all cases.
+  const CX = 195;
+  const CY = 350;
+
+  /** Screen position of image point q under translate(t)+scale(s), origin center. */
+  const project = (qx: number, qy: number, tx: number, ty: number, s: number) => ({
+    x: CX + tx + s * qx,
+    y: CY + ty + s * qy,
+  });
+
+  it('keeps the anchored image point fixed under a stationary midpoint while zooming', () => {
+    // Pinch starts at fit (s0=1, t0=0) with midpoint over image point q.
+    const q = { x: 60, y: -80 };
+    const start = project(q.x, q.y, 0, 0, 1);
+    for (const scale of [1.5, 2, 3, 4]) {
+      const t = anchorPinchTranslation(start.x, start.y, start.x, start.y, CX, CY, scale, 1, 0, 0);
+      const p = project(q.x, q.y, t.tx, t.ty, scale);
+      expect(p.x).toBeCloseTo(start.x);
+      expect(p.y).toBeCloseTo(start.y);
+    }
+  });
+
+  it('pans with the midpoint at constant scale', () => {
+    const s = 2;
+    const t0 = { tx: 10, ty: -20 };
+    const startMid = { x: 250, y: 300 };
+    const moved = anchorPinchTranslation(
+      startMid.x + 35,
+      startMid.y - 15,
+      startMid.x,
+      startMid.y,
+      CX,
+      CY,
+      s,
+      s,
+      t0.tx,
+      t0.ty,
+    );
+    expect(moved.tx).toBeCloseTo(t0.tx + 35);
+    expect(moved.ty).toBeCloseTo(t0.ty - 15);
+  });
+
+  it('handles scale ratio across pinch handoffs (non-unit start scale/translation)', () => {
+    // Second pinch begins already zoomed: s0 = 2, t0 = (30, -40).
+    const s0 = 2;
+    const t0 = { tx: 30, ty: -40 };
+    const q = { x: -50, y: 25 };
+    const startMid = project(q.x, q.y, t0.tx, t0.ty, s0);
+    const s = 3.2;
+    const t = anchorPinchTranslation(
+      startMid.x,
+      startMid.y,
+      startMid.x,
+      startMid.y,
+      CX,
+      CY,
+      s,
+      s0,
+      t0.tx,
+      t0.ty,
+    );
+    const p = project(q.x, q.y, t.tx, t.ty, s);
+    expect(p.x).toBeCloseTo(startMid.x);
+    expect(p.y).toBeCloseTo(startMid.y);
+  });
+
+  it('anchors while zooming and panning simultaneously', () => {
+    const s0 = 1.5;
+    const t0 = { tx: -12, ty: 8 };
+    const q = { x: 40, y: 40 };
+    const startMid = project(q.x, q.y, t0.tx, t0.ty, s0);
+    const mid = { x: startMid.x + 20, y: startMid.y - 30 };
+    const s = 2.5;
+    const t = anchorPinchTranslation(mid.x, mid.y, startMid.x, startMid.y, CX, CY, s, s0, t0.tx, t0.ty);
+    const p = project(q.x, q.y, t.tx, t.ty, s);
+    expect(p.x).toBeCloseTo(mid.x);
+    expect(p.y).toBeCloseTo(mid.y);
+  });
+
+  it('returns identity translation at or below scale 1', () => {
+    expect(anchorPinchTranslation(200, 300, 180, 320, CX, CY, 1, 1, 15, -25)).toEqual({
+      tx: 0,
+      ty: 0,
+    });
+    expect(anchorPinchTranslation(200, 300, 180, 320, CX, CY, 0.8, 2, 15, -25)).toEqual({
+      tx: 0,
+      ty: 0,
+    });
   });
 });
