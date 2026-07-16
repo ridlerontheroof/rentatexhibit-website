@@ -161,11 +161,11 @@ export interface PlanGroup {
   images: Plan['images'];
 }
 
-function bandsForFloors(min: number, max: number): FloorBand[] {
+export function bandsForFloors(min: number, max: number): FloorBand[] {
   return FLOOR_BANDS.filter((b) => min <= b.max && max >= b.min);
 }
 
-function groupKey(p: Plan): string {
+export function groupKey(p: Plan): string {
   return `${p.unit}-${p.category}-${p.baths}-${p.den ? 'den' : 'std'}`;
 }
 

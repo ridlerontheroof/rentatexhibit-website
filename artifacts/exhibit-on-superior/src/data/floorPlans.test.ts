@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  bandsForFloors,
   FLOOR_BANDS,
   filterGroups,
+  groupKey,
   groupMatchesFilters,
   groupMatchesQuery,
   nextPosition,
   planGroups,
+  plans,
   resolveDeepLink,
   SQFT_MAX,
   SQFT_MIN,
@@ -281,5 +284,163 @@ describe('resolveDeepLink', () => {
   it('returns null when there is no id', () => {
     expect(resolveDeepLink(planGroups, null)).toBeNull();
     expect(resolveDeepLink(planGroups, '')).toBeNull();
+  });
+});
+
+// --- bandsForFloors (floor-range -> floor-band resolution) ----------------
+
+describe('bandsForFloors', () => {
+  it('maps a single floor to the one band that contains it', () => {
+    // floor 2 sits in the podium band (2-5)
+    expect(bandsForFloors(2, 2).map((b) => b.id)).toEqual(['podium']);
+    // a mid-rise floor
+    expect(bandsForFloors(10, 10).map((b) => b.id)).toEqual(['mid']);
+    // top penthouse floor
+    expect(bandsForFloors(34, 34).map((b) => b.id)).toEqual(['penthouse']);
+  });
+
+  it('returns every band a cross-band range touches, in floor order', () => {
+    // 6-29 spans mid-rise (6-16) and high-rise (17-29)
+    expect(bandsForFloors(6, 29).map((b) => b.id)).toEqual(['mid', 'high']);
+    // a range that touches all four bands
+    expect(bandsForFloors(2, 34).map((b) => b.id)).toEqual([
+      'podium',
+      'mid',
+      'high',
+      'penthouse',
+    ]);
+  });
+
+  it('is inclusive at band boundaries', () => {
+    // 5 is the last podium floor, 6 the first mid floor
+    expect(bandsForFloors(5, 6).map((b) => b.id)).toEqual(['podium', 'mid']);
+    // 16/17 straddle the mid/high boundary
+    expect(bandsForFloors(16, 17).map((b) => b.id)).toEqual(['mid', 'high']);
+  });
+
+  it('resolves mezzanine ("M") plans to the band of their base floors', () => {
+    // Every mezzanine plan in the dataset (e.g. "3-4M", "4M") should still
+    // land in the correct band(s) from its expanded floor range.
+    const mezz = plans.filter((p) => p.mezzanine);
+    expect(mezz.length).toBeGreaterThan(0);
+    expect(mezz.every((p) => p.floorLabel.includes('M'))).toBe(true);
+    for (const p of mezz) {
+      // the "M" suffix must not have leaked into the numeric floor range
+      expect(Number.isNaN(p.floorMin)).toBe(false);
+      expect(Number.isNaN(p.floorMax)).toBe(false);
+      const bands = bandsForFloors(p.floorMin, p.floorMax);
+      // every band returned genuinely overlaps the plan's floor range
+      expect(bands.every((b) => p.floorMin <= b.max && p.floorMax >= b.min)).toBe(true);
+    }
+    // "3-4M" and "4M" both live entirely within the podium band (2-5)
+    const podiumMezz = mezz.filter((p) => p.floorMax <= 5);
+    expect(podiumMezz.length).toBeGreaterThan(0);
+    for (const p of podiumMezz) {
+      expect(bandsForFloors(p.floorMin, p.floorMax).map((b) => b.id)).toEqual(['podium']);
+    }
+  });
+});
+
+// --- groupKey (residence identity) ----------------------------------------
+
+describe('groupKey', () => {
+  it('same-line variants across floor bands share one key', () => {
+    // Same unit / category / baths / den, only the floor band differs.
+    const podium = makePlan({ unit: 7, category: '1br', baths: 1, den: false, floorMin: 2 });
+    const mid = makePlan({ unit: 7, category: '1br', baths: 1, den: false, floorMin: 6 });
+    const high = makePlan({ unit: 7, category: '1br', baths: 1, den: false, floorMin: 17 });
+    expect(groupKey(podium)).toBe(groupKey(mid));
+    expect(groupKey(mid)).toBe(groupKey(high));
+  });
+
+  it('a different unit produces a different key', () => {
+    expect(groupKey(makePlan({ unit: 1 }))).not.toBe(groupKey(makePlan({ unit: 2 })));
+  });
+
+  it('a different bedroom category produces a different key', () => {
+    expect(groupKey(makePlan({ category: '1br' }))).not.toBe(
+      groupKey(makePlan({ category: '2br' })),
+    );
+  });
+
+  it('a different bath count produces a different key', () => {
+    expect(groupKey(makePlan({ baths: 1 }))).not.toBe(groupKey(makePlan({ baths: 2 })));
+  });
+
+  it('den vs. no-den produces a different key', () => {
+    expect(groupKey(makePlan({ den: true }))).not.toBe(groupKey(makePlan({ den: false })));
+  });
+});
+
+// --- planGroups (client-side collapse of 35 sheets into residence cards) ---
+
+describe('planGroups', () => {
+  it('represents every raw plan in exactly one group with no variants lost', () => {
+    const allVariantIds = planGroups.flatMap((g) => g.variants.map((v) => v.id));
+    // no variant is dropped and none is duplicated across groups
+    expect(allVariantIds.length).toBe(plans.length);
+    expect(new Set(allVariantIds).size).toBe(plans.length);
+    // and the set of grouped variant ids is exactly the set of plan ids
+    expect(new Set(allVariantIds)).toEqual(new Set(plans.map((p) => p.id)));
+  });
+
+  it('never collapses distinct residences into one card', () => {
+    // Any two plans that differ in unit / category / baths / den must land in
+    // separate groups. Verify no group mixes those defining attributes.
+    for (const g of planGroups) {
+      const signatures = new Set(
+        g.variants.map((v) => `${v.unit}-${v.category}-${v.baths}-${v.den}`),
+      );
+      expect(signatures.size).toBe(1);
+    }
+    // Concretely: unit 4 splits into three residences (2/2 std, 2/2 den, 2/1).
+    const unit4 = planGroups.filter((g) => g.unit === 4);
+    const unit4Keys = new Set(unit4.map((g) => g.id));
+    expect(unit4Keys.has('4-2br-2-std')).toBe(true);
+    expect(unit4Keys.has('4-2br-2-den')).toBe(true);
+    expect(unit4Keys.has('4-2br-1-std')).toBe(true);
+  });
+
+  it('collapses same-line variants offered across floor bands into one card', () => {
+    // Unit 7's 1-bed line appears on floors 2, 6-16, 17-21 and 22-29 as four
+    // separate sheets; they must fold into a single multi-band residence card.
+    const group = planGroups.find((g) => g.id === '7-1br-1-std');
+    expect(group).toBeDefined();
+    expect(group!.variants.length).toBeGreaterThan(1);
+    // spans more than one band
+    expect(group!.bands.length).toBeGreaterThan(1);
+  });
+
+  it('aggregates sqft range, floors and bands across a multi-variant group', () => {
+    const group = planGroups.find((g) => g.id === '7-1br-1-std')!;
+    const sqfts = group.variants.map((v) => v.sqft);
+    // sqftMin / sqftMax span the smallest and largest variant
+    expect(group.sqftMin).toBe(Math.min(...sqfts));
+    expect(group.sqftMax).toBe(Math.max(...sqfts));
+    expect(group.sqftMin).toBeLessThan(group.sqftMax);
+
+    // floors are the sorted union of every variant's floors, no duplicates
+    const expectedFloors = Array.from(new Set(group.variants.flatMap((v) => v.floors))).sort(
+      (a, b) => a - b,
+    );
+    expect(group.floors).toEqual(expectedFloors);
+
+    // bands are exactly those touched by the aggregated floors, in floor order
+    expect(group.bands.map((b) => b.id)).toEqual(['podium', 'mid', 'high']);
+    // bands follow the canonical FLOOR_BANDS ordering
+    const canonical = FLOOR_BANDS.map((b) => b.id).filter((id) =>
+      group.bands.some((b) => b.id === id),
+    );
+    expect(group.bands.map((b) => b.id)).toEqual(canonical);
+  });
+
+  it('orders each group\'s variants by ascending floor and picks the lowest as representative', () => {
+    for (const g of planGroups) {
+      const mins = g.variants.map((v) => v.floorMin);
+      const sorted = [...mins].sort((a, b) => a - b);
+      expect(mins).toEqual(sorted);
+      // representative image comes from the lowest-floor variant
+      expect(g.images).toEqual(g.variants[0].images);
+    }
   });
 });
