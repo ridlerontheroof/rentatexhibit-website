@@ -32,6 +32,7 @@ export interface PageSeo {
 export const PAGE_SEO: Record<string, PageSeo> = {
   '/': {
     path: '/',
+    ogImage: `${SITE_URL}/images/og/home.jpg`,
     label: 'Exhibit On Superior',
     title: 'River North Chicago Apartments | Exhibit On Superior',
     description:
