@@ -24,3 +24,9 @@ id = "giubuz7DK5RMHWeHIS58d"
 uri = "file://attached_assets/og-card-final-v2.png"
 type = "image"
 title = "Updated shared-link thumbnail"
+
+[[outputs]]
+id = "Wt3qbnI_ghRWptPcN1Toa"
+uri = "file://attached_assets/og-cards-all.jpg"
+type = "image"
+title = "Per-page share thumbnails (12 pages)"

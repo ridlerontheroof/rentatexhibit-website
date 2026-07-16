@@ -25,6 +25,8 @@ export interface PageSeo {
   faqs: Faq[];
   /** When true, the page is served with robots noindex and excluded from the sitemap. */
   noindex?: boolean;
+  /** Absolute URL for this page's share-card image; falls back to DEFAULT_OG_IMAGE. */
+  ogImage?: string;
 }
 
 export const PAGE_SEO: Record<string, PageSeo> = {
@@ -53,6 +55,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/floor-plans': {
     path: '/floor-plans',
+    ogImage: `${SITE_URL}/images/og/floor-plans.jpg`,
     label: 'Floor Plans',
     title: 'Studio, 1, 2 & 3 Bedroom Floor Plans | Exhibit On Superior',
     description:
@@ -76,6 +79,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/photo-gallery': {
     path: '/photo-gallery',
+    ogImage: `${SITE_URL}/images/og/photo-gallery.jpg`,
     label: 'Photo Gallery',
     title: 'Photo Gallery | Exhibit On Superior Chicago Apartments',
     description:
@@ -95,6 +99,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/virtual-tour': {
     path: '/virtual-tour',
+    ogImage: `${SITE_URL}/images/og/virtual-tour.jpg`,
     label: 'Virtual Tour',
     title: 'Virtual Tours | Exhibit On Superior Apartments Chicago',
     description:
@@ -114,6 +119,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/amenities': {
     path: '/amenities',
+    ogImage: `${SITE_URL}/images/og/amenities.jpg`,
     label: 'Amenities',
     title: 'Amenities | Exhibit On Superior River North Apartments',
     description:
@@ -133,6 +139,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/pet-friendly': {
     path: '/pet-friendly',
+    ogImage: `${SITE_URL}/images/og/pet-friendly.jpg`,
     label: 'Pet Friendly',
     title: 'Pet-Friendly Apartments in River North | Exhibit On Superior',
     description:
@@ -156,6 +163,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/neighborhood': {
     path: '/neighborhood',
+    ogImage: `${SITE_URL}/images/og/neighborhood.jpg`,
     label: 'Neighborhood',
     title: 'River North Neighborhood | Exhibit On Superior Chicago',
     description:
@@ -175,6 +183,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/artist-in-residence': {
     path: '/artist-in-residence',
+    ogImage: `${SITE_URL}/images/og/artist-in-residence.jpg`,
     label: 'Artist-in-Residence',
     title: 'Artist-in-Residence Program | Exhibit On Superior',
     description:
@@ -190,6 +199,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/contact-us': {
     path: '/contact-us',
+    ogImage: `${SITE_URL}/images/og/contact-us.jpg`,
     label: 'Contact Us',
     title: 'Contact Exhibit On Superior | River North Chicago Apartments',
     description:
@@ -204,6 +214,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/map-directions': {
     path: '/map-directions',
+    ogImage: `${SITE_URL}/images/og/map-directions.jpg`,
     label: 'Map + Directions',
     title: 'Map & Directions | Exhibit On Superior Chicago IL',
     description:
@@ -223,6 +234,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/residents': {
     path: '/residents',
+    ogImage: `${SITE_URL}/images/og/residents.jpg`,
     label: 'Residents',
     title: 'Resident Resources | Exhibit On Superior',
     description:
@@ -238,6 +250,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/schedule-a-tour': {
     path: '/schedule-a-tour',
+    ogImage: `${SITE_URL}/images/og/schedule-a-tour.jpg`,
     label: 'Schedule a Tour',
     title: 'Schedule a Tour | Exhibit On Superior Apartments',
     description:
@@ -257,6 +270,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/reviews': {
     path: '/reviews',
+    ogImage: `${SITE_URL}/images/og/reviews.jpg`,
     label: 'Reviews',
     title: 'Reviews | Exhibit On Superior Chicago Apartments',
     description:
@@ -459,6 +473,7 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
   const isNoindex = opts.noindex ?? page?.noindex ?? false;
   // Only known routes self-canonicalize; a 404 must not canonicalize a bad URL.
   const canonical = page ? canonicalFor(path) : undefined;
+  const ogImage = page?.ogImage ?? DEFAULT_OG_IMAGE;
   const baseJsonLd = page && !isNoindex ? buildJsonLd(path) : null;
   const jsonLd = [...(baseJsonLd ? [baseJsonLd] : []), ...(opts.extraJsonLd ?? [])];
 
@@ -470,13 +485,13 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
     { property: 'og:title', content: title },
     { property: 'og:description', content: description },
     ...(canonical ? [{ property: 'og:url', content: canonical }] : []),
-    { property: 'og:image', content: DEFAULT_OG_IMAGE },
+    { property: 'og:image', content: ogImage },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
-    { name: 'twitter:image', content: DEFAULT_OG_IMAGE },
+    { name: 'twitter:image', content: ogImage },
   ];
 
   return { title, canonical, metas, jsonLd };
