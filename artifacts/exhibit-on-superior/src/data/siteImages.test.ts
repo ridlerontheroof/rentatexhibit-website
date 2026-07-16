@@ -83,6 +83,47 @@ describe('site-wide static images', () => {
     expect(missing).toEqual([]);
   });
 
+  it('every image file is non-empty and has a valid header for its format', () => {
+    // Validate every image actually shipped under public/images (excluding
+    // floor plans, which floorPlans.test.ts covers) — this catches corrupted
+    // exports regardless of how the file is referenced.
+    const bad: string[] = [];
+    const files = listFiles(IMAGES_DIR)
+      .map((f) => '/' + relative(PUBLIC_DIR, f).split('\\').join('/'))
+      .filter((p) => !p.startsWith('/images/floor-plans/'))
+      .filter((p) => /\.(?:png|jpe?g|webp)$/i.test(p));
+
+    expect(files.length).toBeGreaterThan(20); // sanity: we are actually checking things
+
+    for (const p of files) {
+      const buf = readFileSync(join(PUBLIC_DIR, p));
+      if (buf.length === 0) {
+        bad.push(`${p} (empty file)`);
+        continue;
+      }
+      const ext = p.slice(p.lastIndexOf('.') + 1).toLowerCase();
+      if (ext === 'webp') {
+        if (
+          buf.length < 12 ||
+          buf.toString('ascii', 0, 4) !== 'RIFF' ||
+          buf.toString('ascii', 8, 12) !== 'WEBP'
+        ) {
+          bad.push(`${p} (invalid WebP header)`);
+        }
+      } else if (ext === 'jpg' || ext === 'jpeg') {
+        if (buf.length < 2 || buf[0] !== 0xff || buf[1] !== 0xd8) {
+          bad.push(`${p} (invalid JPEG header)`);
+        }
+      } else if (ext === 'png') {
+        const sig = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+        if (buf.length < 8 || !sig.every((b, i) => buf[i] === b)) {
+          bad.push(`${p} (invalid PNG signature)`);
+        }
+      }
+    }
+    expect(bad, `corrupted or empty images: ${bad.join(', ')}`).toEqual([]);
+  });
+
   it('no orphan files sit in public/images that nothing references', () => {
     // Union of everything legitimately referenced: source refs, manifest
     // originals, and manifest-generated WebP variants.
