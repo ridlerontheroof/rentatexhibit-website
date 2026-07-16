@@ -159,3 +159,91 @@ describe('PlanLightbox one-finger touch pan tap suppression', () => {
     expect(img.style.width).toBe('160%');
   });
 });
+
+describe('PlanLightbox pinch → pan handoff', () => {
+  it('lifting one finger after a pinch continues panning from the re-baselined start and the final lift is not a tap', () => {
+    const { img, viewer } = renderLightbox();
+
+    // Two-finger pinch out from fit: fingers spread symmetrically around the
+    // viewer centre so the midpoint stays put and the scale doubles.
+    fireEvent.touchStart(viewer, {
+      touches: [touch(400, 400), touch(600, 400)],
+      changedTouches: [touch(400, 400), touch(600, 400)],
+    });
+    act(() => {
+      fireEvent.touchMove(viewer, {
+        touches: [touch(300, 400), touch(700, 400)],
+        changedTouches: [touch(300, 400), touch(700, 400)],
+      });
+    });
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
+
+    // Lift the second finger: gesture hands off pinch → pan, re-baselining the
+    // pan start at the remaining finger (300, 400).
+    act(() => {
+      fireEvent.touchEnd(viewer, {
+        touches: [touch(300, 400)],
+        changedTouches: [touch(700, 400)],
+      });
+    });
+    // Handoff alone must not move the image (no jump).
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
+
+    // Keep moving the remaining finger: the pan tracks the delta from the
+    // re-baselined start (dx = -40, dy = -30), not the original pinch touch.
+    act(() => {
+      fireEvent.touchMove(viewer, {
+        touches: [touch(260, 370)],
+        changedTouches: [touch(260, 370)],
+      });
+    });
+    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
+
+    // Final lift after the continued pan: moved well past the tap slop, so it
+    // must not register as a tap.
+    act(() => {
+      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(260, 370)] });
+    });
+    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
+
+    // No single-tap timer scheduled: the coarse scroll-zoom mode (width 160%)
+    // must not engage later.
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    expect(img.style.width).not.toBe('160%');
+    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
+  });
+
+  it('a barely-moved remaining finger after handoff still counts as a tap', () => {
+    const { img, viewer } = renderLightbox();
+
+    // Pinch out to 2x, then lift one finger to hand off to pan.
+    fireEvent.touchStart(viewer, {
+      touches: [touch(400, 400), touch(600, 400)],
+      changedTouches: [touch(400, 400), touch(600, 400)],
+    });
+    act(() => {
+      fireEvent.touchMove(viewer, {
+        touches: [touch(300, 400), touch(700, 400)],
+        changedTouches: [touch(300, 400), touch(700, 400)],
+      });
+    });
+    act(() => {
+      fireEvent.touchEnd(viewer, {
+        touches: [touch(300, 400)],
+        changedTouches: [touch(700, 400)],
+      });
+    });
+
+    // Lift the remaining finger with movement under the 12px slop: this is a
+    // tap, so the single-tap timer schedules the scroll-zoom toggle.
+    act(() => {
+      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(303, 402)] });
+    });
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
+    expect(img.style.width).toBe('160%');
+  });
+});
