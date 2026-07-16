@@ -230,6 +230,55 @@ describe('site-wide static images', () => {
     expect(bad, `manifest/file dimension mismatches:\n${bad.join('\n')}`).toEqual([]);
   });
 
+  it('every image stays under its byte budget for its format and pixel size', () => {
+    // Guards against a bloated re-export (e.g. a 10MB WebP) silently shipping.
+    // Budgets scale with pixel area (bytes-per-pixel), so larger width tiers
+    // get proportionally larger budgets. Current worst offenders sit around
+    // 0.29 B/px (WebP) and 0.35 B/px (JPEG); the caps below leave headroom for
+    // normal re-exports while catching order-of-magnitude regressions.
+    const BYTES_PER_PIXEL_BUDGET: Record<string, number> = {
+      webp: 0.45,
+      jpg: 0.6,
+      jpeg: 0.6,
+      png: 1.0, // only logos today; PNG photos would be a mistake anyway
+    };
+    const MIN_BUDGET_BYTES = 30 * 1024; // container/metadata floor for tiny images
+    const HARD_CAP_BYTES = 1024 * 1024; // nothing on this site justifies >1MB
+
+    const files = listFiles(IMAGES_DIR)
+      .map((f) => '/' + relative(PUBLIC_DIR, f).split('\\').join('/'))
+      .filter((p) => !p.startsWith('/images/floor-plans/')) // covered by floorPlans.test.ts
+      .filter((p) => /\.(?:png|jpe?g|webp)$/i.test(p));
+
+    expect(files.length).toBeGreaterThan(20); // sanity: we are actually checking things
+
+    const fmtKB = (bytes: number) => `${(bytes / 1024).toFixed(1)}KB`;
+    const over: string[] = [];
+
+    for (const p of files) {
+      const full = join(PUBLIC_DIR, p);
+      const size = statSync(full).size;
+      const ext = p.slice(p.lastIndexOf('.') + 1).toLowerCase();
+      const dims = readImageDimensions(full);
+      if (!dims) {
+        over.push(`${p} (could not read dimensions to compute budget)`);
+        continue;
+      }
+      const budget = Math.min(
+        HARD_CAP_BYTES,
+        Math.max(MIN_BUDGET_BYTES, Math.ceil(dims.width * dims.height * BYTES_PER_PIXEL_BUDGET[ext])),
+      );
+      if (size > budget) {
+        over.push(
+          `${p} is ${fmtKB(size)}, over its ${fmtKB(budget)} budget ` +
+            `(${dims.width}x${dims.height} ${ext} @ ${BYTES_PER_PIXEL_BUDGET[ext]} B/px, hard cap ${fmtKB(HARD_CAP_BYTES)})`,
+        );
+      }
+    }
+
+    expect(over, `oversized images:\n${over.join('\n')}`).toEqual([]);
+  });
+
   it('no orphan files sit in public/images that nothing references', () => {
     // Union of everything legitimately referenced: source refs, manifest
     // originals, and manifest-generated WebP variants.
