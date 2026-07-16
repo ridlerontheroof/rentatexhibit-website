@@ -152,6 +152,12 @@ export function trackLead(
  * - link_url: the outbound destination
  * - cta_location: where the CTA lives (e.g. 'nav', 'floor_plans', 'redirect')
  * - floor_plan: the plan/unit label the visitor was viewing (lightbox clicks; no PII)
+ *
+ * These clicks fire immediately before a same-tab navigation to RentCafe
+ * (see the Redirect component in App.tsx), so the event is sent with
+ * `transport_type: 'beacon'` — gtag then uses navigator.sendBeacon, which the
+ * browser flushes even after the page unloads. Without it, the request could
+ * be dropped mid-navigation and the highest-intent action undercounted.
  */
 export function trackOutboundClick(
   linkType: 'apply' | 'availability',
@@ -171,5 +177,5 @@ export function trackOutboundClick(
   if (previousPath) params.referring_page = previousPath;
   if (attribution?.floorPlan) params.floor_plan = attribution.floorPlan.slice(0, 100);
 
-  window.gtag('event', 'outbound_click', params);
+  window.gtag('event', 'outbound_click', { ...params, transport_type: 'beacon' });
 }

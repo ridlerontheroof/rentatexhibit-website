@@ -136,6 +136,7 @@ describe('trackOutboundClick payload whitelist (no PII)', () => {
     'link_url',
     'cta_location',
     'floor_plan',
+    'transport_type',
     'page_path',
     'referring_page',
     'utm_source',

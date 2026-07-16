@@ -21,7 +21,7 @@ const NotFound = lazy(() => import('./pages/not-found').then((m) => ({ default: 
  * (see the migration bundle's host-recommendation.md); this guarantees visitors
  * never hit a 404 in the SPA.
  */
-function Redirect({ to }: { to: string }) {
+export function Redirect({ to }: { to: string }) {
   const [, setLocation] = useLocation();
   useEffect(() => {
     if (/^https?:\/\//i.test(to)) {
