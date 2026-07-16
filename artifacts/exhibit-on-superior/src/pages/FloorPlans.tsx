@@ -20,17 +20,17 @@ import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import {
   planGroups,
   filterGroups,
+  sortGroups,
   nextPosition,
   resolveDeepLink,
   SQFT_MIN,
   SQFT_MAX,
   type Category,
   type PlanGroup,
+  type SortKey,
 } from '../data/floorPlans';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
-
-type SortKey = 'featured' | 'beds-asc' | 'beds-desc' | 'size-desc' | 'size-asc';
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'featured', label: 'Featured' },
@@ -91,28 +91,10 @@ export function FloorPlans() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [variantIndex, setVariantIndex] = useState(0);
 
-  const filtered = useMemo(() => {
-    const result = filterGroups(planGroups, search, filters);
-
-    const byCategory = (g: PlanGroup) =>
-      ['studio', 'convertible', '1br', '2br', '3br'].indexOf(g.category);
-
-    result.sort((a, b) => {
-      switch (sort) {
-        case 'size-desc':
-          return b.sqftMax - a.sqftMax;
-        case 'size-asc':
-          return a.sqftMin - b.sqftMin;
-        case 'beds-asc':
-          return a.beds - b.beds || a.sqftMin - b.sqftMin;
-        case 'beds-desc':
-          return b.beds - a.beds || b.sqftMax - a.sqftMax;
-        default:
-          return byCategory(a) - byCategory(b) || a.unit - b.unit;
-      }
-    });
-    return result;
-  }, [search, filters, sort]);
+  const filtered = useMemo(
+    () => sortGroups(filterGroups(planGroups, search, filters), sort),
+    [search, filters, sort],
+  );
 
   // Deep-link: open from URL on load.
   useEffect(() => {

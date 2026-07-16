@@ -256,6 +256,55 @@ export function filterGroups(
   return groups.filter((g) => groupMatchesQuery(g, search) && groupMatchesFilters(g, filters));
 }
 
+/** Sort keys exposed by the Floor Plans "sort by" control. */
+export type SortKey = 'featured' | 'beds-asc' | 'beds-desc' | 'size-desc' | 'size-asc';
+
+/**
+ * Category display order used by the "Featured" sort. Kept as an explicit list
+ * (studio → convertible → 1br → 2br → 3br) so the featured ordering is locked in
+ * place independently of the CATEGORIES array.
+ */
+const FEATURED_CATEGORY_ORDER: Category[] = ['studio', 'convertible', '1br', '2br', '3br'];
+
+function featuredRank(g: PlanGroup): number {
+  return FEATURED_CATEGORY_ORDER.indexOf(g.category);
+}
+
+/**
+ * Pure comparator for two plan groups under a given sort key. Returns a negative
+ * number when `a` should sort before `b`, positive when after, and 0 for a tie.
+ *
+ * Tie-break rules:
+ * - featured:  category order, then unit number ascending
+ * - beds-asc:  bedroom count ascending, then smallest sqft ascending
+ * - beds-desc: bedroom count descending, then largest sqft descending
+ * - size-desc: largest sqft descending
+ * - size-asc:  smallest sqft ascending
+ */
+export function compareGroups(a: PlanGroup, b: PlanGroup, sort: SortKey): number {
+  switch (sort) {
+    case 'size-desc':
+      return b.sqftMax - a.sqftMax;
+    case 'size-asc':
+      return a.sqftMin - b.sqftMin;
+    case 'beds-asc':
+      return a.beds - b.beds || a.sqftMin - b.sqftMin;
+    case 'beds-desc':
+      return b.beds - a.beds || b.sqftMax - a.sqftMax;
+    case 'featured':
+    default:
+      return featuredRank(a) - featuredRank(b) || a.unit - b.unit;
+  }
+}
+
+/**
+ * Return a new array of groups ordered by the given sort key. Does not mutate
+ * the input array.
+ */
+export function sortGroups(groups: PlanGroup[], sort: SortKey): PlanGroup[] {
+  return [...groups].sort((a, b) => compareGroups(a, b, sort));
+}
+
 /**
  * Step to the next position within a filtered list, wrapping around at both
  * ends. Returns the current index unchanged when there is nothing to navigate.

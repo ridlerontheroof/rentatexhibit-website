@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   bandsForFloors,
   FLOOR_BANDS,
+  compareGroups,
   filterGroups,
   groupKey,
   groupMatchesFilters,
@@ -10,12 +11,14 @@ import {
   planGroups,
   plans,
   resolveDeepLink,
+  sortGroups,
   SQFT_MAX,
   SQFT_MIN,
   type Category,
   type GroupFilterState,
   type Plan,
   type PlanGroup,
+  type SortKey,
 } from './floorPlans';
 
 // --- Test factories -------------------------------------------------------
@@ -266,6 +269,152 @@ describe('nextPosition', () => {
     expect(filtered[nextPosition(last, 1, filtered.length)].id).toBe(filtered[0].id);
     // stepping before the start lands on the last entry
     expect(filtered[nextPosition(0, -1, filtered.length)].id).toBe(filtered[last].id);
+  });
+});
+
+// --- compareGroups / sortGroups (the "sort by" control) -------------------
+
+describe('compareGroups', () => {
+  it('featured: orders by category (studio → convertible → 1br → 2br → 3br)', () => {
+    const studio = makeGroup({ category: 'studio', unit: 9 });
+    const convertible = makeGroup({ category: 'convertible', unit: 9 });
+    const oneBed = makeGroup({ category: '1br', unit: 9 });
+    const twoBed = makeGroup({ category: '2br', unit: 9 });
+    const threeBed = makeGroup({ category: '3br', unit: 9 });
+    expect(compareGroups(studio, convertible, 'featured')).toBeLessThan(0);
+    expect(compareGroups(convertible, oneBed, 'featured')).toBeLessThan(0);
+    expect(compareGroups(oneBed, twoBed, 'featured')).toBeLessThan(0);
+    expect(compareGroups(twoBed, threeBed, 'featured')).toBeLessThan(0);
+  });
+
+  it('featured: breaks ties within a category by unit number ascending', () => {
+    const a = makeGroup({ category: '2br', unit: 4 });
+    const b = makeGroup({ category: '2br', unit: 9 });
+    expect(compareGroups(a, b, 'featured')).toBeLessThan(0);
+    expect(compareGroups(b, a, 'featured')).toBeGreaterThan(0);
+    expect(compareGroups(a, makeGroup({ category: '2br', unit: 4 }), 'featured')).toBe(0);
+  });
+
+  it('size-desc: orders by largest sqft (sqftMax) descending', () => {
+    const big = makeGroup({ sqftMax: 1200 });
+    const small = makeGroup({ sqftMax: 600 });
+    expect(compareGroups(big, small, 'size-desc')).toBeLessThan(0);
+    expect(compareGroups(small, big, 'size-desc')).toBeGreaterThan(0);
+  });
+
+  it('size-asc: orders by smallest sqft (sqftMin) ascending', () => {
+    const small = makeGroup({ sqftMin: 500 });
+    const big = makeGroup({ sqftMin: 900 });
+    expect(compareGroups(small, big, 'size-asc')).toBeLessThan(0);
+    expect(compareGroups(big, small, 'size-asc')).toBeGreaterThan(0);
+  });
+
+  it('beds-asc: orders by bedroom count, then breaks ties by smallest sqft ascending', () => {
+    const oneBed = makeGroup({ beds: 1, sqftMin: 700 });
+    const twoBed = makeGroup({ beds: 2, sqftMin: 600 });
+    // fewer beds wins even though its sqft is larger
+    expect(compareGroups(oneBed, twoBed, 'beds-asc')).toBeLessThan(0);
+    // same beds -> smaller sqftMin first
+    const twoBedSmall = makeGroup({ beds: 2, sqftMin: 800 });
+    const twoBedBig = makeGroup({ beds: 2, sqftMin: 950 });
+    expect(compareGroups(twoBedSmall, twoBedBig, 'beds-asc')).toBeLessThan(0);
+    // full tie
+    expect(compareGroups(twoBedSmall, makeGroup({ beds: 2, sqftMin: 800 }), 'beds-asc')).toBe(0);
+  });
+
+  it('beds-desc: orders by bedroom count descending, then breaks ties by largest sqft descending', () => {
+    const twoBed = makeGroup({ beds: 2, sqftMax: 900 });
+    const oneBed = makeGroup({ beds: 1, sqftMax: 1100 });
+    // more beds wins even though its sqft is smaller
+    expect(compareGroups(twoBed, oneBed, 'beds-desc')).toBeLessThan(0);
+    // same beds -> larger sqftMax first
+    const twoBedBig = makeGroup({ beds: 2, sqftMax: 1000 });
+    const twoBedSmall = makeGroup({ beds: 2, sqftMax: 800 });
+    expect(compareGroups(twoBedBig, twoBedSmall, 'beds-desc')).toBeLessThan(0);
+    // full tie
+    expect(compareGroups(twoBedBig, makeGroup({ beds: 2, sqftMax: 1000 }), 'beds-desc')).toBe(0);
+  });
+});
+
+describe('sortGroups', () => {
+  const groups = [
+    makeGroup({ id: 'twoBed-u9', category: '2br', unit: 9, beds: 2, sqftMin: 779, sqftMax: 899 }),
+    makeGroup({ id: 'studio', category: 'studio', unit: 3, beds: 0, sqftMin: 448, sqftMax: 484 }),
+    makeGroup({ id: 'threeBed', category: '3br', unit: 1, beds: 3, sqftMin: 1455, sqftMax: 1528 }),
+    makeGroup({ id: 'convertible', category: 'convertible', unit: 5, beds: 0, sqftMin: 450, sqftMax: 450 }),
+    makeGroup({ id: 'twoBed-u4', category: '2br', unit: 4, beds: 2, sqftMin: 983, sqftMax: 983 }),
+    makeGroup({ id: 'oneBed', category: '1br', unit: 6, beds: 1, sqftMin: 619, sqftMax: 665 }),
+  ];
+
+  it('does not mutate the input array', () => {
+    const input = [...groups];
+    const originalOrder = input.map((g) => g.id);
+    sortGroups(input, 'size-desc');
+    expect(input.map((g) => g.id)).toEqual(originalOrder);
+  });
+
+  it('featured: category order, then unit ascending within a category', () => {
+    expect(sortGroups(groups, 'featured').map((g) => g.id)).toEqual([
+      'studio',
+      'convertible',
+      'oneBed',
+      'twoBed-u4', // unit 4 before unit 9 within 2br
+      'twoBed-u9',
+      'threeBed',
+    ]);
+  });
+
+  it('size-desc: largest sqftMax first', () => {
+    expect(sortGroups(groups, 'size-desc').map((g) => g.id)).toEqual([
+      'threeBed', // 1528
+      'twoBed-u4', // 983
+      'twoBed-u9', // 899
+      'oneBed', // 665
+      'studio', // 484
+      'convertible', // 450
+    ]);
+  });
+
+  it('size-asc: smallest sqftMin first', () => {
+    expect(sortGroups(groups, 'size-asc').map((g) => g.id)).toEqual([
+      'studio', // 448
+      'convertible', // 450
+      'oneBed', // 619
+      'twoBed-u9', // 779
+      'twoBed-u4', // 983
+      'threeBed', // 1455
+    ]);
+  });
+
+  it('beds-asc: bedroom count ascending, smallest sqft tie-break', () => {
+    expect(sortGroups(groups, 'beds-asc').map((g) => g.id)).toEqual([
+      'studio', // 0 beds, sqftMin 448 -> smaller sqftMin comes first
+      'convertible', // 0 beds, sqftMin 450
+      'oneBed', // 1 bed
+      'twoBed-u9', // 2 beds, sqftMin 779
+      'twoBed-u4', // 2 beds, sqftMin 983
+      'threeBed', // 3 beds
+    ]);
+  });
+
+  it('beds-desc: bedroom count descending, largest sqft tie-break', () => {
+    expect(sortGroups(groups, 'beds-desc').map((g) => g.id)).toEqual([
+      'threeBed', // 3 beds
+      'twoBed-u4', // 2 beds, sqftMax 983
+      'twoBed-u9', // 2 beds, sqftMax 899
+      'oneBed', // 1 bed
+      'studio', // 0 beds, sqftMax 484 -> larger sqftMax first
+      'convertible', // 0 beds, sqftMax 450
+    ]);
+  });
+
+  it('every sort key produces a stable, complete ordering of real plan data', () => {
+    const keys: SortKey[] = ['featured', 'size-desc', 'size-asc', 'beds-asc', 'beds-desc'];
+    for (const key of keys) {
+      const sorted = sortGroups(planGroups, key);
+      expect(sorted).toHaveLength(planGroups.length);
+      expect(new Set(sorted.map((g) => g.id)).size).toBe(planGroups.length);
+    }
   });
 });
 
