@@ -122,6 +122,13 @@ describe('pending submit lock (double-click duplicate-lead guard)', () => {
     fireEvent.click(submitButton());
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
+    // A programmatic submit (form.requestSubmit() from an extension or
+    // autofill tool) bypasses the disabled button entirely — the onSubmit
+    // handler's own isPending early-return must block the second POST.
+    submitForm();
+    await waitFor(() => expect(submitButton().disabled).toBe(true));
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
     // Let the request settle: success banner shows, button re-enables.
     resolveFetch();
     await waitFor(() =>
@@ -147,6 +154,12 @@ describe('pending submit lock (double-click duplicate-lead guard)', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
     fireEvent.click(submitButton());
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    // Programmatic submit bypasses the disabled button; the handler's
+    // isPending early-return must still block a second POST.
+    submitForm();
+    await waitFor(() => expect(submitButton().disabled).toBe(true));
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
     resolveFetch();

@@ -49,6 +49,7 @@ export function ScheduleTour() {
   useUnsavedChangesWarning(isDirty && !submitted && !createLead.isPending);
 
   const onSubmit = (data: TourFormData) => {
+    if (createLead.isPending) return;
     const details = [
       data.bedrooms ? `Floor plan preference: ${data.bedrooms}` : '',
       data.message ?? '',

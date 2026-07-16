@@ -47,6 +47,7 @@ export function ContactUs() {
   useUnsavedChangesWarning(isDirty && !submitted && !createLead.isPending);
 
   const onSubmit = (data: ContactFormData) => {
+    if (createLead.isPending) return;
     createLead.mutate(
       {
         type: 'contact',
