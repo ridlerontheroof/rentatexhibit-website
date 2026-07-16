@@ -89,6 +89,17 @@ function readImageDimensions(file: string): { width: number; height: number } | 
     return null;
   }
 
+  // AVIF: ISOBMFF container; primary item dimensions live in the first 'ispe'
+  // (image spatial extents) property box: fourcc, 4-byte version/flags, then
+  // uint32 BE width and height.
+  if (buf.length >= 12 && buf.toString('ascii', 4, 8) === 'ftyp' && buf.toString('ascii', 8, 12) === 'avif') {
+    const idx = buf.indexOf('ispe', 0, 'ascii');
+    if (idx !== -1 && idx + 16 <= buf.length) {
+      return { width: buf.readUInt32BE(idx + 8), height: buf.readUInt32BE(idx + 12) };
+    }
+    return null;
+  }
+
   // WebP: RIFF container with VP8 (lossy), VP8L (lossless), or VP8X (extended).
   if (
     buf.length >= 30 &&
@@ -141,12 +152,13 @@ describe('site-wide static images', () => {
     expect(missing).toEqual([]);
   });
 
-  it('every IMAGE_MANIFEST original and WebP variant exists under public/', () => {
+  it('every IMAGE_MANIFEST original and WebP/AVIF variant exists under public/', () => {
     const missing: string[] = [];
     for (const [original, meta] of Object.entries(IMAGE_MANIFEST)) {
       if (!existsSync(join(PUBLIC_DIR, original))) missing.push(original);
       for (const v of meta.variants) {
         if (!existsSync(join(PUBLIC_DIR, v.src))) missing.push(v.src);
+        if (!existsSync(join(PUBLIC_DIR, v.avif))) missing.push(v.avif);
       }
     }
     expect(missing).toEqual([]);
@@ -160,7 +172,7 @@ describe('site-wide static images', () => {
     const files = listFiles(IMAGES_DIR)
       .map((f) => '/' + relative(PUBLIC_DIR, f).split('\\').join('/'))
       .filter((p) => !p.startsWith('/images/floor-plans/'))
-      .filter((p) => /\.(?:png|jpe?g|webp)$/i.test(p));
+      .filter((p) => /\.(?:png|jpe?g|webp|avif)$/i.test(p));
 
     expect(files.length).toBeGreaterThan(20); // sanity: we are actually checking things
 
@@ -171,7 +183,15 @@ describe('site-wide static images', () => {
         continue;
       }
       const ext = p.slice(p.lastIndexOf('.') + 1).toLowerCase();
-      if (ext === 'webp') {
+      if (ext === 'avif') {
+        if (
+          buf.length < 12 ||
+          buf.toString('ascii', 4, 8) !== 'ftyp' ||
+          buf.toString('ascii', 8, 12) !== 'avif'
+        ) {
+          bad.push(`${p} (invalid AVIF header)`);
+        }
+      } else if (ext === 'webp') {
         if (
           buf.length < 12 ||
           buf.toString('ascii', 0, 4) !== 'RIFF' ||
@@ -209,20 +229,22 @@ describe('site-wide static images', () => {
       }
 
       for (const v of meta.variants) {
-        const vDims = readImageDimensions(join(PUBLIC_DIR, v.src));
-        if (!vDims) {
-          bad.push(`${v.src} (could not read dimensions)`);
-          continue;
-        }
-        if (vDims.width !== v.w) {
-          bad.push(`${v.src} (manifest says width ${v.w}, file is ${vDims.width}x${vDims.height})`);
-        }
-        // Variants must preserve the original's aspect ratio (±1px rounding).
-        const expectedH = Math.round((v.w * meta.height) / meta.width);
-        if (Math.abs(vDims.height - expectedH) > 1) {
-          bad.push(
-            `${v.src} (expected height ~${expectedH} for width ${v.w} at ${meta.width}x${meta.height} aspect, file is ${vDims.width}x${vDims.height})`,
-          );
+        for (const variantPath of [v.src, v.avif]) {
+          const vDims = readImageDimensions(join(PUBLIC_DIR, variantPath));
+          if (!vDims) {
+            bad.push(`${variantPath} (could not read dimensions)`);
+            continue;
+          }
+          if (vDims.width !== v.w) {
+            bad.push(`${variantPath} (manifest says width ${v.w}, file is ${vDims.width}x${vDims.height})`);
+          }
+          // Variants must preserve the original's aspect ratio (±1px rounding).
+          const expectedH = Math.round((v.w * meta.height) / meta.width);
+          if (Math.abs(vDims.height - expectedH) > 1) {
+            bad.push(
+              `${variantPath} (expected height ~${expectedH} for width ${v.w} at ${meta.width}x${meta.height} aspect, file is ${vDims.width}x${vDims.height})`,
+            );
+          }
         }
       }
     }
@@ -237,6 +259,7 @@ describe('site-wide static images', () => {
     // 0.29 B/px (WebP) and 0.35 B/px (JPEG); the caps below leave headroom for
     // normal re-exports while catching order-of-magnitude regressions.
     const BYTES_PER_PIXEL_BUDGET: Record<string, number> = {
+      avif: 0.45,
       webp: 0.45,
       jpg: 0.6,
       jpeg: 0.6,
@@ -248,7 +271,7 @@ describe('site-wide static images', () => {
     const files = listFiles(IMAGES_DIR)
       .map((f) => '/' + relative(PUBLIC_DIR, f).split('\\').join('/'))
       .filter((p) => !p.startsWith('/images/floor-plans/')) // covered by floorPlans.test.ts
-      .filter((p) => /\.(?:png|jpe?g|webp)$/i.test(p));
+      .filter((p) => /\.(?:png|jpe?g|webp|avif)$/i.test(p));
 
     expect(files.length).toBeGreaterThan(20); // sanity: we are actually checking things
 
@@ -285,7 +308,10 @@ describe('site-wide static images', () => {
     const known = new Set<string>(referenced.keys());
     for (const [original, meta] of Object.entries(IMAGE_MANIFEST)) {
       known.add(original);
-      for (const v of meta.variants) known.add(v.src);
+      for (const v of meta.variants) {
+        known.add(v.src);
+        known.add(v.avif);
+      }
     }
 
     const orphans = listFiles(IMAGES_DIR)
