@@ -6,7 +6,11 @@ import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
 import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
 import { trackOutboundClick } from '../../lib/analytics';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
-import { decideSheetSnap } from '../../lib/sheetSnap';
+import {
+  clampSheetDragHeight,
+  decideSheetSnap,
+  sampleSheetVelocity,
+} from '../../lib/sheetSnap';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
 
@@ -196,22 +200,21 @@ export function PlanLightbox({
   const onSheetDragMove = (e: React.PointerEvent) => {
     if (!dragRef.current) return;
     const d = dragRef.current;
-    // Track instantaneous velocity (px/ms, positive = upward), smoothed a
-    // little so a single jittery event doesn't dominate.
-    const dt = e.timeStamp - d.lastTime;
-    if (dt > 0) {
-      const instant = (d.lastY - e.clientY) / dt;
-      d.velocity = d.velocity * 0.3 + instant * 0.7;
-      d.lastY = e.clientY;
-      d.lastTime = e.timeStamp;
-    }
+    // Track instantaneous velocity (px/ms, positive = upward), smoothed so a
+    // single jittery event doesn't dominate (see lib/sheetSnap.ts).
+    const sampled = sampleSheetVelocity(d, e.clientY, e.timeStamp);
+    d.lastY = sampled.lastY;
+    d.lastTime = sampled.lastTime;
+    d.velocity = sampled.velocity;
     const dy = d.startY - e.clientY;
     const vh = viewportH();
-    const next = Math.min(
-      (SHEET_EXPANDED / 100) * vh,
-      Math.max((SHEET_COLLAPSED / 100) * vh * 0.6, dragRef.current.startHeightPx + dy),
+    setDragHeightPx(
+      clampSheetDragHeight(
+        d.startHeightPx + dy,
+        (SHEET_COLLAPSED / 100) * vh,
+        (SHEET_EXPANDED / 100) * vh,
+      ),
     );
-    setDragHeightPx(next);
   };
   const onSheetDragEnd = (e?: React.PointerEvent) => {
     if (!dragRef.current) return;

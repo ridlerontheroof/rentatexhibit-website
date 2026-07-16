@@ -29,6 +29,52 @@ export interface SnapDecisionInput {
  * Decide which snap point the sheet should settle at when a drag ends.
  * Returns the chosen snap point in px (either collapsedPx or expandedPx).
  */
+/** Fraction of the collapsed height the sheet may shrink below while dragging. */
+export const MIN_DRAG_FRACTION = 0.6;
+
+/** Weight given to the previous smoothed velocity sample (new sample gets the rest). */
+export const VELOCITY_SMOOTHING = 0.3;
+
+/**
+ * Clamp a dragged sheet height between 60% of the collapsed snap point and
+ * the expanded snap point, so the sheet can never be dragged off-screen.
+ */
+export function clampSheetDragHeight(
+  heightPx: number,
+  collapsedPx: number,
+  expandedPx: number,
+): number {
+  return Math.min(expandedPx, Math.max(collapsedPx * MIN_DRAG_FRACTION, heightPx));
+}
+
+export interface VelocitySample {
+  lastY: number;
+  lastTime: number;
+  /** Smoothed velocity in px/ms; positive = moving up (sheet growing). */
+  velocity: number;
+}
+
+/**
+ * Blend a new pointer sample into the smoothed drag velocity
+ * (0.3 previous / 0.7 instantaneous) so a single jittery event doesn't
+ * dominate. Samples with dt <= 0 are ignored (returned unchanged) to avoid
+ * division by zero or time going backwards.
+ */
+export function sampleSheetVelocity(
+  prev: VelocitySample,
+  clientY: number,
+  timeStamp: number,
+): VelocitySample {
+  const dt = timeStamp - prev.lastTime;
+  if (dt <= 0) return prev;
+  const instant = (prev.lastY - clientY) / dt;
+  return {
+    lastY: clientY,
+    lastTime: timeStamp,
+    velocity: prev.velocity * VELOCITY_SMOOTHING + instant * (1 - VELOCITY_SMOOTHING),
+  };
+}
+
 export function decideSheetSnap({
   velocity,
   currentPx,
