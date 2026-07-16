@@ -137,14 +137,16 @@ export function PlanLightbox({
   const viewportH = () =>
     typeof window !== 'undefined' ? window.innerHeight : 800;
 
-  const onSheetDragStart = (e: React.TouchEvent) => {
+  const onSheetDragStart = (e: React.PointerEvent) => {
     const startHeightPx =
       dragHeightPx ?? (sheetSnap / 100) * viewportH();
-    dragRef.current = { startY: e.touches[0].clientY, startHeightPx };
+    dragRef.current = { startY: e.clientY, startHeightPx };
+    // Keep receiving move/up events even when the pointer leaves the handle.
+    e.currentTarget.setPointerCapture?.(e.pointerId);
   };
-  const onSheetDragMove = (e: React.TouchEvent) => {
+  const onSheetDragMove = (e: React.PointerEvent) => {
     if (!dragRef.current) return;
-    const dy = dragRef.current.startY - e.touches[0].clientY;
+    const dy = dragRef.current.startY - e.clientY;
     const vh = viewportH();
     const next = Math.min(
       (SHEET_EXPANDED / 100) * vh,
@@ -486,10 +488,10 @@ export function PlanLightbox({
                 Also acts as the drag handle for expanding/collapsing the sheet. */}
             <div
               className="sticky top-0 z-10 touch-none border-b border-border bg-white px-4 pb-3 pt-2 shadow-sm lg:hidden"
-              onTouchStart={onSheetDragStart}
-              onTouchMove={onSheetDragMove}
-              onTouchEnd={onSheetDragEnd}
-              onTouchCancel={onSheetDragEnd}
+              onPointerDown={onSheetDragStart}
+              onPointerMove={onSheetDragMove}
+              onPointerUp={onSheetDragEnd}
+              onPointerCancel={onSheetDragEnd}
             >
               <button
                 type="button"
