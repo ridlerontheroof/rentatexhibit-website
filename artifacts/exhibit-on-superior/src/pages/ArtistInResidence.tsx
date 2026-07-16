@@ -1,13 +1,12 @@
 import { PageHero } from '../components/PageHero';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 
 export function ArtistInResidence() {
   return (
     <>
-      <Helmet>
-        <title>Artist-in-Residence Program | Exhibit On Superior</title>
-        <meta name="description" content="Learn about the Artist-in-Residence program at Exhibit On Superior and how the community connects residents with local art and music experiences." />
-      </Helmet>
+      <Seo path="/artist-in-residence" />
       <div>
         <PageHero
           image="/images/image-083-dsc00806-yr6rhk.jpg"
@@ -15,6 +14,8 @@ export function ArtistInResidence() {
           title="Artist-in-Residence Program: A Home Where Art and Music Thrive"
           subtitle="Artist-in-Residence"
         />
+
+        <QuickAnswer path="/artist-in-residence" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
@@ -52,6 +53,7 @@ export function ArtistInResidence() {
           </div>
         </section>
       </div>
+        <FaqSection path="/artist-in-residence" />
     </>
   );
 }

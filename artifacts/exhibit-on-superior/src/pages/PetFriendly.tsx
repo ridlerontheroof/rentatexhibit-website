@@ -1,15 +1,14 @@
 import { PageHero } from '../components/PageHero';
 import { Heart, Home, MapPin, PawPrint } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 
 export function PetFriendly() {
   return (
     <>
-      <Helmet>
-        <title>Pet-Friendly Apartments in River North | Exhibit On Superior</title>
-        <meta name="description" content="Learn about pet-friendly living at Exhibit On Superior in Chicago, including dog and cat-friendly apartment content and on-site pet amenities." />
-      </Helmet>
+      <Seo path="/pet-friendly" />
       <div>
         <PageHero
           image="/images/image-079-gettyimages-1440280890-ox4ske.jpg"
@@ -17,6 +16,8 @@ export function PetFriendly() {
           title="Dogs & Cats Say Hello to Pet-Friendly Living In Chicago"
           subtitle="Pet Friendly"
         />
+
+        <QuickAnswer path="/pet-friendly" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
@@ -135,6 +136,7 @@ export function PetFriendly() {
           </div>
         </section>
       </div>
+        <FaqSection path="/pet-friendly" />
     </>
   );
 }

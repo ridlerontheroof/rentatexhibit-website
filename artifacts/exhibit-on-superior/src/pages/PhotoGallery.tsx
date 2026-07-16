@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { X } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 
 const galleryImages = [
@@ -60,10 +62,7 @@ export function PhotoGallery() {
 
   return (
     <>
-      <Helmet>
-        <title>Photo Gallery | Exhibit On Superior Chicago Apartments</title>
-        <meta name="description" content="View apartment, amenity, skyline, and community photos for Exhibit On Superior in Chicago's River North neighborhood." />
-      </Helmet>
+      <Seo path="/photo-gallery" />
       <div>
         <PageHero
           image="/images/image-033-lounge-mfioa0.jpg"
@@ -71,6 +70,8 @@ export function PhotoGallery() {
           title="The Art of City Living"
           subtitle="Photo Gallery"
         />
+
+        <QuickAnswer path="/photo-gallery" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
@@ -156,6 +157,7 @@ export function PhotoGallery() {
           </div>
         </section>
       </div>
+        <FaqSection path="/photo-gallery" />
     </>
   );
 }

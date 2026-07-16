@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { Link } from 'wouter';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import {
@@ -27,7 +29,6 @@ import {
 } from '../data/floorPlans';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
-const CANONICAL = 'https://www.rentatexhibit.com/floor-plans';
 
 type SortKey = 'featured' | 'beds-asc' | 'beds-desc' | 'size-desc' | 'size-asc';
 
@@ -185,15 +186,7 @@ export function FloorPlans() {
 
   return (
     <>
-      <Helmet>
-        <title>Studio, 1, 2 & 3 Bedroom Floor Plans | Exhibit On Superior</title>
-        <meta
-          name="description"
-          content="Search and explore studio, convertible, one, two, and three-bedroom floor plans at Exhibit On Superior in River North Chicago, then check current availability."
-        />
-        <link rel="canonical" href={CANONICAL} />
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-      </Helmet>
+      <Seo path="/floor-plans" extraJsonLd={[structuredData]} />
 
       <div>
         <PageHero
@@ -202,6 +195,8 @@ export function FloorPlans() {
           title="Smartly Designed Residences Studio, 1, 2 & 3 Bedroom Apartments"
           subtitle="Floor Plans"
         />
+
+        <QuickAnswer path="/floor-plans" />
 
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-3xl text-center">
@@ -365,6 +360,8 @@ export function FloorPlans() {
             </div>
           </div>
         </section>
+
+        <FaqSection path="/floor-plans" />
       </div>
 
       <PlanLightbox

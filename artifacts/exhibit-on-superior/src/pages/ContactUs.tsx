@@ -5,7 +5,9 @@ import { Phone, Mail, MapPin } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 
 const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -52,10 +54,7 @@ export function ContactUs() {
 
   return (
     <>
-      <Helmet>
-        <title>Contact Exhibit On Superior | River North Chicago Apartments</title>
-        <meta name="description" content="Contact Exhibit On Superior in Chicago's River North neighborhood. Email exhibit@highlandptrs.com or call 312-450-0635." />
-      </Helmet>
+      <Seo path="/contact-us" />
       <div>
         <PageHero
           image="/images/image-084-20170601-0076-p0s5be.jpg"
@@ -63,6 +62,8 @@ export function ContactUs() {
           title="Get in touch"
           subtitle="Contact Us"
         />
+
+        <QuickAnswer path="/contact-us" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
@@ -225,6 +226,7 @@ export function ContactUs() {
           </div>
         </section>
       </div>
+        <FaqSection path="/contact-us" />
     </>
   );
 }

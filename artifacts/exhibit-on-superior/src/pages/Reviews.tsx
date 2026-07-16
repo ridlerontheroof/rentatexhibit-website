@@ -1,14 +1,13 @@
 import { PageHero } from '../components/PageHero';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 
 export function Reviews() {
   return (
     <>
-      <Helmet>
-        <title>Reviews | Exhibit On Superior Chicago Apartments</title>
-        <meta name="description" content="Read review-oriented content for Exhibit On Superior and connect the rebuilt page to Highland's preferred review source or Google Business Profile." />
-      </Helmet>
+      <Seo path="/reviews" />
       <div>
         <PageHero
           image="/images/image-088-20170808-0868-1-odeo9b.jpg"
@@ -16,6 +15,8 @@ export function Reviews() {
           title="Exhibit On Superior Reviews"
           subtitle="Reviews"
         />
+
+        <QuickAnswer path="/reviews" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
@@ -46,6 +47,7 @@ export function Reviews() {
           </div>
         </section>
       </div>
+        <FaqSection path="/reviews" />
     </>
   );
 }

@@ -1,14 +1,13 @@
 import { PageHero } from '../components/PageHero';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 
 export function Amenities() {
   return (
     <>
-      <Helmet>
-        <title>Amenities | Exhibit On Superior River North Apartments</title>
-        <meta name="description" content="Explore Exhibit On Superior amenities, including a full-floor amenity deck, fitness center, pool, lounges, work areas, dog spa, and on-site lifestyle retail." />
-      </Helmet>
+      <Seo path="/amenities" />
       <div>
         <PageHero
           image="/images/image-075-20170601-0036-z1fw1i.jpg"
@@ -16,6 +15,8 @@ export function Amenities() {
           title="Endless opportunities Your urban playground"
           subtitle="Amenities"
         />
+
+        <QuickAnswer path="/amenities" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
@@ -159,6 +160,7 @@ export function Amenities() {
           </div>
         </section>
       </div>
+        <FaqSection path="/amenities" />
     </>
   );
 }

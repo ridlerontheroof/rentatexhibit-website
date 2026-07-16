@@ -1,14 +1,13 @@
 import { PageHero } from '../components/PageHero';
 import { MapPin, Navigation, Car, Train, Plane } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 
 export function MapDirections() {
   return (
     <>
-      <Helmet>
-        <title>Map & Directions | Exhibit On Superior Chicago IL</title>
-        <meta name="description" content="Get map and direction information for Exhibit On Superior at 165 W Superior St in Chicago's River North neighborhood." />
-      </Helmet>
+      <Seo path="/map-directions" />
       <div>
         <PageHero
           image="/images/image-085-30-south-kis7bz.jpg"
@@ -16,6 +15,8 @@ export function MapDirections() {
           title="Driving Directions to Exhibit On Superior"
           subtitle="Map + Directions"
         />
+
+        <QuickAnswer path="/map-directions" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
@@ -75,6 +76,7 @@ export function MapDirections() {
           </div>
         </section>
       </div>
+        <FaqSection path="/map-directions" />
     </>
   );
 }

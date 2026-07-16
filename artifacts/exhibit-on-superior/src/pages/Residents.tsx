@@ -1,13 +1,12 @@
 import { PageHero } from '../components/PageHero';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 
 export function Residents() {
   return (
     <>
-      <Helmet>
-        <title>Resident Resources | Exhibit On Superior</title>
-        <meta name="description" content="Resident resource page for Exhibit On Superior. Replace prior resident portal links with the current AppFolio resident portal once confirmed." />
-      </Helmet>
+      <Seo path="/residents" />
       <div>
         <PageHero
           image="/images/image-086-work-spaces-with-blazing-fast-wifi-access-d3tr2q.jpg"
@@ -15,6 +14,8 @@ export function Residents() {
           title="Resident Life Made Simple"
           subtitle="Residents"
         />
+
+        <QuickAnswer path="/residents" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
@@ -44,6 +45,7 @@ export function Residents() {
           </div>
         </section>
       </div>
+        <FaqSection path="/residents" />
     </>
   );
 }

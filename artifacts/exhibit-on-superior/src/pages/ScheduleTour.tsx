@@ -5,7 +5,9 @@ import { Calendar, Clock, User } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 
 const tourSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -60,10 +62,7 @@ export function ScheduleTour() {
 
   return (
     <>
-      <Helmet>
-        <title>Schedule a Tour | Exhibit On Superior Apartments</title>
-        <meta name="description" content="Schedule a tour of Exhibit On Superior in River North Chicago. Email exhibit@highlandptrs.com or call 312-450-0635." />
-      </Helmet>
+      <Seo path="/schedule-a-tour" />
       <div>
         <PageHero
           image="/images/image-087-012417-5548-ocwsdh.jpg"
@@ -71,6 +70,8 @@ export function ScheduleTour() {
           title="Let us show you around"
           subtitle="Schedule a Tour"
         />
+
+        <QuickAnswer path="/schedule-a-tour" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-5xl">
@@ -249,6 +250,7 @@ export function ScheduleTour() {
           </div>
         </section>
       </div>
+        <FaqSection path="/schedule-a-tour" />
     </>
   );
 }

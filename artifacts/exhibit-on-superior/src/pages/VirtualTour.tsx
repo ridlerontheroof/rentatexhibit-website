@@ -1,14 +1,13 @@
 import { PageHero } from '../components/PageHero';
 import { Link } from 'wouter';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 
 export function VirtualTour() {
   return (
     <>
-      <Helmet>
-        <title>Virtual Tours | Exhibit On Superior Apartments Chicago</title>
-        <meta name="description" content="Take a virtual tour of Exhibit On Superior apartments and amenities in River North Chicago with video and Matterport tour embeds." />
-      </Helmet>
+      <Seo path="/virtual-tour" />
       <div>
         <PageHero
           image="/images/image-074-game-area-with-arcade-games-and-wall-scrabble-ej.jpg"
@@ -16,6 +15,8 @@ export function VirtualTour() {
           title="See Yourself Here"
           subtitle="Virtual Tour"
         />
+
+        <QuickAnswer path="/virtual-tour" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-5xl">
@@ -95,6 +96,7 @@ export function VirtualTour() {
           </div>
         </section>
       </div>
+        <FaqSection path="/virtual-tour" />
     </>
   );
 }

@@ -1,63 +1,13 @@
 import { Link } from 'wouter';
 import { ArrowRight, MapPin, Phone, Mail } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 
 export function Home() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ApartmentComplex",
-    "name": "Exhibit On Superior",
-    "image": "https://www.rentatexhibit.com/images/image-002-gettyimages-1286580777-nvdupq.jpg",
-    "url": "https://www.rentatexhibit.com",
-    "telephone": "312-450-0635",
-    "email": "exhibit@highlandptrs.com",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "165 W Superior St",
-      "addressLocality": "Chicago",
-      "addressRegion": "IL",
-      "postalCode": "60654",
-      "addressCountry": "US"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 41.8953945,
-      "longitude": -87.6335254
-    },
-    "openingHoursSpecification": [
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        "opens": "09:00",
-        "closes": "18:00"
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Saturday"],
-        "opens": "10:00",
-        "closes": "17:00"
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Sunday"],
-        "opens": "12:00",
-        "closes": "17:00"
-      }
-    ],
-    "petsAllowed": "True",
-    "containedInPlace": {
-      "@type": "Neighborhood",
-      "name": "River North"
-    }
-  };
-
   return (
     <>
-      <Helmet>
-        <title>River North Chicago Apartments | Exhibit On Superior</title>
-        <meta name="description" content="Explore Exhibit On Superior, a River North Chicago apartment community with studio, one, two, and three-bedroom homes, skyline views, amenities, and on-site retail." />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
-      </Helmet>
+      <Seo path="/" />
       <div>
         {/* Hero Section */}
         <section className="relative h-[600px] lg:h-[700px] overflow-hidden">
@@ -85,6 +35,8 @@ export function Home() {
             </div>
           </div>
         </section>
+
+        <QuickAnswer path="/" />
 
         {/* Welcome Section */}
         <section className="py-20 px-4">
@@ -241,6 +193,8 @@ export function Home() {
             </div>
           </div>
         </section>
+
+        <FaqSection path="/" />
       </div>
     </>
   );

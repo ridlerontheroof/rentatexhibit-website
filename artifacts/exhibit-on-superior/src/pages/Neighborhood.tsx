@@ -1,14 +1,13 @@
 import { PageHero } from '../components/PageHero';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 
 export function Neighborhood() {
   return (
     <>
-      <Helmet>
-        <title>River North Neighborhood | Exhibit On Superior Chicago</title>
-        <meta name="description" content="Explore the River North location around Exhibit On Superior, close to dining, cafes, shopping, parks, the Chicago River, West Loop, Old Town, and Fulton Market." />
-      </Helmet>
+      <Seo path="/neighborhood" />
       <div>
         <PageHero
           image="/images/image-081-20170926-1450-wmbiod.jpg"
@@ -16,6 +15,8 @@ export function Neighborhood() {
           title="Get out and Explore The Best of River North"
           subtitle="Neighborhood"
         />
+
+        <QuickAnswer path="/neighborhood" />
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
@@ -69,6 +70,7 @@ export function Neighborhood() {
           </div>
         </section>
       </div>
+        <FaqSection path="/neighborhood" />
     </>
   );
 }
