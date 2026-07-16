@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { SmartImg } from './SmartImg';
 
 export interface HeroSlide {
   src: string;
@@ -75,9 +76,10 @@ export function HeroSlider({ slides, children, interval = 5000, className = '' }
             aria-label={`${i + 1} of ${count}`}
             aria-hidden={!active}
           >
-            <img
+            <SmartImg
               src={slide.src}
               alt={slide.alt}
+              sizes="100vw"
               className="w-full h-full object-cover"
               loading={i === 0 ? 'eager' : 'lazy'}
               fetchPriority={i === 0 ? 'high' : 'auto'}

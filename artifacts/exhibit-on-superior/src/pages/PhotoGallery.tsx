@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { X } from 'lucide-react';
 import { Seo } from '../components/Seo';
+import { SmartImg } from '../components/SmartImg';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
@@ -115,9 +116,10 @@ export function PhotoGallery() {
                   onClick={() => setSelectedImage(index)}
                   className="relative aspect-square overflow-hidden group cursor-pointer"
                 >
-                  <img
+                  <SmartImg
                     src={image.src}
                     alt={image.alt}
+                    sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
@@ -137,9 +139,11 @@ export function PhotoGallery() {
             >
               <X className="w-8 h-8" />
             </button>
-            <img
+            <SmartImg
               src={filteredImages[selectedImage].src}
               alt={filteredImages[selectedImage].alt}
+              sizes="100vw"
+              loading="eager"
               className="max-w-full max-h-full object-contain"
             />
             <div className="absolute bottom-4 left-0 right-0 text-center text-white text-sm">

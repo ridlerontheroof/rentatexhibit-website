@@ -29,6 +29,27 @@ if (missingRoutes.length || orphanRoutes.length) {
   );
 }
 
+// Guard: every WebP variant listed in the image manifest must exist in the
+// build output, so a stale/hand-edited manifest can't ship 404ing srcsets.
+{
+  const manifestSrc = await fs.readFile(path.join(root, 'src', 'data', 'imageManifest.ts'), 'utf8');
+  const variantPaths = [...manifestSrc.matchAll(/"src":\s*"(\/images\/[^"]+\.webp)"/g)].map((m) => m[1]);
+  const missing = [];
+  for (const p of variantPaths) {
+    try {
+      await fs.access(path.join(publicDir, p.replace(/^\//, '')));
+    } catch {
+      missing.push(p);
+    }
+  }
+  if (missing.length) {
+    throw new Error(
+      `Prerender aborted: ${missing.length} image manifest variant(s) missing from build output ` +
+        `(run scripts/optimize-images.mjs): ${missing.slice(0, 5).join(', ')}`,
+    );
+  }
+}
+
 const templatePath = path.join(publicDir, 'index.html');
 const template = await fs.readFile(templatePath, 'utf8');
 

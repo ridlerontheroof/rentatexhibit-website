@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { HeroSlider, type HeroSlide } from '../components/HeroSlider';
+import { SmartImg } from '../components/SmartImg';
 
 // Home hero carousel — same photos and order as the source rentatexhibit.com hero.
 const HERO_SLIDES: HeroSlide[] = [
@@ -76,9 +77,10 @@ export function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="relative h-[350px] overflow-hidden group">
-                <img
+                <SmartImg
                   src="/images/image-009-34-southeast-levwhc.jpg"
                   alt="City view at Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
@@ -87,9 +89,10 @@ export function Home() {
               </div>
 
               <div className="relative h-[350px] overflow-hidden group">
-                <img
+                <SmartImg
                   src="/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg"
                   alt="Well-furnished modern apartment at Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
@@ -98,9 +101,10 @@ export function Home() {
               </div>
 
               <div className="relative h-[350px] overflow-hidden group">
-                <img
+                <SmartImg
                   src="/images/image-011-20170808-0713-n8k48b.jpg"
                   alt="Picturesque swimming pool at Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
@@ -109,9 +113,10 @@ export function Home() {
               </div>
 
               <div className="relative h-[350px] overflow-hidden group">
-                <img
+                <SmartImg
                   src="/images/image-012-012417-6415-hgfghu.jpg"
                   alt="Fitness center at Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
@@ -150,24 +155,28 @@ export function Home() {
                 </Link>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <img
+                <SmartImg
                   src="/images/image-023-gettyimages-639122762-qpfmh0.jpg"
                   alt="Resident listening to music near the water by Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 25vw, 50vw"
                   className="w-full h-[250px] object-cover"
                 />
-                <img
+                <SmartImg
                   src="/images/image-024-gettyimages-1464613356-q7z583.jpg"
                   alt="A concert nearby Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 25vw, 50vw"
                   className="w-full h-[250px] object-cover"
                 />
-                <img
+                <SmartImg
                   src="/images/image-025-gettyimages-1694195877-kb4dln.jpg"
                   alt="Resident carrying shopping bags near Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 25vw, 50vw"
                   className="w-full h-[250px] object-cover"
                 />
-                <img
+                <SmartImg
                   src="/images/image-026-gettyimages-2169911981-his7ly.jpg"
                   alt="Wine bar near Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 25vw, 50vw"
                   className="w-full h-[250px] object-cover"
                 />
               </div>

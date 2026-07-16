@@ -24,3 +24,7 @@ Approach (no Playwright/Chromium — must build in Replit's pure-Node deploy pip
 **Build-time guards to keep it from silently rotting:** prerender.mjs hard-fails if (a) `ROUTE_PATHS` (from `routes.tsx`) ≠ `Object.keys(PAGE_SEO)`, or (b) any generated head lacks `<title>`/`rel="canonical"`. Page-specific extra JSON-LD (e.g. floor-plans ItemList) lives in a shared exported builder used by both the page's `<Seo extraJsonLd>` and an `EXTRA_JSONLD` map in `entry-server`.
 
 **Note:** true production serving of the per-route rewrites is only fully verifiable after deploy; validated here at config + build level only.
+
+## Phase 2 (images) notes
+- `pnpm run build` requires `BASE_PATH=/ PORT=<n>` env vars (vite.config.ts hard-fails without them).
+- Images: `scripts/optimize-images.mjs` (ImageMagick) generates WebP rungs 800/1280/2000 + `src/data/imageManifest.ts`; `<SmartImg>` consumes it. Re-run the script whenever a new image lands in `public/images`. Original JPEGs are kept so og:image URLs stay valid; prerender.mjs fails the build if manifest variants are missing on disk.

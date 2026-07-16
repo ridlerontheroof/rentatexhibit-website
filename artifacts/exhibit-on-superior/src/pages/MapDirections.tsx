@@ -1,8 +1,9 @@
 import { PageHero } from '../components/PageHero';
-import { MapPin, Navigation } from 'lucide-react';
+import { Car, Clock, MapPin, Navigation, TrainFront } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { Link } from 'wouter';
 
 export function MapDirections() {
   return (
@@ -22,7 +23,7 @@ export function MapDirections() {
           <div className="container mx-auto max-w-4xl text-center">
             <h2 className="section-title mb-6">165 W Superior St Chicago, IL 60654</h2>
             <p className="text-lg leading-relaxed">
-              Check out the Directions feature in the map below for turn-by-turn directions to our studio, 1, 2 & 3 bedroom apartments for rent in Chicago, Illinois.
+              Check out the Directions feature in the map below for turn-by-turn directions to our studio, 1, 2 & 3 bedroom apartments for rent in Chicago, Illinois. Exhibit On Superior sits at the corner of Superior and Wells in River North, a few blocks north of the Loop and steps from the neighborhood&rsquo;s galleries, cafes, and restaurants.
             </p>
           </div>
         </section>
@@ -51,6 +52,93 @@ export function MapDirections() {
                 Get Directions
               </a>
             </div>
+          </div>
+        </section>
+
+        {/* Getting here */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <h3 className="text-3xl uppercase tracking-wider mb-10 text-center">Getting Here</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-muted p-8 border border-border">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                    <Car className="w-6 h-6" />
+                  </div>
+                  <h4 className="text-lg uppercase tracking-wider">By Car</h4>
+                </div>
+                <ul className="space-y-3 text-sm leading-relaxed">
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 flex-shrink-0">•</span>
+                    <span>
+                      <strong>From I-90/94 (Kennedy Expressway):</strong> Take the Ohio Street exit eastbound, continue east on Ohio Street, turn left (north) on Wells Street, then continue to Superior Street. The building is at the corner of Superior and Wells.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 flex-shrink-0">•</span>
+                    <span>
+                      <strong>From Lake Shore Drive (US-41):</strong> Exit at Ohio Street heading west, then turn right (north) on Wells Street and continue to Superior Street.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 flex-shrink-0">•</span>
+                    <span>
+                      <strong>From the Loop:</strong> Head north on Wells Street across the Chicago River; Superior Street is about six blocks north of the river.
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-muted p-8 border border-border">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                    <TrainFront className="w-6 h-6" />
+                  </div>
+                  <h4 className="text-lg uppercase tracking-wider">By Train or Bus</h4>
+                </div>
+                <ul className="space-y-3 text-sm leading-relaxed">
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 flex-shrink-0">•</span>
+                    <span>
+                      <strong>CTA Brown & Purple Lines:</strong> The Chicago station on Franklin Street is a short walk from the building.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 flex-shrink-0">•</span>
+                    <span>
+                      <strong>CTA Red Line:</strong> The Chicago/State station is an easy walk east along Superior or Chicago Avenue.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 flex-shrink-0">•</span>
+                    <span>
+                      <strong>CTA Buses:</strong> Several CTA bus routes, including the #66 Chicago Avenue route, run near Superior and Wells.
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground text-center mt-8">
+              Routes, exits, and schedules can change — use the map above or your preferred navigation app for current turn-by-turn directions, and check transitchicago.com for CTA service details.
+            </p>
+          </div>
+        </section>
+
+        {/* Office hours */}
+        <section className="py-16 px-4 bg-muted">
+          <div className="container mx-auto max-w-3xl text-center">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Clock className="w-6 h-6 text-primary" />
+              <h3 className="text-3xl uppercase tracking-wider">Leasing Office Hours</h3>
+            </div>
+            <ul className="space-y-2 text-lg mb-8">
+              <li>Monday – Friday: 9:00 AM – 6:00 PM</li>
+              <li>Saturday: 10:00 AM – 5:00 PM</li>
+              <li>Sunday: 12:00 PM – 5:00 PM</li>
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              Planning a visit? <Link href="/schedule-a-tour" className="text-primary underline">Schedule a tour</Link> ahead of time so our team is ready to show you around.
+            </p>
           </div>
         </section>
 

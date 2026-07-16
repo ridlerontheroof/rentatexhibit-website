@@ -1,4 +1,5 @@
 import { PageHero } from '../components/PageHero';
+import { SmartImg } from '../components/SmartImg';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
@@ -52,9 +53,10 @@ export function Neighborhood() {
                   </Link>
                 </div>
               </div>
-              <img
+              <SmartImg
                 src="/images/image-082-bt7b3562-adimkf.jpg"
                 alt="Street view of the city near Exhibit On Superior in Chicago, Illinois"
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="w-full h-auto object-cover"
               />
             </div>

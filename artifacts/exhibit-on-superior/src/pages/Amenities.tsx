@@ -1,4 +1,5 @@
 import { PageHero } from '../components/PageHero';
+import { SmartImg } from '../components/SmartImg';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
@@ -37,9 +38,10 @@ export function Amenities() {
           <div className="container mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               <div className="relative h-[350px] overflow-hidden group">
-                <img
+                <SmartImg
                   src="/images/image-009-34-southeast-levwhc.jpg"
                   alt="Views for days"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
@@ -47,9 +49,10 @@ export function Amenities() {
                 </div>
               </div>
               <div className="relative h-[350px] overflow-hidden group">
-                <img
+                <SmartImg
                   src="/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg"
                   alt="Cozy comfort"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
@@ -57,9 +60,10 @@ export function Amenities() {
                 </div>
               </div>
               <div className="relative h-[350px] overflow-hidden group">
-                <img
+                <SmartImg
                   src="/images/image-011-20170808-0713-n8k48b.jpg"
                   alt="Sun Soaked Vibes"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
@@ -67,9 +71,10 @@ export function Amenities() {
                 </div>
               </div>
               <div className="relative h-[350px] overflow-hidden group">
-                <img
+                <SmartImg
                   src="/images/image-012-012417-6415-hgfghu.jpg"
                   alt="Sweat Session"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">

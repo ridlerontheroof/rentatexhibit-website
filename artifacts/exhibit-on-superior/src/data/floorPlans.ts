@@ -354,27 +354,51 @@ export function resolveDeepLink(groups: PlanGroup[], id: string | null): string 
  * <Seo extraJsonLd>. Shared with the prerenderer (entry-server.tsx) so the
  * static HTML and the client emit identical structured data.
  */
+const CATEGORY_SCHEMA_LABEL: Record<Category, string> = {
+  studio: 'Studio',
+  convertible: 'Convertible',
+  '1br': 'One Bedroom',
+  '2br': 'Two Bedroom',
+  '3br': 'Three Bedroom',
+};
+
 export function floorPlansItemListJsonLd(): Record<string, unknown> {
+  // NOTE: No `Offer` (price/availability) nodes are emitted here on purpose.
+  // Pricing lives off-site (Highland/AppFolio) and is not displayed on the
+  // page; schema must never claim prices the visitor cannot see. If live
+  // per-plan pricing ever lands on /floor-plans, map it to an `offers` node
+  // on each item — sourced from the same data the page renders.
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'Floor Plans at Exhibit On Superior',
-    itemListElement: planGroups.map((g, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      item: {
-        '@type': 'Accommodation',
-        name: `${g.typeLabel} \u2013 Unit ${g.unit}`,
-        numberOfBathroomsTotal: g.baths,
-        ...(g.beds > 0 ? { numberOfBedrooms: g.beds } : {}),
-        floorSize: {
-          '@type': 'QuantitativeValue',
-          minValue: g.sqftMin,
-          maxValue: g.sqftMax,
-          unitCode: 'FTK',
+    itemListElement: planGroups.map((g, i) => {
+      const floorRange =
+        g.floors.length > 1 ? `floors ${g.floors[0]}\u2013${g.floors[g.floors.length - 1]}` : `floor ${g.floors[0]}`;
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Apartment',
+          name: `${g.typeLabel} \u2013 Unit ${g.unit}`,
+          description: `${g.typeLabel} residence line (unit ${String(g.unit).padStart(2, '0')}) at Exhibit On Superior, offered on ${floorRange}, ${
+            g.sqftMin === g.sqftMax ? `${g.sqftMin} sq ft` : `${g.sqftMin}\u2013${g.sqftMax} sq ft`
+          }.`,
+          url: `https://www.rentatexhibit.com/floor-plans?plan=${encodeURIComponent(g.id)}`,
+          accommodationCategory: CATEGORY_SCHEMA_LABEL[g.category],
+          numberOfBathroomsTotal: g.baths,
+          ...(g.beds > 0 ? { numberOfBedrooms: g.beds } : {}),
+          floorSize: {
+            '@type': 'QuantitativeValue',
+            minValue: g.sqftMin,
+            maxValue: g.sqftMax,
+            unitCode: 'FTK',
+            unitText: 'sq ft',
+          },
+          containedInPlace: { '@id': 'https://www.rentatexhibit.com#apartmentcomplex' },
+          image: `https://www.rentatexhibit.com${g.images.detail}`,
         },
-        image: `https://www.rentatexhibit.com${g.images.detail}`,
-      },
-    })),
+      };
+    }),
   };
 }

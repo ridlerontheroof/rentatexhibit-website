@@ -1,4 +1,5 @@
 import { PageHero } from '../components/PageHero';
+import { SmartImg } from '../components/SmartImg';
 import { Heart, Home, MapPin, PawPrint } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
@@ -30,9 +31,10 @@ export function PetFriendly() {
         <section className="py-12 px-4 bg-muted">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <img
+              <SmartImg
                 src="/images/image-080-gettyimages-1386939001-lrrzhc.jpg"
                 alt="Happy dog on a walk outside at Exhibit On Superior in Chicago, Illinois"
+                sizes="(min-width: 768px) 50vw, 100vw"
                 className="w-full h-[500px] object-cover"
               />
               <div>
@@ -99,10 +101,23 @@ export function PetFriendly() {
           </div>
         </section>
 
+        {/* On-site pet amenities detail */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl">
+            <h3 className="text-3xl uppercase tracking-wider mb-8 text-center">Built For Life With Pets</h3>
+            <p className="text-lg leading-relaxed text-center mb-8">
+              Pet-friendly here means more than "pets allowed." The building&rsquo;s community amenities include a dedicated doggie spa and lounge for bath and grooming days, plus a gated outdoor dog walk so quick trips outside don&rsquo;t require a walk around the block. Inside your apartment, driftwood plank floors throughout stand up to paws and claws far better than carpet — and they clean up in seconds after muddy-day walks.
+            </p>
+            <p className="text-lg leading-relaxed text-center">
+              The location does the rest. River North is an ultra-walkable neighborhood, with side streets for daily loops and the Chicago River and lakefront within easy reach for longer outings. Your dog&rsquo;s daily routine gets real variety without ever needing the car.
+            </p>
+          </div>
+        </section>
+
+        <section className="py-16 px-4 bg-muted">
+          <div className="container mx-auto max-w-4xl">
             <h3 className="text-3xl uppercase tracking-wider mb-8 text-center">Pet Policy</h3>
-            <div className="bg-muted p-8 border border-border">
+            <div className="bg-white p-8 border border-border">
               <p className="text-lg leading-relaxed text-center mb-6">
                 Exhibit is a pet-friendly community! Acknowledgement of Dog Rider and compliance of pet policy is required prior to application approval. 2 pets maximum.
               </p>
@@ -118,6 +133,14 @@ export function PetFriendly() {
                 <li className="flex items-start gap-3">
                   <span className="text-primary mt-1 flex-shrink-0">•</span>
                   <span>All pets must be registered with management</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1 flex-shrink-0">•</span>
+                  <span>Dog owners must acknowledge the Dog Rider and comply with the pet policy before application approval</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1 flex-shrink-0">•</span>
+                  <span>Confirm current pet fees, deposits, and any breed or weight guidelines with the leasing team before applying</span>
                 </li>
               </ul>
               <p className="mt-6 text-sm text-muted-foreground text-center">

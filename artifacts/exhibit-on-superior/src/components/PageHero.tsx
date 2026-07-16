@@ -1,3 +1,5 @@
+import { SmartImg } from './SmartImg';
+
 interface PageHeroProps {
   image: string;
   alt: string;
@@ -8,9 +10,13 @@ interface PageHeroProps {
 export function PageHero({ image, alt, title, subtitle }: PageHeroProps) {
   return (
     <div className="relative h-[400px] lg:h-[500px] overflow-hidden">
-      <img
+      {/* The page hero is the LCP element on every subpage — load it eagerly. */}
+      <SmartImg
         src={image}
         alt={alt}
+        sizes="100vw"
+        loading="eager"
+        fetchPriority="high"
         className="w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
