@@ -151,11 +151,13 @@ export function trackLead(
  * - link_type: 'apply' | 'availability'
  * - link_url: the outbound destination
  * - cta_location: where the CTA lives (e.g. 'nav', 'floor_plans', 'redirect')
+ * - floor_plan: the plan/unit label the visitor was viewing (lightbox clicks; no PII)
  */
 export function trackOutboundClick(
   linkType: 'apply' | 'availability',
   linkUrl: string,
-  ctaLocation: string
+  ctaLocation: string,
+  attribution?: { floorPlan?: string }
 ): void {
   if (!analyticsEnabled() || !window.gtag) return;
 
@@ -167,6 +169,7 @@ export function trackOutboundClick(
     ...getStoredUtmParams(),
   };
   if (previousPath) params.referring_page = previousPath;
+  if (attribution?.floorPlan) params.floor_plan = attribution.floorPlan.slice(0, 100);
 
   window.gtag('event', 'outbound_click', params);
 }

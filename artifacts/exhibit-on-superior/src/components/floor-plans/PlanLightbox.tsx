@@ -400,6 +400,8 @@ export function PlanLightbox({
 
   const variant = group.variants[variantIndex] ?? group.variants[0];
   const sqftLabel = `${variant.sqft.toLocaleString()} sq ft`;
+  /** Non-PII plan identifier attached to availability clicks from the lightbox. */
+  const planLabel = `${variant.typeLabel} · Unit ${String(variant.unit).padStart(2, '0')}`;
 
   const pinchZoomed = pinch.scale > 1.01;
 
@@ -756,7 +758,11 @@ export function PlanLightbox({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-gold-outline flex min-h-11 shrink-0 items-center bg-primary px-4 text-center text-xs text-white hover:bg-primary/90"
-                  onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'plan_lightbox')}
+                  onClick={() =>
+                    trackOutboundClick('availability', AVAILABILITY_URL, 'plan_lightbox', {
+                      floorPlan: planLabel,
+                    })
+                  }
                 >
                   Check Availability
                 </a>
@@ -850,7 +856,11 @@ export function PlanLightbox({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold-outline hidden bg-primary text-center text-white hover:bg-primary/90 lg:block"
-                onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'plan_lightbox')}
+                onClick={() =>
+                  trackOutboundClick('availability', AVAILABILITY_URL, 'plan_lightbox', {
+                    floorPlan: planLabel,
+                  })
+                }
               >
                 Check Availability
               </a>

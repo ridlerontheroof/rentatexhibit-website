@@ -135,6 +135,7 @@ describe('trackOutboundClick payload whitelist (no PII)', () => {
     'link_type',
     'link_url',
     'cta_location',
+    'floor_plan',
     'page_path',
     'referring_page',
     'utm_source',
@@ -182,6 +183,48 @@ describe('trackOutboundClick payload whitelist (no PII)', () => {
     expect(params.link_type).toBe('availability');
     expect(params.cta_location).toBe('plan_lightbox');
     expect(params.page_path).toBe('/floor-plans');
+    expect(params).not.toHaveProperty('floor_plan');
+  });
+
+  it('includes only the whitelisted floor_plan key for lightbox availability clicks', async () => {
+    const analytics = await loadAnalytics();
+    analytics.trackPageView('/floor-plans');
+    analytics.trackOutboundClick('availability', 'https://example.com/units', 'plan_lightbox', {
+      floorPlan: 'Residence · Unit 06',
+    });
+
+    const params = lastOutboundParams();
+    for (const key of Object.keys(params)) {
+      expect(ALLOWED_OUTBOUND_KEYS.has(key), `unexpected gtag param "${key}"`).toBe(true);
+      expect(key).not.toMatch(PII_KEY_PATTERN);
+      expect(typeof params[key]).toBe('string');
+    }
+    expect(params.floor_plan).toBe('Residence · Unit 06');
+  });
+
+  it('ignores extra properties on the outbound attribution argument', async () => {
+    const analytics = await loadAnalytics();
+    analytics.trackPageView('/floor-plans');
+    analytics.trackOutboundClick('availability', 'https://example.com/units', 'plan_lightbox', {
+      floorPlan: 'A1',
+      email: 'jane@example.com',
+      name: 'Jane Doe',
+    } as never);
+
+    const params = lastOutboundParams();
+    expect(params).not.toHaveProperty('email');
+    expect(params).not.toHaveProperty('name');
+    expect(params.floor_plan).toBe('A1');
+  });
+
+  it('truncates oversized floor_plan values to 100 characters', async () => {
+    const analytics = await loadAnalytics();
+    analytics.trackPageView('/floor-plans');
+    analytics.trackOutboundClick('availability', 'https://example.com/units', 'plan_lightbox', {
+      floorPlan: 'x'.repeat(500),
+    });
+
+    expect(String(lastOutboundParams().floor_plan)).toHaveLength(100);
   });
 });
 
