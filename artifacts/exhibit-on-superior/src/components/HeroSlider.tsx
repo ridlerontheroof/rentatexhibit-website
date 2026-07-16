@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SmartImg } from './SmartImg';
 
 export interface HeroSlide {
@@ -35,8 +34,6 @@ export function HeroSlider({ slides, children, interval = 5000, className = '' }
   const count = slides.length;
 
   const goTo = useCallback((i: number) => setCurrent(((i % count) + count) % count), [count]);
-  const next = useCallback(() => goTo(current + 1), [current, goTo]);
-  const prev = useCallback(() => goTo(current - 1), [current, goTo]);
 
   const reducedMotion = useRef(false);
   useEffect(() => {
@@ -101,24 +98,6 @@ export function HeroSlider({ slides, children, interval = 5000, className = '' }
 
       {count > 1 && (
         <>
-          {/* Prev / Next controls */}
-          <button
-            type="button"
-            onClick={prev}
-            aria-label="Previous slide"
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 grid place-items-center h-11 w-11 rounded-full bg-black/40 text-white ring-1 ring-white/40 backdrop-blur-sm transition hover:bg-primary hover:ring-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <ChevronLeft className="h-6 w-6" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={next}
-            aria-label="Next slide"
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 grid place-items-center h-11 w-11 rounded-full bg-black/40 text-white ring-1 ring-white/40 backdrop-blur-sm transition hover:bg-primary hover:ring-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <ChevronRight className="h-6 w-6" aria-hidden="true" />
-          </button>
-
           {/* Slide indicators */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-2">
             {slides.map((slide, i) => (
