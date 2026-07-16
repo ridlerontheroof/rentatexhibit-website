@@ -105,6 +105,27 @@ for (const routePath of seoPaths) {
     page = page.replace(LCP_BLOCK, '');
   }
 
+  // Guard: React 19 SSR silently emits <link rel="preload" as="image"
+  // href="..."> for any eager plain <img> rendered outside a <picture> —
+  // exactly how a full-size PNG logo preload once shipped unnoticed. Only the
+  // deliberate href-less imagesrcset AVIF LCP hints are allowed; any image
+  // preload carrying a fixed href fails the build loudly.
+  {
+    const imagePreloads = page.match(/<link\b[^>]*rel="preload"[^>]*>/gi) ?? [];
+    const offenders = imagePreloads.filter(
+      (tag) => /\bas="image"/i.test(tag) && /\bhref="[^"]*"/i.test(tag),
+    );
+    if (offenders.length) {
+      throw new Error(
+        `Prerender aborted: page ${routePath} contains ${offenders.length} fixed-href image preload(s) ` +
+          `(likely React 19 auto-preload from an eager plain <img>; render via SmartImg instead):\n` +
+          offenders
+            .map((tag) => `  ${tag} -> ${tag.match(/\bhref="([^"]*)"/i)?.[1] ?? '?'}`)
+            .join('\n'),
+      );
+    }
+  }
+
   // Assert the head tags actually landed inside the marker block (not the body).
   const block = page.match(SEO_BLOCK);
   if (!block || !/<title>/.test(block[0]) || !/rel="canonical"/.test(block[0])) {
