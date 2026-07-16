@@ -74,8 +74,21 @@ export function PlanLightbox({
     panStartY: 0,
   });
 
+  // Mouse drag-to-pan state (desktop). Mirrors the touch "pan" gesture.
+  const mouseDrag = useRef<{
+    startX: number;
+    startY: number;
+    startTx: number;
+    startTy: number;
+    moved: boolean;
+  } | null>(null);
+  const [mouseDragging, setMouseDragging] = useState(false);
+  const suppressClick = useRef(false);
+
   const resetPinch = useCallback(() => {
     gesture.current.mode = null;
+    mouseDrag.current = null;
+    setMouseDragging(false);
     setPinch({ scale: 1, tx: 0, ty: 0 });
   }, []);
 
@@ -163,6 +176,97 @@ export function PlanLightbox({
     setDragHeightPx(null);
     dragRef.current = null;
   };
+
+  // Rubber-band slack while a gesture is in progress; gesture end hard-clamps.
+  const PAN_RUBBER_PX = 40;
+
+  const clampPan = useCallback((tx: number, ty: number, scale: number, allowance: number) => {
+    const viewer = viewerRef.current;
+    const img = imgRef.current;
+    if (!viewer || !img) return { tx, ty };
+    return clampPanTranslation(
+      tx,
+      ty,
+      scale,
+      img.clientWidth,
+      img.clientHeight,
+      viewer.clientWidth,
+      viewer.clientHeight,
+      allowance,
+    );
+  }, []);
+
+  // Desktop: wheel / ctrl+wheel (trackpad pinch) zooms toward the cursor.
+  // Attached natively with { passive: false } so preventDefault stops page scroll.
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      // ctrl+wheel (trackpad pinch) reports larger deltas; scale sensitivity down.
+      const intensity = e.ctrlKey ? 0.01 : 0.002;
+      clearZoomExitTimer();
+      setZoomed(false);
+      setZoomPhase('idle');
+      setPinch((p) => {
+        const scale = Math.min(4, Math.max(1, p.scale * Math.exp(-e.deltaY * intensity)));
+        if (scale <= 1) return { scale: 1, tx: 0, ty: 0 };
+        const rect = viewer.getBoundingClientRect();
+        // Keep the image point under the cursor stationary while scaling.
+        const px = e.clientX - (rect.left + rect.width / 2);
+        const py = e.clientY - (rect.top + rect.height / 2);
+        const ratio = scale / p.scale;
+        return {
+          scale,
+          ...clampPan(px - ratio * (px - p.tx), py - ratio * (py - p.ty), scale, 0),
+        };
+      });
+    };
+    viewer.addEventListener('wheel', onWheel, { passive: false });
+    return () => viewer.removeEventListener('wheel', onWheel);
+  }, [clampPan, group, clearZoomExitTimer]);
+
+  // Desktop: click-and-drag pans while zoomed in.
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0 || pinch.scale <= 1) return;
+    e.preventDefault();
+    mouseDrag.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startTx: pinch.tx,
+      startTy: pinch.ty,
+      moved: false,
+    };
+    setMouseDragging(true);
+  };
+
+  useEffect(() => {
+    if (!mouseDragging) return;
+    const onMove = (e: MouseEvent) => {
+      const d = mouseDrag.current;
+      if (!d) return;
+      const dx = e.clientX - d.startX;
+      const dy = e.clientY - d.startY;
+      if (!d.moved && Math.hypot(dx, dy) > 3) d.moved = true;
+      setPinch((p) => ({
+        ...p,
+        ...clampPan(d.startTx + dx, d.startTy + dy, p.scale, PAN_RUBBER_PX),
+      }));
+    };
+    const onUp = () => {
+      if (mouseDrag.current?.moved) suppressClick.current = true;
+      mouseDrag.current = null;
+      setMouseDragging(false);
+      // Settle any rubber-band overshoot back inside the hard pan bounds.
+      setPinch((p) => ({ ...p, ...clampPan(p.tx, p.ty, p.scale, 0) }));
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, [mouseDragging, clampPan]);
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -264,25 +368,6 @@ export function PlanLightbox({
     }, DOUBLE_TAP_MS);
     return false;
   };
-
-  // Rubber-band slack while a gesture is in progress; gesture end hard-clamps.
-  const PAN_RUBBER_PX = 40;
-
-  const clampPan = useCallback((tx: number, ty: number, scale: number, allowance: number) => {
-    const viewer = viewerRef.current;
-    const img = imgRef.current;
-    if (!viewer || !img) return { tx, ty };
-    return clampPanTranslation(
-      tx,
-      ty,
-      scale,
-      img.clientWidth,
-      img.clientHeight,
-      viewer.clientWidth,
-      viewer.clientHeight,
-      allowance,
-    );
-  }, []);
 
   const onTouchMove = (e: React.TouchEvent) => {
     const g = gesture.current;
@@ -400,6 +485,7 @@ export function PlanLightbox({
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
+              onMouseDown={onMouseDown}
             >
               <img
                 ref={imgRef}
@@ -407,6 +493,10 @@ export function PlanLightbox({
                 src={zoomed || pinchZoomed ? variant.images.zoom : variant.images.detail}
                 alt={`${variant.typeLabel} floor plan, Unit ${variant.unit}, floors ${variant.floorLabel}, ${sqftLabel}`}
                 onClick={() => {
+                  if (suppressClick.current) {
+                    suppressClick.current = false;
+                    return;
+                  }
                   if (pinchZoomed) {
                     resetPinch();
                   } else {
@@ -417,7 +507,13 @@ export function PlanLightbox({
                 className={
                   zoomed
                     ? 'max-w-none cursor-zoom-out'
-                    : 'mx-auto max-h-full max-w-full cursor-zoom-in object-contain'
+                    : `mx-auto max-h-full max-w-full object-contain ${
+                        pinchZoomed
+                          ? mouseDragging
+                            ? 'cursor-grabbing'
+                            : 'cursor-grab'
+                          : 'cursor-zoom-in'
+                      }`
                 }
                 style={
                   zoomed
@@ -431,9 +527,10 @@ export function PlanLightbox({
                     : {
                         transform: `translate(${pinch.tx}px, ${pinch.ty}px) scale(${pinch.scale})`,
                         transformOrigin: 'center center',
-                        transition: gesture.current.mode
-                          ? 'none'
-                          : 'transform 200ms ease',
+                        transition:
+                          gesture.current.mode || mouseDragging
+                            ? 'none'
+                            : 'transform 200ms ease',
                       }
                 }
               />
