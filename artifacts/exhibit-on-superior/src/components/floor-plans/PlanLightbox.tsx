@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dia
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { Link } from 'wouter';
 import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
+import { clampPanTranslation } from '../../lib/panBounds';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
 
@@ -30,6 +31,8 @@ export function PlanLightbox({
   // Double-tap detection (touch devices).
   const lastTap = useRef<{ time: number; x: number; y: number } | null>(null);
   const singleTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const viewerRef = useRef<HTMLDivElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   // Mobile bottom-sheet drag state. Snap points are expressed in dvh.
   const SHEET_COLLAPSED = 40;
@@ -200,8 +203,12 @@ export function PlanLightbox({
         setZoomed(false);
         setPinch({
           scale: DOUBLE_TAP_SCALE,
-          tx: -(x - cx) * (DOUBLE_TAP_SCALE - 1),
-          ty: -(y - cy) * (DOUBLE_TAP_SCALE - 1),
+          ...clampPan(
+            -(x - cx) * (DOUBLE_TAP_SCALE - 1),
+            -(y - cy) * (DOUBLE_TAP_SCALE - 1),
+            DOUBLE_TAP_SCALE,
+            0,
+          ),
         });
       }
       return true;
@@ -216,22 +223,48 @@ export function PlanLightbox({
     return false;
   };
 
+  // Rubber-band slack while a gesture is in progress; gesture end hard-clamps.
+  const PAN_RUBBER_PX = 40;
+
+  const clampPan = useCallback((tx: number, ty: number, scale: number, allowance: number) => {
+    const viewer = viewerRef.current;
+    const img = imgRef.current;
+    if (!viewer || !img) return { tx, ty };
+    return clampPanTranslation(
+      tx,
+      ty,
+      scale,
+      img.clientWidth,
+      img.clientHeight,
+      viewer.clientWidth,
+      viewer.clientHeight,
+      allowance,
+    );
+  }, []);
+
   const onTouchMove = (e: React.TouchEvent) => {
     const g = gesture.current;
     if (g.mode === 'pinch' && e.touches.length === 2) {
       const scale = Math.min(4, Math.max(1, (g.startScale * touchDist(e)) / g.startDist));
       const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
       const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-      setPinch({
+      const clamped = clampPan(
+        scale <= 1 ? 0 : g.startTx + (midX - g.startMidX),
+        scale <= 1 ? 0 : g.startTy + (midY - g.startMidY),
         scale,
-        tx: scale <= 1 ? 0 : g.startTx + (midX - g.startMidX),
-        ty: scale <= 1 ? 0 : g.startTy + (midY - g.startMidY),
-      });
+        PAN_RUBBER_PX,
+      );
+      setPinch({ scale, ...clamped });
     } else if (g.mode === 'pan' && e.touches.length === 1) {
+      const touch = e.touches[0];
       setPinch((p) => ({
         ...p,
-        tx: g.startTx + (e.touches[0].clientX - g.panStartX),
-        ty: g.startTy + (e.touches[0].clientY - g.panStartY),
+        ...clampPan(
+          g.startTx + (touch.clientX - g.panStartX),
+          g.startTy + (touch.clientY - g.panStartY),
+          p.scale,
+          PAN_RUBBER_PX,
+        ),
       }));
     }
   };
@@ -255,8 +288,13 @@ export function PlanLightbox({
           }
           if (e.cancelable) e.preventDefault();
         }
-        // Snap back to fit when nearly zoomed out
-        setPinch((p) => (p.scale <= 1.05 ? { scale: 1, tx: 0, ty: 0 } : p));
+        // Snap back to fit when nearly zoomed out; otherwise settle any
+        // rubber-band overshoot back inside the hard pan bounds.
+        setPinch((p) =>
+          p.scale <= 1.05
+            ? { scale: 1, tx: 0, ty: 0 }
+            : { ...p, ...clampPan(p.tx, p.ty, p.scale, 0) },
+        );
       } else if (g.mode === 'pinch' && e.touches.length === 1) {
         // Hand off from pinch to one-finger pan
         g.mode = 'pan';
@@ -304,6 +342,7 @@ export function PlanLightbox({
           {/* Image viewer */}
           <div className="relative flex min-h-0 flex-1 items-center justify-center bg-[#111] lg:flex-none">
             <div
+              ref={viewerRef}
               className={`h-full w-full ${zoomed ? 'overflow-auto' : 'overflow-hidden flex items-center justify-center p-4 sm:p-8'}`}
               style={!zoomed ? { touchAction: pinchZoomed ? 'none' : 'pan-y pinch-zoom' } : undefined}
               onTouchStart={onTouchStart}
@@ -311,6 +350,7 @@ export function PlanLightbox({
               onTouchEnd={onTouchEnd}
             >
               <img
+                ref={imgRef}
                 key={variant.id}
                 src={zoomed || pinchZoomed ? variant.images.zoom : variant.images.detail}
                 alt={`${variant.typeLabel} floor plan, Unit ${variant.unit}, floors ${variant.floorLabel}, ${sqftLabel}`}
