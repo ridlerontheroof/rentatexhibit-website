@@ -7,6 +7,7 @@ import { routes } from './routes';
 import { NotFound } from './pages/not-found';
 import { buildSeoModel, renderHeadTags } from './data/seo';
 import { floorPlansItemListJsonLd } from './data/floorPlans';
+import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
 
 // Re-exported so the (browserless) prerender script can read the route list,
 // canonical URLs, and noindex flags straight from the built SSR bundle.
@@ -19,6 +20,10 @@ export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
 // page component passes to <Seo extraJsonLd>; keep in sync with that page.
 const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
   '/floor-plans': () => [floorPlansItemListJsonLd()],
+  // At prerender time there is no live Google feed, so the model resolves to
+  // the curated fallback — exactly what the SSR'd page body displays. The
+  // client re-emits the schema from the live-merged model after hydration.
+  '/reviews': () => [reviewsJsonLd(buildReviewsPageModel())],
 };
 
 export interface RenderResult {

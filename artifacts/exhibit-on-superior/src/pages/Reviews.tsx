@@ -5,55 +5,24 @@ import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { Star, Quote } from 'lucide-react';
 import { useGoogleReviews } from '../hooks/use-google-reviews';
+import { buildReviewsPageModel, reviewsJsonLd } from '../data/reviews';
 
 const GOOGLE_REVIEWS_URL =
   'https://www.google.com/maps/place/Exhibit+on+Superior/@41.8953899,-87.6361029,1557m/data=!3m2!1e3!4b1!4m6!3m5!1s0x880fd34b54f928af:0xdb1555e020a513c9!8m2!3d41.8953859!4d-87.633528!16s%2Fg%2F11z14j3shz?entry=ttu&g_ep=EgoyMDI2MDcxMy4wIKXMDSoASAFQAw%3D%3D';
 
-/**
- * Curated fallback shown when the live Google reviews feed is unavailable.
- * Quotes were pulled from the community's public Google Business Profile.
- */
-const FALLBACK_RATING = 4.2;
-const FALLBACK_REVIEW_COUNT = 136;
-const FALLBACK_REVIEWS = [
-  {
-    quote:
-      "I honestly can't say enough about Exhibit. I moved in to a very clean apartment! The staff has bent over backwards to make us feel welcome and have been responsive to any request! Great location, great apartment, great staff!!!",
-    author: 'Verified Resident',
-  },
-  {
-    quote:
-      'Love this apartment. Great location, amazing amenities and stunning views. Will be resigning my lease!',
-    author: 'Verified Resident',
-  },
-  {
-    quote:
-      "I've enjoyed living here for almost three years. It's a great location.",
-    author: 'Verified Resident',
-  },
-];
-
 export function Reviews() {
   // Live quotes from the Google Business Profile (via the API server) are
-  // appended after the original curated quotes. The building's review history
-  // (4.2 / 136) lives on an older Google profile awaiting a merge, so we keep
-  // the curated aggregate until the live listing's count catches up — once
-  // Google merges the profiles, the live figures take over automatically.
+  // appended after the original curated quotes; the merge logic lives in
+  // data/reviews.ts so the visible content and the Review/AggregateRating
+  // JSON-LD always derive from the exact same model and can never diverge.
   const { data: live } = useGoogleReviews();
 
-  const useLiveAggregate = live !== undefined && live.reviewCount >= FALLBACK_REVIEW_COUNT;
-  const rating = useLiveAggregate ? live.rating : FALLBACK_RATING;
-  const reviewCount = useLiveAggregate ? live.reviewCount : FALLBACK_REVIEW_COUNT;
-
-  const curated = FALLBACK_REVIEWS.map((r) => ({ ...r, rating: 5 }));
-  const fresh = (live?.reviews ?? [])
-    .filter((r) => !FALLBACK_REVIEWS.some((c) => c.quote === r.quote))
-    .map((r) => ({ quote: r.quote, author: r.author, rating: r.rating }));
-  const reviews = [...curated, ...fresh].slice(0, 6);
+  const model = buildReviewsPageModel(live);
+  const { rating, reviewCount, reviews } = model;
 
   return (
     <>
-      <Seo path="/reviews" />
+      <Seo path="/reviews" extraJsonLd={[reviewsJsonLd(model)]} />
       <div>
         <PageHero
           image="/images/image-088-20170808-0868-1-odeo9b.jpg"
