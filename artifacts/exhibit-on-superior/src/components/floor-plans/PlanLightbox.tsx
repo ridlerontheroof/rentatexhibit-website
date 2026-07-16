@@ -5,6 +5,7 @@ import { Link } from 'wouter';
 import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
 import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
 import { trackOutboundClick } from '../../lib/analytics';
+import { useReducedMotion } from '../../hooks/use-reduced-motion';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
 
@@ -25,6 +26,11 @@ export function PlanLightbox({
   onNavigate,
   onVariantChange,
 }: PlanLightboxProps) {
+  const reducedMotion = useReducedMotion();
+  const reducedMotionRef = useRef(reducedMotion);
+  useEffect(() => {
+    reducedMotionRef.current = reducedMotion;
+  }, [reducedMotion]);
   const [zoomed, setZoomed] = useState(false);
   const zoomedRef = useRef(false);
   useEffect(() => {
@@ -114,6 +120,17 @@ export function PlanLightbox({
   /** Toggle the scroll-zoom mode with a ~200ms scale animation in each direction. */
   const animateZoomToggle = useCallback(() => {
     if (zoomExitTimer.current !== null) return; // already animating out
+    if (reducedMotionRef.current) {
+      // Instant toggle, no scale animation.
+      if (zoomedRef.current) {
+        setZoomed(false);
+      } else {
+        resetPinch();
+        setZoomed(true);
+      }
+      setZoomPhase('idle');
+      return;
+    }
     if (zoomedRef.current) {
       setZoomPhase('exit');
       zoomExitTimer.current = setTimeout(() => {
@@ -632,13 +649,15 @@ export function PlanLightbox({
                         transformOrigin: 'top left',
                         transform: zoomPhase === 'idle' ? 'scale(1)' : 'scale(0.625)',
                         transition:
-                          zoomPhase === 'enter' ? 'none' : 'transform 200ms ease',
+                          reducedMotion || zoomPhase === 'enter'
+                            ? 'none'
+                            : 'transform 200ms ease',
                       }
                     : {
                         transform: `translate(${pinch.tx}px, ${pinch.ty}px) scale(${pinch.scale})`,
                         transformOrigin: 'center center',
                         transition:
-                          gesture.current.mode || mouseDragging
+                          reducedMotion || gesture.current.mode || mouseDragging
                             ? 'none'
                             : 'transform 200ms ease',
                       }
@@ -692,7 +711,9 @@ export function PlanLightbox({
           {/* Details panel */}
           <aside
             className={`flex min-h-0 shrink-0 flex-col overflow-y-auto bg-white h-[var(--sheet-h)] max-h-[var(--sheet-h)] lg:h-auto lg:max-h-none lg:shrink ${
-              dragHeightPx === null ? 'transition-[height,max-height] duration-300 ease-out' : ''
+              dragHeightPx === null && !reducedMotion
+                ? 'transition-[height,max-height] duration-300 ease-out'
+                : ''
             }`}
             style={
               {
