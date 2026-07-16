@@ -273,6 +273,69 @@ describe('floor-plan image files', () => {
     expect(over, `oversized floor-plan images:\n${over.join('\n')}`).toEqual([]);
   });
 
+  it('every variant tier has its expected pixel dimensions (thumb 600x776, detail 1500x1941, zoom 2600x3365)', () => {
+    // Guards against a mis-sized re-export: a wrong-width thumb stretches the
+    // cards, a zoom smaller than its detail shows *less* when zooming in.
+    const EXPECTED: Record<'thumb' | 'detail' | 'zoom', { width: number; height: number }> = {
+      thumb: { width: 600, height: 776 },
+      detail: { width: 1500, height: 1941 },
+      zoom: { width: 2600, height: 3365 },
+    };
+
+    const bad: string[] = [];
+    let checked = 0;
+
+    for (const p of plans) {
+      for (const key of ['thumb', 'detail', 'zoom'] as const) {
+        const file = basename(p.images[key]);
+        const path = join(IMG_DIR, file);
+        if (!existsSync(path)) continue; // missing files are reported by an earlier test
+        checked += 1;
+        const dims = readWebpDimensions(readFileSync(path));
+        if (!dims) {
+          bad.push(`${file} (could not read WebP dimensions)`);
+          continue;
+        }
+        const exp = EXPECTED[key];
+        if (dims.width !== exp.width || dims.height !== exp.height) {
+          bad.push(
+            `${file} is ${dims.width}x${dims.height}, expected ${exp.width}x${exp.height} for the ${key} tier`,
+          );
+        }
+      }
+    }
+
+    expect(checked).toBeGreaterThan(100); // sanity: 35 plans x 3 variants
+    expect(bad, `mis-sized floor-plan images:\n${bad.join('\n')}`).toEqual([]);
+  });
+
+  it('per plan, zoom > detail > thumb in pixel area (zooming must add detail)', () => {
+    const bad: string[] = [];
+
+    for (const p of plans) {
+      const dimsByKey: Partial<Record<'thumb' | 'detail' | 'zoom', { width: number; height: number }>> = {};
+      for (const key of ['thumb', 'detail', 'zoom'] as const) {
+        const path = join(IMG_DIR, basename(p.images[key]));
+        if (!existsSync(path)) continue; // missing files are reported by an earlier test
+        dimsByKey[key] = readWebpDimensions(readFileSync(path)) ?? undefined;
+      }
+      const { thumb, detail, zoom } = dimsByKey;
+      const fmt = (d: { width: number; height: number }) => `${d.width}x${d.height}`;
+      if (detail && thumb && (detail.width <= thumb.width || detail.height <= thumb.height)) {
+        bad.push(
+          `${p.id}: detail (${fmt(detail)}) is not strictly larger than thumb (${fmt(thumb)})`,
+        );
+      }
+      if (zoom && detail && (zoom.width <= detail.width || zoom.height <= detail.height)) {
+        bad.push(
+          `${p.id}: zoom (${fmt(zoom)}) is not strictly larger than detail (${fmt(detail)})`,
+        );
+      }
+    }
+
+    expect(bad, `floor-plan variant ordering violations:\n${bad.join('\n')}`).toEqual([]);
+  });
+
   it('no orphan image files exist that no plan references', () => {
     const referenced = new Set(
       plans.flatMap((p) => [p.images.thumb, p.images.detail, p.images.zoom].map((s) => basename(s))),
