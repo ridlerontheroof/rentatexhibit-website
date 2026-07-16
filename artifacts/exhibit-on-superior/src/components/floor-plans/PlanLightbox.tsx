@@ -33,10 +33,40 @@ export function PlanLightbox({
   const [dragHeightPx, setDragHeightPx] = useState<number | null>(null);
   const dragRef = useRef<{ startY: number; startHeightPx: number } | null>(null);
 
+  // Pinch-to-zoom state (touch devices). scale === 1 means "fit".
+  const [pinch, setPinch] = useState({ scale: 1, tx: 0, ty: 0 });
+  const gesture = useRef<{
+    mode: 'pinch' | 'pan' | null;
+    startDist: number;
+    startScale: number;
+    startTx: number;
+    startTy: number;
+    startMidX: number;
+    startMidY: number;
+    panStartX: number;
+    panStartY: number;
+  }>({
+    mode: null,
+    startDist: 0,
+    startScale: 1,
+    startTx: 0,
+    startTy: 0,
+    startMidX: 0,
+    startMidY: 0,
+    panStartX: 0,
+    panStartY: 0,
+  });
+
+  const resetPinch = useCallback(() => {
+    gesture.current.mode = null;
+    setPinch({ scale: 1, tx: 0, ty: 0 });
+  }, []);
+
   // Reset zoom whenever the shown plan changes.
   useEffect(() => {
     setZoomed(false);
-  }, [group?.id, variantIndex]);
+    resetPinch();
+  }, [group?.id, variantIndex, resetPinch]);
 
   // Collapse the sheet when a different plan group is opened.
   useEffect(() => {
@@ -93,11 +123,84 @@ export function PlanLightbox({
   const variant = group.variants[variantIndex] ?? group.variants[0];
   const sqftLabel = `${variant.sqft.toLocaleString()} sq ft`;
 
+  const pinchZoomed = pinch.scale > 1.01;
+
+  const touchDist = (e: React.TouchEvent) => {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.hypot(dx, dy);
+  };
+
   const onTouchStart = (e: React.TouchEvent) => {
+    const g = gesture.current;
+    if (!zoomed && e.touches.length === 2) {
+      // Begin pinch
+      g.mode = 'pinch';
+      g.startDist = touchDist(e);
+      g.startScale = pinch.scale;
+      g.startTx = pinch.tx;
+      g.startTy = pinch.ty;
+      g.startMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      g.startMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      touchStartX.current = null;
+      return;
+    }
+    if (!zoomed && pinchZoomed && e.touches.length === 1) {
+      // One-finger pan while pinch-zoomed
+      g.mode = 'pan';
+      g.panStartX = e.touches[0].clientX;
+      g.panStartY = e.touches[0].clientY;
+      g.startTx = pinch.tx;
+      g.startTy = pinch.ty;
+      touchStartX.current = null;
+      return;
+    }
+    g.mode = null;
     touchStartX.current = e.touches[0].clientX;
   };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    const g = gesture.current;
+    if (g.mode === 'pinch' && e.touches.length === 2) {
+      const scale = Math.min(4, Math.max(1, (g.startScale * touchDist(e)) / g.startDist));
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      setPinch({
+        scale,
+        tx: scale <= 1 ? 0 : g.startTx + (midX - g.startMidX),
+        ty: scale <= 1 ? 0 : g.startTy + (midY - g.startMidY),
+      });
+    } else if (g.mode === 'pan' && e.touches.length === 1) {
+      setPinch((p) => ({
+        ...p,
+        tx: g.startTx + (e.touches[0].clientX - g.panStartX),
+        ty: g.startTy + (e.touches[0].clientY - g.panStartY),
+      }));
+    }
+  };
+
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null || zoomed) return;
+    const g = gesture.current;
+    if (g.mode) {
+      if (e.touches.length === 0) {
+        g.mode = null;
+        // Snap back to fit when nearly zoomed out
+        setPinch((p) => (p.scale <= 1.05 ? { scale: 1, tx: 0, ty: 0 } : p));
+      } else if (g.mode === 'pinch' && e.touches.length === 1) {
+        // Hand off from pinch to one-finger pan
+        g.mode = 'pan';
+        g.panStartX = e.touches[0].clientX;
+        g.panStartY = e.touches[0].clientY;
+        setPinch((p) => {
+          g.startTx = p.tx;
+          g.startTy = p.ty;
+          return p;
+        });
+      }
+      return;
+    }
+    // Swipe navigation only while fully zoomed out
+    if (touchStartX.current === null || zoomed || pinchZoomed) return;
     const dx = e.changedTouches[0].clientX - touchStartX.current;
     if (Math.abs(dx) > 50) onNavigate(dx < 0 ? 1 : -1);
     touchStartX.current = null;
@@ -121,32 +224,55 @@ export function PlanLightbox({
           <div className="relative flex min-h-0 flex-1 items-center justify-center bg-[#111] lg:flex-none">
             <div
               className={`h-full w-full ${zoomed ? 'overflow-auto' : 'overflow-hidden flex items-center justify-center p-4 sm:p-8'}`}
+              style={!zoomed ? { touchAction: pinchZoomed ? 'none' : 'pan-y pinch-zoom' } : undefined}
               onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
             >
               <img
                 key={variant.id}
-                src={zoomed ? variant.images.zoom : variant.images.detail}
+                src={zoomed || pinchZoomed ? variant.images.zoom : variant.images.detail}
                 alt={`${variant.typeLabel} floor plan, Unit ${variant.unit}, floors ${variant.floorLabel}, ${sqftLabel}`}
-                onClick={() => setZoomed((z) => !z)}
+                onClick={() => {
+                  resetPinch();
+                  setZoomed((z) => !z);
+                }}
+                draggable={false}
                 className={
                   zoomed
                     ? 'max-w-none cursor-zoom-out'
                     : 'mx-auto max-h-full max-w-full cursor-zoom-in object-contain'
                 }
-                style={zoomed ? { width: '160%' } : undefined}
+                style={
+                  zoomed
+                    ? { width: '160%' }
+                    : pinchZoomed || gesture.current.mode
+                      ? {
+                          transform: `translate(${pinch.tx}px, ${pinch.ty}px) scale(${pinch.scale})`,
+                          transformOrigin: 'center center',
+                          transition: 'none',
+                        }
+                      : undefined
+                }
               />
             </div>
 
             {/* Zoom toggle */}
             <button
               type="button"
-              onClick={() => setZoomed((z) => !z)}
+              onClick={() => {
+                if (pinchZoomed) {
+                  resetPinch();
+                } else {
+                  resetPinch();
+                  setZoomed((z) => !z);
+                }
+              }}
               className="absolute bottom-4 left-4 flex min-h-11 items-center gap-2 bg-black/60 px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80"
-              aria-label={zoomed ? 'Zoom out' : 'Zoom in'}
+              aria-label={zoomed || pinchZoomed ? 'Zoom out' : 'Zoom in'}
             >
-              {zoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
-              {zoomed ? 'Fit' : 'Zoom'}
+              {zoomed || pinchZoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
+              {zoomed || pinchZoomed ? 'Fit' : 'Zoom'}
             </button>
 
             {/* Prev / next */}
