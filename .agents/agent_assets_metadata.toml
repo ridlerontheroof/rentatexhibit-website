@@ -18,3 +18,9 @@ id = "JkErfgPLpvC3KB6w0kvfk"
 uri = "file://attached_assets/og-card-final.png"
 type = "image"
 title = "New shared-link thumbnail (1200×630)"
+
+[[outputs]]
+id = "giubuz7DK5RMHWeHIS58d"
+uri = "file://attached_assets/og-card-final-v2.png"
+type = "image"
+title = "Updated shared-link thumbnail"
