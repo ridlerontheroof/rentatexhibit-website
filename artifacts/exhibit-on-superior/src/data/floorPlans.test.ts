@@ -100,13 +100,16 @@ describe('parseFloors', () => {
     });
   });
 
-  it('flags mezzanine labels without leaking "M" into the numeric range', () => {
-    expect(parseFloors('3-4M')).toEqual({ floors: [3, 4], min: 3, max: 4, mezzanine: true });
-    expect(parseFloors('4-4M')).toEqual({ floors: [4], min: 4, max: 4, mezzanine: true });
+  it('counts the mezzanine as its own level (one above the floor it tops)', () => {
+    // The building has no sheet for "floor 5": the podium band runs 2-5 and
+    // level 5 IS the "4M" mezzanine, so ranges ending in the mezzanine
+    // include it as max+1. Real unit numbers like 0502 depend on this.
+    expect(parseFloors('3-4M')).toEqual({ floors: [3, 4, 5], min: 3, max: 5, mezzanine: true });
+    expect(parseFloors('4-4M')).toEqual({ floors: [4, 5], min: 4, max: 5, mezzanine: true });
   });
 
-  it('parses a single mezzanine floor ("4M")', () => {
-    expect(parseFloors('4M')).toEqual({ floors: [4], min: 4, max: 4, mezzanine: true });
+  it('parses a pure mezzanine sheet ("4M") as only the mezzanine level', () => {
+    expect(parseFloors('4M')).toEqual({ floors: [5], min: 5, max: 5, mezzanine: true });
   });
 
   it('every floor it produces is a finite number (no NaN from "M")', () => {
@@ -424,6 +427,16 @@ describe('groupMatchesQuery', () => {
     expect(groupMatchesQuery(g, '203')).toBe(true);
     // still matches the fully padded form
     expect(groupMatchesQuery(g, '0203')).toBe(true);
+  });
+
+  it('finds real mezzanine-level units in the actual dataset (502 regression)', () => {
+    // Unit 0502 = unit line 2 on the "4M" mezzanine (level 5). Searching
+    // "502" or "0502" must surface it.
+    for (const q of ['502', '0502']) {
+      const hits = planGroups.filter((g) => groupMatchesQuery(g, q));
+      expect(hits.length).toBeGreaterThan(0);
+      expect(hits.some((g) => g.unit === 2 && g.floors.includes(5))).toBe(true);
+    }
   });
 
   it('text query matches the type label (case-insensitive)', () => {

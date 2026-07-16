@@ -61,8 +61,20 @@ export function parseFloors(label: string) {
     .split('-')
     .map((s) => parseInt(s, 10))
     .filter((n) => !Number.isNaN(n));
-  const min = parts[0];
-  const max = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+  let min = parts[0];
+  let max = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+  // The mezzanine counts as its own numbered residential level, one above the
+  // floor it sits on: the sheets have no "floor 5" yet the podium band runs
+  // 2-5 — level 5 IS the "4M" mezzanine, so unit line 2 there is unit 0502.
+  if (mezzanine) {
+    if (parts.length === 1 && /^[0-9]+M$/.test(label)) {
+      // A pure mezzanine sheet like "4M" covers only the mezzanine level.
+      min = max = max + 1;
+    } else {
+      // A range ending in the mezzanine ("3-4M", "4-4M") includes it.
+      max = max + 1;
+    }
+  }
   const floors: number[] = [];
   for (let i = min; i <= max; i++) floors.push(i);
   return { floors, min, max, mezzanine };
