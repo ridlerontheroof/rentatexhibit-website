@@ -142,3 +142,19 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = `;
 
 await fs.writeFile(manifestPath, header + JSON.stringify(manifest, null, 2) + ';\n', 'utf8');
 console.log(`Optimized ${files.length} images; manifest written to ${path.relative(root, manifestPath)}.`);
+
+// Prune orphaned generated variants: *-NNNw.webp/.avif files on disk that no
+// manifest entry references (left behind by renamed/removed source photos).
+const referenced = new Set();
+for (const meta of Object.values(manifest)) {
+  for (const v of meta.variants) {
+    referenced.add(path.basename(v.src));
+    if (v.avif) referenced.add(path.basename(v.avif));
+  }
+}
+const orphans = (await fs.readdir(imagesDir)).filter((f) => /-\d+w\.(webp|avif)$/.test(f) && !referenced.has(f));
+for (const f of orphans) {
+  await fs.rm(path.join(imagesDir, f), { force: true });
+  console.warn(`Pruned orphaned variant ${f}`);
+}
+if (orphans.length) console.log(`Pruned ${orphans.length} orphaned variant file(s).`);

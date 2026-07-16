@@ -2,7 +2,7 @@
 // auto-generated IMAGE_MANIFEST must actually exist under public/images.
 // If a re-export deletes or renames variant files without regenerating the
 // manifest, this fails before visitors see broken photos.
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { IMAGE_MANIFEST } from './imageManifest';
@@ -32,5 +32,25 @@ describe('IMAGE_MANIFEST files exist on disk', () => {
     const widths = meta.variants.map((v) => v.w);
     const sorted = [...new Set(widths)].sort((a, b) => a - b);
     expect(widths).toEqual(sorted);
+  });
+
+  // The reverse guard: renamed/removed source photos must not leave orphaned
+  // generated variants (*-NNNw.webp / *-NNNw.avif) shipping in every deploy.
+  // `node scripts/optimize-images.mjs` also prunes these automatically.
+  it('has no orphaned generated variants on disk', () => {
+    const referenced = new Set<string>();
+    for (const [, meta] of entries) {
+      for (const variant of meta.variants) {
+        referenced.add(path.basename(variant.src));
+        if (variant.avif) referenced.add(path.basename(variant.avif));
+      }
+    }
+    const orphans = readdirSync(path.join(publicDir, 'images')).filter(
+      (file) => /-\d+w\.(webp|avif)$/.test(file) && !referenced.has(file),
+    );
+    expect(
+      orphans,
+      `orphaned variant files in public/images (delete them or rerun scripts/optimize-images.mjs): ${orphans.join(', ')}`,
+    ).toEqual([]);
   });
 });
