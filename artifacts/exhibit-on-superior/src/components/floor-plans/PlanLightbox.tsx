@@ -290,9 +290,19 @@ export function PlanLightbox({
       const scale = Math.min(4, Math.max(1, (g.startScale * touchDist(e)) / g.startDist));
       const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
       const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      // Keep the image point that was under the pinch midpoint anchored under
+      // the fingers. With transform-origin center, a screen point p maps to
+      // p = center + t + s * q (q = image-space offset from centre), so the
+      // translation that keeps q under the current midpoint is:
+      //   t = mid - center - (s / s0) * (startMid - center - t0)
+      const viewer = viewerRef.current;
+      const rect = viewer?.getBoundingClientRect();
+      const cx = rect ? rect.left + rect.width / 2 : 0;
+      const cy = rect ? rect.top + rect.height / 2 : 0;
+      const ratio = scale / g.startScale;
       const clamped = clampPan(
-        scale <= 1 ? 0 : g.startTx + (midX - g.startMidX),
-        scale <= 1 ? 0 : g.startTy + (midY - g.startMidY),
+        scale <= 1 ? 0 : midX - cx - ratio * (g.startMidX - cx - g.startTx),
+        scale <= 1 ? 0 : midY - cy - ratio * (g.startMidY - cy - g.startTy),
         scale,
         PAN_RUBBER_PX,
       );
