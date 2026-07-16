@@ -54,6 +54,75 @@ function collectReferencedPaths(): Map<string, Set<string>> {
   return refs;
 }
 
+/** Parse real pixel dimensions from a PNG/JPEG/WebP file header. */
+function readImageDimensions(file: string): { width: number; height: number } | null {
+  const buf = readFileSync(file);
+
+  // PNG: IHDR width/height at fixed offsets 16..24.
+  if (buf.length >= 24 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
+    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  }
+
+  // JPEG: walk markers until a SOFn frame header (contains height then width).
+  if (buf.length >= 4 && buf[0] === 0xff && buf[1] === 0xd8) {
+    let off = 2;
+    while (off + 9 < buf.length) {
+      if (buf[off] !== 0xff) return null; // corrupt marker stream
+      const marker = buf[off + 1];
+      if (marker === 0xff) {
+        off += 1; // fill byte
+        continue;
+      }
+      // Standalone markers without a length segment.
+      if (marker === 0xd8 || (marker >= 0xd0 && marker <= 0xd7) || marker === 0x01) {
+        off += 2;
+        continue;
+      }
+      const len = buf.readUInt16BE(off + 2);
+      const isSOF =
+        marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
+      if (isSOF) {
+        return { height: buf.readUInt16BE(off + 5), width: buf.readUInt16BE(off + 7) };
+      }
+      off += 2 + len;
+    }
+    return null;
+  }
+
+  // WebP: RIFF container with VP8 (lossy), VP8L (lossless), or VP8X (extended).
+  if (
+    buf.length >= 30 &&
+    buf.toString('ascii', 0, 4) === 'RIFF' &&
+    buf.toString('ascii', 8, 12) === 'WEBP'
+  ) {
+    const fourcc = buf.toString('ascii', 12, 16);
+    if (fourcc === 'VP8 ') {
+      // Lossy: frame tag at 20, sync code 9D 01 2A, then 14-bit width/height.
+      if (buf[23] === 0x9d && buf[24] === 0x01 && buf[25] === 0x2a) {
+        return {
+          width: buf.readUInt16LE(26) & 0x3fff,
+          height: buf.readUInt16LE(28) & 0x3fff,
+        };
+      }
+      return null;
+    }
+    if (fourcc === 'VP8L') {
+      if (buf[20] !== 0x2f) return null; // signature byte
+      const bits = buf.readUInt32LE(21);
+      return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+    }
+    if (fourcc === 'VP8X') {
+      // 24-bit little-endian canvas width/height minus one at offsets 24 and 27.
+      const width = 1 + (buf[24] | (buf[25] << 8) | (buf[26] << 16));
+      const height = 1 + (buf[27] | (buf[28] << 8) | (buf[29] << 16));
+      return { width, height };
+    }
+    return null;
+  }
+
+  return null;
+}
+
 const referenced = collectReferencedPaths();
 
 describe('site-wide static images', () => {
@@ -122,6 +191,43 @@ describe('site-wide static images', () => {
       }
     }
     expect(bad, `corrupted or empty images: ${bad.join(', ')}`).toEqual([]);
+  });
+
+  it('every IMAGE_MANIFEST entry matches the real pixel dimensions on disk', () => {
+    // Manifest dimensions reserve layout space; if a re-exported image drifts
+    // from the recorded size, pages jump or images render stretched.
+    const bad: string[] = [];
+
+    for (const [original, meta] of Object.entries(IMAGE_MANIFEST)) {
+      const dims = readImageDimensions(join(PUBLIC_DIR, original));
+      if (!dims) {
+        bad.push(`${original} (could not read dimensions)`);
+      } else if (dims.width !== meta.width || dims.height !== meta.height) {
+        bad.push(
+          `${original} (manifest says ${meta.width}x${meta.height}, file is ${dims.width}x${dims.height})`,
+        );
+      }
+
+      for (const v of meta.variants) {
+        const vDims = readImageDimensions(join(PUBLIC_DIR, v.src));
+        if (!vDims) {
+          bad.push(`${v.src} (could not read dimensions)`);
+          continue;
+        }
+        if (vDims.width !== v.w) {
+          bad.push(`${v.src} (manifest says width ${v.w}, file is ${vDims.width}x${vDims.height})`);
+        }
+        // Variants must preserve the original's aspect ratio (±1px rounding).
+        const expectedH = Math.round((v.w * meta.height) / meta.width);
+        if (Math.abs(vDims.height - expectedH) > 1) {
+          bad.push(
+            `${v.src} (expected height ~${expectedH} for width ${v.w} at ${meta.width}x${meta.height} aspect, file is ${vDims.width}x${vDims.height})`,
+          );
+        }
+      }
+    }
+
+    expect(bad, `manifest/file dimension mismatches:\n${bad.join('\n')}`).toEqual([]);
   });
 
   it('no orphan files sit in public/images that nothing references', () => {
