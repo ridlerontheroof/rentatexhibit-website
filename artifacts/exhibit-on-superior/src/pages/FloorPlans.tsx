@@ -1,14 +1,204 @@
+import { useEffect, useMemo, useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { Link } from 'wouter';
 import { Helmet } from 'react-helmet-async';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
+import { PlanCard } from '../components/floor-plans/PlanCard';
+import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFilters';
+import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
+import {
+  planGroups,
+  groupMatchesQuery,
+  SQFT_MIN,
+  SQFT_MAX,
+  type Category,
+  type PlanGroup,
+} from '../data/floorPlans';
+
+const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
+const CANONICAL = 'https://www.rentatexhibit.com/floor-plans';
+
+type SortKey = 'featured' | 'beds-asc' | 'beds-desc' | 'size-desc' | 'size-asc';
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: 'featured', label: 'Featured' },
+  { value: 'size-desc', label: 'Largest first' },
+  { value: 'size-asc', label: 'Smallest first' },
+  { value: 'beds-asc', label: 'Fewest bedrooms' },
+  { value: 'beds-desc', label: 'Most bedrooms' },
+];
+
+function readPlanFromUrl(): string | null {
+  if (typeof window === 'undefined') return null;
+  return new URLSearchParams(window.location.search).get('plan');
+}
+
+function writePlanToUrl(id: string | null) {
+  if (typeof window === 'undefined') return;
+  const params = new URLSearchParams(window.location.search);
+  if (id) params.set('plan', id);
+  else params.delete('plan');
+  const query = params.toString();
+  const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
+  window.history.replaceState(null, '', newUrl);
+}
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Floor Plans at Exhibit On Superior',
+  itemListElement: planGroups.map((g, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Accommodation',
+      name: `${g.typeLabel} \u2013 Residence ${g.unit}`,
+      numberOfBathroomsTotal: g.baths,
+      ...(g.beds > 0 ? { numberOfBedrooms: g.beds } : {}),
+      floorSize: {
+        '@type': 'QuantitativeValue',
+        minValue: g.sqftMin,
+        maxValue: g.sqftMax,
+        unitCode: 'FTK',
+      },
+      image: `https://www.rentatexhibit.com${g.images.detail}`,
+    },
+  })),
+};
 
 export function FloorPlans() {
+  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState<FilterState>({
+    categories: new Set<Category>(),
+    bands: new Set<string>(),
+    sqft: [SQFT_MIN, SQFT_MAX],
+  });
+  const [sort, setSort] = useState<SortKey>('featured');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [variantIndex, setVariantIndex] = useState(0);
+
+  const filtered = useMemo(() => {
+    const result = planGroups.filter((g) => {
+      if (!groupMatchesQuery(g, search)) return false;
+      if (filters.categories.size > 0 && !filters.categories.has(g.category)) return false;
+      if (filters.bands.size > 0 && !g.bands.some((b) => filters.bands.has(b.id))) return false;
+      if (g.sqftMax < filters.sqft[0] || g.sqftMin > filters.sqft[1]) return false;
+      return true;
+    });
+
+    const byCategory = (g: PlanGroup) =>
+      ['studio', 'convertible', '1br', '2br', '3br'].indexOf(g.category);
+
+    result.sort((a, b) => {
+      switch (sort) {
+        case 'size-desc':
+          return b.sqftMax - a.sqftMax;
+        case 'size-asc':
+          return a.sqftMin - b.sqftMin;
+        case 'beds-asc':
+          return a.beds - b.beds || a.sqftMin - b.sqftMin;
+        case 'beds-desc':
+          return b.beds - a.beds || b.sqftMax - a.sqftMax;
+        default:
+          return byCategory(a) - byCategory(b) || a.unit - b.unit;
+      }
+    });
+    return result;
+  }, [search, filters, sort]);
+
+  // Deep-link: open from URL on load.
+  useEffect(() => {
+    const id = readPlanFromUrl();
+    if (id && planGroups.some((g) => g.id === id)) {
+      setOpenId(id);
+      setVariantIndex(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const openGroup = openId ? planGroups.find((g) => g.id === openId) ?? null : null;
+  const openPosition = openGroup ? filtered.findIndex((g) => g.id === openGroup.id) : -1;
+
+  const handleOpen = (group: PlanGroup) => {
+    setOpenId(group.id);
+    setVariantIndex(0);
+    writePlanToUrl(group.id);
+  };
+
+  const handleClose = () => {
+    setOpenId(null);
+    writePlanToUrl(null);
+  };
+
+  const handleNavigate = (dir: -1 | 1) => {
+    if (openPosition < 0 || filtered.length === 0) return;
+    const next = (openPosition + dir + filtered.length) % filtered.length;
+    const nextGroup = filtered[next];
+    setOpenId(nextGroup.id);
+    setVariantIndex(0);
+    writePlanToUrl(nextGroup.id);
+  };
+
+  const toggleCategory = (c: Category) =>
+    setFilters((f) => {
+      const categories = new Set(f.categories);
+      categories.has(c) ? categories.delete(c) : categories.add(c);
+      return { ...f, categories };
+    });
+
+  const toggleBand = (id: string) =>
+    setFilters((f) => {
+      const bands = new Set(f.bands);
+      bands.has(id) ? bands.delete(id) : bands.add(id);
+      return { ...f, bands };
+    });
+
+  const setSqft = (range: [number, number]) => setFilters((f) => ({ ...f, sqft: range }));
+
+  const hasActiveFilters =
+    search.trim() !== '' ||
+    filters.categories.size > 0 ||
+    filters.bands.size > 0 ||
+    filters.sqft[0] !== SQFT_MIN ||
+    filters.sqft[1] !== SQFT_MAX;
+
+  const resetAll = () => {
+    setSearch('');
+    setFilters({ categories: new Set(), bands: new Set(), sqft: [SQFT_MIN, SQFT_MAX] });
+  };
+
+  const filterProps = {
+    state: filters,
+    sqftMin: SQFT_MIN,
+    sqftMax: SQFT_MAX,
+    onToggleCategory: toggleCategory,
+    onToggleBand: toggleBand,
+    onSqftChange: setSqft,
+  };
+
   return (
     <>
       <Helmet>
         <title>Studio, 1, 2 & 3 Bedroom Floor Plans | Exhibit On Superior</title>
-        <meta name="description" content="Review studio, one, two, and three-bedroom floor plan content for Exhibit On Superior in River North Chicago, then check current availability through Highland." />
+        <meta
+          name="description"
+          content="Search and explore studio, convertible, one, two, and three-bedroom floor plans at Exhibit On Superior in River North Chicago, then check current availability."
+        />
+        <link rel="canonical" href={CANONICAL} />
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
+
       <div>
         <PageHero
           image="/images/image-030-012417-5663-hxwee6.jpg"
@@ -17,54 +207,178 @@ export function FloorPlans() {
           subtitle="Floor Plans"
         />
 
-        <section className="py-16 px-4 bg-muted">
-          <div className="container mx-auto max-w-5xl">
-            <h2 className="text-center text-3xl uppercase tracking-wider mb-6">Live smart, Live Beautifully Studio, 1, 2 & 3 Bedroom Floor Plans</h2>
-            <p className="text-center text-lg leading-relaxed mb-12">
-              Choose your perfect floor plan and step up to a trend-forward home that provides the ultimate respite from the hustle and bustle of Chicago. Packed with stylish features and life-enhancing extras, the studio, one, two, and three bedroom apartments at Exhibit On Superior are designed for ultimate modern living. Enjoy a space that's uniquely yours, perfect for both relaxing and entertaining right here at Exhibit.
+        <section className="px-4 py-14">
+          <div className="container mx-auto max-w-3xl text-center">
+            <span className="eyebrow">Live Smart, Live Beautifully</span>
+            <h2 className="section-title mb-6">Find Your Floor Plan</h2>
+            <p className="text-lg leading-relaxed text-muted-foreground">
+              Explore every layout at Exhibit On Superior. Search by residence or floor, filter by
+              size and bedroom count, then open any plan for a closer look. When you're ready, check
+              live availability and pricing with our leasing team.
             </p>
-            <div className="text-center mb-12">
-              <a href="https://www.highlandptrs.com/chicago-availability?search=exhibit" target="_blank" rel="noopener noreferrer" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
-                Apply Now
-              </a>
-            </div>
+          </div>
+        </section>
 
-            <div className="aspect-video bg-white border border-border mb-16">
-              <iframe
-                src="https://sightmap.com/embed/r5v516ejwny"
-                className="w-full h-full"
-                allowFullScreen
-                title="Exhibit On Superior site map"
-              />
-            </div>
-            
-            <div className="text-center max-w-4xl mx-auto">
-              <h2 className="text-3xl uppercase tracking-wider mb-6">Your Space, Your Style Where creativity and city life collide</h2>
-              <p className="text-lg leading-relaxed mb-8">
-                Welcome home to your high-rise hideaway to a living space as vibrant as Chicago itself. Our apartments strike the perfect balance of style, comfort, and functionality in the heart of River North. Retreat to your personal sanctuary, where thoughtfully designed bedrooms feature floor-to-ceiling windows that frame stunning city views, ensuring that your private oasis is as beautiful as it is comfortable. Your dream home is just a move away!
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <Link href="/photo-gallery" className="btn-gold-outline inline-block">
-                  See More Photos
-                </Link>
-                <a href="https://www.highlandptrs.com/chicago-availability?search=exhibit" target="_blank" rel="noopener noreferrer" className="btn-gold-outline inline-block">
-                  View Available Units
-                </a>
-              </div>
+        <section className="px-4 pb-20">
+          <div className="container mx-auto">
+            <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-10">
+              {/* Sidebar filters (desktop) */}
+              <aside className="hidden lg:block">
+                <div className="sticky top-24 space-y-6">
+                  <label className="relative block">
+                    <span className="sr-only">Search by residence or floor</span>
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search unit or floor…"
+                      className="pl-9"
+                    />
+                  </label>
+                  <PlanFilters {...filterProps} />
+                  {hasActiveFilters && (
+                    <button
+                      type="button"
+                      onClick={resetAll}
+                      className="flex items-center gap-1.5 text-sm uppercase tracking-wide text-primary hover:underline"
+                    >
+                      <X className="h-4 w-4" /> Clear all filters
+                    </button>
+                  )}
+                </div>
+              </aside>
 
-              <h2 className="section-title mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/contact-us" className="btn-gold-outline inline-block">
-                  Contact Us
-                </Link>
-                <a href="https://www.highlandptrs.com/chicago-availability?search=exhibit" target="_blank" rel="noopener noreferrer" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
-                  Apply Now
-                </a>
+              {/* Results column */}
+              <div>
+                {/* Top bar: mobile search + count + sort */}
+                <div className="mb-6 space-y-4">
+                  <label className="relative block lg:hidden">
+                    <span className="sr-only">Search by residence or floor</span>
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search unit or floor…"
+                      className="pl-9"
+                    />
+                  </label>
+
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="text-sm uppercase tracking-wide text-muted-foreground" aria-live="polite">
+                      {filtered.length} {filtered.length === 1 ? 'plan' : 'plans'}
+                    </p>
+
+                    <div className="flex items-center gap-3">
+                      {/* Mobile filter trigger */}
+                      <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+                        <SheetTrigger asChild>
+                          <button
+                            type="button"
+                            className="flex items-center gap-2 border border-border px-3 py-2 text-xs uppercase tracking-wide hover:border-primary lg:hidden"
+                          >
+                            <SlidersHorizontal className="h-4 w-4" />
+                            Filters
+                            {hasActiveFilters && (
+                              <span className="ml-1 flex h-2 w-2 rounded-full bg-primary" aria-hidden />
+                            )}
+                          </button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-[85vw] max-w-sm overflow-y-auto">
+                          <SheetHeader>
+                            <SheetTitle className="uppercase tracking-wider">Filter Plans</SheetTitle>
+                          </SheetHeader>
+                          <div className="mt-6">
+                            <PlanFilters {...filterProps} />
+                            {hasActiveFilters && (
+                              <button
+                                type="button"
+                                onClick={resetAll}
+                                className="mt-6 flex items-center gap-1.5 text-sm uppercase tracking-wide text-primary hover:underline"
+                              >
+                                <X className="h-4 w-4" /> Clear all filters
+                              </button>
+                            )}
+                          </div>
+                        </SheetContent>
+                      </Sheet>
+
+                      <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+                        <SelectTrigger className="w-[170px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SORT_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Grid or empty state */}
+                {filtered.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                    {filtered.map((group) => (
+                      <PlanCard key={group.id} group={group} onOpen={handleOpen} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center border border-dashed border-border py-20 text-center">
+                    <p className="mb-2 text-lg uppercase tracking-wider">No plans match your search</p>
+                    <p className="mb-6 max-w-md text-muted-foreground">
+                      Try widening your filters or clearing your search to see every available layout.
+                    </p>
+                    <button type="button" onClick={resetAll} className="btn-gold-outline">
+                      Reset filters
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </section>
+
+        {/* Closing CTA */}
+        <section className="bg-dark-section px-4 py-16">
+          <div className="container mx-auto max-w-3xl text-center">
+            <h2 className="section-title mb-6 text-white">Embrace Unbounded City Living</h2>
+            <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-white/80">
+              Found a layout you love? Check real-time availability and pricing, or connect with our
+              leasing team to schedule a personal tour.
+            </p>
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
+              <a
+                href={AVAILABILITY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold-outline border-white bg-primary text-white hover:bg-primary/90"
+              >
+                Check Availability
+              </a>
+              <Link href="/schedule-a-tour" className="btn-gold-outline border-white text-white hover:bg-white hover:text-foreground">
+                Schedule a Tour
+              </Link>
+              <Link href="/photo-gallery" className="btn-gold-outline border-white text-white hover:bg-white hover:text-foreground">
+                See More Photos
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
+
+      <PlanLightbox
+        group={openGroup}
+        variantIndex={variantIndex}
+        position={{ index: openPosition, total: filtered.length }}
+        onClose={handleClose}
+        onNavigate={handleNavigate}
+        onVariantChange={setVariantIndex}
+      />
     </>
   );
 }
