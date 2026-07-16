@@ -418,3 +418,95 @@ export function buildJsonLd(path: string): Record<string, unknown> {
 }
 
 export { canonicalFor };
+
+// ---------------------------------------------------------------------------
+// Shared SEO tag model
+//
+// One model feeds BOTH the client <Seo> component (react-helmet-async) and the
+// build-time prerenderer (renderHeadTags below), so title/description/canonical/
+// OG/Twitter/JSON-LD can never drift between the two.
+// ---------------------------------------------------------------------------
+
+export interface SeoMeta {
+  name?: string;
+  property?: string;
+  content: string;
+}
+
+export interface SeoModel {
+  title: string;
+  canonical?: string;
+  metas: SeoMeta[];
+  jsonLd: Record<string, unknown>[];
+}
+
+export interface SeoOptions {
+  /** Override title (routes without a PAGE_SEO entry, e.g. 404). */
+  title?: string;
+  description?: string;
+  /** Serve robots noindex and omit canonical/JSON-LD for unknown routes. */
+  noindex?: boolean;
+  /** Extra JSON-LD objects appended after the base @graph (e.g. floor-plan ItemList). */
+  extraJsonLd?: Record<string, unknown>[];
+}
+
+export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | null {
+  const page = PAGE_SEO[path];
+  const title = opts.title ?? page?.title;
+  if (!title) return null;
+
+  const description = opts.description ?? page?.description ?? '';
+  const isNoindex = opts.noindex ?? page?.noindex ?? false;
+  // Only known routes self-canonicalize; a 404 must not canonicalize a bad URL.
+  const canonical = page ? canonicalFor(path) : undefined;
+  const baseJsonLd = page && !isNoindex ? buildJsonLd(path) : null;
+  const jsonLd = [...(baseJsonLd ? [baseJsonLd] : []), ...(opts.extraJsonLd ?? [])];
+
+  const metas: SeoMeta[] = [
+    { name: 'description', content: description },
+    { name: 'robots', content: isNoindex ? 'noindex, follow' : 'index, follow' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:site_name', content: 'Exhibit On Superior' },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
+    ...(canonical ? [{ property: 'og:url', content: canonical }] : []),
+    { property: 'og:image', content: DEFAULT_OG_IMAGE },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:description', content: description },
+    { name: 'twitter:image', content: DEFAULT_OG_IMAGE },
+  ];
+
+  return { title, canonical, metas, jsonLd };
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Render an SeoModel to a `<head>`-ready HTML string, used by the prerenderer.
+ * (react-helmet-async does not populate the SSR context under React 19, so head
+ * tags are emitted deterministically here rather than via renderToString.)
+ */
+export function renderHeadTags(model: SeoModel): string {
+  const parts: string[] = [`<title>${escapeHtml(model.title)}</title>`];
+  if (model.canonical) {
+    parts.push(`<link rel="canonical" href="${escapeHtml(model.canonical)}" />`);
+  }
+  for (const m of model.metas) {
+    const attr = m.name ? `name="${m.name}"` : `property="${m.property}"`;
+    parts.push(`<meta ${attr} content="${escapeHtml(m.content)}" />`);
+  }
+  for (const obj of model.jsonLd) {
+    // Escape "<" so the JSON can never break out of the <script> element.
+    const json = JSON.stringify(obj).replace(/</g, '\\u003c');
+    parts.push(`<script type="application/ld+json">${json}</script>`);
+  }
+  return parts.join('\n    ');
+}

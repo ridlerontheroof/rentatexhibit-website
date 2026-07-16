@@ -1,26 +1,17 @@
 import { Route, Switch, useLocation } from 'wouter';
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, type ComponentType } from 'react';
 import { Layout } from './components/Layout';
 import { APPLY_URL, AVAILABILITY_URL } from './data/seo';
+import { routes } from './routes';
 
-// Route-based code splitting: each page ships in its own chunk.
-const Home = lazy(() => import('./pages/Home').then((m) => ({ default: m.Home })));
-const FloorPlans = lazy(() => import('./pages/FloorPlans').then((m) => ({ default: m.FloorPlans })));
-const PhotoGallery = lazy(() => import('./pages/PhotoGallery').then((m) => ({ default: m.PhotoGallery })));
-const VirtualTour = lazy(() => import('./pages/VirtualTour').then((m) => ({ default: m.VirtualTour })));
-const Amenities = lazy(() => import('./pages/Amenities').then((m) => ({ default: m.Amenities })));
-const PetFriendly = lazy(() => import('./pages/PetFriendly').then((m) => ({ default: m.PetFriendly })));
-const Neighborhood = lazy(() => import('./pages/Neighborhood').then((m) => ({ default: m.Neighborhood })));
-const ArtistInResidence = lazy(() => import('./pages/ArtistInResidence').then((m) => ({ default: m.ArtistInResidence })));
-const ContactUs = lazy(() => import('./pages/ContactUs').then((m) => ({ default: m.ContactUs })));
-const MapDirections = lazy(() => import('./pages/MapDirections').then((m) => ({ default: m.MapDirections })));
-const Residents = lazy(() => import('./pages/Residents').then((m) => ({ default: m.Residents })));
-const ScheduleTour = lazy(() => import('./pages/ScheduleTour').then((m) => ({ default: m.ScheduleTour })));
-const Reviews = lazy(() => import('./pages/Reviews').then((m) => ({ default: m.Reviews })));
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy').then((m) => ({ default: m.PrivacyPolicy })));
-const AccessibilityStatement = lazy(() =>
-  import('./pages/AccessibilityStatement').then((m) => ({ default: m.AccessibilityStatement }))
-);
+// Route-based code splitting: each page ships in its own chunk. The page list is
+// shared with the build-time prerenderer via `routes.tsx`; here each loader is
+// wrapped in `React.lazy` (created once at module scope, stable across renders).
+const lazyRoutes = routes.map((r) => ({
+  path: r.path,
+  Component: lazy(() => r.load().then((C: ComponentType) => ({ default: C }))),
+}));
+
 const NotFound = lazy(() => import('./pages/not-found').then((m) => ({ default: m.NotFound })));
 
 /**
@@ -64,21 +55,9 @@ function App() {
     <Layout>
       <Suspense fallback={<div className="min-h-[60vh]" aria-hidden="true" />}>
         <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/floor-plans" component={FloorPlans} />
-          <Route path="/photo-gallery" component={PhotoGallery} />
-          <Route path="/virtual-tour" component={VirtualTour} />
-          <Route path="/amenities" component={Amenities} />
-          <Route path="/pet-friendly" component={PetFriendly} />
-          <Route path="/neighborhood" component={Neighborhood} />
-          <Route path="/artist-in-residence" component={ArtistInResidence} />
-          <Route path="/contact-us" component={ContactUs} />
-          <Route path="/map-directions" component={MapDirections} />
-          <Route path="/residents" component={Residents} />
-          <Route path="/schedule-a-tour" component={ScheduleTour} />
-          <Route path="/reviews" component={Reviews} />
-          <Route path="/privacy-policy" component={PrivacyPolicy} />
-          <Route path="/accessibility-statement" component={AccessibilityStatement} />
+          {lazyRoutes.map(({ path, Component }) => (
+            <Route key={path} path={path} component={Component} />
+          ))}
 
           {/* Clean external CTA URLs preserved from the migration information architecture */}
           <Route path="/available-units">{() => <Redirect to={AVAILABILITY_URL} />}</Route>

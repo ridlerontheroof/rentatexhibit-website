@@ -18,6 +18,124 @@ build = [ "pnpm", "--filter", "@workspace/exhibit-on-superior", "run", "build" ]
 serve = "static"
 publicDir = "artifacts/exhibit-on-superior/dist/public"
 
+# Per-page prerendered HTML. Each indexable route (and its trailing-slash form)
+# is served from its own static index.html so crawlers and link-preview bots
+# (which do not run JS) receive the correct per-page title/description/canonical/
+# OG + JSON-LD. Per the static-serve rules a rewrite is ignored when the path
+# matches a real asset, so hashed js/css/images are unaffected. The catch-all
+# SPA fallback MUST stay last so client-only paths and unknown URLs still boot.
+[[services.production.rewrites]]
+from = "/floor-plans"
+to = "/floor-plans/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/"
+to = "/floor-plans/index.html"
+
+[[services.production.rewrites]]
+from = "/photo-gallery"
+to = "/photo-gallery/index.html"
+
+[[services.production.rewrites]]
+from = "/photo-gallery/"
+to = "/photo-gallery/index.html"
+
+[[services.production.rewrites]]
+from = "/virtual-tour"
+to = "/virtual-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/virtual-tour/"
+to = "/virtual-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/amenities"
+to = "/amenities/index.html"
+
+[[services.production.rewrites]]
+from = "/amenities/"
+to = "/amenities/index.html"
+
+[[services.production.rewrites]]
+from = "/pet-friendly"
+to = "/pet-friendly/index.html"
+
+[[services.production.rewrites]]
+from = "/pet-friendly/"
+to = "/pet-friendly/index.html"
+
+[[services.production.rewrites]]
+from = "/neighborhood"
+to = "/neighborhood/index.html"
+
+[[services.production.rewrites]]
+from = "/neighborhood/"
+to = "/neighborhood/index.html"
+
+[[services.production.rewrites]]
+from = "/artist-in-residence"
+to = "/artist-in-residence/index.html"
+
+[[services.production.rewrites]]
+from = "/artist-in-residence/"
+to = "/artist-in-residence/index.html"
+
+[[services.production.rewrites]]
+from = "/contact-us"
+to = "/contact-us/index.html"
+
+[[services.production.rewrites]]
+from = "/contact-us/"
+to = "/contact-us/index.html"
+
+[[services.production.rewrites]]
+from = "/map-directions"
+to = "/map-directions/index.html"
+
+[[services.production.rewrites]]
+from = "/map-directions/"
+to = "/map-directions/index.html"
+
+[[services.production.rewrites]]
+from = "/residents"
+to = "/residents/index.html"
+
+[[services.production.rewrites]]
+from = "/residents/"
+to = "/residents/index.html"
+
+[[services.production.rewrites]]
+from = "/schedule-a-tour"
+to = "/schedule-a-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/schedule-a-tour/"
+to = "/schedule-a-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/reviews"
+to = "/reviews/index.html"
+
+[[services.production.rewrites]]
+from = "/reviews/"
+to = "/reviews/index.html"
+
+[[services.production.rewrites]]
+from = "/privacy-policy"
+to = "/privacy-policy/index.html"
+
+[[services.production.rewrites]]
+from = "/privacy-policy/"
+to = "/privacy-policy/index.html"
+
+[[services.production.rewrites]]
+from = "/accessibility-statement"
+to = "/accessibility-statement/index.html"
+
+[[services.production.rewrites]]
+from = "/accessibility-statement/"
+to = "/accessibility-statement/index.html"
+
 [[services.production.rewrites]]
 from = "/*"
 to = "/index.html"

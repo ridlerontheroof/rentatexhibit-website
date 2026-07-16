@@ -23,6 +23,7 @@ import {
   sortGroups,
   nextPosition,
   resolveDeepLink,
+  floorPlansItemListJsonLd,
   SQFT_MIN,
   SQFT_MAX,
   type Category,
@@ -55,28 +56,9 @@ function writePlanToUrl(id: string | null) {
   window.history.replaceState(null, '', newUrl);
 }
 
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  name: 'Floor Plans at Exhibit On Superior',
-  itemListElement: planGroups.map((g, i) => ({
-    '@type': 'ListItem',
-    position: i + 1,
-    item: {
-      '@type': 'Accommodation',
-      name: `${g.typeLabel} \u2013 Unit ${g.unit}`,
-      numberOfBathroomsTotal: g.baths,
-      ...(g.beds > 0 ? { numberOfBedrooms: g.beds } : {}),
-      floorSize: {
-        '@type': 'QuantitativeValue',
-        minValue: g.sqftMin,
-        maxValue: g.sqftMax,
-        unitCode: 'FTK',
-      },
-      image: `https://www.rentatexhibit.com${g.images.detail}`,
-    },
-  })),
-};
+// Shared with the build-time prerenderer (see entry-server.tsx) so the static
+// HTML and the client emit identical floor-plan structured data.
+const structuredData = floorPlansItemListJsonLd();
 
 export function FloorPlans() {
   const [search, setSearch] = useState('');

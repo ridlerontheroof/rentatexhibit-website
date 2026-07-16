@@ -239,7 +239,7 @@ export function groupMatchesQuery(g: PlanGroup, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
   // Any standalone numbers in the query
-  const tokens = q.match(/\d+/g) || [];
+  const tokens: string[] = q.match(/\d+/g) || [];
   if (tokens.length) {
     const unitNumbers = new Set(unitNumbersForGroup(g));
     return tokens.every((tok) => {
@@ -347,4 +347,34 @@ export function nextPosition(current: number, dir: -1 | 1, total: number): numbe
  */
 export function resolveDeepLink(groups: PlanGroup[], id: string | null): string | null {
   return id && groups.some((g) => g.id === id) ? id : null;
+}
+
+/**
+ * JSON-LD ItemList of every floor-plan group, surfaced on /floor-plans via
+ * <Seo extraJsonLd>. Shared with the prerenderer (entry-server.tsx) so the
+ * static HTML and the client emit identical structured data.
+ */
+export function floorPlansItemListJsonLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Floor Plans at Exhibit On Superior',
+    itemListElement: planGroups.map((g, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Accommodation',
+        name: `${g.typeLabel} \u2013 Unit ${g.unit}`,
+        numberOfBathroomsTotal: g.baths,
+        ...(g.beds > 0 ? { numberOfBedrooms: g.beds } : {}),
+        floorSize: {
+          '@type': 'QuantitativeValue',
+          minValue: g.sqftMin,
+          maxValue: g.sqftMax,
+          unitCode: 'FTK',
+        },
+        image: `https://www.rentatexhibit.com${g.images.detail}`,
+      },
+    })),
+  };
 }
