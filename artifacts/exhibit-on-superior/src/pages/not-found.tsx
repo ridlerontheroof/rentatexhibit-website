@@ -1,23 +1,36 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
+import { Link, useLocation } from 'wouter';
+import { Seo } from '@/components/Seo';
 
-export default function NotFound() {
+export function NotFound() {
+  const [location] = useLocation();
+
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md mx-4">
-        <CardContent className="pt-6">
-          <div className="flex mb-4 gap-2">
-            <AlertCircle className="h-8 w-8 text-red-500" />
-            <h1 className="text-2xl font-bold text-gray-900">
-              404 Page Not Found
-            </h1>
-          </div>
-
-          <p className="mt-4 text-sm text-gray-600">
-            Did you forget to add the page to the router?
+    <>
+      <Seo
+        path={location}
+        noindex
+        title="Page Not Found | Exhibit On Superior"
+        description="The page you're looking for doesn't exist. Explore floor plans, amenities, and more at Exhibit On Superior in River North Chicago."
+      />
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center max-w-lg">
+          <p className="text-primary uppercase tracking-[0.3em] text-sm mb-4">Error 404</p>
+          <h1 className="text-4xl md:text-5xl uppercase tracking-wider mb-4">Page Not Found</h1>
+          <p className="text-lg text-muted-foreground mb-8">
+            The page you're looking for doesn't exist or may have moved.
           </p>
-        </CardContent>
-      </Card>
-    </div>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link href="/" className="btn-gold-outline inline-block">
+              Return Home
+            </Link>
+            <Link href="/floor-plans" className="btn-gold-outline inline-block">
+              View Floor Plans
+            </Link>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
+
+export default NotFound;

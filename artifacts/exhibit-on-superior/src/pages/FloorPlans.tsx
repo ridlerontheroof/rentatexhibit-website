@@ -64,7 +64,7 @@ const structuredData = {
     position: i + 1,
     item: {
       '@type': 'Accommodation',
-      name: `${g.typeLabel} \u2013 Residence ${g.unit}`,
+      name: `${g.typeLabel} \u2013 Unit ${g.unit}`,
       numberOfBathroomsTotal: g.baths,
       ...(g.beds > 0 ? { numberOfBedrooms: g.beds } : {}),
       floorSize: {
@@ -185,7 +185,7 @@ export function FloorPlans() {
             <span className="eyebrow">Live Smart, Live Beautifully</span>
             <h2 className="section-title mb-6">Find Your Floor Plan</h2>
             <p className="text-lg leading-relaxed text-muted-foreground">
-              Explore every layout at Exhibit On Superior. Search by residence or floor, filter by
+              Explore every layout at Exhibit On Superior. Search by unit or floor, filter by
               size and bedroom count, then open any plan for a closer look. When you're ready, check
               live availability and pricing with our leasing team.
             </p>
@@ -199,7 +199,7 @@ export function FloorPlans() {
               <aside className="hidden lg:block">
                 <div className="sticky top-24 space-y-6">
                   <label className="relative block">
-                    <span className="sr-only">Search by residence or floor</span>
+                    <span className="sr-only">Search by unit or floor</span>
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       type="search"
@@ -227,7 +227,7 @@ export function FloorPlans() {
                 {/* Top bar: mobile search + count + sort */}
                 <div className="mb-6 space-y-4">
                   <label className="relative block lg:hidden">
-                    <span className="sr-only">Search by residence or floor</span>
+                    <span className="sr-only">Search by unit or floor</span>
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       type="search"

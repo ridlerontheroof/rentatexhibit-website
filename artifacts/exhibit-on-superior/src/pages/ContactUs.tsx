@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { useCreateLead } from '../hooks/use-create-lead';
+import { useUnsavedChangesWarning } from '../hooks/use-unsaved-changes';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +14,13 @@ const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Valid email is required'),
-  phone: z.string().min(10, 'Valid phone number is required'),
+  phone: z
+    .string()
+    .min(1, 'Phone number is required')
+    .refine((v) => {
+      const digits = v.replace(/\D/g, '');
+      return digits.length >= 10 && digits.length <= 15;
+    }, 'Enter a valid phone number'),
   message: z.string().min(10, 'Please provide a message'),
 });
 
@@ -26,11 +33,13 @@ export function ContactUs() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
   });
+
+  useUnsavedChangesWarning(isDirty && !submitted && !createLead.isPending);
 
   const onSubmit = (data: ContactFormData) => {
     createLead.mutate(
@@ -125,7 +134,11 @@ export function ContactUs() {
                 <h2 className="text-3xl uppercase tracking-wider mb-6">Send a Message</h2>
 
                 {submitted && (
-                  <div className="bg-primary/10 text-primary p-4 mb-6 border border-primary">
+                  <div
+                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary"
+                    role="status"
+                    aria-live="polite"
+                  >
                     Thank you! We've received your message and will respond shortly.
                   </div>
                 )}
@@ -136,7 +149,7 @@ export function ContactUs() {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">
@@ -146,10 +159,14 @@ export function ContactUs() {
                         type="text"
                         id="firstName"
                         {...register('firstName')}
+                        aria-invalid={errors.firstName ? true : undefined}
+                        aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                       />
                       {errors.firstName && (
-                        <p className="text-destructive text-xs mt-1">{errors.firstName.message}</p>
+                        <p id="firstName-error" role="alert" className="text-destructive text-xs mt-1">
+                          {errors.firstName.message}
+                        </p>
                       )}
                     </div>
                     <div>
@@ -160,10 +177,14 @@ export function ContactUs() {
                         type="text"
                         id="lastName"
                         {...register('lastName')}
+                        aria-invalid={errors.lastName ? true : undefined}
+                        aria-describedby={errors.lastName ? 'lastName-error' : undefined}
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                       />
                       {errors.lastName && (
-                        <p className="text-destructive text-xs mt-1">{errors.lastName.message}</p>
+                        <p id="lastName-error" role="alert" className="text-destructive text-xs mt-1">
+                          {errors.lastName.message}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -176,10 +197,14 @@ export function ContactUs() {
                       type="email"
                       id="email"
                       {...register('email')}
+                      aria-invalid={errors.email ? true : undefined}
+                      aria-describedby={errors.email ? 'email-error' : undefined}
                       className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                     />
                     {errors.email && (
-                      <p className="text-destructive text-xs mt-1">{errors.email.message}</p>
+                      <p id="email-error" role="alert" className="text-destructive text-xs mt-1">
+                        {errors.email.message}
+                      </p>
                     )}
                   </div>
 
@@ -191,10 +216,14 @@ export function ContactUs() {
                       type="tel"
                       id="phone"
                       {...register('phone')}
+                      aria-invalid={errors.phone ? true : undefined}
+                      aria-describedby={errors.phone ? 'phone-error' : undefined}
                       className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                     />
                     {errors.phone && (
-                      <p className="text-destructive text-xs mt-1">{errors.phone.message}</p>
+                      <p id="phone-error" role="alert" className="text-destructive text-xs mt-1">
+                        {errors.phone.message}
+                      </p>
                     )}
                   </div>
 
@@ -206,10 +235,14 @@ export function ContactUs() {
                       id="message"
                       {...register('message')}
                       rows={5}
+                      aria-invalid={errors.message ? true : undefined}
+                      aria-describedby={errors.message ? 'message-error' : undefined}
                       className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary resize-none"
                     />
                     {errors.message && (
-                      <p className="text-destructive text-xs mt-1">{errors.message.message}</p>
+                      <p id="message-error" role="alert" className="text-destructive text-xs mt-1">
+                        {errors.message.message}
+                      </p>
                     )}
                   </div>
 

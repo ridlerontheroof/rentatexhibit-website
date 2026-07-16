@@ -23,6 +23,8 @@ export interface PageSeo {
   /** AEO "Quick Answer" summary shown visibly near the top of the page */
   quickAnswer: string;
   faqs: Faq[];
+  /** When true, the page is served with robots noindex and excluded from the sitemap. */
+  noindex?: boolean;
 }
 
 export const PAGE_SEO: Record<string, PageSeo> = {
@@ -267,6 +269,28 @@ export const PAGE_SEO: Record<string, PageSeo> = {
         a: 'Reviews come from current, verifiable sources such as the Google Business Profile.',
       },
     ],
+  },
+  '/privacy-policy': {
+    path: '/privacy-policy',
+    label: 'Privacy Policy',
+    title: 'Privacy Policy | Exhibit On Superior',
+    description:
+      'Read the privacy policy for Exhibit On Superior, managed by Highland Management LLC, covering how we collect, use, and protect your information.',
+    quickAnswer:
+      'This page explains how Exhibit On Superior and Highland Management LLC collect, use, and protect the information you share through the website.',
+    faqs: [],
+    noindex: true,
+  },
+  '/accessibility-statement': {
+    path: '/accessibility-statement',
+    label: 'Accessibility Statement',
+    title: 'Accessibility Statement | Exhibit On Superior',
+    description:
+      'Exhibit On Superior is committed to digital accessibility and conforming to WCAG 2.1 AA. Learn about our measures and how to share feedback.',
+    quickAnswer:
+      'Exhibit On Superior is committed to WCAG 2.1 AA digital accessibility. Contact us if you encounter any barrier using the site.',
+    faqs: [],
+    noindex: true,
   },
 };
 

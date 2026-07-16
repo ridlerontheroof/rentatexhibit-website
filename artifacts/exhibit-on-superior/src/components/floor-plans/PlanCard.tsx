@@ -17,12 +17,12 @@ export function PlanCard({ group, onOpen }: PlanCardProps) {
       type="button"
       onClick={() => onOpen(group)}
       className="group flex flex-col text-left border border-border bg-white transition-colors hover:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      aria-label={`View ${group.typeLabel}, Residence ${String(group.unit).padStart(2, '0')}, ${sqftLabel}`}
+      aria-label={`View ${group.typeLabel}, Unit ${String(group.unit).padStart(2, '0')}, ${sqftLabel}`}
     >
       <div className="relative aspect-4/3 overflow-hidden bg-muted">
         <img
           src={group.images.thumb}
-          alt={`${group.typeLabel} floor plan, Residence ${group.unit}`}
+          alt={`${group.typeLabel} floor plan, Unit ${group.unit}`}
           loading="lazy"
           width={600}
           height={450}
@@ -32,7 +32,7 @@ export function PlanCard({ group, onOpen }: PlanCardProps) {
           <Maximize2 className="h-4 w-4" />
         </span>
         <span className="absolute left-0 top-3 bg-primary px-3 py-1 text-xs uppercase tracking-wider text-white">
-          Residence {String(group.unit).padStart(2, '0')}
+          Unit {String(group.unit).padStart(2, '0')}
         </span>
       </div>
 

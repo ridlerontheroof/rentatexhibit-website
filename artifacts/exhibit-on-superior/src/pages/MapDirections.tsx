@@ -1,5 +1,5 @@
 import { PageHero } from '../components/PageHero';
-import { MapPin, Navigation, Car, Train, Plane } from 'lucide-react';
+import { MapPin, Navigation } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';

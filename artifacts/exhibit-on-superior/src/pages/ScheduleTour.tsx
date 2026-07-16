@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { useCreateLead } from '../hooks/use-create-lead';
-import { Calendar, Clock, User } from 'lucide-react';
+import { useUnsavedChangesWarning } from '../hooks/use-unsaved-changes';
+import { Calendar } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,7 +14,13 @@ const tourSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Valid email is required'),
-  phone: z.string().min(10, 'Valid phone number is required'),
+  phone: z
+    .string()
+    .min(1, 'Phone number is required')
+    .refine((v) => {
+      const digits = v.replace(/\D/g, '');
+      return digits.length >= 10 && digits.length <= 15;
+    }, 'Enter a valid phone number'),
   moveInDate: z.string().min(1, 'Move-in date is required'),
   bedrooms: z.string().min(1, 'Please select floor plan preference'),
   message: z.string().optional(),
@@ -28,11 +35,13 @@ export function ScheduleTour() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
   } = useForm<TourFormData>({
     resolver: zodResolver(tourSchema),
   });
+
+  useUnsavedChangesWarning(isDirty && !submitted && !createLead.isPending);
 
   const onSubmit = (data: TourFormData) => {
     const details = [
@@ -76,7 +85,11 @@ export function ScheduleTour() {
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-5xl">
             {submitted ? (
-              <div className="max-w-2xl mx-auto text-center bg-muted p-12 border border-border">
+              <div
+                className="max-w-2xl mx-auto text-center bg-muted p-12 border border-border"
+                role="status"
+                aria-live="polite"
+              >
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 text-primary mb-6">
                   <Calendar className="w-10 h-10" />
                 </div>
@@ -126,7 +139,7 @@ export function ScheduleTour() {
                     </div>
                   )}
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">
@@ -136,10 +149,14 @@ export function ScheduleTour() {
                           type="text"
                           id="firstName"
                           {...register('firstName')}
+                          aria-invalid={errors.firstName ? true : undefined}
+                          aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                           className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                         />
                         {errors.firstName && (
-                          <p className="text-destructive text-xs mt-1">{errors.firstName.message}</p>
+                          <p id="firstName-error" role="alert" className="text-destructive text-xs mt-1">
+                            {errors.firstName.message}
+                          </p>
                         )}
                       </div>
                       <div>
@@ -150,10 +167,14 @@ export function ScheduleTour() {
                           type="text"
                           id="lastName"
                           {...register('lastName')}
+                          aria-invalid={errors.lastName ? true : undefined}
+                          aria-describedby={errors.lastName ? 'lastName-error' : undefined}
                           className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                         />
                         {errors.lastName && (
-                          <p className="text-destructive text-xs mt-1">{errors.lastName.message}</p>
+                          <p id="lastName-error" role="alert" className="text-destructive text-xs mt-1">
+                            {errors.lastName.message}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -166,10 +187,14 @@ export function ScheduleTour() {
                         type="email"
                         id="email"
                         {...register('email')}
+                        aria-invalid={errors.email ? true : undefined}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                       />
                       {errors.email && (
-                        <p className="text-destructive text-xs mt-1">{errors.email.message}</p>
+                        <p id="email-error" role="alert" className="text-destructive text-xs mt-1">
+                          {errors.email.message}
+                        </p>
                       )}
                     </div>
 
@@ -181,10 +206,14 @@ export function ScheduleTour() {
                         type="tel"
                         id="phone"
                         {...register('phone')}
+                        aria-invalid={errors.phone ? true : undefined}
+                        aria-describedby={errors.phone ? 'phone-error' : undefined}
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                       />
                       {errors.phone && (
-                        <p className="text-destructive text-xs mt-1">{errors.phone.message}</p>
+                        <p id="phone-error" role="alert" className="text-destructive text-xs mt-1">
+                          {errors.phone.message}
+                        </p>
                       )}
                     </div>
 
@@ -196,10 +225,14 @@ export function ScheduleTour() {
                         type="date"
                         id="moveInDate"
                         {...register('moveInDate')}
+                        aria-invalid={errors.moveInDate ? true : undefined}
+                        aria-describedby={errors.moveInDate ? 'moveInDate-error' : undefined}
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                       />
                       {errors.moveInDate && (
-                        <p className="text-destructive text-xs mt-1">{errors.moveInDate.message}</p>
+                        <p id="moveInDate-error" role="alert" className="text-destructive text-xs mt-1">
+                          {errors.moveInDate.message}
+                        </p>
                       )}
                     </div>
 
@@ -210,16 +243,21 @@ export function ScheduleTour() {
                       <select
                         id="bedrooms"
                         {...register('bedrooms')}
+                        aria-invalid={errors.bedrooms ? true : undefined}
+                        aria-describedby={errors.bedrooms ? 'bedrooms-error' : undefined}
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
                       >
                         <option value="">Select...</option>
                         <option value="Studio">Studio</option>
                         <option value="1 Bedroom">1 Bedroom</option>
                         <option value="2 Bedrooms">2 Bedrooms</option>
+                        <option value="3 Bedrooms">3 Bedrooms</option>
                         <option value="Any">Any / Not Sure</option>
                       </select>
                       {errors.bedrooms && (
-                        <p className="text-destructive text-xs mt-1">{errors.bedrooms.message}</p>
+                        <p id="bedrooms-error" role="alert" className="text-destructive text-xs mt-1">
+                          {errors.bedrooms.message}
+                        </p>
                       )}
                     </div>
 

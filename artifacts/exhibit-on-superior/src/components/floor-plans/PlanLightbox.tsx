@@ -67,7 +67,7 @@ export function PlanLightbox({
         className="max-w-none w-screen h-screen max-h-screen translate-x-[-50%] translate-y-[-50%] gap-0 border-0 bg-[#111] p-0 sm:rounded-none"
       >
         <DialogTitle className="sr-only">
-          {variant.typeLabel}, Residence {variant.unit}, floors {variant.floorLabel}
+          {variant.typeLabel}, Unit {variant.unit}, floors {variant.floorLabel}
         </DialogTitle>
         <DialogDescription className="sr-only">
           {sqftLabel}. Use the left and right arrow keys or swipe to move between floor plans. Press
@@ -85,7 +85,7 @@ export function PlanLightbox({
               <img
                 key={variant.id}
                 src={zoomed ? variant.images.zoom : variant.images.detail}
-                alt={`${variant.typeLabel} floor plan, Residence ${variant.unit}, floors ${variant.floorLabel}, ${sqftLabel}`}
+                alt={`${variant.typeLabel} floor plan, Unit ${variant.unit}, floors ${variant.floorLabel}, ${sqftLabel}`}
                 onClick={() => setZoomed((z) => !z)}
                 className={
                   zoomed
@@ -137,7 +137,7 @@ export function PlanLightbox({
           <aside className="flex flex-col gap-5 overflow-y-auto bg-white p-6 lg:p-8">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[2px] text-primary">
-                Residence {String(variant.unit).padStart(2, '0')}
+                Unit {String(variant.unit).padStart(2, '0')}
               </p>
               <h2 className="mt-1 text-2xl uppercase tracking-wider text-foreground">
                 {variant.typeLabel}
@@ -211,7 +211,7 @@ export function PlanLightbox({
             )}
 
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Each plan sheet includes the building stacking diagram with this residence highlighted
+              Each plan sheet includes the building stacking diagram with this unit highlighted
               and a north orientation arrow. Zoom in to explore dimensions and layout in detail.
             </p>
 
