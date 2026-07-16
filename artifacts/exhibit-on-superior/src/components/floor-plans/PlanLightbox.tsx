@@ -25,6 +25,11 @@ export function PlanLightbox({
 }: PlanLightboxProps) {
   const [zoomed, setZoomed] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  // Double-tap detection (touch devices).
+  const lastTap = useRef<{ time: number; x: number; y: number } | null>(null);
+  const singleTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Mobile bottom-sheet drag state. Snap points are expressed in dvh.
   const SHEET_COLLAPSED = 40;
@@ -62,11 +67,22 @@ export function PlanLightbox({
     setPinch({ scale: 1, tx: 0, ty: 0 });
   }, []);
 
+  const clearSingleTapTimer = useCallback(() => {
+    if (singleTapTimer.current !== null) {
+      clearTimeout(singleTapTimer.current);
+      singleTapTimer.current = null;
+    }
+  }, []);
+
+  useEffect(() => clearSingleTapTimer, [clearSingleTapTimer]);
+
   // Reset zoom whenever the shown plan changes.
   useEffect(() => {
     setZoomed(false);
     resetPinch();
-  }, [group?.id, variantIndex, resetPinch]);
+    clearSingleTapTimer();
+    lastTap.current = null;
+  }, [group?.id, variantIndex, resetPinch, clearSingleTapTimer]);
 
   // Collapse the sheet when a different plan group is opened.
   useEffect(() => {
@@ -157,6 +173,47 @@ export function PlanLightbox({
     }
     g.mode = null;
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const DOUBLE_TAP_MS = 300;
+  const DOUBLE_TAP_SLOP = 40;
+  const TAP_MOVE_SLOP = 12;
+  const DOUBLE_TAP_SCALE = 2;
+
+  /** Handle a completed tap at (x, y) inside the viewer container. Returns true when it consumed a double-tap. */
+  const handleTap = (x: number, y: number, container: HTMLElement): boolean => {
+    const now = Date.now();
+    const prev = lastTap.current;
+    lastTap.current = { time: now, x, y };
+    if (prev && now - prev.time < DOUBLE_TAP_MS && Math.hypot(x - prev.x, y - prev.y) < DOUBLE_TAP_SLOP) {
+      // Double-tap: toggle between fit and ~2x zoom toward the tapped point.
+      clearSingleTapTimer();
+      lastTap.current = null;
+      if (zoomed || pinchZoomed) {
+        resetPinch();
+        setZoomed(false);
+      } else {
+        const rect = container.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        setZoomed(false);
+        setPinch({
+          scale: DOUBLE_TAP_SCALE,
+          tx: -(x - cx) * (DOUBLE_TAP_SCALE - 1),
+          ty: -(y - cy) * (DOUBLE_TAP_SCALE - 1),
+        });
+      }
+      return true;
+    }
+    // Single tap: wait to see whether a second tap follows before toggling zoom.
+    clearSingleTapTimer();
+    singleTapTimer.current = setTimeout(() => {
+      singleTapTimer.current = null;
+      resetPinch();
+      setZoomed((z) => !z);
+    }, DOUBLE_TAP_MS);
+    return false;
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
@@ -183,7 +240,21 @@ export function PlanLightbox({
     const g = gesture.current;
     if (g.mode) {
       if (e.touches.length === 0) {
+        const wasPan = g.mode === 'pan';
+        const t = e.changedTouches[0];
         g.mode = null;
+        // A "pan" that barely moved is a tap — allow double-tap-to-fit while pinch-zoomed.
+        if (
+          wasPan &&
+          t &&
+          Math.hypot(t.clientX - g.panStartX, t.clientY - g.panStartY) < TAP_MOVE_SLOP
+        ) {
+          if (handleTap(t.clientX, t.clientY, e.currentTarget as HTMLElement)) {
+            if (e.cancelable) e.preventDefault();
+            return;
+          }
+          if (e.cancelable) e.preventDefault();
+        }
         // Snap back to fit when nearly zoomed out
         setPinch((p) => (p.scale <= 1.05 ? { scale: 1, tx: 0, ty: 0 } : p));
       } else if (g.mode === 'pinch' && e.touches.length === 1) {
@@ -199,11 +270,21 @@ export function PlanLightbox({
       }
       return;
     }
-    // Swipe navigation only while fully zoomed out
-    if (touchStartX.current === null || zoomed || pinchZoomed) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 50) onNavigate(dx < 0 ? 1 : -1);
+    if (touchStartX.current === null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX.current;
+    const dy = touchStartY.current === null ? 0 : t.clientY - touchStartY.current;
     touchStartX.current = null;
+    touchStartY.current = null;
+    // Tap (little movement): handle single/double tap ourselves and suppress the synthetic click.
+    if (Math.hypot(dx, dy) < TAP_MOVE_SLOP) {
+      handleTap(t.clientX, t.clientY, e.currentTarget as HTMLElement);
+      if (e.cancelable) e.preventDefault();
+      return;
+    }
+    // Swipe navigation only while fully zoomed out
+    if (zoomed || pinchZoomed) return;
+    if (Math.abs(dx) > 50) onNavigate(dx < 0 ? 1 : -1);
   };
 
   return (
