@@ -3,6 +3,20 @@ import { ArrowRight, MapPin, Phone } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { HeroSlider, type HeroSlide } from '../components/HeroSlider';
+
+// Home hero carousel — same photos and order as the source rentatexhibit.com hero.
+const HERO_SLIDES: HeroSlide[] = [
+  { src: '/images/image-013-20170808-0861-n4esrp.jpg', alt: 'Large lap pool at Exhibit On Superior in Chicago, Illinois' },
+  { src: '/images/image-014-exhibit-living-room-n5xrna.jpg', alt: 'Beautiful living room with large windows at Exhibit On Superior in Chicago, Illinois' },
+  { src: '/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq.jpg', alt: 'Large meeting table in the clubhouse at Exhibit On Superior in Chicago, Illinois' },
+  { src: '/images/image-016-012417-6396-e1vomm.jpg', alt: 'Expansive fitness center at Exhibit On Superior in Chicago, Illinois' },
+  { src: '/images/image-017-012417-6521-i8yuom.jpg', alt: 'Resident lounge at Exhibit On Superior in Chicago, Illinois' },
+  { src: '/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom.jpg', alt: 'Resident lounge with large TV and fireplace at Exhibit On Superior in Chicago, Illinois' },
+  { src: '/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz.jpg', alt: 'Chess in the resident lounge with great views at Exhibit On Superior in Chicago, Illinois' },
+  { src: '/images/image-020-dsc00806-yr6rhk.jpg', alt: 'Music studio at Exhibit On Superior in Chicago, Illinois' },
+  { src: '/images/image-021-20170808-0852-sw1ncm.jpg', alt: 'Outdoor deck with firepit at Exhibit On Superior in Chicago, Illinois' },
+];
 
 export function Home() {
   return (
@@ -10,31 +24,24 @@ export function Home() {
       <Seo path="/" />
       <div>
         {/* Hero Section */}
-        <section className="relative h-[600px] lg:h-[700px] overflow-hidden">
-          <img
-            src="/images/image-002-gettyimages-1286580777-nvdupq.jpg"
-            alt="Apartments at Exhibit On Superior in Chicago, Illinois"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-            <div className="text-center text-white px-4">
-              <h1 className="text-5xl md:text-7xl font-light uppercase tracking-[15px] mb-6">
-                Urban Living Never Looked So Good
-              </h1>
-              <p className="text-xl md:text-2xl mb-8 tracking-wide">
-                Sleek Design for Modern Living Chicago Apartments
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/schedule-a-tour" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90">
-                  Schedule a Tour
-                </Link>
-                <Link href="/floor-plans" className="btn-gold-outline">
-                  View Floor Plans
-                </Link>
-              </div>
+        <HeroSlider slides={HERO_SLIDES}>
+          <div className="text-center text-white px-4">
+            <h1 className="text-5xl md:text-7xl font-light uppercase tracking-[15px] mb-6">
+              Urban Living Never Looked So Good
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 tracking-wide">
+              Sleek Design for Modern Living Chicago Apartments
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/schedule-a-tour" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90">
+                Schedule a Tour
+              </Link>
+              <Link href="/floor-plans" className="btn-gold-outline">
+                View Floor Plans
+              </Link>
             </div>
           </div>
-        </section>
+        </HeroSlider>
 
         <QuickAnswer path="/" />
 
