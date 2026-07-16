@@ -4,3 +4,4 @@
 - [Plan mode blocks workspace writes](plan-mode-writes-blocked.md) — ShellExec writes + executeJs are disabled in Plan mode; asset generation only works in Build mode (not a filesystem bug).
 - [Floor-plan unit numbers](floor-plan-unit-numbers.md) — apartment # = pad2(floor)+pad2(unitLine) (e.g. 0606); "Residence" label is a code mislabel, source says "UNIT".
 - [Tailwind v4 unlayered classes beat utilities](tailwind-v4-unlayered-classes.md) — custom .btn-* classes override JSX utilities; use `!` important (e.g. `bg-black/50!`).
+- [SPA has no per-page HTML for crawlers](spa-seo-prerender.md) — deep routes serve home meta + 0 JSON-LD until JS runs; prerender to fix. Plan: SEO_PLAN.md.
