@@ -64,7 +64,7 @@ export function PlanLightbox({
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="max-w-none w-screen h-screen max-h-screen translate-x-[-50%] translate-y-[-50%] gap-0 border-0 bg-[#111] p-0 sm:rounded-none"
+        className="max-w-none w-screen h-screen max-h-screen supports-[height:100svh]:h-[100svh] supports-[height:100svh]:max-h-[100svh] supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:max-h-[100dvh] translate-x-[-50%] translate-y-[-50%] gap-0 border-0 bg-[#111] p-0 sm:rounded-none"
       >
         <DialogTitle className="sr-only">
           {variant.typeLabel}, Unit {variant.unit}, floors {variant.floorLabel}
@@ -74,9 +74,9 @@ export function PlanLightbox({
           Escape to close.
         </DialogDescription>
 
-        <div className="grid h-screen grid-rows-[1fr_auto] lg:grid-cols-[1fr_360px] lg:grid-rows-1">
+        <div className="flex h-screen supports-[height:100svh]:h-[100svh] supports-[height:100dvh]:h-[100dvh] flex-col lg:grid lg:h-screen lg:grid-cols-[1fr_360px] lg:grid-rows-1">
           {/* Image viewer */}
-          <div className="relative flex min-h-0 items-center justify-center bg-[#111]">
+          <div className="relative flex min-h-0 flex-1 items-center justify-center bg-[#111] lg:flex-none">
             <div
               className={`h-full w-full ${zoomed ? 'overflow-auto' : 'overflow-hidden flex items-center justify-center p-4 sm:p-8'}`}
               onTouchStart={onTouchStart}
@@ -100,7 +100,7 @@ export function PlanLightbox({
             <button
               type="button"
               onClick={() => setZoomed((z) => !z)}
-              className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/60 px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80"
+              className="absolute bottom-4 left-4 flex min-h-11 items-center gap-2 bg-black/60 px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80"
               aria-label={zoomed ? 'Zoom out' : 'Zoom in'}
             >
               {zoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
@@ -134,8 +134,33 @@ export function PlanLightbox({
           </div>
 
           {/* Details panel */}
-          <aside className="flex flex-col gap-5 overflow-y-auto bg-white p-6 lg:p-8">
-            <div>
+          <aside className="flex max-h-[40vh] min-h-0 shrink-0 flex-col overflow-y-auto bg-white supports-[height:100svh]:max-h-[40svh] supports-[height:100dvh]:max-h-[40dvh] lg:max-h-none lg:shrink">
+            {/* Mobile compact summary + primary CTA, pinned at the top of the sheet */}
+            <div className="sticky top-0 z-10 border-b border-border bg-white px-4 pb-3 pt-2 shadow-sm lg:hidden">
+              <div aria-hidden className="mx-auto mb-2 h-1 w-10 rounded-full bg-border" />
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[2px] text-primary">
+                    Unit {String(variant.unit).padStart(2, '0')}
+                  </p>
+                  <p className="truncate text-sm text-foreground">
+                    {variant.typeLabel} · {sqftLabel} · {variant.baths}{' '}
+                    {variant.baths === 1 ? 'bath' : 'baths'}
+                  </p>
+                </div>
+                <a
+                  href={AVAILABILITY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-gold-outline flex min-h-11 shrink-0 items-center bg-primary px-4 text-center text-xs text-white hover:bg-primary/90"
+                >
+                  Check Availability
+                </a>
+              </div>
+            </div>
+
+            <div className="flex flex-1 flex-col gap-5 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:p-8 lg:pb-8">
+            <div className="hidden lg:block">
               <p className="text-xs font-semibold uppercase tracking-[2px] text-primary">
                 Unit {String(variant.unit).padStart(2, '0')}
               </p>
@@ -220,7 +245,7 @@ export function PlanLightbox({
                 href={AVAILABILITY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-gold-outline bg-primary text-center text-white hover:bg-primary/90"
+                className="btn-gold-outline hidden bg-primary text-center text-white hover:bg-primary/90 lg:block"
               >
                 Check Availability
               </a>
@@ -236,6 +261,7 @@ export function PlanLightbox({
                   Contact Us
                 </Link>
               </div>
+            </div>
             </div>
           </aside>
         </div>
