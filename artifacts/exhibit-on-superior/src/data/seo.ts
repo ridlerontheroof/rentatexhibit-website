@@ -2,7 +2,7 @@
 // Source of truth: migration bundle seo-aeo-metadata + faq-answer-bank + schema manifest.
 
 export const SITE_URL = 'https://www.rentatexhibit.com';
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg`;
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg`;
 
 export const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
 export const APPLY_URL =
@@ -471,6 +471,8 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
     { property: 'og:description', content: description },
     ...(canonical ? [{ property: 'og:url', content: canonical }] : []),
     { property: 'og:image', content: DEFAULT_OG_IMAGE },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
