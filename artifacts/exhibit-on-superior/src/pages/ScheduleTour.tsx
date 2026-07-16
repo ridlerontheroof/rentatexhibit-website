@@ -63,7 +63,7 @@ export function ScheduleTour() {
       },
       {
         onSuccess: () => {
-          trackLead('tour');
+          trackLead('tour', { floorPlanPreference: data.bedrooms });
           setSubmitted(true);
           reset();
         },

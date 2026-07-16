@@ -18,8 +18,54 @@ export const analyticsEnabled = (): boolean =>
 
 let initialized = false;
 
+/** SPA navigation history: the path before the current one (for lead attribution). */
+let previousPath: string | null = null;
+let currentPath: string | null = null;
+
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
+const UTM_STORAGE_KEY = 'exhibit_utm_params';
+
+/**
+ * Capture UTM parameters from the landing URL and persist them for the
+ * session so they survive SPA navigation and can be attached to conversions.
+ * Runs even when analytics is disabled so nothing is lost if the ID is set later.
+ */
+function captureUtmParams(): void {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const utm: Record<string, string> = {};
+    for (const key of UTM_KEYS) {
+      const value = params.get(key);
+      if (value) utm[key] = value.slice(0, 100);
+    }
+    if (Object.keys(utm).length > 0) {
+      sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm));
+    }
+  } catch {
+    // Storage unavailable (private mode, etc.) — attribution is best-effort.
+  }
+}
+
+function getStoredUtmParams(): Record<string, string> {
+  try {
+    const raw = sessionStorage.getItem(UTM_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null) return {};
+    const utm: Record<string, string> = {};
+    for (const key of UTM_KEYS) {
+      const value = (parsed as Record<string, unknown>)[key];
+      if (typeof value === 'string' && value) utm[key] = value;
+    }
+    return utm;
+  } catch {
+    return {};
+  }
+}
+
 /** Load gtag.js once and configure GA4. Page views are sent manually (SPA). */
 export function initAnalytics(): void {
+  if (typeof window !== 'undefined') captureUtmParams();
   if (!analyticsEnabled() || initialized) return;
   initialized = true;
 
@@ -40,6 +86,13 @@ export function initAnalytics(): void {
 
 /** Report a page view (initial load and every SPA navigation). */
 export function trackPageView(path: string): void {
+  if (typeof window === 'undefined') return;
+  // Track SPA navigation history regardless of whether GA is enabled, so
+  // attribution stays correct when the measurement ID is configured later.
+  if (path !== currentPath) {
+    previousPath = currentPath;
+    currentPath = path;
+  }
   if (!analyticsEnabled() || !window.gtag) return;
   window.gtag('event', 'page_view', {
     page_path: path,
@@ -52,8 +105,40 @@ export function trackPageView(path: string): void {
  * Report a conversion event. Uses GA4's recommended `generate_lead` event for
  * contact/tour submissions so it can be marked as a key event (conversion) in
  * the GA4 admin UI without renaming.
+ *
+ * Attribution parameters (no PII — never send name/email/phone):
+ * - page_path: the page hosting the form
+ * - referring_page: the previous SPA page (or external referrer on direct landings)
+ * - floor_plan_preference: the tour form's selected floor plan (tours only)
+ * - utm_*: campaign parameters captured from the landing URL for this session
  */
-export function trackLead(formType: 'contact' | 'tour'): void {
+export function trackLead(
+  formType: 'contact' | 'tour',
+  attribution?: { floorPlanPreference?: string }
+): void {
   if (!analyticsEnabled() || !window.gtag) return;
-  window.gtag('event', 'generate_lead', { form_type: formType });
+
+  let referringPage = previousPath ?? '';
+  if (!referringPage && document.referrer) {
+    try {
+      const ref = new URL(document.referrer);
+      if (ref.origin !== window.location.origin) {
+        referringPage = ref.origin + ref.pathname;
+      }
+    } catch {
+      // Malformed referrer — omit.
+    }
+  }
+
+  const params: Record<string, string> = {
+    form_type: formType,
+    page_path: currentPath ?? window.location.pathname,
+    ...getStoredUtmParams(),
+  };
+  if (referringPage) params.referring_page = referringPage;
+  if (attribution?.floorPlanPreference) {
+    params.floor_plan_preference = attribution.floorPlanPreference;
+  }
+
+  window.gtag('event', 'generate_lead', params);
 }
