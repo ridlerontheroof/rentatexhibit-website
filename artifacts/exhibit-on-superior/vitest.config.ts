@@ -3,7 +3,8 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
-    // Match the app's `@/*` -> `src/*` path alias (tsconfig/vite).
+    // Mirror the `@` -> `src` alias from tsconfig/vite so component tests can
+    // import sources (e.g. ui/dialog.tsx) that use it.
     alias: {
       '@': path.resolve(import.meta.dirname, 'src'),
     },
