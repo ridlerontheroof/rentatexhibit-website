@@ -5,6 +5,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { SplitHeadline } from '../components/SplitHeadline';
 
 export function PetFriendly() {
   return (
@@ -14,7 +15,8 @@ export function PetFriendly() {
         <PageHero
           image="/images/image-079-gettyimages-1440280890-ox4ske.jpg"
           alt="Pet Friendly | Exhibit On Superior in Chicago, Illinois"
-          title="Dogs & Cats Say Hello to Pet-Friendly Living In Chicago"
+          titleScript="Dogs & Cats"
+          title="Say Hello to Pet-Friendly Living In Chicago"
           subtitle="Pet Friendly"
         />
 
@@ -152,7 +154,7 @@ export function PetFriendly() {
 
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
-            <h2 className="section-title text-white mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+            <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" dark className="mb-6" />
             <Link href="/contact-us" className="btn-gold-outline inline-block">
               Contact Us
             </Link>

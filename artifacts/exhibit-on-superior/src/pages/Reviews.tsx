@@ -4,6 +4,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { Star, Quote } from 'lucide-react';
+import { SplitHeadline } from '../components/SplitHeadline';
 import { useGoogleReviews } from '../hooks/use-google-reviews';
 import { buildReviewsPageModel, reviewsJsonLd } from '../data/reviews';
 
@@ -27,7 +28,8 @@ export function Reviews() {
         <PageHero
           image="/images/image-088-20170808-0868-1-odeo9b.jpg"
           alt="Reviews | Exhibit On Superior in Chicago, Illinois"
-          title="Exhibit On Superior Reviews"
+          titleScript="Exhibit On Superior"
+          title="Reviews"
           subtitle="Reviews"
         />
 
@@ -44,8 +46,7 @@ export function Reviews() {
         {/* Reviews Grid */}
         <section className="py-12 px-4 bg-muted">
           <div className="container mx-auto max-w-6xl">
-            <p className="eyebrow mb-2">What Residents Say</p>
-            <h2 className="section-title mb-6">Resident Reviews</h2>
+            <SplitHeadline script="What Residents Say" caps="Resident Reviews" className="mb-6" />
 
             {/* Aggregate rating pulled from the community's Google Business Profile */}
             <div className="mb-12 flex flex-col items-center gap-2">
@@ -105,7 +106,7 @@ export function Reviews() {
         {/* CTA */}
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
-            <h2 className="section-title text-white mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+            <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" dark className="mb-6" />
             <Link href="/contact-us" className="btn-gold-outline inline-block">
               Contact Us
             </Link>

@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { SplitHeadline } from '../components/SplitHeadline';
 
 export function ArtistInResidence() {
   return (
@@ -13,7 +14,8 @@ export function ArtistInResidence() {
         <PageHero
           image="/images/image-083-dsc00806-yr6rhk.jpg"
           alt="Artist-in-Residence | Exhibit On Superior in Chicago, Illinois"
-          title="Artist-in-Residence Program: A Home Where Art and Music Thrive"
+          titleScript="Artist-in-Residence Program"
+          title="A Home Where Art and Music Thrive"
           subtitle="Artist-in-Residence"
         />
 
@@ -21,7 +23,7 @@ export function ArtistInResidence() {
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
-            <h2 className="section-title mb-6">Where Creativity Lives</h2>
+            <SplitHeadline script="Where Creativity" caps="Lives" className="mb-6" />
             <div className="prose prose-lg max-w-none text-left mb-8">
               <p className="mb-6">
                 Since 2017, Highland Management LLC has proudly hosted an innovative Artist-in-Residence program, where creativity meets community. As part of our ongoing commitment to enriching the living experience, as well as supporting local artists from musicians and muralist we can offer exclusive events and experiences to both the artist and our residents.
@@ -119,7 +121,7 @@ export function ArtistInResidence() {
 
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
-            <h2 className="section-title text-white mb-6">Live Where Art And Music Thrive</h2>
+            <SplitHeadline script="Live Where" caps="Art and Music Thrive" dark className="mb-6" />
             <p className="text-lg leading-relaxed mb-8 text-white">
               Want to experience the program in person? Schedule a tour and see the artwork, amenity spaces, and River North location for yourself.
             </p>

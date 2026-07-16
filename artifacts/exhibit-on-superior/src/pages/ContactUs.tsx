@@ -70,7 +70,8 @@ export function ContactUs() {
         <PageHero
           image="/images/image-084-20170601-0076-p0s5be.jpg"
           alt="Contact Us | Exhibit On Superior in Chicago, Illinois"
-          title="Get in touch"
+          titleScript="Get in Touch"
+          title="With Exhibit On Superior"
           subtitle="Contact Us"
         />
 

@@ -6,6 +6,7 @@ import { SmartImg } from '../components/SmartImg';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { SplitHeadline } from '../components/SplitHeadline';
 
 const galleryImages = [
   { src: '/images/image-033-lounge-mfioa0.jpg', alt: 'Photo Gallery | Exhibit On Superior in Chicago, Illinois', category: 'Lobby' },
@@ -68,7 +69,8 @@ export function PhotoGallery() {
         <PageHero
           image="/images/image-033-lounge-mfioa0.jpg"
           alt="Photo Gallery | Exhibit On Superior in Chicago, Illinois"
-          title="The Art of City Living"
+          titleScript="The Art"
+          title="Of City Living"
           subtitle="Photo Gallery"
         />
 
@@ -154,7 +156,7 @@ export function PhotoGallery() {
 
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
-            <h2 className="section-title text-white mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+            <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" dark className="mb-6" />
             <Link href="/contact-us" className="btn-gold-outline inline-block">
               Contact Us
             </Link>

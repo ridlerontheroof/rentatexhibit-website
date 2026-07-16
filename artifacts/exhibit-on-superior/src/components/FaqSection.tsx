@@ -1,5 +1,6 @@
 import { PAGE_SEO } from '../data/seo';
 import { Plus } from 'lucide-react';
+import { SplitHeadline } from './SplitHeadline';
 
 interface FaqSectionProps {
   path: string;
@@ -14,7 +15,7 @@ export function FaqSection({ path }: FaqSectionProps) {
     <section className="px-4 py-16">
       <div className="container mx-auto max-w-3xl">
         <p className="eyebrow mb-2 text-center">Good to Know</p>
-        <h2 className="section-title mb-8 text-center">Frequently Asked Questions</h2>
+        <SplitHeadline caps="Frequently Asked Questions" className="mb-8" />
         <div className="divide-y divide-border border-y border-border">
           {page.faqs.map((faq) => (
             <details key={faq.q} className="group py-4">

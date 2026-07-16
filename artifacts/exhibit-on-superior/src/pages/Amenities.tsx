@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { SplitHeadline } from '../components/SplitHeadline';
 
 export function Amenities() {
   return (
@@ -13,7 +14,8 @@ export function Amenities() {
         <PageHero
           image="/images/image-075-20170601-0036-z1fw1i.jpg"
           alt="Amenities | Exhibit On Superior in Chicago, Illinois"
-          title="Endless opportunities Your urban playground"
+          titleScript="Endless Opportunities"
+          title="Your Urban Playground"
           subtitle="Amenities"
         />
 
@@ -150,7 +152,7 @@ export function Amenities() {
         {/* Discover Beauty Section */}
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-4xl text-center text-white">
-            <h2 className="section-title text-white mb-6">Discover the Beauty Of Being at Home</h2>
+            <SplitHeadline script="Discover the Beauty" caps="Of Being at Home" dark className="mb-6" />
             <p className="text-lg leading-relaxed mb-6">
               Home is more than just where you live, it’s where you thrive. Whether you're fueling up, working out, or winding down, everything you need to feel your best is just steps away.Start your day with an energizing workout at CycleBar or Club Pilates, then grab your favorite coffee and a sweet treat from Goddess and the Baker, all within the building. Reset and recharge with a session at LaPerior Foot Spa or challenge yourself at Train Moment for a next level fitness experience.
             </p>
@@ -158,7 +160,7 @@ export function Amenities() {
               From wellness to indulgence, our on-site retail and lifestyle options bring everyday convenience right to your doorstep. Live well without the hassle, without the commute, and always on your terms. Because convenience isn’t an extra, it’s a way of life at Exhibit on Superior.
             </p>
             
-            <h2 className="section-title text-white mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+            <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" dark className="mb-6" />
             <Link href="/contact-us" className="btn-gold-outline inline-block">
               Contact Us
             </Link>

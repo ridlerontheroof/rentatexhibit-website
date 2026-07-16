@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
@@ -240,4 +240,28 @@
 
 .eyebrow {
   @apply text-primary uppercase tracking-[2px] font-semibold text-sm mb-4 block text-center;
+}
+
+/* Two-tier headline pattern from the original rentatexhibit.com design. */
+.headline-script {
+  font-family: 'Reenie Beanie', cursive;
+  font-size: clamp(28px, 4.5vw, 42px);
+  letter-spacing: 4px;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-bottom: 0.35em;
+}
+
+.headline-caps {
+  @apply uppercase;
+  font-size: clamp(24px, 3.5vw, 34px);
+  letter-spacing: clamp(4px, 1vw, 10px);
+  line-height: 1.2;
+}
+
+.headline-rule {
+  @apply block bg-primary;
+  width: 160px;
+  height: 3px;
+  margin-top: 1.25rem;
 }

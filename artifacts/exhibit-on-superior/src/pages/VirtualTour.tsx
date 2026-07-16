@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { SplitHeadline } from '../components/SplitHeadline';
 
 export function VirtualTour() {
   return (
@@ -12,7 +13,8 @@ export function VirtualTour() {
         <PageHero
           image="/images/image-074-game-area-with-arcade-games-and-wall-scrabble-ej.jpg"
           alt="Virtual Tour | Exhibit On Superior in Chicago, Illinois"
-          title="See Yourself Here"
+          titleScript="See Yourself"
+          title="Here"
           subtitle="Virtual Tour"
         />
 
@@ -88,7 +90,7 @@ export function VirtualTour() {
             </div>
 
             <div className="text-center mt-16">
-              <h2 className="section-title mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+              <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" className="mb-6" />
               <Link href="/contact-us" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
                 Contact Us
               </Link>

@@ -5,6 +5,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { SplitHeadline } from '../components/SplitHeadline';
 import { Input } from '../components/ui/input';
 import {
   Select,
@@ -156,7 +157,8 @@ export function FloorPlans() {
         <PageHero
           image="/images/image-030-012417-5663-hxwee6.jpg"
           alt="Floor Plans | Exhibit On Superior in Chicago, Illinois"
-          title="Smartly Designed Residences Studio, 1, 2 & 3 Bedroom Apartments"
+          titleScript="Smartly Designed Residences"
+          title="Studio, 1, 2 & 3 Bedroom Apartments"
           subtitle="Floor Plans"
         />
 
@@ -164,8 +166,7 @@ export function FloorPlans() {
 
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-3xl text-center">
-            <span className="eyebrow">Live Smart, Live Beautifully</span>
-            <h2 className="section-title mb-6">Find Your Floor Plan</h2>
+            <SplitHeadline script="Live Smart, Live Beautifully" caps="Find Your Floor Plan" className="mb-6" />
             <p className="text-lg leading-relaxed text-muted-foreground">
               Explore every layout at Exhibit On Superior. Search by unit or floor, filter by
               size and bedroom count, then open any plan for a closer look. When you're ready, check
@@ -301,7 +302,7 @@ export function FloorPlans() {
         {/* Closing CTA */}
         <section className="bg-dark-section px-4 py-16">
           <div className="container mx-auto max-w-3xl text-center">
-            <h2 className="section-title mb-6 text-white">Embrace Unbounded City Living</h2>
+            <SplitHeadline script="Embrace Unbounded" caps="City Living" dark className="mb-6" />
             <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-white/80">
               Found a layout you love? Check real-time availability and pricing, or connect with our
               leasing team to schedule a personal tour.

@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { SplitHeadline } from '../components/SplitHeadline';
 
 export function Neighborhood() {
   return (
@@ -13,7 +14,8 @@ export function Neighborhood() {
         <PageHero
           image="/images/image-081-20170926-1450-wmbiod.jpg"
           alt="Neighborhood | Exhibit On Superior in Chicago, Illinois"
-          title="Get out and Explore The Best of River North"
+          titleScript="Get Out and Explore"
+          title="The Best of River North"
           subtitle="Neighborhood"
         />
 
@@ -37,7 +39,7 @@ export function Neighborhood() {
           <div className="container mx-auto max-w-5xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl uppercase tracking-wider mb-6">Embrace the Energy Urban living Perfected</h2>
+                <SplitHeadline script="Embrace the Energy" caps="Urban Living Perfected" align="left" className="mb-6" />
                 <p className="text-lg leading-relaxed mb-6">
                   Feel the pulse of Chicago and turn up the volume on city living; where the skyline is your nightlight and the hum of the city is your soundtrack.
                 </p>
@@ -65,7 +67,7 @@ export function Neighborhood() {
 
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
-            <h2 className="section-title text-white mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+            <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" dark className="mb-6" />
             <Link href="/contact-us" className="btn-gold-outline inline-block">
               Contact Us
             </Link>

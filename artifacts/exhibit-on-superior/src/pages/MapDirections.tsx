@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { SplitHeadline } from '../components/SplitHeadline';
 
 export function MapDirections() {
   return (
@@ -13,7 +14,8 @@ export function MapDirections() {
         <PageHero
           image="/images/image-085-30-south-kis7bz.jpg"
           alt="Map + Directions | Exhibit On Superior in Chicago, Illinois"
-          title="Driving Directions to Exhibit On Superior"
+          titleScript="Driving Directions"
+          title="To Exhibit On Superior"
           subtitle="Map + Directions"
         />
 
@@ -21,7 +23,7 @@ export function MapDirections() {
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
-            <h2 className="section-title mb-6">165 W Superior St Chicago, IL 60654</h2>
+            <SplitHeadline script="165 W Superior St" caps="Chicago, IL 60654" className="mb-6" />
             <p className="text-lg leading-relaxed">
               Check out the Directions feature in the map below for turn-by-turn directions to our studio, 1, 2 & 3 bedroom apartments for rent in Chicago, Illinois. Exhibit On Superior sits at the corner of Superior and Wells in River North, a few blocks north of the Loop and steps from the neighborhood&rsquo;s galleries, cafes, and restaurants.
             </p>

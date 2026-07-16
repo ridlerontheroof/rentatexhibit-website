@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { HeroSlider, type HeroSlide } from '../components/HeroSlider';
+import { SplitHeadline } from '../components/SplitHeadline';
 import { SmartImg } from '../components/SmartImg';
 
 // Home hero carousel — same photos and order as the source rentatexhibit.com hero.
@@ -27,9 +28,14 @@ export function Home() {
         {/* Hero Section */}
         <HeroSlider slides={HERO_SLIDES}>
           <div className="text-center text-white px-4">
-            <h1 className="text-5xl md:text-7xl font-light uppercase tracking-[15px] mb-6">
-              Urban Living Never Looked So Good
-            </h1>
+            <SplitHeadline
+              as="h1"
+              script="Smart Living on Display"
+              caps="In Downtown Chicago"
+              underline={false}
+              scriptClassName="text-white"
+              className="mb-6 [&_.headline-script]:text-[clamp(34px,6vw,64px)] [&_.headline-caps]:text-[clamp(28px,5vw,56px)] [&_.headline-caps]:tracking-[clamp(6px,1.5vw,15px)]"
+            />
             <p className="text-xl md:text-2xl mb-8 tracking-wide">
               Sleek Design for Modern Living Chicago Apartments
             </p>
@@ -49,7 +55,7 @@ export function Home() {
         {/* Welcome Section */}
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl text-center">
-            <h2 className="section-title">Less clutter. Less "stuff" More time. More Freedom</h2>
+            <SplitHeadline script={'Less clutter. Less "stuff"'} caps="More Time. More Freedom" className="mb-8" />
             <p className="text-lg leading-relaxed mb-6">
               Discover the perfect fit for your on-the-go lifestyle at Exhibit on Superior, where modern apartments in Chicago’s vibrant River North neighborhood put everything within reach. From fitness to food to relaxation, CycleBar, Club Pilates, Goddess and the Baker, Train Moment, and LaPerior Foot Spa are all right here in the building. This is your social hub, entertainment zone, wellness retreat, and relaxing oasis all rolled into one, with endless amenities at every turn. At Exhibit on Superior, every day is anything but ordinary.
             </p>
@@ -73,7 +79,7 @@ export function Home() {
         {/* Featured Amenities Grid */}
         <section className="py-20 bg-muted">
           <div className="container mx-auto px-4">
-            <h2 className="section-title mb-12 text-center">Get A Glimpse Of the Exhibit On Superior Lifestyle</h2>
+            <SplitHeadline script="Get a Glimpse" caps="Of the Exhibit On Superior Lifestyle" className="mb-12" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="relative h-[350px] overflow-hidden group">
@@ -139,7 +145,7 @@ export function Home() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="section-title text-white text-left mb-6">Urban Bliss Just Outside Your Door</h2>
+                <SplitHeadline script="Urban Bliss" caps="Just Outside Your Door" align="left" dark className="mb-6" />
                 <p className="text-lg leading-relaxed mb-6 text-white">
                   Make the most of the vibrant city with a home base that puts everything at your fingertips. From cozy cafés and trendy restaurants to sprawling parks and convenient shops, you’ll find it all just steps away. Take a quick trip to Target or spend the afternoon along the Chicago River.
                 </p>
@@ -187,7 +193,7 @@ export function Home() {
         {/* CTA Section */}
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl text-center">
-            <h2 className="section-title mb-6">Embrace Unbounded City Living At Exhibit On Superior</h2>
+            <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" className="mb-6" />
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
               <div className="flex items-center gap-2">
                 <Phone className="w-5 h-5 text-primary" />

@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { SplitHeadline } from '../components/SplitHeadline';
 
 export function Residents() {
   return (
@@ -13,7 +14,8 @@ export function Residents() {
         <PageHero
           image="/images/image-086-work-spaces-with-blazing-fast-wifi-access-d3tr2q.jpg"
           alt="Residents | Exhibit On Superior in Chicago, Illinois"
-          title="Resident Life Made Simple"
+          titleScript="Resident Life"
+          title="Made Simple"
           subtitle="Residents"
         />
 
@@ -101,7 +103,7 @@ export function Residents() {
 
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
-            <h2 className="section-title text-white mb-6">Need Help?</h2>
+            <SplitHeadline caps="Need Help?" dark className="mb-6" />
             <p className="text-lg leading-relaxed mb-8 text-white">
               Our team is available to assist with any questions or technical issues with the resident portal.
             </p>
