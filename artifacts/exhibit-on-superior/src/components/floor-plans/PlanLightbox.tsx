@@ -25,6 +25,15 @@ export function PlanLightbox({
   onVariantChange,
 }: PlanLightboxProps) {
   const [zoomed, setZoomed] = useState(false);
+  const zoomedRef = useRef(false);
+  useEffect(() => {
+    zoomedRef.current = zoomed;
+  }, [zoomed]);
+  // Animation phase for the scroll-zoom ("zoomed") mode toggle:
+  // 'enter' = first frame after zooming in (scaled down, no transition),
+  // 'exit' = animating back down before leaving zoomed mode.
+  const [zoomPhase, setZoomPhase] = useState<'idle' | 'enter' | 'exit'>('idle');
+  const zoomExitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
@@ -70,6 +79,33 @@ export function PlanLightbox({
     setPinch({ scale: 1, tx: 0, ty: 0 });
   }, []);
 
+  const clearZoomExitTimer = useCallback(() => {
+    if (zoomExitTimer.current !== null) {
+      clearTimeout(zoomExitTimer.current);
+      zoomExitTimer.current = null;
+    }
+  }, []);
+
+  /** Toggle the scroll-zoom mode with a ~200ms scale animation in each direction. */
+  const animateZoomToggle = useCallback(() => {
+    if (zoomExitTimer.current !== null) return; // already animating out
+    if (zoomedRef.current) {
+      setZoomPhase('exit');
+      zoomExitTimer.current = setTimeout(() => {
+        zoomExitTimer.current = null;
+        setZoomed(false);
+        setZoomPhase('idle');
+      }, 200);
+    } else {
+      resetPinch();
+      setZoomed(true);
+      setZoomPhase('enter');
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setZoomPhase('idle')),
+      );
+    }
+  }, [resetPinch]);
+
   const clearSingleTapTimer = useCallback(() => {
     if (singleTapTimer.current !== null) {
       clearTimeout(singleTapTimer.current);
@@ -82,10 +118,14 @@ export function PlanLightbox({
   // Reset zoom whenever the shown plan changes.
   useEffect(() => {
     setZoomed(false);
+    setZoomPhase('idle');
+    clearZoomExitTimer();
     resetPinch();
     clearSingleTapTimer();
     lastTap.current = null;
-  }, [group?.id, variantIndex, resetPinch, clearSingleTapTimer]);
+  }, [group?.id, variantIndex, resetPinch, clearSingleTapTimer, clearZoomExitTimer]);
+
+  useEffect(() => clearZoomExitTimer, [clearZoomExitTimer]);
 
   // Collapse the sheet when a different plan group is opened.
   useEffect(() => {
@@ -193,9 +233,10 @@ export function PlanLightbox({
       // Double-tap: toggle between fit and ~2x zoom toward the tapped point.
       clearSingleTapTimer();
       lastTap.current = null;
-      if (zoomed || pinchZoomed) {
+      if (zoomed) {
+        animateZoomToggle();
+      } else if (pinchZoomed) {
         resetPinch();
-        setZoomed(false);
       } else {
         const rect = container.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
@@ -217,8 +258,7 @@ export function PlanLightbox({
     clearSingleTapTimer();
     singleTapTimer.current = setTimeout(() => {
       singleTapTimer.current = null;
-      resetPinch();
-      setZoomed((z) => !z);
+      animateZoomToggle();
     }, DOUBLE_TAP_MS);
     return false;
   };
@@ -355,8 +395,11 @@ export function PlanLightbox({
                 src={zoomed || pinchZoomed ? variant.images.zoom : variant.images.detail}
                 alt={`${variant.typeLabel} floor plan, Unit ${variant.unit}, floors ${variant.floorLabel}, ${sqftLabel}`}
                 onClick={() => {
-                  resetPinch();
-                  setZoomed((z) => !z);
+                  if (pinchZoomed) {
+                    resetPinch();
+                  } else {
+                    animateZoomToggle();
+                  }
                 }}
                 draggable={false}
                 className={
@@ -366,14 +409,20 @@ export function PlanLightbox({
                 }
                 style={
                   zoomed
-                    ? { width: '160%' }
-                    : pinchZoomed || gesture.current.mode
-                      ? {
-                          transform: `translate(${pinch.tx}px, ${pinch.ty}px) scale(${pinch.scale})`,
-                          transformOrigin: 'center center',
-                          transition: 'none',
-                        }
-                      : undefined
+                    ? {
+                        width: '160%',
+                        transformOrigin: 'top left',
+                        transform: zoomPhase === 'idle' ? 'scale(1)' : 'scale(0.625)',
+                        transition:
+                          zoomPhase === 'enter' ? 'none' : 'transform 200ms ease',
+                      }
+                    : {
+                        transform: `translate(${pinch.tx}px, ${pinch.ty}px) scale(${pinch.scale})`,
+                        transformOrigin: 'center center',
+                        transition: gesture.current.mode
+                          ? 'none'
+                          : 'transform 200ms ease',
+                      }
                 }
               />
             </div>
@@ -385,8 +434,7 @@ export function PlanLightbox({
                 if (pinchZoomed) {
                   resetPinch();
                 } else {
-                  resetPinch();
-                  setZoomed((z) => !z);
+                  animateZoomToggle();
                 }
               }}
               className="absolute bottom-4 left-4 flex min-h-11 items-center gap-2 bg-black/60 px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80"
