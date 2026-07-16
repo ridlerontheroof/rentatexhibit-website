@@ -103,6 +103,9 @@ export function PlanLightbox({
   const [mouseDragging, setMouseDragging] = useState(false);
   const suppressClick = useRef(false);
 
+  // Desktop-only keyboard shortcut legend (toggled by the "?" button or key).
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
   const resetPinch = useCallback(() => {
     gesture.current.mode = null;
     mouseDrag.current = null;
@@ -355,6 +358,11 @@ export function PlanLightbox({
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
         return;
       }
+      if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcuts((s) => !s);
+        return;
+      }
       if (e.key === '+' || e.key === '=') {
         e.preventDefault();
         keyboardZoom(1);
@@ -600,8 +608,8 @@ export function PlanLightbox({
         </DialogTitle>
         <DialogDescription className="sr-only">
           {sqftLabel}. Use the left and right arrow keys or swipe to move between floor plans. Press
-          plus or minus to zoom, 0 to reset, and the arrow keys to pan while zoomed. Press Escape to
-          close.
+          plus or minus to zoom, 0 to reset, and the arrow keys to pan while zoomed. Press question
+          mark to toggle the shortcut legend. Press Escape to close.
         </DialogDescription>
 
         <div className="flex h-screen supports-[height:100svh]:h-[100svh] supports-[height:100dvh]:h-[100dvh] flex-col lg:grid lg:h-screen lg:grid-cols-[1fr_360px] lg:grid-rows-1">
@@ -683,6 +691,57 @@ export function PlanLightbox({
               {zoomed || pinchZoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
               {zoomed || pinchZoomed ? 'Fit' : 'Zoom'}
             </button>
+
+            {/* Keyboard shortcuts hint (desktop / fine-pointer only) */}
+            <button
+              type="button"
+              onClick={() => setShowShortcuts((s) => !s)}
+              aria-expanded={showShortcuts}
+              aria-controls="plan-shortcuts-legend"
+              aria-label={showShortcuts ? 'Hide keyboard shortcuts' : 'Show keyboard shortcuts'}
+              className="absolute bottom-4 left-[7.5rem] hidden min-h-11 min-w-11 items-center justify-center bg-black/60 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-black/80 pointer-fine:lg:flex"
+            >
+              ?
+            </button>
+            {showShortcuts && (
+              <div
+                id="plan-shortcuts-legend"
+                role="region"
+                aria-label="Keyboard shortcuts"
+                className="absolute bottom-16 left-4 z-10 hidden w-60 bg-black/80 p-4 text-white backdrop-blur-sm pointer-fine:lg:block"
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-[11px] font-semibold uppercase tracking-[2px] text-white/70">
+                    Keyboard shortcuts
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowShortcuts(false)}
+                    aria-label="Dismiss keyboard shortcuts"
+                    className="-mr-1 -mt-1 px-1 text-white/60 transition-colors hover:text-white"
+                  >
+                    ×
+                  </button>
+                </div>
+                <dl className="space-y-1.5 text-xs">
+                  {[
+                    ['+ / −', 'Zoom in / out'],
+                    ['0', 'Reset zoom'],
+                    ['← →', 'Next / previous plan'],
+                    ['Arrows', 'Pan while zoomed'],
+                    ['Esc', 'Fit, then close'],
+                    ['?', 'Toggle this panel'],
+                  ].map(([key, desc]) => (
+                    <div key={key} className="flex items-center justify-between gap-3">
+                      <dt className="whitespace-nowrap border border-white/25 px-1.5 py-0.5 font-mono text-[11px] text-white/90">
+                        {key}
+                      </dt>
+                      <dd className="text-right text-white/70">{desc}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
 
             {/* Prev / next */}
             {position.total > 1 && (
