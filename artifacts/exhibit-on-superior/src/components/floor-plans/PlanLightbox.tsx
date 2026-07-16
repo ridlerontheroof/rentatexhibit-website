@@ -6,6 +6,7 @@ import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
 import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
 import { trackOutboundClick } from '../../lib/analytics';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
+import { decideSheetSnap } from '../../lib/sheetSnap';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
 
@@ -63,10 +64,7 @@ export function PlanLightbox({
     velocity: number; // px/ms; positive = moving up (sheet growing)
   } | null>(null);
 
-  // A flick faster than this (px/ms) snaps in the flick's direction
-  // regardless of how far the sheet has travelled. ~0.5 px/ms matches
-  // typical native bottom-sheet thresholds.
-  const FLICK_VELOCITY = 0.5;
+  // Flick threshold & snap decision live in lib/sheetSnap.ts (pure, unit-tested).
 
   // Pinch-to-zoom state (touch devices). scale === 1 means "fit".
   const [pinch, setPinch] = useState({ scale: 1, tx: 0, ty: 0 });
@@ -219,19 +217,14 @@ export function PlanLightbox({
     if (!dragRef.current) return;
     const vh = viewportH();
     const currentPx = dragHeightPx ?? (sheetSnap / 100) * vh;
-    const midpointPx = ((SHEET_COLLAPSED + SHEET_EXPANDED) / 2 / 100) * vh;
-    // If the pointer paused before release, the last-sampled velocity is
-    // stale — treat it as a slow drag rather than a flick.
-    const paused = e ? e.timeStamp - dragRef.current.lastTime > 100 : false;
-    const velocity = paused ? 0 : dragRef.current.velocity;
-    // A fast flick wins regardless of position; slow drags snap by midpoint.
-    if (velocity >= FLICK_VELOCITY) {
-      setSheetSnap(SHEET_EXPANDED);
-    } else if (velocity <= -FLICK_VELOCITY) {
-      setSheetSnap(SHEET_COLLAPSED);
-    } else {
-      setSheetSnap(currentPx >= midpointPx ? SHEET_EXPANDED : SHEET_COLLAPSED);
-    }
+    const snapPx = decideSheetSnap({
+      velocity: dragRef.current.velocity,
+      currentPx,
+      collapsedPx: (SHEET_COLLAPSED / 100) * vh,
+      expandedPx: (SHEET_EXPANDED / 100) * vh,
+      msSinceLastMove: e ? e.timeStamp - dragRef.current.lastTime : 0,
+    });
+    setSheetSnap(snapPx === (SHEET_EXPANDED / 100) * vh ? SHEET_EXPANDED : SHEET_COLLAPSED);
     setDragHeightPx(null);
     dragRef.current = null;
   };
