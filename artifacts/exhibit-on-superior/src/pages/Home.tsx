@@ -8,7 +8,7 @@ import { SplitHeadline } from '../components/SplitHeadline';
 import { SmartImg } from '../components/SmartImg';
 
 // Home hero carousel — same photos and order as the source rentatexhibit.com hero.
-const HERO_SLIDES: HeroSlide[] = [
+export const HERO_SLIDES: HeroSlide[] = [
   { src: '/images/image-013-20170808-0861-n4esrp.jpg', alt: 'Large lap pool at Exhibit On Superior in Chicago, Illinois' },
   { src: '/images/image-014-exhibit-living-room-n5xrna.jpg', alt: 'Beautiful living room with large windows at Exhibit On Superior in Chicago, Illinois' },
   { src: '/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq.jpg', alt: 'Large meeting table in the clubhouse at Exhibit On Superior in Chicago, Illinois' },

@@ -54,6 +54,10 @@ const templatePath = path.join(publicDir, 'index.html');
 const template = await fs.readFile(templatePath, 'utf8');
 
 const SEO_BLOCK = /<!--\s*seo:start\s*-->[\s\S]*?<!--\s*seo:end\s*-->/;
+// Home-hero LCP preload block (AVIF imagesrcset). Only the home page renders
+// the hero slider, so the preload is stripped from every other prerendered
+// page to avoid wasted bandwidth.
+const LCP_BLOCK = /\s*<!--\s*lcp:start\s*-->[\s\S]*?<!--\s*lcp:end\s*-->/;
 const ROOT_DIV = '<div id="root"></div>';
 
 if (!SEO_BLOCK.test(template)) {
@@ -64,6 +68,11 @@ if (!SEO_BLOCK.test(template)) {
 if (!template.includes(ROOT_DIV)) {
   throw new Error(`Prerender aborted: could not find "${ROOT_DIV}" in index.html.`);
 }
+if (!LCP_BLOCK.test(template)) {
+  throw new Error(
+    'Prerender aborted: could not find <!-- lcp:start --> / <!-- lcp:end --> markers in index.html.',
+  );
+}
 
 for (const routePath of seoPaths) {
   const { html, head } = await render(routePath);
@@ -72,9 +81,14 @@ for (const routePath of seoPaths) {
     throw new Error(`Prerender aborted: no <title> generated for ${routePath}.`);
   }
 
-  const page = template
+  let page = template
     .replace(SEO_BLOCK, `<!-- seo:start -->\n    ${head}\n    <!-- seo:end -->`)
     .replace(ROOT_DIV, `<div id="root">${html}</div>`);
+
+  // Only the home page has the hero slider; drop the LCP preload elsewhere.
+  if (routePath !== '/') {
+    page = page.replace(LCP_BLOCK, '');
+  }
 
   // Assert the head tags actually landed inside the marker block (not the body).
   const block = page.match(SEO_BLOCK);
