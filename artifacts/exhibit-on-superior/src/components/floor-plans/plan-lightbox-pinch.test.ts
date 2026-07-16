@@ -111,6 +111,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   view?.unmount();
   view = null;
   for (const { proto, prop, original } of sizeDescriptors.splice(0)) {
@@ -302,6 +303,75 @@ describe('horizontal swipe navigation', () => {
     const t = readTransform();
     expect(t.scale).toBeCloseTo(2, 5);
     expect(t.tx).toBe(-100); // the gesture panned the plan
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Double-tap zoom. handleTap uses Date.now for the double-tap window and a
+// setTimeout for the deferred single-tap toggle, so fake timers control both
+// (vi.setSystemTime moves Date.now without firing the single-tap timer).
+// jsdom's getBoundingClientRect is all-zero, so the viewer centre is (0, 0)
+// and the expected translation is simply -(tap) * (scale - 1).
+// ---------------------------------------------------------------------------
+const DOUBLE_TAP_SCALE = 2;
+
+/** A quick tap: touchstart + touchend at the same point (no movement). */
+function tap(p: Pt) {
+  fireTouch('touchstart', [p]);
+  fireTouch('touchend', [], [p]);
+}
+
+describe('double-tap zoom', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  it('zooms to 2x toward the tapped point: t = -(tap - center) * (scale - 1)', () => {
+    tap({ x: 100, y: 50 });
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 }); // waits for 2nd tap
+    tap({ x: 100, y: 50 });
+    const t = readTransform();
+    expect(t.scale).toBe(DOUBLE_TAP_SCALE);
+    expect(t.tx).toBe(-100 * (DOUBLE_TAP_SCALE - 1));
+    expect(t.ty).toBe(-50 * (DOUBLE_TAP_SCALE - 1));
+  });
+
+  it('clamps the double-tap translation to the pan bounds', () => {
+    // At scale 2 the hard bounds are |tx| <= 400, |ty| <= 300. A tap at
+    // (500, 350) would want (-500, -350) unclamped.
+    tap({ x: 500, y: 350 });
+    tap({ x: 500, y: 350 });
+    const t = readTransform();
+    expect(t.scale).toBe(DOUBLE_TAP_SCALE);
+    expect(t.tx).toBe(-VIEWER_W / 2);
+    expect(t.ty).toBe(-VIEWER_H / 2);
+  });
+
+  it('a second double-tap while pinch-zoomed resets to fit', () => {
+    tap({ x: 100, y: 50 });
+    tap({ x: 100, y: 50 });
+    expect(readTransform().scale).toBe(DOUBLE_TAP_SCALE);
+
+    // While pinch-zoomed a one-finger touch takes the "pan" path; a barely
+    // moved pan still counts as a tap, and the second one resets to fit.
+    tap({ x: 20, y: 10 });
+    tap({ x: 20, y: 10 });
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+  });
+
+  it('two taps slower than 300ms apart do not zoom', () => {
+    tap({ x: 100, y: 50 });
+    // Move Date.now past the double-tap window without firing the pending
+    // single-tap timer (which would toggle the scroll-zoom mode instead).
+    vi.setSystemTime(Date.now() + 400);
+    tap({ x: 100, y: 50 });
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+  });
+
+  it('two quick taps farther apart than the 40px slop do not zoom', () => {
+    tap({ x: 0, y: 0 });
+    tap({ x: 60, y: 0 });
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
   });
 });
 
