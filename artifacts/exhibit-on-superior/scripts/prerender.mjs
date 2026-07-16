@@ -31,11 +31,22 @@ if (missingRoutes.length || orphanRoutes.length) {
   );
 }
 
-// Guard: every WebP variant listed in the image manifest must exist in the
-// build output, so a stale/hand-edited manifest can't ship 404ing srcsets.
+// Guard: every WebP AND AVIF variant listed in the image manifest must exist
+// in the build output, so a stale/hand-edited manifest can't ship 404ing
+// srcsets or <source type="image/avif"> entries. The manifest object literal
+// is generator-emitted JSON, so parse it structurally rather than regexing
+// individual fields — robust against formatting changes.
 {
   const manifestSrc = await fs.readFile(path.join(root, 'src', 'data', 'imageManifest.ts'), 'utf8');
-  const variantPaths = [...manifestSrc.matchAll(/"src":\s*"(\/images\/[^"]+\.webp)"/g)].map((m) => m[1]);
+  const objectMatch = manifestSrc.match(/IMAGE_MANIFEST[^=]*=\s*(\{[\s\S]*\})\s*;/);
+  if (!objectMatch) {
+    throw new Error('Prerender aborted: could not locate IMAGE_MANIFEST object in imageManifest.ts');
+  }
+  /** @type {Record<string, {variants: Array<{src: string, avif?: string}>}>} */
+  const manifest = JSON.parse(objectMatch[1]);
+  const variantPaths = Object.values(manifest).flatMap((meta) =>
+    meta.variants.flatMap((v) => (v.avif ? [v.src, v.avif] : [v.src])),
+  );
   const missing = [];
   for (const p of variantPaths) {
     try {

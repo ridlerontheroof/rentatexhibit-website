@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import rateLimit from "express-rate-limit";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { CreateLeadBody, CreateLeadResponse } from "@workspace/api-zod";
 import { db, leadsTable } from "@workspace/db";
 import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
@@ -74,10 +74,13 @@ router.post("/leads", leadLimiter, async (req, res) => {
     void sendLeadNotification(leadForEmail).then(async (sent) => {
       if (!sent) return;
       try {
+        // Conditional stamp (notified_at IS NULL) so that if another instance
+        // (e.g. the retry sweeper on a different replica) already recorded a
+        // send, we don't overwrite its timestamp.
         await db
           .update(leadsTable)
           .set({ notifiedAt: new Date() })
-          .where(eq(leadsTable.id, row.id));
+          .where(and(eq(leadsTable.id, row.id), isNull(leadsTable.notifiedAt)));
       } catch (err) {
         req.log.error(
           { err, leadId: row.id },

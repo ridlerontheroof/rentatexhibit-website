@@ -1,5 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { startLeadNotificationRetry } from "./lib/leadNotificationRetry";
 
 const rawPort = process.env["PORT"];
 
@@ -22,4 +23,8 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // Durable backstop: periodically retry leasing-team notifications for leads
+  // whose fire-and-forget send failed (notified_at still NULL).
+  startLeadNotificationRetry();
 });
