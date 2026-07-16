@@ -1,3 +1,5 @@
+import { existsSync, readdirSync } from 'node:fs';
+import { basename, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   bandsForFloors,
@@ -155,6 +157,31 @@ describe('plans dataset', () => {
     for (const p of plans) {
       expect(p.id).toBe(slugFor(p.unit, p.floorLabel));
     }
+  });
+});
+
+// --- floor-plan image files exist on disk ---------------------------------
+
+describe('floor-plan image files', () => {
+  const IMG_DIR = join(__dirname, '..', '..', 'public', 'images', 'floor-plans');
+
+  it('every plan\'s thumb, detail, and zoom .webp files exist on disk', () => {
+    const missing: string[] = [];
+    for (const p of plans) {
+      for (const key of ['thumb', 'detail', 'zoom'] as const) {
+        const file = basename(p.images[key]);
+        if (!existsSync(join(IMG_DIR, file))) missing.push(file);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it('no orphan image files exist that no plan references', () => {
+    const referenced = new Set(
+      plans.flatMap((p) => [p.images.thumb, p.images.detail, p.images.zoom].map((s) => basename(s))),
+    );
+    const orphans = readdirSync(IMG_DIR).filter((f) => f.endsWith('.webp') && !referenced.has(f));
+    expect(orphans).toEqual([]);
   });
 });
 
