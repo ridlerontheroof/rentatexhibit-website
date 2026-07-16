@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { useCreateLead } from '../hooks/use-create-lead';
 import { useUnsavedChangesWarning } from '../hooks/use-unsaved-changes';
+import { useOnlineStatus } from '../hooks/use-online-status';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,6 +31,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 export function ContactUs() {
   const [submitted, setSubmitted] = useState(false);
   const createLead = useCreateLead();
+  const isOnline = useOnlineStatus();
 
   const {
     register,
@@ -146,6 +148,16 @@ export function ContactUs() {
                   </div>
                 )}
 
+                {!isOnline && (
+                  <div
+                    className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    You appear to be offline. Please check your internet connection before sending your message.
+                  </div>
+                )}
+
                 {createLead.isError && (
                   <div className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive" role="alert">
                     Something went wrong and your message couldn't be sent. Please check your connection and try again.
@@ -251,7 +263,7 @@ export function ContactUs() {
 
                   <button
                     type="submit"
-                    disabled={createLead.isPending}
+                    disabled={createLead.isPending || !isOnline}
                     className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 w-full disabled:opacity-50"
                   >
                     {createLead.isPending ? 'Sending...' : 'Send Message'}
