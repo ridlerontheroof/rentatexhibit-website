@@ -76,6 +76,7 @@ function makeGroup(): PlanGroup {
 }
 
 let view: RenderResult | null = null;
+let onNavigate: ReturnType<typeof vi.fn>;
 
 const sizeDescriptors: Array<{
   proto: object;
@@ -96,13 +97,14 @@ beforeEach(() => {
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
 
+  onNavigate = vi.fn();
   view = render(
     createElement(PlanLightbox, {
       group: makeGroup(),
       variantIndex: 0,
       position: { index: 0, total: 3 },
       onClose: vi.fn(),
-      onNavigate: vi.fn(),
+      onNavigate,
       onVariantChange: vi.fn(),
     }),
   );
@@ -260,6 +262,46 @@ describe('one-finger pan while pinch-zoomed', () => {
     expect(t.tx).toBe(VIEWER_W / 2);
     expect(t.ty).toBe(-(VIEWER_H / 2));
     expect(t.scale).toBeCloseTo(2, 5);
+  });
+});
+
+describe('horizontal swipe navigation', () => {
+  it('a >50px horizontal swipe at scale 1 navigates in the right direction', () => {
+    // Swipe left (finger moves left, dx < 0): next plan.
+    fireTouch('touchstart', [{ x: 200, y: 0 }]);
+    fireTouch('touchend', [], [{ x: 100, y: 0 }]);
+    expect(onNavigate).toHaveBeenCalledTimes(1);
+    expect(onNavigate).toHaveBeenLastCalledWith(1);
+
+    // Swipe right (dx > 0): previous plan.
+    fireTouch('touchstart', [{ x: 100, y: 0 }]);
+    fireTouch('touchend', [], [{ x: 200, y: 0 }]);
+    expect(onNavigate).toHaveBeenCalledTimes(2);
+    expect(onNavigate).toHaveBeenLastCalledWith(-1);
+  });
+
+  it('a short (<50px) swipe never navigates', () => {
+    // Move > tap slop so it is not a tap, but under the 50px swipe threshold.
+    fireTouch('touchstart', [{ x: 0, y: 0 }]);
+    fireTouch('touchend', [], [{ x: 40, y: 0 }]);
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
+
+  it('the same swipe while pinch-zoomed pans instead of navigating', () => {
+    // Pinch to 2x and lift both fingers.
+    pinchTo(2);
+    fireTouch('touchend', [], [{ x: -100, y: 0 }, { x: 100, y: 0 }]);
+    expect(readTransform().scale).toBeCloseTo(2, 5);
+
+    // One-finger horizontal drag > 50px: becomes a pan gesture.
+    fireTouch('touchstart', [{ x: 0, y: 0 }]);
+    fireTouch('touchmove', [{ x: -100, y: 0 }]);
+    fireTouch('touchend', [], [{ x: -100, y: 0 }]);
+
+    expect(onNavigate).not.toHaveBeenCalled();
+    const t = readTransform();
+    expect(t.scale).toBeCloseTo(2, 5);
+    expect(t.tx).toBe(-100); // the gesture panned the plan
   });
 });
 
