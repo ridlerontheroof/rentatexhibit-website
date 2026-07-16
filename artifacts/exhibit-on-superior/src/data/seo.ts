@@ -4,7 +4,7 @@
 export const SITE_URL = 'https://www.rentatexhibit.com';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg`;
 
-export const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
+export const AVAILABILITY_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
 export const APPLY_URL =
   'https://highlandrealestatepartners.appfolio.com/apply/9ccea374-8cca-48fa-8f86-4aff06b01f03/start?source=Website';
 
