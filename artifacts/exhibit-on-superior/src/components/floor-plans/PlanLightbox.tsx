@@ -12,7 +12,7 @@ import {
   sampleSheetVelocity,
 } from '../../lib/sheetSnap';
 
-const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
+import { AVAILABILITY_URL } from '../../data/seo';
 
 interface PlanLightboxProps {
   group: PlanGroup | null;
@@ -614,7 +614,7 @@ export function PlanLightbox({
             <div
               ref={viewerRef}
               className={`h-full w-full ${zoomed ? 'overflow-auto' : 'overflow-hidden flex items-center justify-center p-4 sm:p-8'}`}
-              style={!zoomed ? { touchAction: pinchZoomed ? 'none' : 'pan-y pinch-zoom' } : undefined}
+              style={!zoomed ? { touchAction: pinchZoomed ? 'none' : 'pan-y' } : undefined}
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}

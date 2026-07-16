@@ -33,7 +33,7 @@ import {
   type SortKey,
 } from '../data/floorPlans';
 
-const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
+import { AVAILABILITY_URL } from '../data/seo';
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'featured', label: 'Featured' },

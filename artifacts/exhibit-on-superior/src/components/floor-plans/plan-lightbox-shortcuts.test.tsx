@@ -36,7 +36,7 @@ beforeAll(() => {
     dimensionSpies.push({
       restore: () => {
         if (original) Object.defineProperty(HTMLElement.prototype, prop, original);
-        else delete (HTMLElement.prototype as Record<string, unknown>)[prop];
+        else delete (HTMLElement.prototype as unknown as Record<string, unknown>)[prop];
       },
     });
   }
