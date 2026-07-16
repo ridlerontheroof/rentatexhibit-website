@@ -30,3 +30,9 @@ id = "Wt3qbnI_ghRWptPcN1Toa"
 uri = "file://attached_assets/og-cards-all.jpg"
 type = "image"
 title = "Per-page share thumbnails (12 pages)"
+
+[[outputs]]
+id = "ttu8CaRQteLo5wEr5LTNq"
+uri = "file://artifacts/exhibit-on-superior/public/images/og/home.jpg"
+type = "image"
+title = "Exhibit on Superior — Share Thumbnail (logo + tagline)"
