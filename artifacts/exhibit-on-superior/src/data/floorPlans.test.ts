@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
@@ -174,6 +174,28 @@ describe('floor-plan image files', () => {
       }
     }
     expect(missing).toEqual([]);
+  });
+
+  it('every image file is non-empty and starts with a valid WebP header (RIFF....WEBP)', () => {
+    const bad: string[] = [];
+    for (const p of plans) {
+      for (const key of ['thumb', 'detail', 'zoom'] as const) {
+        const file = basename(p.images[key]);
+        const path = join(IMG_DIR, file);
+        if (!existsSync(path)) continue; // missing files are reported by the previous test
+        const buf = readFileSync(path);
+        if (buf.length === 0) {
+          bad.push(`${file} (empty file)`);
+        } else if (
+          buf.length < 12 ||
+          buf.toString('ascii', 0, 4) !== 'RIFF' ||
+          buf.toString('ascii', 8, 12) !== 'WEBP'
+        ) {
+          bad.push(`${file} (invalid WebP header)`);
+        }
+      }
+    }
+    expect(bad, `corrupted or empty floor-plan images: ${bad.join(', ')}`).toEqual([]);
   });
 
   it('no orphan image files exist that no plan references', () => {
