@@ -205,7 +205,7 @@ export function FloorPlans() {
                       type="search"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search unit or floor…"
+                      placeholder="Search unit # or floor…"
                       className="pl-9"
                     />
                   </label>
@@ -233,7 +233,7 @@ export function FloorPlans() {
                       type="search"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search unit or floor…"
+                      placeholder="Search unit # or floor…"
                       className="pl-9"
                     />
                   </label>

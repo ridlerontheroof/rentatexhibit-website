@@ -14,6 +14,8 @@ import {
   sortGroups,
   SQFT_MAX,
   SQFT_MIN,
+  unitNumbersForGroup,
+  unitNumbersForPlan,
   type Category,
   type GroupFilterState,
   type Plan,
@@ -71,6 +73,35 @@ function makeFilters(over: Partial<GroupFilterState> = {}): GroupFilterState {
   };
 }
 
+// --- unit numbers --------------------------------------------------------
+
+describe('unitNumbersForPlan / unitNumbersForGroup', () => {
+  it('formats each number as floor + zero-padded unit line', () => {
+    expect(unitNumbersForPlan(makePlan({ unit: 2, floors: [30, 31, 34] }))).toEqual([
+      '3002',
+      '3102',
+      '3402',
+    ]);
+  });
+
+  it('zero-pads single-digit floors (floor 6, unit 6 -> 0606)', () => {
+    expect(unitNumbersForPlan(makePlan({ unit: 6, floors: [6] }))).toEqual(['0606']);
+    expect(unitNumbersForPlan(makePlan({ unit: 5, floors: [2] }))).toEqual(['0205']);
+  });
+
+  it('keeps two-digit unit lines intact', () => {
+    expect(unitNumbersForPlan(makePlan({ unit: 10, floors: [2] }))).toEqual(['0210']);
+  });
+
+  it('unitNumbersForGroup spans the whole floor range', () => {
+    expect(unitNumbersForGroup(makeGroup({ unit: 7, floors: [6, 7, 8] }))).toEqual([
+      '0607',
+      '0707',
+      '0807',
+    ]);
+  });
+});
+
 // --- groupMatchesQuery ----------------------------------------------------
 
 describe('groupMatchesQuery', () => {
@@ -101,6 +132,19 @@ describe('groupMatchesQuery', () => {
     expect(groupMatchesQuery(g, '5 12')).toBe(true);
     // 5 -> unit ok, 99 -> neither: fails.
     expect(groupMatchesQuery(g, '5 99')).toBe(false);
+  });
+
+  it('numeric query matches a full apartment unit number (floor + unit line)', () => {
+    const g = makeGroup({ unit: 2, floors: [30, 31, 32, 33, 34] });
+    expect(groupMatchesQuery(g, '3002')).toBe(true);
+    expect(groupMatchesQuery(g, '3402')).toBe(true);
+    expect(groupMatchesQuery(g, '9902')).toBe(false);
+  });
+
+  it('matches full unit numbers on single-digit floors (floor zero-padded)', () => {
+    const g = makeGroup({ unit: 5, floors: [2] });
+    expect(groupMatchesQuery(g, '0205')).toBe(true);
+    expect(groupMatchesQuery(g, '9905')).toBe(false);
   });
 
   it('text query matches the type label (case-insensitive)', () => {

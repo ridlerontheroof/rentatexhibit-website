@@ -213,14 +213,38 @@ export function bandLabelForGroup(g: PlanGroup): string {
   return g.bands.map((b) => b.label).join(', ');
 }
 
-/** Match a group against a free-text query (unit number or floor number). */
+/**
+ * Actual apartment unit numbers for a single plan: each floor and the unit line
+ * both zero-padded to two digits (FFUU). E.g. unit 6 on floor 6 -> "0606";
+ * unit 2 on floors 30-34 -> 3002, 3102, 3202, 3302, 3402.
+ */
+export function unitNumbersForPlan(p: Plan): string[] {
+  const line = String(p.unit).padStart(2, '0');
+  return p.floors.map((f) => `${String(f).padStart(2, '0')}${line}`);
+}
+
+/** Every apartment unit number across a group's full floor range. */
+export function unitNumbersForGroup(g: PlanGroup): string[] {
+  const line = String(g.unit).padStart(2, '0');
+  return g.floors.map((f) => `${String(f).padStart(2, '0')}${line}`);
+}
+
+/**
+ * Match a group against a free-text query. Numeric tokens match the unit line,
+ * a floor number, or a full apartment unit number (e.g. "3002"). Non-numeric
+ * text matches the type label, "unit N" phrasing, or a floor-band label.
+ */
 export function groupMatchesQuery(g: PlanGroup, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
   // Any standalone numbers in the query
-  const nums = (q.match(/\d+/g) || []).map((n) => parseInt(n, 10));
-  if (nums.length) {
-    return nums.every((n) => g.unit === n || g.floors.includes(n));
+  const tokens = q.match(/\d+/g) || [];
+  if (tokens.length) {
+    const unitNumbers = new Set(unitNumbersForGroup(g));
+    return tokens.every((tok) => {
+      const n = parseInt(tok, 10);
+      return g.unit === n || g.floors.includes(n) || unitNumbers.has(tok);
+    });
   }
   // Text search across type label + "unit N" + floor labels
   const haystack = [

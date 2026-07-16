@@ -2,3 +2,4 @@
 - [Design-subagent correction-pass pattern](design-subagent-correction-pass.md) — first build subagent produces fidelity defects; run a second scoped "correction" subagent, then verify claims yourself.
 - [Orval → api-zod codegen quirk](orval-zod-codegen.md) — regenerating drifts the email field to Zod v4 `zod.email()` which breaks the Zod-v3 build; restore `zod.string().email()` after codegen.
 - [Plan mode blocks workspace writes](plan-mode-writes-blocked.md) — ShellExec writes + executeJs are disabled in Plan mode; asset generation only works in Build mode (not a filesystem bug).
+- [Floor-plan unit numbers](floor-plan-unit-numbers.md) — apartment # = pad2(floor)+pad2(unitLine) (e.g. 0606); "Residence" label is a code mislabel, source says "UNIT".

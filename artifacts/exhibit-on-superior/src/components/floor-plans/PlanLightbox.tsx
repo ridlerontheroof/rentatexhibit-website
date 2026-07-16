@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { Link } from 'wouter';
-import type { PlanGroup } from '../../data/floorPlans';
+import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
 
 const AVAILABILITY_URL = 'https://www.highlandptrs.com/chicago-availability?search=exhibit';
 
@@ -164,6 +164,25 @@ export function PlanLightbox({
                 <dd className="text-xl font-semibold text-foreground">See plan</dd>
               </div>
             </dl>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[2px] text-muted-foreground">
+                Unit Numbers
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {unitNumbersForPlan(variant).map((n) => (
+                  <span
+                    key={n}
+                    className="border border-border px-2.5 py-1 text-sm font-medium tabular-nums text-foreground"
+                  >
+                    {n}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Floor number + unit line {String(variant.unit).padStart(2, '0')}.
+              </p>
+            </div>
 
             {group.variants.length > 1 && (
               <div>
