@@ -8,6 +8,8 @@ import {
   groupMatchesFilters,
   groupMatchesQuery,
   nextPosition,
+  parseFloors,
+  slugFor,
   floorPlansItemListJsonLd,
   planGroups,
   plans,
@@ -73,6 +75,88 @@ function makeFilters(over: Partial<GroupFilterState> = {}): GroupFilterState {
     ...over,
   };
 }
+
+// --- parseFloors (floor label -> numeric range) ----------------------------
+
+describe('parseFloors', () => {
+  it('parses a single-floor label', () => {
+    expect(parseFloors('2')).toEqual({ floors: [2], min: 2, max: 2, mezzanine: false });
+  });
+
+  it('parses a ranged label into the full expanded floor list', () => {
+    expect(parseFloors('6-29')).toEqual({
+      floors: Array.from({ length: 24 }, (_, i) => i + 6),
+      min: 6,
+      max: 29,
+      mezzanine: false,
+    });
+    expect(parseFloors('30-34')).toEqual({
+      floors: [30, 31, 32, 33, 34],
+      min: 30,
+      max: 34,
+      mezzanine: false,
+    });
+  });
+
+  it('flags mezzanine labels without leaking "M" into the numeric range', () => {
+    expect(parseFloors('3-4M')).toEqual({ floors: [3, 4], min: 3, max: 4, mezzanine: true });
+    expect(parseFloors('4-4M')).toEqual({ floors: [4], min: 4, max: 4, mezzanine: true });
+  });
+
+  it('parses a single mezzanine floor ("4M")', () => {
+    expect(parseFloors('4M')).toEqual({ floors: [4], min: 4, max: 4, mezzanine: true });
+  });
+
+  it('every floor it produces is a finite number (no NaN from "M")', () => {
+    for (const label of ['2', '4M', '3-4M', '6-29', '17-21']) {
+      const { floors, min, max } = parseFloors(label);
+      expect(Number.isFinite(min)).toBe(true);
+      expect(Number.isFinite(max)).toBe(true);
+      expect(floors.every((f) => Number.isInteger(f))).toBe(true);
+    }
+  });
+});
+
+// --- slugFor (plan id / image filename stem) --------------------------------
+
+describe('slugFor', () => {
+  it('uses the "floor" prefix for a single floor', () => {
+    expect(slugFor(5, '2')).toBe('unit-5-floor-2');
+  });
+
+  it('uses the "floor" prefix for a single mezzanine floor and lowercases the label', () => {
+    expect(slugFor(4, '4M')).toBe('unit-4-floor-4m');
+  });
+
+  it('uses the "floors" prefix for ranged labels', () => {
+    expect(slugFor(1, '6-29')).toBe('unit-1-floors-6-29');
+    expect(slugFor(3, '3-4M')).toBe('unit-3-floors-3-4m');
+  });
+});
+
+// --- plans dataset integrity ------------------------------------------------
+
+describe('plans dataset', () => {
+  it('has a unique id for every plan (no slug collisions across the 35 sheets)', () => {
+    expect(plans).toHaveLength(35);
+    const ids = plans.map((p) => p.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('derives each plan\'s three image paths from its own id', () => {
+    for (const p of plans) {
+      expect(p.images.thumb).toBe(`/images/floor-plans/${p.id}-thumb.webp`);
+      expect(p.images.detail).toBe(`/images/floor-plans/${p.id}-detail.webp`);
+      expect(p.images.zoom).toBe(`/images/floor-plans/${p.id}-zoom.webp`);
+    }
+  });
+
+  it('each plan\'s id matches slugFor of its own unit + floor label', () => {
+    for (const p of plans) {
+      expect(p.id).toBe(slugFor(p.unit, p.floorLabel));
+    }
+  });
+});
 
 // --- unit numbers --------------------------------------------------------
 

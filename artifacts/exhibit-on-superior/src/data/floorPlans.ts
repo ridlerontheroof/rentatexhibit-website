@@ -54,7 +54,7 @@ export const CATEGORIES: { id: Category; label: string; order: number }[] = [
 
 const IMG_BASE = '/images/floor-plans';
 
-function parseFloors(label: string) {
+export function parseFloors(label: string) {
   const mezzanine = label.includes('M');
   const clean = label.replace(/M/g, '');
   const parts = clean
@@ -109,7 +109,7 @@ const RAW: Raw[] = [
   [6, '17-21', '2br', '2 Bed / 1 Bath', 2, 1, false, 769],
 ];
 
-function slugFor(unit: number, floorLabel: string): string {
+export function slugFor(unit: number, floorLabel: string): string {
   const floors = floorLabel.toLowerCase();
   const single = /^[0-9]+m?$/.test(floors);
   const prefix = single ? 'floor' : 'floors';
