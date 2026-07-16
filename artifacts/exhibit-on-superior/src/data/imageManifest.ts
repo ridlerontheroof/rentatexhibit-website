@@ -1446,5 +1446,19 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 2000
       }
     ]
+  },
+  "/images/og-card.jpg": {
+    "width": 1200,
+    "height": 630,
+    "variants": [
+      {
+        "src": "/images/og-card-800w.webp",
+        "w": 800
+      },
+      {
+        "src": "/images/og-card-1200w.webp",
+        "w": 1200
+      }
+    ]
   }
 };

@@ -16,6 +16,18 @@ const imagesDir = path.join(root, 'public', 'images');
 const manifestPath = path.join(root, 'src', 'data', 'imageManifest.ts');
 
 const QUALITY = '78';
+// Per-stem WebP quality overrides for unusually detail-heavy photos whose
+// variants blow past the ~300KB peer norm at the default quality. Slightly
+// lower quality is visually indistinguishable but cuts page weight sharply.
+const QUALITY_OVERRIDES = {
+  'image-077-20170808-0721-c60hfw': '68',
+  'image-059-20170808-0852-sw1ncm': '70',
+  'image-055-dji-20230620092832-0149-d-yrh5eg': '70',
+  'image-058-20170808-0843-ymrdpp': '70',
+  'image-056-20170808-0721-c60hfw': '70',
+  'image-054-20170808-0677-qicu1y': '70',
+  'image-073-30-south-kis7bz': '70',
+};
 // Responsive rungs. The largest rung also caps the "full" WebP — nothing on
 // the site renders wider than ~2000 CSS px.
 const WIDTHS = [800, 1280, 2000];
@@ -49,7 +61,7 @@ for (const file of files) {
       need = true;
     }
     if (need) {
-      await run('magick', [abs, '-auto-orient', '-resize', `${target}x>`, '-quality', QUALITY, out]);
+      await run('magick', [abs, '-auto-orient', '-resize', `${target}x>`, '-quality', QUALITY_OVERRIDES[stem] ?? QUALITY, out]);
     }
     variants.push({ src: `/images/${outName}`, w: target });
     if (target === width) break; // original narrower than this rung; stop
