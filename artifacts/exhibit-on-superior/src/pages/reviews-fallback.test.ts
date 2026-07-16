@@ -89,6 +89,73 @@ describe('Reviews page fallback', () => {
     expect(document.querySelectorAll('figure blockquote')).toHaveLength(3);
   });
 
+  it('merges live quotes after curated ones, filters duplicates, and caps at 6', () => {
+    hookOverride = {
+      data: {
+        rating: 4.8,
+        reviewCount: 42,
+        reviews: [
+          // Exact duplicate of a curated quote — must be filtered out.
+          {
+            quote:
+              'Love this apartment. Great location, amazing amenities and stunning views. Will be resigning my lease!',
+            author: 'Duplicate Resident',
+            rating: 5,
+          },
+          { quote: 'Fresh quote one', author: 'Live Resident 1', rating: 5 },
+          { quote: 'Fresh quote two', author: 'Live Resident 2', rating: 4 },
+          { quote: 'Fresh quote three', author: 'Live Resident 3', rating: 5 },
+          // Would be the 7th card counting curated three — must be dropped.
+          { quote: 'Fresh quote four', author: 'Live Resident 4', rating: 5 },
+        ],
+      },
+    };
+
+    renderReviews();
+
+    const blockquotes = Array.from(
+      document.querySelectorAll('figure blockquote'),
+    ).map((el) => el.textContent ?? '');
+
+    // Max 6 cards.
+    expect(blockquotes).toHaveLength(6);
+    // Curated three come first, in order.
+    CURATED_SNIPPETS.forEach((snippet, i) => {
+      expect(blockquotes[i]).toContain(snippet);
+    });
+    // Live quotes follow the curated ones.
+    expect(blockquotes[3]).toBe('Fresh quote one');
+    expect(blockquotes[4]).toBe('Fresh quote two');
+    expect(blockquotes[5]).toBe('Fresh quote three');
+    // Duplicate curated quote appears only once (curated card, not the live one).
+    expect(screen.queryByText('Duplicate Resident')).toBeNull();
+    expect(
+      blockquotes.filter((t) => t.includes('Will be resigning my lease!')),
+    ).toHaveLength(1);
+    // Live count 42 < 136, so curated aggregate stays.
+    expect(screen.getByText('4.2')).toBeTruthy();
+    expect(screen.getByText('136')).toBeTruthy();
+  });
+
+  it('uses the live aggregate once the live reviewCount reaches 136', () => {
+    hookOverride = {
+      data: {
+        rating: 4.6,
+        reviewCount: 141,
+        reviews: [
+          { quote: 'Fresh quote one', author: 'Live Resident 1', rating: 5 },
+        ],
+      },
+    };
+
+    renderReviews();
+
+    expect(screen.getByText('4.6')).toBeTruthy();
+    expect(screen.getByText('141')).toBeTruthy();
+    expect(screen.queryByText('4.2')).toBeNull();
+    expect(screen.queryByText('136')).toBeNull();
+  });
+
   it('renders the curated quotes when /api/reviews responds 503', async () => {
     const fetchMock = vi
       .fn()
