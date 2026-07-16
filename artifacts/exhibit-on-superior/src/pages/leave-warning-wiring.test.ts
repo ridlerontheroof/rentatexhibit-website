@@ -84,6 +84,18 @@ function mockLeadSubmitFail() {
   );
 }
 
+// A dropped network: fetch rejects outright (TypeError), never returning a
+// Response. This exercises a different path in the mutation than a non-ok
+// response — the error surfaces before any `response.ok` check runs.
+function mockLeadSubmitNetworkDrop() {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => {
+      throw new TypeError('Failed to fetch');
+    })
+  );
+}
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
@@ -175,6 +187,59 @@ describe('leave-warning wiring', () => {
 
   it('ScheduleTour: guard stays ON when the submit fails, so the visitor cannot silently lose their request', async () => {
     mockLeadSubmitFail();
+    renderPage(ScheduleTour);
+
+    setField('firstName', 'Grace');
+    setField('lastName', 'Hopper');
+    setField('email', 'grace@example.com');
+    setField('phone', '3124500635');
+    setField('moveInDate', '2026-09-01');
+    setField('bedrooms', '1 Bedroom');
+    expect(guardIsOn()).toBe(true);
+
+    submitForm();
+
+    await waitFor(() =>
+      expect(document.body.textContent).toContain(
+        "your tour request couldn't be sent"
+      )
+    );
+
+    expect(
+      (document.getElementById('email') as HTMLInputElement).value
+    ).toBe('grace@example.com');
+    expect(guardIsOn()).toBe(true);
+  });
+
+  it('ContactUs: guard stays ON when the network drops mid-submit (fetch rejects)', async () => {
+    mockLeadSubmitNetworkDrop();
+    renderPage(ContactUs);
+
+    setField('firstName', 'Ada');
+    setField('lastName', 'Lovelace');
+    setField('email', 'ada@example.com');
+    setField('phone', '3124500635');
+    setField('message', 'I would like more information about availability.');
+    expect(guardIsOn()).toBe(true);
+
+    submitForm();
+
+    // The error banner must still show even though fetch never returned a
+    // Response — the rejection path must not be swallowed differently.
+    await waitFor(() =>
+      expect(document.body.textContent).toContain(
+        "your message couldn't be sent"
+      )
+    );
+
+    expect(
+      (document.getElementById('email') as HTMLInputElement).value
+    ).toBe('ada@example.com');
+    expect(guardIsOn()).toBe(true);
+  });
+
+  it('ScheduleTour: guard stays ON when the network drops mid-submit (fetch rejects)', async () => {
+    mockLeadSubmitNetworkDrop();
     renderPage(ScheduleTour);
 
     setField('firstName', 'Grace');
