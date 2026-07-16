@@ -1,6 +1,11 @@
-// Build-tool: convert public/images JPEGs to WebP + AVIF with responsive width
+// Build-tool: convert source JPEGs/PNGs to WebP + AVIF with responsive width
 // variants, and emit src/data/imageManifest.ts (dimensions + variant list)
 // consumed by <SmartImg>. Floor-plan sheets are already WebP and are skipped.
+//
+// Sources live in images-src/ (NOT published — visitors only ever download
+// the generated variants). Any JPEG/PNG still at the top level of
+// public/images (e.g. og-card.jpg, which social crawlers fetch directly) is
+// also treated as a source, since it ships anyway.
 //
 // Idempotent: re-running only regenerates missing/outdated outputs.
 // Usage: node scripts/optimize-images.mjs
@@ -12,7 +17,8 @@ import { fileURLToPath } from 'node:url';
 
 const run = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const imagesDir = path.join(root, 'public', 'images');
+const imagesDir = path.join(root, 'public', 'images'); // output (published)
+const sourcesDir = path.join(root, 'images-src'); // originals (not published)
 const manifestPath = path.join(root, 'src', 'data', 'imageManifest.ts');
 
 const QUALITY = '78';
@@ -47,13 +53,23 @@ const WIDTHS = [800, 1280, 2000];
 const SMALL_RUNG_PATTERNS = [/logo/i];
 const SMALL_WIDTHS = [320];
 
-const files = (await fs.readdir(imagesDir)).filter((f) => /\.(jpe?g|png)$/i.test(f)).sort();
+const isSource = (f) => /\.(jpe?g|png)$/i.test(f);
+const relocated = (await fs.readdir(sourcesDir)).filter(isSource);
+const shippedSources = (await fs.readdir(imagesDir)).filter(
+  (f) => isSource(f) && !relocated.includes(f),
+);
+// name -> absolute source path (relocated sources win over shipped ones)
+const sources = new Map([
+  ...shippedSources.map((f) => [f, path.join(imagesDir, f)]),
+  ...relocated.map((f) => [f, path.join(sourcesDir, f)]),
+]);
+const files = [...sources.keys()].sort();
 
 /** @type {Record<string, { width: number; height: number; variants: { src: string; w: number }[] }>} */
 const manifest = {};
 
 for (const file of files) {
-  const abs = path.join(imagesDir, file);
+  const abs = sources.get(file);
   const { stdout } = await run('magick', ['identify', '-format', '%w %h', abs]);
   const [width, height] = stdout.trim().split(' ').map(Number);
   const stem = file.replace(/\.(jpe?g|png)$/i, '');

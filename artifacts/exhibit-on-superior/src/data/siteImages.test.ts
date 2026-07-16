@@ -12,6 +12,18 @@ const ROOT = join(__dirname, '..', '..');
 const SRC_DIR = join(ROOT, 'src');
 const PUBLIC_DIR = join(ROOT, 'public');
 const IMAGES_DIR = join(PUBLIC_DIR, 'images');
+// Original source photos live outside public/ so they never ship in the
+// published bundle — browsers only download the generated WebP/AVIF variants.
+const SOURCES_DIR = join(ROOT, 'images-src');
+
+/** Resolve an /images/... path to its on-disk file: published copy if it
+ *  ships, otherwise the relocated source in images-src/. */
+function resolveImagePath(p: string): string | null {
+  const shipped = join(PUBLIC_DIR, p);
+  if (existsSync(shipped)) return shipped;
+  const source = join(SOURCES_DIR, p.replace(/^\/images\//, ''));
+  return existsSync(source) ? source : null;
+}
 
 const SOURCE_EXTS = new Set(['.ts', '.tsx', '.css', '.html']);
 const IMAGE_PATH_RE = /\/images\/[A-Za-z0-9_@%./-]+\.(?:png|jpe?g|webp|gif|svg|avif)/g;
@@ -141,21 +153,23 @@ describe('site-wide static images', () => {
     expect(referenced.size).toBeGreaterThan(20);
   });
 
-  it('every image path referenced in source exists under public/', () => {
+  it('every image path referenced in source exists on disk (public/ or images-src/)', () => {
+    // Manifest keys reference original photos that live in images-src/; the
+    // published bundle only contains their generated variants.
     const missing: string[] = [];
     for (const [path, files] of referenced) {
       if (path.startsWith('/images/floor-plans/')) continue; // covered by floorPlans.test.ts
-      if (!existsSync(join(PUBLIC_DIR, path))) {
+      if (!resolveImagePath(path)) {
         missing.push(`${path} (referenced by ${[...files].join(', ')})`);
       }
     }
     expect(missing).toEqual([]);
   });
 
-  it('every IMAGE_MANIFEST original and WebP/AVIF variant exists under public/', () => {
+  it('every IMAGE_MANIFEST original exists on disk and every WebP/AVIF variant under public/', () => {
     const missing: string[] = [];
     for (const [original, meta] of Object.entries(IMAGE_MANIFEST)) {
-      if (!existsSync(join(PUBLIC_DIR, original))) missing.push(original);
+      if (!resolveImagePath(original)) missing.push(original);
       for (const v of meta.variants) {
         if (!existsSync(join(PUBLIC_DIR, v.src))) missing.push(v.src);
         if (v.avif && !existsSync(join(PUBLIC_DIR, v.avif))) missing.push(v.avif);
@@ -219,7 +233,12 @@ describe('site-wide static images', () => {
     const bad: string[] = [];
 
     for (const [original, meta] of Object.entries(IMAGE_MANIFEST)) {
-      const dims = readImageDimensions(join(PUBLIC_DIR, original));
+      const file = resolveImagePath(original);
+      if (!file) {
+        bad.push(`${original} (source file not found)`);
+        continue;
+      }
+      const dims = readImageDimensions(file);
       if (!dims) {
         bad.push(`${original} (could not read dimensions)`);
       } else if (dims.width !== meta.width || dims.height !== meta.height) {
