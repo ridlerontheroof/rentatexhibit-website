@@ -158,7 +158,7 @@ describe('site-wide static images', () => {
       if (!existsSync(join(PUBLIC_DIR, original))) missing.push(original);
       for (const v of meta.variants) {
         if (!existsSync(join(PUBLIC_DIR, v.src))) missing.push(v.src);
-        if (!existsSync(join(PUBLIC_DIR, v.avif))) missing.push(v.avif);
+        if (v.avif && !existsSync(join(PUBLIC_DIR, v.avif))) missing.push(v.avif);
       }
     }
     expect(missing).toEqual([]);
@@ -229,7 +229,7 @@ describe('site-wide static images', () => {
       }
 
       for (const v of meta.variants) {
-        for (const variantPath of [v.src, v.avif]) {
+        for (const variantPath of v.avif ? [v.src, v.avif] : [v.src]) {
           const vDims = readImageDimensions(join(PUBLIC_DIR, variantPath));
           if (!vDims) {
             bad.push(`${variantPath} (could not read dimensions)`);
@@ -302,6 +302,24 @@ describe('site-wide static images', () => {
     expect(over, `oversized images:\n${over.join('\n')}`).toEqual([]);
   });
 
+  it('every shipped AVIF variant is smaller than its WebP twin', () => {
+    // Modern browsers pick AVIF from <picture> when offered; if an AVIF rung
+    // came out larger than its WebP twin, they'd fetch MORE bytes, not fewer.
+    // The optimizer re-encodes or drops such rungs — this catches regressions.
+    const larger: string[] = [];
+    for (const meta of Object.values(IMAGE_MANIFEST)) {
+      for (const v of meta.variants) {
+        if (!v.avif) continue; // rung intentionally dropped by the optimizer
+        const avifSize = statSync(join(PUBLIC_DIR, v.avif)).size;
+        const webpSize = statSync(join(PUBLIC_DIR, v.src)).size;
+        if (avifSize >= webpSize) {
+          larger.push(`${v.avif} (${avifSize}B) >= ${v.src} (${webpSize}B)`);
+        }
+      }
+    }
+    expect(larger, `AVIF variants not smaller than WebP:\n${larger.join('\n')}`).toEqual([]);
+  });
+
   it('no orphan files sit in public/images that nothing references', () => {
     // Union of everything legitimately referenced: source refs, manifest
     // originals, and manifest-generated WebP variants.
@@ -310,7 +328,7 @@ describe('site-wide static images', () => {
       known.add(original);
       for (const v of meta.variants) {
         known.add(v.src);
-        known.add(v.avif);
+        if (v.avif) known.add(v.avif);
       }
     }
 

@@ -24,10 +24,14 @@ export function SmartImg({ src, sizes = '100vw', loading = 'lazy', ...rest }: Sm
   }
   const largest = meta.variants[meta.variants.length - 1];
   const srcSet = meta.variants.map((v) => `${v.src} ${v.w}w`).join(', ');
-  const avifSrcSet = meta.variants.map((v) => `${v.avif} ${v.w}w`).join(', ');
+  // Rungs whose AVIF didn't beat the WebP twin are omitted from the manifest.
+  const avifSrcSet = meta.variants
+    .filter((v) => v.avif)
+    .map((v) => `${v.avif} ${v.w}w`)
+    .join(', ');
   return (
     <picture>
-      <source type="image/avif" srcSet={avifSrcSet} sizes={sizes} />
+      {avifSrcSet && <source type="image/avif" srcSet={avifSrcSet} sizes={sizes} />}
       <img
         src={largest.src}
         srcSet={srcSet}

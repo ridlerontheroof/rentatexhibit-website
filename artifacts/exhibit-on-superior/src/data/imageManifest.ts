@@ -3,7 +3,8 @@
 
 export interface ImageVariant {
   src: string;
-  avif: string;
+  /** Absent when the AVIF encode couldn't beat the WebP twin's size. */
+  avif?: string;
   w: number;
 }
 
