@@ -49,7 +49,18 @@ export function PlanLightbox({
   const SHEET_EXPANDED = 85;
   const [sheetSnap, setSheetSnap] = useState<number>(SHEET_COLLAPSED);
   const [dragHeightPx, setDragHeightPx] = useState<number | null>(null);
-  const dragRef = useRef<{ startY: number; startHeightPx: number } | null>(null);
+  const dragRef = useRef<{
+    startY: number;
+    startHeightPx: number;
+    lastY: number;
+    lastTime: number;
+    velocity: number; // px/ms; positive = moving up (sheet growing)
+  } | null>(null);
+
+  // A flick faster than this (px/ms) snaps in the flick's direction
+  // regardless of how far the sheet has travelled. ~0.5 px/ms matches
+  // typical native bottom-sheet thresholds.
+  const FLICK_VELOCITY = 0.5;
 
   // Pinch-to-zoom state (touch devices). scale === 1 means "fit".
   const [pinch, setPinch] = useState({ scale: 1, tx: 0, ty: 0 });
@@ -154,13 +165,29 @@ export function PlanLightbox({
   const onSheetDragStart = (e: React.PointerEvent) => {
     const startHeightPx =
       dragHeightPx ?? (sheetSnap / 100) * viewportH();
-    dragRef.current = { startY: e.clientY, startHeightPx };
+    dragRef.current = {
+      startY: e.clientY,
+      startHeightPx,
+      lastY: e.clientY,
+      lastTime: e.timeStamp,
+      velocity: 0,
+    };
     // Keep receiving move/up events even when the pointer leaves the handle.
     e.currentTarget.setPointerCapture?.(e.pointerId);
   };
   const onSheetDragMove = (e: React.PointerEvent) => {
     if (!dragRef.current) return;
-    const dy = dragRef.current.startY - e.clientY;
+    const d = dragRef.current;
+    // Track instantaneous velocity (px/ms, positive = upward), smoothed a
+    // little so a single jittery event doesn't dominate.
+    const dt = e.timeStamp - d.lastTime;
+    if (dt > 0) {
+      const instant = (d.lastY - e.clientY) / dt;
+      d.velocity = d.velocity * 0.3 + instant * 0.7;
+      d.lastY = e.clientY;
+      d.lastTime = e.timeStamp;
+    }
+    const dy = d.startY - e.clientY;
     const vh = viewportH();
     const next = Math.min(
       (SHEET_EXPANDED / 100) * vh,
@@ -168,12 +195,23 @@ export function PlanLightbox({
     );
     setDragHeightPx(next);
   };
-  const onSheetDragEnd = () => {
+  const onSheetDragEnd = (e?: React.PointerEvent) => {
     if (!dragRef.current) return;
     const vh = viewportH();
     const currentPx = dragHeightPx ?? (sheetSnap / 100) * vh;
     const midpointPx = ((SHEET_COLLAPSED + SHEET_EXPANDED) / 2 / 100) * vh;
-    setSheetSnap(currentPx >= midpointPx ? SHEET_EXPANDED : SHEET_COLLAPSED);
+    // If the pointer paused before release, the last-sampled velocity is
+    // stale — treat it as a slow drag rather than a flick.
+    const paused = e ? e.timeStamp - dragRef.current.lastTime > 100 : false;
+    const velocity = paused ? 0 : dragRef.current.velocity;
+    // A fast flick wins regardless of position; slow drags snap by midpoint.
+    if (velocity >= FLICK_VELOCITY) {
+      setSheetSnap(SHEET_EXPANDED);
+    } else if (velocity <= -FLICK_VELOCITY) {
+      setSheetSnap(SHEET_COLLAPSED);
+    } else {
+      setSheetSnap(currentPx >= midpointPx ? SHEET_EXPANDED : SHEET_COLLAPSED);
+    }
     setDragHeightPx(null);
     dragRef.current = null;
   };
