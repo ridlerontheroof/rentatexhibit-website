@@ -12,6 +12,7 @@ import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
 // Re-exported so the (browserless) prerender script can read the route list,
 // canonical URLs, and noindex flags straight from the built SSR bundle.
 export { PAGE_SEO, SITE_URL, canonicalFor } from './data/seo';
+export { extractLcpPreload } from './lib/lcpPreload';
 
 /** Content-page paths, exported for the prerenderer's route<->PAGE_SEO parity check. */
 export const ROUTE_PATHS: string[] = routes.map((r) => r.path);

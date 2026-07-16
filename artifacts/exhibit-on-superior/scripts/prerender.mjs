@@ -13,7 +13,9 @@ const root = path.resolve(scriptDir, '..');
 const publicDir = path.join(root, 'dist', 'public');
 const serverEntry = path.join(root, 'dist', 'server', 'entry-server.js');
 
-const { render, PAGE_SEO, canonicalFor, ROUTE_PATHS } = await import(pathToFileURL(serverEntry).href);
+const { render, PAGE_SEO, canonicalFor, ROUTE_PATHS, extractLcpPreload } = await import(
+  pathToFileURL(serverEntry).href
+);
 
 // Parity guard: every indexable page must have a route to render it, and every
 // content route must have SEO metadata. Fail the build on any mismatch so a new
@@ -54,9 +56,10 @@ const templatePath = path.join(publicDir, 'index.html');
 const template = await fs.readFile(templatePath, 'utf8');
 
 const SEO_BLOCK = /<!--\s*seo:start\s*-->[\s\S]*?<!--\s*seo:end\s*-->/;
-// Home-hero LCP preload block (AVIF imagesrcset). Only the home page renders
-// the hero slider, so the preload is stripped from every other prerendered
-// page to avoid wasted bandwidth.
+// Per-page LCP preload block (AVIF imagesrcset). The template carries the
+// home-hero hint (guarded by hero-lcp-preload.test.ts); each prerendered page
+// gets the block rewritten with a preload derived from its own rendered
+// markup, so imagesrcset/imagesizes always match what <SmartImg> renders.
 const LCP_BLOCK = /\s*<!--\s*lcp:start\s*-->[\s\S]*?<!--\s*lcp:end\s*-->/;
 const ROOT_DIV = '<div id="root"></div>';
 
@@ -85,8 +88,20 @@ for (const routePath of seoPaths) {
     .replace(SEO_BLOCK, `<!-- seo:start -->\n    ${head}\n    <!-- seo:end -->`)
     .replace(ROOT_DIV, `<div id="root">${html}</div>`);
 
-  // Only the home page has the hero slider; drop the LCP preload elsewhere.
-  if (routePath !== '/') {
+  // Rewrite the LCP block with this page's own preload, extracted from the
+  // eager high-priority <picture> SmartImg just rendered (exact-match srcset,
+  // so the browser reuses the preloaded response — never a double download).
+  const lcpLink = extractLcpPreload(html);
+  if (lcpLink) {
+    page = page.replace(
+      LCP_BLOCK,
+      `\n    <!-- lcp:start -->\n    ${lcpLink}\n    <!-- lcp:end -->`,
+    );
+    if (routePath === '/' && !page.includes(lcpLink)) {
+      throw new Error('Prerender aborted: home LCP preload injection failed.');
+    }
+  } else {
+    // Page has no eager AVIF image above the fold — drop the hint entirely.
     page = page.replace(LCP_BLOCK, '');
   }
 
