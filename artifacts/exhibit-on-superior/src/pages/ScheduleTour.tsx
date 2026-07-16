@@ -3,6 +3,7 @@ import { PageHero } from '../components/PageHero';
 import { useCreateLead } from '../hooks/use-create-lead';
 import { useUnsavedChangesWarning } from '../hooks/use-unsaved-changes';
 import { useOnlineStatus } from '../hooks/use-online-status';
+import { useBackOnlineNotice } from '../hooks/use-back-online-notice';
 import { Calendar } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,6 +35,7 @@ export function ScheduleTour() {
   const [submitted, setSubmitted] = useState(false);
   const createLead = useCreateLead();
   const isOnline = useOnlineStatus();
+  const showBackOnline = useBackOnlineNotice();
 
   const {
     register,
@@ -145,6 +147,16 @@ export function ScheduleTour() {
                       aria-live="polite"
                     >
                       You appear to be offline. Please check your internet connection before requesting a tour.
+                    </div>
+                  )}
+
+                  {showBackOnline && (
+                    <div
+                      className="bg-primary/10 text-primary p-4 mb-6 border border-primary"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      You're back online. You can now request your tour.
                     </div>
                   )}
 
