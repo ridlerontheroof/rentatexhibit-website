@@ -91,7 +91,7 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0" aria-label="Exhibit On Superior home">
+          <Link href="/" className="flex-shrink-0 pr-6" aria-label="Exhibit On Superior home">
             {/* SmartImg (not a plain <img>) matters here: a plain eager <img>
                 makes React 19's SSR auto-emit a high-priority preload for the
                 heavy original PNG on every prerendered page. Inside SmartImg's
