@@ -80,6 +80,16 @@ describe('Redirect outbound tracking (/apply, /available-units, legacy apply)', 
     expect(callOrder).toEqual(['track', 'replace']);
   });
 
+  it('disables URL-based fallback attribution while APPLY and AVAILABILITY URLs are identical', async () => {
+    // Both CTAs currently point at the same destination, so a Redirect
+    // without an explicit `cta` must not guess — no tracking, still navigates.
+    expect(APPLY_URL).toBe(AVAILABILITY_URL); // precondition for this guard
+    render(<Redirect to={APPLY_URL} />);
+
+    await waitFor(() => expect(replaceSpy).toHaveBeenCalledWith(APPLY_URL));
+    expect(trackSpy).not.toHaveBeenCalled();
+  });
+
   it('does not track other external redirects, but still navigates', async () => {
     render(<Redirect to="https://example.com/elsewhere" />);
 

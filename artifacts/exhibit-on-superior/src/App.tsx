@@ -30,7 +30,18 @@ export function Redirect({ to, cta }: { to: string; cta?: 'apply' | 'availabilit
       // The CTA kind is passed explicitly because APPLY_URL and
       // AVAILABILITY_URL can point at the same destination, making the URL
       // alone ambiguous for attribution.
-      const kind = cta ?? (to === APPLY_URL ? 'apply' : to === AVAILABILITY_URL ? 'availability' : null);
+      // Fallback URL-based attribution is only trustworthy while the two CTA
+      // URLs differ; when they're identical the fallback is disabled and
+      // callsites must pass `cta` explicitly.
+      const urlFallback =
+        APPLY_URL === AVAILABILITY_URL
+          ? null
+          : to === APPLY_URL
+            ? 'apply'
+            : to === AVAILABILITY_URL
+              ? 'availability'
+              : null;
+      const kind = cta ?? urlFallback;
       if (kind) trackOutboundClick(kind, to, 'redirect');
       window.location.replace(to);
     } else {
