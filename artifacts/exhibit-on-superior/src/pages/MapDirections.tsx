@@ -48,7 +48,7 @@ export function MapDirections() {
             </div>
             <div className="text-center">
               <a
-                href="https://www.google.com/maps?cid=15240815771270963454"
+                href="https://www.google.com/maps/dir/?api=1&destination=Exhibit%20On%20Superior%2C%20165%20W%20Superior%20St%2C%20Chicago%2C%20IL%2060654"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold-outline inline-flex items-center gap-2"
