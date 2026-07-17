@@ -34,8 +34,11 @@ export function MapDirections() {
         <section className="py-12 px-4 bg-muted">
           <div className="container mx-auto max-w-5xl">
             <div className="aspect-video bg-white border border-border mb-8">
+              {/* Keyless place-query embed: pins the building with its info
+                  card prepopulated (the previous hand-built `pb` embed
+                  rendered a plain map without a marker). */}
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11880.89369931758!2d-87.633525!3d41.895395!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x880e2cb0cd222165%3A0xd3840af7e2b8eebe!2sExhibit%20on%20Superior!5e0!3m2!1sen!2sus!4v1715000000000!5m2!1sen!2sus"
+                src="https://maps.google.com/maps?q=Exhibit%20On%20Superior%2C%20165%20W%20Superior%20St%2C%20Chicago%2C%20IL%2060654&z=16&output=embed"
                 className="w-full h-full"
                 allowFullScreen
                 loading="lazy"
