@@ -5,6 +5,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
+import { PropertyMap } from '../components/PropertyMap';
 
 export function MapDirections() {
   return (
@@ -34,17 +35,7 @@ export function MapDirections() {
         <section className="py-12 px-4 bg-muted">
           <div className="container mx-auto max-w-5xl">
             <div className="aspect-video bg-white border border-border mb-8">
-              {/* Keyless place-query embed: pins the building with its info
-                  card prepopulated (the previous hand-built `pb` embed
-                  rendered a plain map without a marker). */}
-              <iframe
-                src="https://maps.google.com/maps?q=Exhibit%20On%20Superior%2C%20165%20W%20Superior%20St%2C%20Chicago%2C%20IL%2060654&z=16&output=embed"
-                className="w-full h-full"
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Map of Exhibit On Superior"
-              />
+              <PropertyMap />
             </div>
             <div className="text-center">
               <a

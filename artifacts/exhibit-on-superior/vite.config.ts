@@ -64,6 +64,14 @@ export default defineConfig(async ({ command }) => {
 
   return {
   base: basePath,
+  define: {
+    // Browser Maps JS key for the styled map (Map ID). The user opted to
+    // reuse GOOGLE_PLACES_API_KEY client-side with referrer restrictions;
+    // baking it in via define keeps the secret name out of client code.
+    __GOOGLE_MAPS_BROWSER_KEY__: JSON.stringify(
+      process.env.GOOGLE_PLACES_API_KEY ?? '',
+    ),
+  },
   plugins: [
     react(),
     tailwindcss(),
