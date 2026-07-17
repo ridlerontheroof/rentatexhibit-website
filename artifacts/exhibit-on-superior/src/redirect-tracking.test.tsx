@@ -60,8 +60,8 @@ afterEach(() => {
 
 describe('Redirect outbound tracking (/apply, /available-units, legacy apply)', () => {
   it('fires an apply outbound_click before navigating for /apply and the legacy apply URL', async () => {
-    // /apply and the legacy Wix apply route both render <Redirect to={APPLY_URL}/>.
-    render(<Redirect to={APPLY_URL} />);
+    // /apply and the legacy Wix apply route both render <Redirect to={APPLY_URL} cta="apply"/>.
+    render(<Redirect to={APPLY_URL} cta="apply" />);
 
     await waitFor(() => expect(replaceSpy).toHaveBeenCalledWith(APPLY_URL));
     expect(trackSpy).toHaveBeenCalledTimes(1);
@@ -71,7 +71,9 @@ describe('Redirect outbound tracking (/apply, /available-units, legacy apply)', 
   });
 
   it('fires an availability outbound_click before navigating for /available-units', async () => {
-    render(<Redirect to={AVAILABILITY_URL} />);
+    // cta is passed explicitly because APPLY_URL and AVAILABILITY_URL point at
+    // the same destination, so the URL alone can't attribute the click.
+    render(<Redirect to={AVAILABILITY_URL} cta="availability" />);
 
     await waitFor(() => expect(replaceSpy).toHaveBeenCalledWith(AVAILABILITY_URL));
     expect(trackSpy).toHaveBeenCalledWith('availability', AVAILABILITY_URL, 'redirect');

@@ -21,22 +21,22 @@ const NotFound = lazy(() => import('./pages/not-found').then((m) => ({ default: 
  * (see the migration bundle's host-recommendation.md); this guarantees visitors
  * never hit a 404 in the SPA.
  */
-export function Redirect({ to }: { to: string }) {
+export function Redirect({ to, cta }: { to: string; cta?: 'apply' | 'availability' }) {
   const [, setLocation] = useLocation();
   useEffect(() => {
     if (/^https?:\/\//i.test(to)) {
       // Outbound CTA reached via an internal redirect route (/apply,
       // /available-units, legacy URLs) — attribute it before leaving the SPA.
-      if (to === APPLY_URL) {
-        trackOutboundClick('apply', to, 'redirect');
-      } else if (to === AVAILABILITY_URL) {
-        trackOutboundClick('availability', to, 'redirect');
-      }
+      // The CTA kind is passed explicitly because APPLY_URL and
+      // AVAILABILITY_URL can point at the same destination, making the URL
+      // alone ambiguous for attribution.
+      const kind = cta ?? (to === APPLY_URL ? 'apply' : to === AVAILABILITY_URL ? 'availability' : null);
+      if (kind) trackOutboundClick(kind, to, 'redirect');
       window.location.replace(to);
     } else {
       setLocation(to, { replace: true });
     }
-  }, [to, setLocation]);
+  }, [to, cta, setLocation]);
   return null;
 }
 
@@ -108,13 +108,13 @@ function App() {
           ))}
 
           {/* Clean external CTA URLs preserved from the migration information architecture */}
-          <Route path="/available-units">{() => <Redirect to={AVAILABILITY_URL} />}</Route>
-          <Route path="/apply">{() => <Redirect to={APPLY_URL} />}</Route>
+          <Route path="/available-units">{() => <Redirect to={AVAILABILITY_URL} cta="availability" />}</Route>
+          <Route path="/apply">{() => <Redirect to={APPLY_URL} cta="apply" />}</Route>
 
           {/* Legacy URL redirects */}
           {Object.entries(LEGACY_REDIRECTS).map(([from, to]) => (
             <Route key={from} path={from}>
-              {() => <Redirect to={to} />}
+              {() => <Redirect to={to} cta={to === APPLY_URL ? 'apply' : undefined} />}
             </Route>
           ))}
 
