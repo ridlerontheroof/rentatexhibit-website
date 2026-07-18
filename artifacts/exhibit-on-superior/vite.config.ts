@@ -42,6 +42,24 @@ function siteVerificationTags(): Plugin {
 
 import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
 
+/**
+ * Strips `maximum-scale=1` injected by @replit/vite-plugin-runtime-error-modal.
+ * That attribute prevents pinch-to-zoom and violates WCAG 2.2 SC 1.4.4 (Resize Text, AA).
+ * This plugin runs after runtimeErrorOverlay() and removes the restriction from
+ * every HTML page produced by the build.
+ */
+function removeMaximumScale(): Plugin {
+  return {
+    name: 'remove-maximum-scale',
+    transformIndexHtml(html) {
+      return html.replace(
+        /(<meta\s[^>]*name=["']viewport["'][^>]*content=["'][^"']*),?\s*maximum-scale=\d[^"']*(["'][^>]*>)/gi,
+        '$1$2',
+      );
+    },
+  };
+}
+
 export default defineConfig(async ({ command }) => {
   // PORT is required only when serving (dev/preview); builds don't bind a port.
   // BASE_PATH defaults to '/' for production builds — the deploy pipeline can
@@ -77,6 +95,7 @@ export default defineConfig(async ({ command }) => {
     tailwindcss(),
     siteVerificationTags(),
     runtimeErrorOverlay(),
+    removeMaximumScale(),
     ...(process.env.NODE_ENV !== 'production' &&
     process.env.REPL_ID !== undefined
       ? [
