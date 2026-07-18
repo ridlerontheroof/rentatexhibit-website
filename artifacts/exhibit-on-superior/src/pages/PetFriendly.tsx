@@ -40,7 +40,7 @@ export function PetFriendly() {
                 className="w-full h-[500px] object-cover"
               />
               <div>
-                <h3 className="text-3xl uppercase tracking-wider mb-6">Pet Amenities & Services</h3>
+                <h2 className="text-3xl uppercase tracking-wider mb-6">Pet Amenities & Services</h2>
                 <div className="space-y-6">
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
@@ -49,7 +49,7 @@ export function PetFriendly() {
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-lg uppercase tracking-wider mb-2">Pet Spa Station</h4>
+                      <h3 className="text-lg uppercase tracking-wider mb-2">Pet Spa Station</h3>
                       <p className="text-sm">
                         On-site pet spa with grooming station, wash tubs, and drying area to keep your pets clean and fresh.
                       </p>
@@ -63,7 +63,7 @@ export function PetFriendly() {
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-lg uppercase tracking-wider mb-2">Nearby Parks</h4>
+                      <h3 className="text-lg uppercase tracking-wider mb-2">Nearby Parks</h3>
                       <p className="text-sm">
                         Steps from River North dog parks and walking trails, including Ohio Street Beach dog-friendly area.
                       </p>
@@ -77,7 +77,7 @@ export function PetFriendly() {
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-lg uppercase tracking-wider mb-2">Pet-Friendly Design</h4>
+                      <h3 className="text-lg uppercase tracking-wider mb-2">Pet-Friendly Design</h3>
                       <p className="text-sm">
                         Spacious floor plans with designer plank flooring that's easy to clean and durable for active pets.
                       </p>
@@ -91,7 +91,7 @@ export function PetFriendly() {
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-lg uppercase tracking-wider mb-2">Pet Community</h4>
+                      <h3 className="text-lg uppercase tracking-wider mb-2">Pet Community</h3>
                       <p className="text-sm">
                         Join a vibrant community of pet lovers with regular pet-friendly resident events and social gatherings.
                       </p>
@@ -106,7 +106,7 @@ export function PetFriendly() {
         {/* On-site pet amenities detail */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl">
-            <h3 className="text-3xl uppercase tracking-wider mb-8 text-center">Built For Life With Pets</h3>
+            <h2 className="text-3xl uppercase tracking-wider mb-8 text-center">Built For Life With Pets</h2>
             <p className="text-lg leading-relaxed text-center mb-8">
               Pet-friendly here means more than "pets allowed." The building&rsquo;s community amenities include a dedicated doggie spa and lounge for bath and grooming days, plus a gated outdoor dog walk so quick trips outside don&rsquo;t require a walk around the block. Inside your apartment, driftwood plank floors throughout stand up to paws and claws far better than carpet — and they clean up in seconds after muddy-day walks.
             </p>
@@ -118,7 +118,7 @@ export function PetFriendly() {
 
         <section className="py-16 px-4 bg-muted">
           <div className="container mx-auto max-w-4xl">
-            <h3 className="text-3xl uppercase tracking-wider mb-8 text-center">Pet Policy</h3>
+            <h2 className="text-3xl uppercase tracking-wider mb-8 text-center">Pet Policy</h2>
             <div className="bg-white p-8 border border-border">
               <p className="text-lg leading-relaxed text-center mb-6">
                 Exhibit is a pet-friendly community! Acknowledgement of Dog Rider and compliance of pet policy is required prior to application approval. 2 pets maximum.

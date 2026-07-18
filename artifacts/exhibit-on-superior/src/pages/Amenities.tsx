@@ -47,7 +47,7 @@ export function Amenities() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                  <h3 className="text-white text-2xl uppercase tracking-wider">Views for days</h3>
+                  <p aria-hidden="true" className="text-white text-2xl uppercase tracking-wider">Views for days</p>
                 </div>
               </div>
               <div className="relative h-[350px] overflow-hidden group">
@@ -58,7 +58,7 @@ export function Amenities() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                  <h3 className="text-white text-2xl uppercase tracking-wider">Cozy comfort</h3>
+                  <p aria-hidden="true" className="text-white text-2xl uppercase tracking-wider">Cozy comfort</p>
                 </div>
               </div>
               <div className="relative h-[350px] overflow-hidden group">
@@ -69,7 +69,7 @@ export function Amenities() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                  <h3 className="text-white text-2xl uppercase tracking-wider">Sun Soaked Vibes</h3>
+                  <p aria-hidden="true" className="text-white text-2xl uppercase tracking-wider">Sun Soaked Vibes</p>
                 </div>
               </div>
               <div className="relative h-[350px] overflow-hidden group">
@@ -80,7 +80,7 @@ export function Amenities() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                  <h3 className="text-white text-2xl uppercase tracking-wider">Sweat Session</h3>
+                  <p aria-hidden="true" className="text-white text-2xl uppercase tracking-wider">Sweat Session</p>
                 </div>
               </div>
             </div>
@@ -92,7 +92,7 @@ export function Amenities() {
           <div className="container mx-auto max-w-5xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div>
-                <h3 className="text-2xl uppercase tracking-wider mb-6">Apartment Features</h3>
+                <h2 className="text-2xl uppercase tracking-wider mb-6">Apartment Features</h2>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Dramatic Floor-to-Ceiling Windows</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private Balconies</span></li>
@@ -118,7 +118,7 @@ export function Amenities() {
               </div>
               
               <div>
-                <h3 className="text-2xl uppercase tracking-wider mb-6">Community Amenities</h3>
+                <h2 className="text-2xl uppercase tracking-wider mb-6">Community Amenities</h2>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Full Floor Amenity Deck Overlooking The City And Private Park</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Fitness Center With Two Private Training Rooms</span></li>
