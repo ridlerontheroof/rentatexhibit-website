@@ -327,6 +327,12 @@ const ORGANIZATION_NODE = {
   url: SITE_URL,
   email: 'exhibit@highlandptrs.com',
   telephone: '312-450-0635',
+  logo: {
+    '@type': 'ImageObject',
+    url: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
+    width: 1805,
+    height: 621,
+  },
 };
 
 const APARTMENT_COMPLEX_NODE = {
