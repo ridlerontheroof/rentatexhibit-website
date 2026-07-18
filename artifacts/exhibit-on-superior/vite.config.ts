@@ -69,7 +69,7 @@ export default defineConfig(async ({ command }) => {
     // reuse GOOGLE_PLACES_API_KEY client-side with referrer restrictions;
     // baking it in via define keeps the secret name out of client code.
     __GOOGLE_MAPS_BROWSER_KEY__: JSON.stringify(
-      process.env.GOOGLE_PLACES_API_KEY ?? '',
+      process.env.GOOGLE_MAPS_BROWSER_API_KEY ?? '',
     ),
   },
   plugins: [
