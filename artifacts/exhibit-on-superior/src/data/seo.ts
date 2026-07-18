@@ -480,6 +480,7 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
   const metas: SeoMeta[] = [
     { name: 'description', content: description },
     { name: 'robots', content: isNoindex ? 'noindex, follow' : 'index, follow' },
+    { property: 'og:locale', content: 'en_US' },
     { property: 'og:type', content: 'website' },
     { property: 'og:site_name', content: 'Exhibit On Superior' },
     { property: 'og:title', content: title },

@@ -30,8 +30,8 @@ export function Home() {
           <div className="text-center text-white px-4">
             <SplitHeadline
               as="h1"
-              script="Smart Living on Display"
-              caps="In Downtown Chicago"
+              script="River North Chicago"
+              caps="Apartments"
               underline={false}
               scriptClassName="text-white"
               className="mb-6 [&_.headline-script]:text-[clamp(34px,6vw,64px)] [&_.headline-caps]:text-[clamp(28px,5vw,56px)] [&_.headline-caps]:tracking-[clamp(6px,1.5vw,15px)]"
