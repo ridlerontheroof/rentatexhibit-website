@@ -189,7 +189,7 @@ export function ContactUs() {
                         {...register('firstName')}
                         aria-invalid={errors.firstName ? true : undefined}
                         aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       />
                       {errors.firstName && (
                         <p id="firstName-error" role="alert" className="text-destructive text-xs mt-1">
@@ -207,7 +207,7 @@ export function ContactUs() {
                         {...register('lastName')}
                         aria-invalid={errors.lastName ? true : undefined}
                         aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       />
                       {errors.lastName && (
                         <p id="lastName-error" role="alert" className="text-destructive text-xs mt-1">
@@ -227,7 +227,7 @@ export function ContactUs() {
                       {...register('email')}
                       aria-invalid={errors.email ? true : undefined}
                       aria-describedby={errors.email ? 'email-error' : undefined}
-                      className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                      className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                     />
                     {errors.email && (
                       <p id="email-error" role="alert" className="text-destructive text-xs mt-1">
@@ -246,7 +246,7 @@ export function ContactUs() {
                       {...register('phone')}
                       aria-invalid={errors.phone ? true : undefined}
                       aria-describedby={errors.phone ? 'phone-error' : undefined}
-                      className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                      className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                     />
                     {errors.phone && (
                       <p id="phone-error" role="alert" className="text-destructive text-xs mt-1">
@@ -265,7 +265,7 @@ export function ContactUs() {
                       rows={5}
                       aria-invalid={errors.message ? true : undefined}
                       aria-describedby={errors.message ? 'message-error' : undefined}
-                      className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary resize-none"
+                      className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 resize-none"
                     />
                     {errors.message && (
                       <p id="message-error" role="alert" className="text-destructive text-xs mt-1">

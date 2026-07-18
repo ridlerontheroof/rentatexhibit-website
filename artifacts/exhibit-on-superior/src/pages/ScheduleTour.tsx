@@ -179,7 +179,7 @@ export function ScheduleTour() {
                           {...register('firstName')}
                           aria-invalid={errors.firstName ? true : undefined}
                           aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-                          className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                          className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                         />
                         {errors.firstName && (
                           <p id="firstName-error" role="alert" className="text-destructive text-xs mt-1">
@@ -197,7 +197,7 @@ export function ScheduleTour() {
                           {...register('lastName')}
                           aria-invalid={errors.lastName ? true : undefined}
                           aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-                          className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                          className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                         />
                         {errors.lastName && (
                           <p id="lastName-error" role="alert" className="text-destructive text-xs mt-1">
@@ -217,7 +217,7 @@ export function ScheduleTour() {
                         {...register('email')}
                         aria-invalid={errors.email ? true : undefined}
                         aria-describedby={errors.email ? 'email-error' : undefined}
-                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       />
                       {errors.email && (
                         <p id="email-error" role="alert" className="text-destructive text-xs mt-1">
@@ -236,7 +236,7 @@ export function ScheduleTour() {
                         {...register('phone')}
                         aria-invalid={errors.phone ? true : undefined}
                         aria-describedby={errors.phone ? 'phone-error' : undefined}
-                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       />
                       {errors.phone && (
                         <p id="phone-error" role="alert" className="text-destructive text-xs mt-1">
@@ -255,7 +255,7 @@ export function ScheduleTour() {
                         {...register('moveInDate')}
                         aria-invalid={errors.moveInDate ? true : undefined}
                         aria-describedby={errors.moveInDate ? 'moveInDate-error' : undefined}
-                        className="w-full appearance-none px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                        className="w-full appearance-none px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       />
                       {errors.moveInDate && (
                         <p id="moveInDate-error" role="alert" className="text-destructive text-xs mt-1">
@@ -273,7 +273,7 @@ export function ScheduleTour() {
                         {...register('bedrooms')}
                         aria-invalid={errors.bedrooms ? true : undefined}
                         aria-describedby={errors.bedrooms ? 'bedrooms-error' : undefined}
-                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary"
+                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       >
                         <option value="">Select...</option>
                         <option value="Studio">Studio</option>
@@ -298,7 +298,7 @@ export function ScheduleTour() {
                         {...register('message')}
                         rows={3}
                         placeholder="Preferred tour times, questions, etc."
-                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary resize-none"
+                        className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 resize-none"
                       />
                     </div>
 
