@@ -1,6 +1,5 @@
 import { Link } from 'wouter';
 import { Phone, Mail, MapPin } from 'lucide-react';
-import { SmartImg } from './SmartImg';
 
 export function Footer() {
   return (
@@ -9,10 +8,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & Address */}
           <div>
-            <SmartImg
-              src="/images/image-001-exhibit-on-superior-logo-color-a7pvg4.png"
+            <img
+              src="/images/exhibit-logo-white.svg"
               alt="Exhibit On Superior"
-              sizes="120px"
+              width={336}
+              height={85}
               className="h-10 w-auto mb-4"
             />
             <div className="flex items-start gap-2 text-sm mb-2">
