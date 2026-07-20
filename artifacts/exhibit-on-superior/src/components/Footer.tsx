@@ -13,6 +13,7 @@ export function Footer() {
               alt="Exhibit On Superior"
               width={336}
               height={85}
+              loading="lazy"
               className="h-10 w-auto mb-4"
             />
             <div className="flex items-start gap-2 text-sm mb-2">
