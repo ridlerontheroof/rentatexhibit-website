@@ -36,3 +36,9 @@ id = "ttu8CaRQteLo5wEr5LTNq"
 uri = "file://artifacts/exhibit-on-superior/public/images/og/home.jpg"
 type = "image"
 title = "Exhibit on Superior — Share Thumbnail (logo + tagline)"
+
+[[outputs]]
+id = "7DZvmsbXOoZw9AprpLTeh"
+uri = "file://attached_assets/downloads/exhibit-virtual-tour.mp4"
+type = "video"
+title = "Exhibit on Superior — Virtual Tour Video"
