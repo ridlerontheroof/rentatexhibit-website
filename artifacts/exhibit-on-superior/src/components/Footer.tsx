@@ -72,11 +72,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/artist-in-residence" className="hover:text-primary transition-colors">
-                  Artist-in-Residence
-                </Link>
-              </li>
-              <li>
                 <Link href="/map-directions" className="hover:text-primary transition-colors">
                   Map & Directions
                 </Link>

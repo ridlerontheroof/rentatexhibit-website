@@ -181,22 +181,6 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
     ],
   },
-  '/artist-in-residence': {
-    path: '/artist-in-residence',
-    ogImage: `${SITE_URL}/images/og/artist-in-residence.jpg`,
-    label: 'Artist-in-Residence',
-    title: 'Artist-in-Residence Program | Exhibit On Superior',
-    description:
-      'Learn about the Artist-in-Residence program at Exhibit On Superior and how the community connects residents with local art and music experiences.',
-    quickAnswer:
-      'The Artist-in-Residence program presents Exhibit On Superior as a community with art and music programming that supports local creative experiences for residents.',
-    faqs: [
-      {
-        q: 'What is the Artist-in-Residence program?',
-        a: 'It is a community program that connects Exhibit On Superior residents with local art, music, events, and creative experiences.',
-      },
-    ],
-  },
   '/contact-us': {
     path: '/contact-us',
     ogImage: `${SITE_URL}/images/og/contact-us.jpg`,

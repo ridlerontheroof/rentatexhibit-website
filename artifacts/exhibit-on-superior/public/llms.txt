@@ -16,4 +16,3 @@
 
 - [Photo Gallery](https://www.rentatexhibit.com/photo-gallery)
 - [Virtual Tour](https://www.rentatexhibit.com/virtual-tour)
-- [Artist-in-Residence](https://www.rentatexhibit.com/artist-in-residence)

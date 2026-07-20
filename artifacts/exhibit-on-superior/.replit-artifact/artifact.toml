@@ -73,14 +73,6 @@ from = "/neighborhood/"
 to = "/neighborhood/index.html"
 
 [[services.production.rewrites]]
-from = "/artist-in-residence"
-to = "/artist-in-residence/index.html"
-
-[[services.production.rewrites]]
-from = "/artist-in-residence/"
-to = "/artist-in-residence/index.html"
-
-[[services.production.rewrites]]
 from = "/contact-us"
 to = "/contact-us/index.html"
 

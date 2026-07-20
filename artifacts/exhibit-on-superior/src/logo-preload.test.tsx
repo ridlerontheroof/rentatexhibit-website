@@ -15,22 +15,33 @@ import { Footer } from './components/Footer';
  * suppresses that auto-preload and serves a far smaller file.
  */
 describe('logo rendering', () => {
-  for (const [name, Component] of [
-    ['Header', Header],
-    ['Footer', Footer],
-  ] as const) {
-    it(`${name} renders the logo inside a <picture> with variant sources, not a bare PNG <img>`, () => {
-      const html = renderToString(
-        <Router ssrPath="/">
-          <Component />
-        </Router>,
-      );
-      // The logo must not be a plain <img> pointing at the original PNG —
-      // that's what triggers React's automatic PNG preload during SSR.
-      expect(html).not.toContain('a7pvg4.png');
-      // It must go through SmartImg's <picture> with AVIF + WebP variants.
-      expect(html).toMatch(/<picture><source type="image\/avif"[^>]*a7pvg4[^>]*>/);
-      expect(html).toMatch(/<img[^>]*src[sS]et="[^"]*a7pvg4[^"]*\.webp/);
-    });
-  }
+  it('Header renders the logo inside a <picture> with variant sources, not a bare PNG <img>', () => {
+    const html = renderToString(
+      <Router ssrPath="/">
+        <Header />
+      </Router>,
+    );
+    // The logo must not be a plain <img> pointing at the original PNG —
+    // that's what triggers React's automatic PNG preload during SSR.
+    expect(html).not.toContain('a7pvg4.png');
+    // It must go through SmartImg's <picture> with AVIF + WebP variants.
+    expect(html).toMatch(/<picture><source type="image\/avif"[^>]*a7pvg4[^>]*>/);
+    expect(html).toMatch(/<img[^>]*src[sS]et="[^"]*a7pvg4[^"]*\.webp/);
+  });
+
+  it('Footer renders the white SVG logo lazily so SSR emits no image preload', () => {
+    const html = renderToString(
+      <Router ssrPath="/">
+        <Footer />
+      </Router>,
+    );
+    // Footer uses the white-letters SVG on the dark band — no raster PNG.
+    expect(html).not.toContain('a7pvg4.png');
+    const match = html.match(/<img[^>]*exhibit-logo-white\.svg[^>]*>/);
+    expect(match, 'Footer must render the white SVG logo').toBeTruthy();
+    // The <img> must be lazy: an eager plain <img> makes React 19 SSR emit a
+    // fixed-href preload into every prerendered head, which the prerender
+    // guard rejects and which would fail the production build.
+    expect(match![0]).toMatch(/loading="lazy"/);
+  });
 });

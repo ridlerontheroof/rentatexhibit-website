@@ -101,7 +101,12 @@ describe('header/footer logo downloads the tiny rung on phones', () => {
     assertPicksSmallRung(() => createElement(Header), 'Header');
   });
 
-  it('Footer logo sizes selects the small rung on a phone viewport', () => {
-    assertPicksSmallRung(() => createElement(Footer), 'Footer');
+  it('Footer logo is a resolution-independent SVG (no srcset rungs needed)', () => {
+    const { container } = render(createElement(Footer));
+    const img = Array.from(container.querySelectorAll('img')).find((i) =>
+      /logo/i.test(i.getAttribute('src') ?? ''),
+    );
+    expect(img, 'expected a rendered footer logo <img>').toBeDefined();
+    expect(img!.getAttribute('src')).toMatch(/\.svg$/);
   });
 });

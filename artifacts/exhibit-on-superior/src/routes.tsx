@@ -26,10 +26,6 @@ export const routes: RouteDef[] = [
   { path: '/amenities', load: () => import('./pages/Amenities').then((m) => m.Amenities) },
   { path: '/pet-friendly', load: () => import('./pages/PetFriendly').then((m) => m.PetFriendly) },
   { path: '/neighborhood', load: () => import('./pages/Neighborhood').then((m) => m.Neighborhood) },
-  {
-    path: '/artist-in-residence',
-    load: () => import('./pages/ArtistInResidence').then((m) => m.ArtistInResidence),
-  },
   { path: '/contact-us', load: () => import('./pages/ContactUs').then((m) => m.ContactUs) },
   { path: '/map-directions', load: () => import('./pages/MapDirections').then((m) => m.MapDirections) },
   { path: '/residents', load: () => import('./pages/Residents').then((m) => m.Residents) },

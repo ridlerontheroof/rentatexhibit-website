@@ -127,9 +127,6 @@ export function Header() {
             <Link href="/neighborhood" className={navLink}>
               Neighborhood
             </Link>
-            <Link href="/artist-in-residence" className={navLink}>
-              Artist-in-Residence
-            </Link>
 
             <NavDropdown
               label="Contact Us"
@@ -192,7 +189,6 @@ export function Header() {
               <Link href="/amenities" className="text-sm uppercase tracking-wider py-2">Amenities</Link>
               <Link href="/pet-friendly" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Pet Friendly</Link>
               <Link href="/neighborhood" className="text-sm uppercase tracking-wider py-2">Neighborhood</Link>
-              <Link href="/artist-in-residence" className="text-sm uppercase tracking-wider py-2">Artist-in-Residence</Link>
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
               <Link href="/residents" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Residents</Link>

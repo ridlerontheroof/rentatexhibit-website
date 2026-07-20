@@ -79,7 +79,7 @@ export function Residents() {
               Your home extends well beyond your front door. Residents enjoy the full-floor amenity deck, 75&rsquo; lap pool, outdoor hot tub, fitness center with private training rooms, sauna and wet lounge, tech lounge, game area, private work and meeting rooms, and the private dining room and party suite.
             </p>
             <p className="text-lg leading-relaxed text-center mb-10">
-              Keep an eye out for community programming, too — from live performances by our musician-in-residence to monthly sip-and-paint sessions with our visual artist through the <Link href="/artist-in-residence" className="text-primary underline">Artist-in-Residence program</Link>. Pet owners can find the dog spa, lounge, and gated outdoor dog walk covered on our <Link href="/pet-friendly" className="text-primary underline">Pet Friendly page</Link>.
+              Keep an eye out for community programming, too — from live music performances to monthly sip-and-paint sessions. Pet owners can find the dog spa, lounge, and gated outdoor dog walk covered on our <Link href="/pet-friendly" className="text-primary underline">Pet Friendly page</Link>.
             </p>
             <div className="text-center">
               <Link href="/amenities" className="btn-gold-outline inline-block">
