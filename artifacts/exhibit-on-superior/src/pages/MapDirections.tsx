@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { TOUR_URL } from '../data/seo';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { PropertyMap } from '../components/PropertyMap';
 
@@ -133,7 +134,7 @@ export function MapDirections() {
               <li>Sunday: 12:00 PM – 5:00 PM</li>
             </ul>
             <p className="text-sm text-muted-foreground">
-              Planning a visit? <Link href="/schedule-a-tour" className="text-primary underline">Schedule a tour</Link> ahead of time so our team is ready to show you around.
+              Planning a visit? <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="text-primary underline">Schedule a tour</a> ahead of time so our team is ready to show you around.
             </p>
           </div>
         </section>
@@ -153,7 +154,7 @@ export function MapDirections() {
               <a href="tel:312-450-0635" className="btn-gold-outline inline-block">
                 312-450-0635
               </a>
-              <a href="/schedule-a-tour" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
+              <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
                 Schedule a Tour
               </a>
             </div>

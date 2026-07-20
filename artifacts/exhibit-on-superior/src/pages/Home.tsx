@@ -1,4 +1,5 @@
 import { Link } from 'wouter';
+import { TOUR_URL } from '../data/seo';
 import { ArrowRight, MapPin, Phone } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
@@ -41,9 +42,9 @@ export function Home() {
               Sleek Design for Modern Living Chicago Apartments
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/schedule-a-tour" className="btn-gold-outline bg-black/50! text-white border-primary hover:bg-black/70!">
+              <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline bg-black/50! text-white border-primary hover:bg-black/70!">
                 Schedule a Tour
-              </Link>
+              </a>
               <Link href="/floor-plans" className="btn-gold-outline bg-black/50! text-white hover:bg-black/70!">
                 View Floor Plans
               </Link>

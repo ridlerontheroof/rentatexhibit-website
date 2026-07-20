@@ -20,7 +20,7 @@ import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFil
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { trackOutboundClick } from '../lib/analytics';
 import { SmartImg } from '../components/SmartImg';
-import { APPLY_URL } from '../data/seo';
+import { APPLY_URL, TOUR_URL } from '../data/seo';
 import {
   planGroups,
   filterGroups,
@@ -399,9 +399,9 @@ export function FloorPlans() {
               >
                 Check Availability
               </a>
-              <Link href="/schedule-a-tour" className="btn-gold-outline border-white text-white hover:bg-white hover:text-foreground">
+              <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline border-white text-white hover:bg-white hover:text-foreground">
                 Schedule a Tour
-              </Link>
+              </a>
               <Link href="/photo-gallery" className="btn-gold-outline border-white text-white hover:bg-white hover:text-foreground">
                 See More Photos
               </Link>

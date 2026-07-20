@@ -12,7 +12,7 @@ import {
   sampleSheetVelocity,
 } from '../../lib/sheetSnap';
 
-import { AVAILABILITY_URL } from '../../data/seo';
+import { AVAILABILITY_URL, TOUR_URL } from '../../data/seo';
 
 interface PlanLightboxProps {
   group: PlanGroup | null;
@@ -920,13 +920,15 @@ export function PlanLightbox({
                 Check Availability
               </a>
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/schedule-a-tour"
+                <a
+                  href={TOUR_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={onClose}
                   className="btn-gold-outline flex-1 text-center"
                 >
                   Schedule a Tour
-                </Link>
+                </a>
                 <Link href="/contact-us" onClick={onClose} className="btn-gold-outline flex-1 text-center">
                   Contact Us
                 </Link>

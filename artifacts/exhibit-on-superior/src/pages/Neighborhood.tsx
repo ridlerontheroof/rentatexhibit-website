@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
+import { TOUR_URL } from '../data/seo';
 import { SplitHeadline } from '../components/SplitHeadline';
 
 export function Neighborhood() {
@@ -50,9 +51,9 @@ export function Neighborhood() {
                   Also enjoy quick access to nearby hotspots like Fulton Market, Old Town, and the West Loop. Don't miss out on the action, schedule a tour today
                 </p>
                 <div className="mt-8">
-                  <Link href="/schedule-a-tour" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
+                  <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
                     Schedule a Tour
-                  </Link>
+                  </a>
                 </div>
               </div>
               <SmartImg

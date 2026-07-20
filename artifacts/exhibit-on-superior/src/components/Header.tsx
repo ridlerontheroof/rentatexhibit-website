@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FocusEvent, KeyboardEvent } from 'react';
 import { Link } from 'wouter';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import { AVAILABILITY_URL, APPLY_URL } from '../data/seo';
+import { AVAILABILITY_URL, APPLY_URL, TOUR_URL } from '../data/seo';
 import { SmartImg } from './SmartImg';
 import { trackOutboundClick } from '../lib/analytics';
 
@@ -71,9 +71,21 @@ function NavDropdown({
           >
             {items.map((it) => (
               <li key={it.href}>
-                <Link href={it.href} className={dropLink} onClick={() => setOpen(false)}>
-                  {it.label}
-                </Link>
+                {/^https?:\/\//i.test(it.href) ? (
+                  <a
+                    href={it.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={dropLink}
+                    onClick={() => setOpen(false)}
+                  >
+                    {it.label}
+                  </a>
+                ) : (
+                  <Link href={it.href} className={dropLink} onClick={() => setOpen(false)}>
+                    {it.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -135,7 +147,7 @@ export function Header() {
               items={[
                 { href: '/map-directions', label: 'Map + Directions' },
                 { href: '/residents', label: 'Residents' },
-                { href: '/schedule-a-tour', label: 'Schedule a Tour' },
+                { href: TOUR_URL, label: 'Schedule a Tour' },
                 { href: '/reviews', label: 'Reviews' },
               ]}
             />
@@ -192,7 +204,7 @@ export function Header() {
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
               <Link href="/residents" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Residents</Link>
-              <Link href="/schedule-a-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</Link>
+              <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</a>
               <Link href="/reviews" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Reviews</Link>
 
               <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">

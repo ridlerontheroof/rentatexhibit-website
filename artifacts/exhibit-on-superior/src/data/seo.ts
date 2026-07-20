@@ -6,6 +6,8 @@ export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg`;
 
 export const AVAILABILITY_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
 export const APPLY_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
+/** External "Schedule a Tour" destination (Highland Partners property page). */
+export const TOUR_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
 
 export interface Faq {
   q: string;

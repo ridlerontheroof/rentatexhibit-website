@@ -1,5 +1,6 @@
 import { Phone, Calendar, Mail } from 'lucide-react';
 import { Link } from 'wouter';
+import { TOUR_URL } from '../data/seo';
 
 export function SideRail() {
   return (
@@ -12,14 +13,16 @@ export function SideRail() {
       >
         <Phone className="w-5 h-5" />
       </a>
-      <Link
-        href="/schedule-a-tour"
+      <a
+        href={TOUR_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         className="bg-secondary text-white p-3 hover:bg-secondary/90 transition-colors shadow-lg"
         aria-label="Schedule a tour"
         title="Schedule a Tour"
       >
         <Calendar className="w-5 h-5" />
-      </Link>
+      </a>
       <Link
         href="/contact-us"
         className="bg-primary text-white p-3 hover:bg-primary/90 transition-colors shadow-lg"
