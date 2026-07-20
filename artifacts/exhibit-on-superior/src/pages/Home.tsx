@@ -5,6 +5,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { HeroSlider, type HeroSlide } from '../components/HeroSlider';
 import { SplitHeadline } from '../components/SplitHeadline';
+import { trackOutboundClick } from '../lib/analytics';
 import { SmartImg } from '../components/SmartImg';
 
 // Home hero carousel — same photos and order as the source rentatexhibit.com hero.
@@ -72,6 +73,37 @@ export function Home() {
               <Link href="/floor-plans" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90">
                 View floor plans
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Social media — carried over from the original site */}
+        <section className="py-16 px-4 bg-muted">
+          <div className="container mx-auto max-w-3xl text-center">
+            <SplitHeadline script="Slide into our DMs" caps="Connect With Us on Social Media" className="mb-6" />
+            <p className="text-lg leading-relaxed text-muted-foreground mb-8">
+              Follow Exhibit On Superior for a daily look at life in River North — resident events,
+              amenity updates, and apartment inspiration straight from the building.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="https://www.instagram.com/exhibitonsuperior"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold-outline"
+                onClick={() => trackOutboundClick('social', 'https://www.instagram.com/exhibitonsuperior', 'home_social_section')}
+              >
+                Follow on Instagram
+              </a>
+              <a
+                href="https://www.facebook.com/exhibitonsuperior"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold-outline"
+                onClick={() => trackOutboundClick('social', 'https://www.facebook.com/exhibitonsuperior', 'home_social_section')}
+              >
+                Like on Facebook
+              </a>
             </div>
           </div>
         </section>

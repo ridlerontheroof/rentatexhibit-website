@@ -322,7 +322,13 @@ export function FloorPlans() {
                   space that&rsquo;s uniquely yours, perfect for both relaxing and entertaining
                   right here at Exhibit.
                 </p>
-                <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline inline-block">
+                <a
+                  href={APPLY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-gold-outline inline-block"
+                  onClick={() => trackOutboundClick('apply', APPLY_URL, 'floor_plans_live_smart_section')}
+                >
                   Apply Now
                 </a>
               </div>

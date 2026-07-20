@@ -162,7 +162,7 @@ export function trackLead(
  * be dropped mid-navigation and the highest-intent action undercounted.
  */
 export function trackOutboundClick(
-  linkType: 'apply' | 'availability',
+  linkType: 'apply' | 'availability' | 'social',
   linkUrl: string,
   ctaLocation: string,
   attribution?: { floorPlan?: string }
