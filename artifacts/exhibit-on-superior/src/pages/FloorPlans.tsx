@@ -19,6 +19,8 @@ import { PlanCard } from '../components/floor-plans/PlanCard';
 import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFilters';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { trackOutboundClick } from '../lib/analytics';
+import { SmartImg } from '../components/SmartImg';
+import { APPLY_URL } from '../data/seo';
 import {
   planGroups,
   filterGroups,
@@ -301,6 +303,79 @@ export function FloorPlans() {
         </section>
 
         {/* Closing CTA */}
+        {/* Live Smart, Live Beautifully — carried over from the original site */}
+        <section className="px-4 py-20">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+              <div className="lg:order-1">
+                <SplitHeadline
+                  script="Live Smart, Live Beautifully"
+                  caps="Studio, 1, 2 & 3 Bedroom Floor Plans"
+                  align="left"
+                  className="mb-6"
+                />
+                <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
+                  Choose your perfect floor plan and step up to a trend-forward home that provides
+                  the ultimate respite from the hustle and bustle of Chicago. Packed with stylish
+                  features and life-enhancing extras, the studio, one, two, and three bedroom
+                  apartments at Exhibit On Superior are designed for ultimate modern living. Enjoy a
+                  space that&rsquo;s uniquely yours, perfect for both relaxing and entertaining
+                  right here at Exhibit.
+                </p>
+                <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline inline-block">
+                  Apply Now
+                </a>
+              </div>
+              <div className="relative lg:order-2">
+                <div aria-hidden="true" className="pointer-events-none absolute -right-4 -top-4 bottom-8 left-8 border border-primary" />
+                <SmartImg
+                  src="/images/image-031-012417-5607-piqxtr.jpg"
+                  alt="Dining table and living room with blue accent wall at Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="relative h-[320px] w-full object-cover md:h-[420px]"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Your Space, Your Style — carried over from the original site */}
+        <section className="bg-dark-section px-4 py-20">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+              <div className="relative">
+                <div aria-hidden="true" className="pointer-events-none absolute -left-4 -top-4 bottom-8 right-8 border border-primary" />
+                <SmartImg
+                  src="/images/image-014-exhibit-living-room-n5xrna.jpg"
+                  alt="Living room with floor-to-ceiling windows and Chicago city views at Exhibit On Superior in Chicago, Illinois"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="relative h-[320px] w-full object-cover md:h-[420px]"
+                />
+              </div>
+              <div>
+                <SplitHeadline
+                  script="Your Space, Your Style"
+                  caps="Where Creativity and City Life Collide"
+                  align="left"
+                  dark
+                  className="mb-6"
+                />
+                <p className="mb-8 text-lg leading-relaxed text-white">
+                  Welcome home to your high-rise hideaway to a living space as vibrant as Chicago
+                  itself. Our apartments strike the perfect balance of style, comfort, and
+                  functionality in the heart of River North. Retreat to your personal sanctuary,
+                  where thoughtfully designed bedrooms feature floor-to-ceiling windows that frame
+                  stunning city views, ensuring that your private oasis is as beautiful as it is
+                  comfortable. Your dream home is just a move away!
+                </p>
+                <Link href="/photo-gallery" className="btn-gold-outline inline-block">
+                  See More Photos
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="bg-dark-section px-4 py-16">
           <div className="container mx-auto max-w-3xl text-center">
             <SplitHeadline script="Embrace Unbounded" caps="City Living" dark className="mb-6" />
