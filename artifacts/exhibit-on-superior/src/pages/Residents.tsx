@@ -52,7 +52,7 @@ export function Residents() {
                 </div>
                 <h3 className="text-lg uppercase tracking-wider mb-3">Request Maintenance</h3>
                 <p className="text-sm leading-relaxed">
-                  Submit maintenance requests from your phone or computer through the portal. For urgent issues, call us directly at (312) 883-5503.
+                  Submit maintenance requests from your phone or computer through the portal. For urgent issues, call us directly at <a href="tel:312-883-5503" className="text-primary hover:underline">(312) 883-5503</a>.
                 </p>
               </div>
               <div className="bg-white p-8 border border-border text-center">

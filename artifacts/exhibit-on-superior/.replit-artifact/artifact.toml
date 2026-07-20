@@ -72,6 +72,24 @@ to = "/neighborhood/index.html"
 from = "/neighborhood/"
 to = "/neighborhood/index.html"
 
+# Legacy Artist-in-Residence URLs: page removed. Serve a static no-JS
+# meta-refresh redirect (noindex, canonical /) so crawlers migrate without JS.
+[[services.production.rewrites]]
+from = "/artist-in-residence"
+to = "/artist-in-residence/index.html"
+
+[[services.production.rewrites]]
+from = "/artist-in-residence/"
+to = "/artist-in-residence/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/artist-in-residence"
+to = "/artist-in-residence/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/artist-in-residence/"
+to = "/artist-in-residence/index.html"
+
 [[services.production.rewrites]]
 from = "/contact-us"
 to = "/contact-us/index.html"

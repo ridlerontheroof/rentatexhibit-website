@@ -55,7 +55,7 @@ The **one issue that undercuts all of that**: the site is a client-rendered SPA.
 - Titles are unique, keyword-led, and mostly within 50–60 chars; descriptions are unique and compelling. No action required beyond keeping them within range as pages change. **Priority: 5.**
 
 ### 6. Thin content risk on secondary pages — MEDIUM
-- **Issue:** Pages like `/artist-in-residence`, `/pet-friendly`, `/map-directions`, `/residents` risk being thin (short body + FAQ). Depth drives rankings and helpful-content signals.
+- **Issue:** Pages like `/pet-friendly`, `/map-directions`, `/residents` risk being thin (short body + FAQ). Depth drives rankings and helpful-content signals.
 - **Fix:** Ensure each indexable page has genuinely useful, unique body copy (neighborhood detail, pet policy specifics, resident resources) beyond the Quick Answer + FAQ. Lean on real content from the migration bundle rather than padding.
 - **Priority:** 3.
 
