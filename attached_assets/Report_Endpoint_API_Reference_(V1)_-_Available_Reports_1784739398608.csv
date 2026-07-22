@@ -1,0 +1,1724 @@
+Aged Payables Summary,,
+Report Endpoint ID,aged_payables_summary,
+Date Range Options,to_date,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+PayeeName,Payee Name,string
+AmountPayable,Amount Payable,decimal
+NotYetDue,Not Yet Due,decimal
+0To30,0-30,decimal
+30To60,31-60,decimal
+60To90,61-90,decimal
+90Plus,91+,decimal
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+UnitId,Unit ID,id
+30Plus,31+,decimal
+60Plus,61+,decimal
+InvoicePartyId,Payee ID,string
+InvoicePartyType,Payee Type,string
+,,
+,,
+Aged Receivable Detail,,
+Report Endpoint ID,aged_receivables_detail,
+Date Range Options,to_date,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+PayerName,Payer Name,string
+InvoiceOccurredOn,Charge Date,date
+PostingDate,Posting Date,date
+GlAccountNumber,GL Account Number,string
+GlAccountName,GL Account Name,string
+TotalAmount,Total Amount,decimal
+AmountReceivable,Amount Receivable,decimal
+0To30,0-30,decimal
+30To60,31-60,decimal
+60To90,61-90,decimal
+90Plus,91+,decimal
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+GlAccountId,GL Account ID,id
+FutureCharges,Future Charges,decimal
+30Plus,31+,decimal
+60Plus,61+,decimal
+OccupancyName,Unit & Payer Name,string
+GlAccount,GL Account,string
+UnitAddress,Unit Address,string
+UnitStreet1,Unit Street Address 1,string
+UnitStreet2,Unit Street Address 2,string
+UnitCity,Unit City,string
+UnitState,Unit State,string
+UnitZip,Unit Zip,string
+UnitName,Unit Name,string
+UnitType,Unit Type,string
+UnitTags,Unit Tags,text
+TenantStatus,Tenant Status,string
+PaymentPlan,Payment Plan,string
+occupancy_id,Occupancy ID,id
+UnitId,Unit ID,id
+,,
+,,
+Bill Detail,,
+Report Endpoint ID,bill_detail,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+ReferenceNumber,Reference,string
+BillDate,Bill Date,date
+DueDate,Due Date,date
+Account,Account,string
+Property,Property,string
+Unit,Unit,string
+PayeeName,Payee Name,string
+Paid,Paid,decimal
+Unpaid,Unpaid,decimal
+CheckNumber,Check #,string
+PaymentDate,Paid Date,date
+Description,Description,string
+PostingDate,Posting Date,date
+AccountName,Account Name,string
+AccountNumber,Account Number,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+WorkOrder,Work Order #,string
+CashAccount,Cash Account,string
+TxnId,Txn ID,id
+UnitId,Unit ID,id
+Quantity,Quantity,decimal
+Rate,Rate,decimal
+WorkOrderAssignee,Work Order Assignee,string
+ApprovalStatus,Approval Status,string
+LastApprover,Last Approver,string
+NextApprovers,Next Approvers,string
+DaysPendingApproval,Days Pending Approval,string
+BoardApprovalStatus,Board Approval Status,string
+TxnCreatedAt,Created At,datetime
+TxnUpdatedAt,Last Edited At,datetime
+CreatedBy,Created By,string
+BankAccount,Bank Account,string
+OtherPaymentType,Other Payment Type,string
+PurchaseOrderNumber,Purchase Order Number,string
+PurchaseOrderId,Purchase Order ID,id
+ProjectId,Project ID,id
+ServiceRequestId,Service Request ID,id
+VendorId,Vendor ID,id
+,,
+,,
+Cancelled Workflows,,
+Report Endpoint ID,cancelled_processes,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+AttachableFor,For,string
+Property,Property,string
+WorkflowName,Workflow Name,string
+CancelledDate,Cancelled Date,string
+CancelledBy,Cancelled By,string
+CancellationReason,Cancellation Reason,string
+,,
+,,
+Charge Detail,,
+Report Endpoint ID,charge_detail,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+ChargeDate,Charge Date,date
+ReceiptInfo,Type - Receipt Date - Reference,string
+GlAccountNumber,Account Number,string
+GlAccountName,Account Name,string
+ChargedTo,Charged to,string
+ChargeAmount,Charge Amount,decimal
+PaidAmount,Paid Amount,decimal
+Unit,Unit,string
+UnitAddress,Unit Address,string
+UnitStreet1,Unit Street Address 1,string
+UnitStreet2,Unit Street Address 2,string
+UnitCity,Unit City,string
+UnitState,Unit State,string
+UnitZip,Unit Zip,string
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+TxnId,Txn ID,id
+PartyId,Party ID,id
+Owners,Owner(s),string
+PostingDate,Posting Date,date
+UnitID,Unit ID,id
+ReceivedFromID,Charged to ID,id
+GlAccountId,GL Account ID,id
+,,
+,,
+Chart of Accounts,,
+Report Endpoint ID,chart_of_accounts,
+Date Range Options,none,
+Columns Endpoint,Description,Type
+GlAccountNumber,GL Account Number,string
+GlAccountName,GL Account Name,string
+GlAccountType,GL Account Type,titleized
+SubAccountof,Sub Account of,string
+OffsetAccount,Offset Account,string
+Options,Options,titleized
+Hidden,Hidden,string
+SubjectToTaxAuthority,Subject To Tax Authority,yes_no
+FundAccount,Fund Account,string
+GlAccountId,GL Account ID,id
+SubAccountOfId,Sub Account Of ID,id
+OffsetAccountId,Offset Account ID,id
+,,
+,,
+Check Register Detail (Enhanced),,
+Report Endpoint ID,check_register_detail,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+BankAccount,Bank Account,string
+PayeeName,Payee Name,string
+CheckNumber,Check #,string
+Cleared,Cleared,yes_no
+CheckMemo,Check Memo,string
+OccurredDate,Check Date,date
+PaymentAmount,Payment Amount,decimal
+PropertyName,Property Name,string
+GLAccountNumber,GL Account #,string
+GlAccountName,GL Account Name,string
+InvoiceAmount,Amount,decimal
+Remarks,Description,string
+Reference,Bill Reference #,string
+ACHBatchGenDate,ACH Batch Generation Date,date
+PropertyAddress,Property Address,string
+GLAccountId,Gl Account ID,id
+PropertyId,Property ID,id
+,,
+,,
+Completed Workflows,,
+Report Endpoint ID,completed_processes,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+AttachableFor,For,string
+Property,Property,string
+WorkflowName,Workflow Name,string
+CompletedDate,Completed Date,string
+,,
+,,
+Delinquency,,
+Report Endpoint ID,delinquency,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Unit,Unit,string
+Name,Name,string
+TenantStatus,Tenant Status,string
+Tags,Tags,text
+PhoneNumbers,Phone Numbers,string
+MoveIn,Move In,date
+MoveOut,Move Out,date
+Deposit,Deposit,decimal
+AmountReceivable,Amount Receivable,decimal
+DelinquentSubsidyAmount,Delinquent Subsidy Amount,decimal
+0To30,0-30,decimal
+30Plus,30+,decimal
+LastPayment,Last Payment,date
+PaymentAmount,Payment Amount,decimal
+LateCount,Late Count,integer
+PrimaryTenantEmail,Primary Tenant Email,string
+UnitType,Unit Type,string
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+NotYetDue,Not Yet Due,decimal
+30To60,30-60,decimal
+60Plus,60+,decimal
+60To90,60-90,decimal
+90Plus,90+,decimal
+PrepaymentAmount,Prepayment Amount,decimal
+NSF,NSF Count,integer
+CertifiedFundsOnly,Certified Funds Only,yes_no
+Rent,Rent,decimal
+DelinquentRent,Delinquent Rent,decimal
+DelinquencyNotes,Delinquency Notes,mediumtext
+MonthlyCharges,Monthly Charges,decimal
+RentDueDay,Rent Due Day,integer
+InCollections,In Collections,string
+CollectionsAgency,Collections Agency,string
+UnitId,Unit ID,id
+OccupancyId,Occupancy ID,id
+PaymentPlan,Payment Plan,decimal
+,,
+,,
+Deposit Register,,
+Report Endpoint ID,deposit_register,
+Date Range Options,"from_date, to_date",
+Columns Endpoint,Description,Type
+DepositNumber,Deposit Number,string
+ReceiptDate,Receipt Date,date
+Payer,Payer,string
+PropertyName,Property Name,string
+Type,Type,string
+Reference,Reference,string
+Description,Description,string
+DepositAmount,Deposit Amount,decimal
+ReceiptAmount,Receipt Amount,decimal
+Cleared,Cleared,yes_no
+ReceiptDescription,Receipt Description,string
+UnitName,Unit,string
+PropertyId,Property ID,id
+UnitId,Unit ID,id
+,,
+,,
+General Ledger,,
+Report Endpoint ID,general_ledger,
+Date Range Options,"from_date, to_date",
+Last Edited Range,"last_edited_from_date, last_edited_to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Accounting Basis Filter,,
+Reversed Transactions Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+PostDate,Date,date
+PartyName,Payee / Payer,string
+Type,Type,string
+Reference,Reference,string
+Debit,Debit,decimal
+Credit,Credit,decimal
+Balance,Balance,decimal
+Description,Description,string
+GlAccountName,GL Account,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+Unit,Unit,string
+Month,Month,string
+Quarter,Quarter,string
+Year,Year,string
+BankAccount,Bank Account,string
+TxnCreatedAt,Created At,datetime
+TxnUpdatedAt,Last Edited At,datetime
+CreatedBy,Created By,string
+Remarks,Remarks,string
+DepositDate,Deposit Date,date
+DepositNumber,Deposit Number,string
+CashAccount,Cash Account,string
+PartyId,Party ID,id
+TxnId,Txn ID,id
+TxnDetailId,Txn Detail ID,id
+UnitId,Unit ID,id
+GlAccountId,GL Account ID,id
+,,
+,,
+Gross Potential Rent,,
+Report Endpoint ID,gross_potential_rent_enhanced,
+Date Range Options,to_date,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Accounting Basis Filter,,
+Columns Endpoint,Description,Type
+Unit,Unit,string
+BdBa,BD/BA,string
+Tenant,Tenant,string
+GrossPotentialRent,Gross Potential Rent,decimal
+LossToMarket,Loss to Market,decimal
+MonthlyRent,Monthly Rent,decimal
+Concessions,- Concessions,decimal
+VacancyLoss,- Vacancy Loss,decimal
+ModelLoss,- Model Loss,decimal
+RenovationLoss,- Renovation Loss,decimal
+OfficeLoss,- Office Loss,decimal
+DelinquencyLoss,- Delinquency Loss,decimal
+NetRentIncome,= Net Rent Income,decimal
+Period,Period,string
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+UnitTags,Tags,text
+UnitType,Unit Type,string
+OccupancyId,Occupancy ID,id
+UnitId,Unit ID,id
+MarketRent,Market Rent,decimal
+RentCharges,Rent Charges,decimal
+,,
+,,
+Guest Cards,,
+Report Endpoint ID,guest_cards,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Status Filter,,
+Columns Endpoint,Description,Type
+Name,Name,string
+EmailAddress,Email Address,string
+PhoneNumber,Phone Number,string
+Received,Interest Received,datetime
+LastActivityDate,Last Activity Date,date
+LastActivityType,Last Activity Type,string
+Status,Status,string
+MoveInPreference,Move In Preference,date
+MaxRent,Max Rent,decimal
+BedBathPreference,Bed Bath Preference,string
+PetPreference,Pet Preference,string
+MonthlyIncome,Monthly Income,decimal
+CreditScore,Credit Score,string
+LeadType,Lead Type,string
+Source,Source,string
+Property,Property,string
+Unit,Unit,string
+AssignedUser,Assigned User,string
+AssignedUserID,Assigned User ID,id
+GuestCardId,Guest Card ID,id
+PropertyId,Property ID,string
+UnitId,Unit ID,id
+Notes,Notes,mediumtext
+PropertyName,Property Name,string
+TenantId,Tenant ID,id
+,,
+,,
+Homeowner Directory,,
+Report Endpoint ID,homeowner_directory,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Status Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+Unit,Unit,string
+Homeowner,Homeowner,string
+ElectronicDeliveryConsent,Electronic Delivery Consent,yes_no
+Status,Status,string
+RenterOccupiedUnit,Renter Occupied Unit,yes_no
+HomeownerType,Homeowner Type,string
+PhoneNumbers,Phone Numbers,string
+Emails,Emails,string
+LockboxId,Lockbox ID,string
+OwnershipPercentage,Ownership Percentage,string
+Dues,Dues,decimal
+Tags,Tags,text
+HomeownerAddress,Homeowner Address,string
+HomeownerStreet1,Homeowner Street Address 1,string
+HomeownerStreet2,Homeowner Street Address 2,string
+HomeownerCity,Homeowner City,string
+HomeownerState,Homeowner State,string
+HomeownerZip,Homeowner Zip,string
+HomeownerCountry,Homeowner Country,string
+HomeownerBirthdate,Homeowner Birthdate,string
+UnitAddress,Unit Address,string
+UnitStreet1,Unit Street Address 1,string
+UnitStreet2,Unit Street Address 2,string
+UnitCity,Unit City,string
+UnitState,Unit State,string
+UnitZip,Unit Zip,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+FirstName,First Name,string
+LastName,Last Name,string
+CertifiedFundsOnly,Certified Funds Only,yes_no
+EligibleForDuesIncrease,Eligible for Dues Increase,date
+LastDuesIncrease,Last Dues Increase,date
+NextDuesAdjustment,Next Dues Increase Date,date
+OnlinePortalActivated,Online Portal Activated,yes_no
+OnlinePaymentsRecurringTotal,Online Payments Recurring Total,string
+OnlinePaymentsRecurringCount,Online Payments Recurring Count,integer
+OnlinePortalLogin,Online Portal Login,string
+SendDuesReminders,Send Dues Reminders,yes_no
+UnitTags,Unit Tags,text
+UnitType,Unit Type,string
+LateFeeType,Late Fee Type,string
+LateFeeBaseAmount,Late Fee Base Amount,decimal
+LateFeeDailyAmount,Late Fee Daily Amount,decimal
+DuesGraceDays,Grace Period,integer
+DuesGraceDayFixedDay,Grace Period Fixed Day,integer
+LateFeeGraceBalance,Grace Balance,decimal
+MaxDailyLateFeesAmount,Max Daily Late Fees Amount,decimal
+IgnorePartialPayments,Ignore Partial Payments,string
+PurchaseDate,Purchase Date,date
+SaleDate,Sale Date,date
+InsuranceCompanyName,Insurance Company Name,string
+InsuranceExpiration,Insurance Expiration,date
+InsurancePolicyNumber,Insurance Policy Number,string
+LicensePlates,License Plates,string
+Pets,Pets,string
+RenterLeaseStartDate,Renter Lease Start Date,date
+RenterLeaseEndDate,Renter Lease End Date,date
+NsfFee,NSF Fee Amount,decimal
+RequireOnlinePaymentsInFull,Require Online Payments In Full,yes_no
+SelectedHomeownerId,Tenant ID,id
+OccupancyId,Occupancy ID,id
+UnitId,Unit ID,id
+,,
+,,
+Homeowner Vehicle Info,,
+Report Endpoint ID,homeowner_vehicle_info,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+Unit,Unit,string
+Homeowner,Primary Homeowner,string
+PhoneNumbers,Phone Numbers,string
+HomeownerStatus,Homeowner Status,string
+Make,Make,string
+Model,Model,string
+Color,Color,string
+LicensePlate,License Plate,string
+Year,Year,string
+PermitNumber,Permit Number,string
+UnitId,Unit ID,id
+PropertyId,Property ID,id
+OccupancyId,Occupancy ID,id
+HomeownerId,Homeowner ID,id
+RentableItem,Rentable Item,string
+,,
+,,
+In-Progress Workflows,,
+Report Endpoint ID,in_progress_workflows,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+AttachableFor,For,string
+Property,Property,string
+WorkflowName,Workflow Name,string
+CurrentStep,Current Step,string
+Status,Status,string
+DueDate,Due Date,string
+AssignedTo,Assigned To,string
+,,
+,,
+Lease Expiration Detail By Month,,
+Report Endpoint ID,lease_expiration_detail,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+Unit,Unit,string
+UnitTags,Tags,text
+MoveIn,Move In,date
+LeaseExpires,Lease Expires,date
+MarketRent,Market Rent,decimal
+Sqft,Sqft,integer
+TenantName,Tenant Name,string
+Deposit,Deposit,decimal
+Rent,Rent,decimal
+PhoneNumbers,Phone Numbers,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+UnitType,Unit Type,string
+LeaseExpiresMonth,Lease Expires Month,string
+UnitId,Unit ID,id
+OccupancyId,Occupancy ID,id
+OwnerAgent,Owner Agent,string
+RentStatus,Rent Status,string
+LegalRent,Legal Rent,decimal
+Owners,Owner(s),string
+LastRentIncrease,Last Rent Increase Date,date
+NextRentAdjustment,Next Rent Increase Date,date
+NextRentIncrease,Eligible for Rent Increase,date
+LeaseSignDate,Lease Sign Date,date
+LastLeaseRenewal,Last Lease Renewal,date
+Status,Status,string
+RenewalStartDate,Renewal Start Date,date
+NoticeGivenDate,Notice Given Date,date
+MoveOut,Move Out,date
+TenantTags,Tenant Tags,text
+ComputedMarketRent,Computed Market Rent,decimal
+,,
+,,
+Leasing Agent Performance,,
+Report Endpoint ID,leasing_agent_performance,
+Date Range Options,"from_date, to_date",
+Columns Endpoint,Description,Type
+AssignedUser,Assigned User,string
+GuestCards,Guest Cards,integer
+Showings,Showings,integer
+Applications,Applications,integer
+LeasedUnits,Leased Units,integer
+AssignedUserID,Assigned User ID,id
+,,
+,,
+Owner Directory,,
+Report Endpoint ID,owner_directory,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Name,Name,string
+PhoneNumbers,Phone Numbers,string
+Email,Email,string
+AlternativePayee,Alternative Payee,string
+PaymentType,Payment Type,string
+LastPaymentDate,Last Payment Date,string
+HoldPayments,Hold Payments?,yes_no
+OwnerPacketReports,Owner Packet Reports,string
+SendOwnerPacketsByEmail,Send Owner Packets by Email?,yes_no
+PropertiesOwned,Properties Owned,mediumtext
+Tags,Tags,text
+OwnerAddress,Owner Address,string
+LastPacketSent,Last Packet Sent,string
+OwnerStreet1,Owner Street Address 1,string
+OwnerStreet2,Owner Street Address 2,string
+OwnerCity,Owner City,string
+OwnerState,Owner State,string
+OwnerZip,Owner Zip,string
+OwnerCountry,Owner Country,country
+OwnerId,Owner ID,string
+PropertiesOwnedIDs,Properties Owned IDs,string
+NotesForTheOwner,Notes For The Owner,mediumtext
+FirstName,First Name,string
+LastName,Last Name,string
+,,
+,,
+Payment Plans,,
+Report Endpoint ID,payment_plans,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+AccountNumber,Account Number,string
+AccountName,Account Name,string
+Name,Name,string
+Tags,Tags,text
+OriginalCharge,Original Charge,decimal
+OriginalChargeDate,Original Charge Date,date
+TotalOutstandingBalance,Total Outstanding Balance,decimal
+Month0,Month0,decimal
+Month1,Month1,decimal
+Month2,Month2,decimal
+Month3,Month3,decimal
+Month4,Month4,decimal
+Month5,Month5,decimal
+Month6,Month6,decimal
+Month7,Month7,decimal
+Month8,Month8,decimal
+Month9,Month9,decimal
+Month10,Month10,decimal
+Month11,Month11,decimal
+TxnId,Txn ID,id
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+GlAccountId,Gl Account ID,string
+TenantId,Tenant ID,string
+OccupancyId,Occupancy ID,string
+,,
+,,
+Property Budget,,
+Report Endpoint ID,property_budget,
+Date Range Options,to_date,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+GlAccountName,GL Account Name,string
+PropertyName,Property Name,string
+Year,Year,string
+Jan,Jan,decimal
+Feb,Feb,decimal
+Mar,Mar,decimal
+Apr,Apr,decimal
+May,May,decimal
+Jun,Jun,decimal
+Jul,Jul,decimal
+Aug,Aug,decimal
+Sep,Sep,decimal
+Oct,Oct,decimal
+Nov,Nov,decimal
+Dec,Dec,decimal
+Notes,Notes,text
+GlAccountId,GL Account ID,id
+PropertyId,Property ID,id
+,,
+,,
+Property Directory,,
+Report Endpoint ID,property_directory,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Visibility Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+MarketRent,Market Rent,decimal
+Units,Units,integer
+SqFt,Sqft,integer
+ManagementFlatFee,Management Flat Fee,decimal
+ManagementFeePercent,Management Fee Percent,percent
+MinimumFee,Minimum Fee,decimal
+Reserve,Reserve,decimal
+HomeWarrantyExpiration,Home Warranty Expiration,date
+InsuranceExpiration,Insurance Expiration,date
+TaxYearEnd,Tax Year End,integer
+Owners,Owner(s),string
+Description,Description,mediumtext
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+TaxAuthority,Tax Authority,string
+PayerName,Vendor 1099 Payer,string
+Portfolio,Portfolio,mediumtext
+PremiumLeadsStatus,Premium Status,string
+PremiumLeadsMonthlyCap,Premium Monthly Cap,decimal
+PremiumLeadsActivationDate,Premium Activation Date,date
+OwnerIDs,Owner ID(s),string
+PropertyGroupId,Property Group ID(s),text
+Visibility,Visibility,string
+MaintenanceLimit,Maintenance Limit,decimal
+MaintenanceNotes,Maintenance Notes,text
+SiteManagerName,Site Manager Name,string
+SiteManagerPhoneNumber,Site Manager Phone Number,string
+ManagementFeeType,Management Fee Type,string
+LeaseFeeType,Lease Fee Type,string
+LeaseFlatFee,Lease Flat Fee,decimal
+LeaseFeePercent,Lease Fee Percent,percent
+OwnerPaymentType,Owner Payment Type,string
+PropertyType,Property Type,string
+PropertyCreatedOn,Property Created On,date
+PropertyCreatedBy,Property Created By,string
+LateFeeType,Late Fee Type,string
+LateFeeBaseAmount,Late Fee Base Amount,decimal
+LateFeeDailyAmount,Late Fee Daily Amount,decimal
+LateFeeGracePeriod,Grace Period (Days),integer
+LateFeeGracePeriodFixedDay,Grace Period Fixed Day,integer
+LateFeeGraceBalance,Grace Balance,decimal
+MaxDailyLateFeesAmount,Max Daily Late Fees Amount,decimal
+IgnorePartialPayments,Ignore Partial Payments,string
+YearBuilt,Year Built,integer
+ContractExpirations,Contract Expiration,date
+ManagementStartDate,Management Start Date,date
+ManagementEndDate,Management End Date,date
+ManagementEndReason,Management End Reason,string
+AgentOfRecord,Owner Agent,string
+PropertyClass,Class,string
+OnlineMaintenanceRequestInstructions,Online Maintenance Request Instructions,mediumtext
+Amenities,Amenities,string
+,,
+,,
+Property Group Directory,,
+Report Endpoint ID,property_group_directory,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+PropertyName,Property Name,string
+PropertyAddress,Property Address,string
+Property,Property,string
+PropertyId,Property ID,id
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+PropertyLegacyStreet1,Property Street Address 1 (Alphabetical Sorting),string
+PropertyGroupName,Property Group Name,string
+Portfolio,Portfolio,string
+PropertyGroupId,Property Group ID,id
+PortfolioId,Portfolio ID,id
+,,
+,,
+Prospect Source Tracking,,
+Report Endpoint ID,prospect_source_tracking,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Source,Source,string
+GuestCards,Guest Cards,integer
+Showings,Showings,integer
+Applications,Applications,integer
+ApprovedApplications,Approved Applications,integer
+ConvertedTenants,Converted Tenants,integer
+,,
+,,
+Purchase Order,,
+Report Endpoint ID,purchase_order,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+PurchaseOrderNumber,Purchase Order Number,string
+Property,Property,string
+Description,Description,string
+Account,Account,string
+UnitName,Unit Name,string
+VendorName,Vendor,string
+ApprovalStatus,Approval Status,string
+LastApprover,Last Approver,string
+LastApprovedOn,Last Approved On,string
+CreatedAt,Created At,date
+RequiredBy,Required By,date
+Received,Received,yes_no
+Completed,Completed,yes_no
+SumOfBills,Sum of Bills,decimal
+Amount,Amount,decimal
+AllBills,All Bills,string
+BilledAmount,Billed Amount (Line Item),decimal
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+AccountName,Account Name,string
+AccountNumber,Account Number,string
+GlAccountId,Account ID,id
+ShippedTo,Shipped To,string
+CreatedBy,Created By,string
+UpdatedAt,Updated At,date
+Canceled,Canceled,yes_no
+unit_id,Unit ID,id
+PurchaseOrderId,Purchase Order ID,id
+Instructions,Instructions,string
+WorkOrders,Work Orders,string
+RevisionInstructions,Revision Instructions,string
+RevisionAssignee,Revision Assignee,string
+RevisionRequester,Revision Requester,string
+RevisionRequestedDate,Revision Requested Date,string
+RevisionCompletedDate,Revision Completed Date,string
+,,
+,,
+Receivables Activity,,
+Report Endpoint ID,receivables_activity,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+Party,Payee,string
+Status,Status,string
+TxnAmount,Receipt Amount,decimal
+TxnRemarks,Remarks,string
+TxnReference,Reference,string
+TxnReceiptDate,Receipt Date,date
+PortalActivated,Online Portal Activated?,yes_no
+LastOnlineReceiptDate,Last Online Portal Payment,date
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+OnlinePaymentsRecurringCount,Online Payments Recurring Count,integer
+OnlinePaymentsRecurringTotal,Online Payments Recurring Total,string
+MoveIn,Move-in,date
+Emails,Emails,string
+PhoneNumbers,Phone Numbers,string
+CertifiedFundsOnly,Certified Funds Only,yes_no
+OptedOutOfPortal,Opted Out Of Portal,yes_no
+PaymentType,Payment Type,string
+MustPayBalanceInFull,Require Online Payments In Full,yes_no
+PropertyList,Portfolio,string
+OccupancyId,Occupancy ID,id
+SelectedTenantId,Selected Tenant ID,id
+UnitId,Unit ID,id
+,,
+,,
+Rent Roll,,
+Report Endpoint ID,rent_roll,
+Date Range Options,to_date,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Unit,Unit,string
+UnitTags,Tags,text
+BdBa,BD/BA,string
+Tenant,Tenant,string
+Status,Status,string
+SquareFt,Sq. Ft.,integer
+MarketRent,Market Rent,decimal
+Rent,Rent,decimal
+Deposit,Deposit,decimal
+LeaseFrom,Lease From,date
+LeaseTo,Lease To,date
+MoveIn,Move-in,date
+MoveOut,Move-out,date
+PastDue,Past Due,decimal
+NSF,NSF Count,integer
+Late,Late Count,integer
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+PropertyType,Property Type,string
+OccupancyId,Occupancy ID,id
+UnitId,Unit ID,id
+UnitType,Unit Type,string
+StatusBySquareFeet,Status by SF,string
+MonthlyMarketRentSquareFt,Monthly Market Rent / SF,decimal
+AnnualMarketRentSquareFt,Annual Market Rent / SF,decimal
+MonthlyRentSquareFt,Monthly Rent / SF,decimal
+AnnualRentSquareFt,Annual Rent / SF,decimal
+Amenities,Amenities,string
+AdditionalTenants,Additional Tenants,string
+MonthlyCharges,Monthly Charges,decimal
+RentReady,Rent Ready,yes_no
+RentStatus,Rent Status,string
+LegalRent,Legal Rent,decimal
+LastRentIncrease,Last Rent Increase Date,date
+NextRentAdjustment,Next Rent Increase Date,date
+NextRentIncreaseAmount,Next Rent Increase Amount,decimal
+NextRentIncrease,Eligible for Rent Increase,date
+ApplicationFee,Application Fee,decimal
+AmenitiesPrice,Amenities Price,decimal
+ComputedMarketRent,Computed Market Rent,decimal
+PropertyGroupId,Property Group ID(s),text
+PortfolioId,Portfolio ID,id
+TenantTags,Tenant Tags,text
+LeaseExpiresMonth,Lease Expires Month,string
+TenantId,Tenant ID,id
+AdditionalTenantIds,Additional Tenant ID(s),text
+PreviousOccupancyRent,Previous Occupancy Rent,decimal
+PreviousRent,Previous Rent,decimal
+,,
+,,
+Rent Roll (Itemized),,
+Report Endpoint ID,rent_roll_itemized,
+Date Range Options,to_date,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Unit,Unit,string
+BdBa,BD/BA,string
+Status,Status,string
+SquareFt,Sqft,integer
+GL0,Gl0,decimal
+GL1,Gl1,decimal
+GL2,Gl2,decimal
+GL3,Gl3,decimal
+GL4,Gl4,decimal
+GL5,Gl5,decimal
+GL6,Gl6,decimal
+GL7,Gl7,decimal
+GL8,Gl8,decimal
+GL9,Gl9,decimal
+GL10,Gl10,decimal
+GL11,Gl11,decimal
+GL12,Gl12,decimal
+GL13,Gl13,decimal
+GL14,Gl14,decimal
+GL15,Gl15,decimal
+GL16,Gl16,decimal
+GL17,Gl17,decimal
+GL18,Gl18,decimal
+GL19,Gl19,decimal
+GL20,Gl20,decimal
+GL21,Gl21,decimal
+GL22,Gl22,decimal
+GL23,Gl23,decimal
+GL24,Gl24,decimal
+GL25,Gl25,decimal
+GL26,Gl26,decimal
+GL27,Gl27,decimal
+GL28,Gl28,decimal
+GL29,Gl29,decimal
+GL30,Gl30,decimal
+GL31,Gl31,decimal
+GL32,Gl32,decimal
+GL33,Gl33,decimal
+GL34,Gl34,decimal
+Total,Total,decimal
+OtherCharges,Other Charges,decimal
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+PropertyType,Property Type,string
+OccupancyId,Occupancy ID,id
+UnitId,Unit ID,id
+UnitTags,Tags,text
+UnitType,Unit Type,string
+Tenant,Tenant,string
+MarketRent,Market Rent,decimal
+ComputedMarketRent,Computed Market Rent,decimal
+MonthlyRentSquareFt,Monthly Rent / SF,decimal
+AnnualRentSquareFt,Annual Rent / SF,decimal
+Deposit,Deposit,decimal
+LeaseFrom,Lease From,date
+LeaseTo,Lease To,date
+LastRentIncrease,Last Rent Increase Date,date
+NextRentAdjustment,Next Rent Increase Date,date
+NextRentIncreaseAmount,Next Rent Increase Amount,decimal
+NextRentIncrease,Eligible for Rent Increase,date
+MoveIn,Move-in,date
+MoveOut,Move-out,date
+PastDue,Past Due,decimal
+NSF,NSF Count,integer
+Late,Late Count,integer
+Amenities,Amenities,string
+AdditionalTenants,Additional Tenants,string
+MonthlyCharges,Monthly Charges,decimal
+RentReady,Rent Ready,yes_no
+RentStatus,Rent Status,string
+LegalRent,Legal Rent,decimal
+TenantTags,Tenant Tags,text
+PropertyGroupId,Property Group ID(s),text
+PortfolioId,Portfolio ID,id
+,,
+,,
+Rentable Items,,
+Report Endpoint ID,rentable_items,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+RentableItemName,Rentable Item Name,string
+GLAccount,GL Account,string
+Amount,Amount,decimal
+Tenant,Tenant,string
+Available,Available,yes_no
+Type,Type,string
+Description,Description,string
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+StartDate,Start Date,date
+EndDate,End Date,date
+Unit,Unit,string
+OccupancyId,Occupancy ID,id
+UnitId,Unit ID,id
+GLAccountId,GL Account ID,id
+LicensePlates,License Plates,string
+,,
+,,
+Rental Applications,,
+Report Endpoint ID,rental_applications,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Status Filter,,
+Columns Endpoint,Description,Type
+Applicants,Applicant(s),string
+Received,Received,datetime
+DesiredMoveIn,Desired Move In,date
+LeadSource,Lead Source,string
+Status,Status,string
+Screening,Screening,string
+AssignedUserId,Assigned User ID,id
+CreatedBy,Created By,string
+ReasonForStatus,Reason For Status,mediumtext
+UnitTitle,Unit,string
+UnitType,Unit Type,string
+PropertyName,Property Name,string
+UnitName,Unit Name,string
+CampaignTitle,Campaign Title,string
+ApplyingFor,Applying For,string
+AssignedUser,Assigned User,string
+ApplicantReportedSource,Applicant Reported Source,string
+ApprovedAt,Approved At,datetime
+DeniedAt,Denied At,datetime
+CanceledAt,Canceled At,datetime
+ApplicationFeePaid,Application Fee Paid,yes_no
+RentalApplicationId,Rental Application ID,id
+RentalApplicationGroupId,Rental Application Group ID,id
+Email,Primary Email,string
+PhoneNumber,Primary Phone Number,string
+CurrentAddress1,Current Address 1,string
+CurrentAddress2,Current Address 2,string
+CurrentCity,Current City,string
+CurrentState,Current State,string
+CurrentZip,Current Zip,string
+CurrentMonthlyRent,Current Monthly Rent,string
+ResidedFrom,Resided From,date
+ResidedTo,Resided To,date
+LandlordName,Landlord Name,string
+LandlordPhoneNumber,Landlord Phone Number,string
+LandlordEmail,Landlord Email,string
+Previous1Address1,Previous 1 Address 1,string
+Previous1Address2,Previous 1 Address 2,string
+PreviousCity1,Previous City 1,string
+PreviousState1,Previous State 1,string
+PreviousZip1,Previous Zip 1,string
+PreviousMonthlyRent1,Previous Monthly Rent 1,string
+PreviousResidedFrom1,Previous Resided From 1,date
+PreviousResidedTo1,Previous Resided To 1,date
+PreviousLandlordName1,Previous Landlord 1 Name,string
+PreviousLandlordPhoneNumber1,Previous Landlord 1 Phone,string
+PreviousLandlordEmail1,Previous Landlord 1 Email,string
+Previous2Address1,Previous 2 Address 1,string
+Previous2Address2,Previous 2 Address 2,string
+PreviousCity2,Previous City 2,string
+PreviousState2,Previous State 2,string
+PreviousZip2,Previous Zip 2,string
+PreviousMonthlyRent2,Previous Monthly Rent 2,string
+PreviousResidedFrom2,Previous Resided From 2,date
+PreviousResidedTo2,Previous Resided To 2,date
+PreviousLandlordName2,Previous Landlord 2 Name,string
+PreviousLandlordPhoneNumber2,Previous Landlord 2 Phone,string
+PreviousLandlordEmail2,Previous Landlord 2 Email,string
+EmployerName,Employer Name,string
+EmployerPhoneNumber,Employer Phone Number,string
+MonthlySalary,Monthly Salary,string
+PositionHeld,Position Held,string
+YearsWorked,Years Worked,string
+AdditionalIncomes,Total Additional Income,string
+PetsNames,Pets Names,string
+PetsKinds,Pets Kinds,string
+PetsWeights,Pets Weights,string
+UnitAddress,Unit Address,string
+UnitStreet1,Unit Street Address 1,string
+UnitStreet2,Unit Street Address 2,string
+UnitCity,Unit City,string
+UnitState,Unit State,string
+UnitZip,Unit Zip,string
+UnitId,Unit ID,id
+PropertyId,Property ID,id
+TenantId,Tenant ID,id
+,,
+,,
+Screening Decisions,,
+Report Endpoint ID,screening_decisions,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+ApplicantName,Applicant Name,string
+ScreeningDecision,Screening Decision,string
+ScreeningTimestamp,Screen Ran At,datetime
+FinalDecision,Final Decision,string
+OverrideReasons,Override Reasons,string
+OverrideComment,Override Comment,string
+OverrideTimestamp,Overridden At,datetime
+OverrideUser,Overridden By,string
+RentalApplicationId,Rental Application ID,id
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+,,
+,,
+Survey Responses,,
+Report Endpoint ID,surveys_summary,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Survey Type Filter,,
+Columns Endpoint,Description,Type
+Tenant,Tenant,string
+Property,Property,string
+Question1,How satisfied are you with the overall experience?,string
+Question2,Has the issue been resolved completely?,string
+Question3,Was the work completed in a timely manner?,string
+Question4,Any additional feedback?,string
+DateSent,Date Sent,date
+DateReceived,Date Received,date
+SurveyId,Survey ID,string
+SurveyType,Survey Type,string
+PropertyId,Property ID,string
+,,
+,,
+Debt Collections Status,,
+Report Endpoint ID,tenant_debt_collections_status,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Tenants,Tenants,string
+Unit,Unit,string
+Property,Property,string
+VendorAccountNumber,Reference #,string
+SubmissionDate,Date Submitted,date
+LastPaymentDate,Date Last Payment Received,date
+BalancePlaced,Balance Placed,decimal
+AmountCollected,Amount Collected,decimal
+BalanceDue,Remaining Balance,decimal
+StatusDescription,Detailed Status,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+BalanceCancelled,Amount Forgiven,decimal
+CancellationDate,Date Cancelled,date
+OccupancyId,Occupancy ID,id
+UnitId,Unit ID,id
+,,
+,,
+Tenant Directory,,
+Report Endpoint ID,tenant_directory,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Status Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+Unit,Unit,string
+Tenant,Tenant,string
+Status,Status,string
+TenantType,Tenant Type,string
+PhoneNumbers,Phone Numbers,string
+Emails,Emails,string
+MoveIn,Move-in,date
+LeaseTo,Lease To,date
+Rent,Rent,decimal
+Deposit,Deposit,decimal
+TenantTags,Tenant Tags,text
+TenantAddress,Tenant Address,string
+TenantStreet1,Tenant Street Address 1,string
+TenantStreet2,Tenant Street Address 2,string
+TenantCity,Tenant City,string
+TenantState,Tenant State,string
+TenantZip,Tenant Zip,string
+TenantBirthdate,Tenant Birthdate,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+CertifiedFundsOnly,Certified Funds Only,yes_no
+LeaseFrom,Lease From,date
+LastLeaseRenewal,Last Lease Renewal,date
+MoveOut,Move-out,date
+NextRentIncrease,Eligible for Rent Increase,date
+LastRentIncrease,Last Rent Increase,date
+NextRentAdjustment,Next Rent Increase Date,date
+TenantPortalActivated,Online Portal Activated,yes_no
+OnlinePaymentsRecurringTotal,Online Payments Recurring Total,string
+OnlinePaymentsRecurringCount,Online Payments Recurring Count,integer
+TenantPortalLogin,Online Portal Login,string
+SendRentReminders,Send Rent Reminders,yes_no
+UnitTags,Unit Tags,text
+UnitType,Unit Type,string
+LateFeeType,Late Fee Type,string
+LateFeeBaseAmount,Late Fee Base Amount,decimal
+LateFeeDailyAmount,Late Fee Daily Amount,decimal
+RentGraceDays,Grace Period,integer
+RentGraceDayFixedDay,Grace Period Fixed Day,integer
+LateFeeGraceBalance,Grace Balance,decimal
+MaxDailyLateFeesAmount,Max Daily Late Fees Amount,decimal
+IgnorePartialPayments,Ignore Partial Payments,string
+InsuranceCompanyName,Insurance Company Name,string
+InsuranceExpiration,Insurance Expiration,date
+InsurancePolicyNumber,Insurance Policy Number,string
+TransactionFee,Transaction Fee,string
+PrimaryTenant,Primary Tenant,yes_no
+FirstName,First Name,string
+LastName,Last Name,string
+LicensePlates,License Plates,string
+Pets,Pets,string
+AutoNsfFeeAmount,NSF Fee Amount,decimal
+RequireOnlinePaymentsInFull,Require Online Payments In Full,yes_no
+OccupancyId,Occupancy ID,id
+UnitId,Unit ID,id
+SelectedTenantId,Tenant ID,id
+GuestCardId,Guest Card ID,id
+RentalApplicationId,Rental Application ID,id
+PortfolioId,Portfolio ID,id
+,,
+,,
+Tenant Tickler,,
+Report Endpoint ID,tenant_tickler,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+OccurredDate,Date,date
+Event,Event,string
+Property,Property,string
+Unit,Unit,string
+UnitTags,Tags,text
+Tenant,Tenant,string
+TenantPhoneNumber,Tenant Phone Number,string
+TenantEmail,Tenant Email,string
+Rent,Rent,decimal
+LeaseFrom,Lease From,date
+LeaseTo,Lease To,date
+Deposit,Deposit,decimal
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+UnitType,Unit Type,string
+TenantTags,Tenant Tags,text
+MoveOutDate,Move Out Date,date
+MoveOutReason,Move Out Reason,string
+MoveInDate,Move In Date,date
+LeaseSignDate,Lease Sign Date,date
+AssignedUser,Assigned User,string
+TenantStatus,Tenant Status,string
+UnitId,Unit ID,id
+OccupancyId,Occupancy ID,id
+TenantId,Tenant ID,id
+RentalApplicationId,Rental Application ID,id
+PortfolioId,Portfolio ID,id
+,,
+,,
+Tenant Vehicle Info,,
+Report Endpoint ID,tenant_vehicle_info,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+Unit,Unit,string
+Tenant,Tenant,string
+PhoneNumbers,Phone Numbers,string
+TenantStatus,Tenant Status,string
+Make,Make,string
+Model,Model,string
+Color,Color,string
+LicensePlate,License Plate,string
+Year,Year,string
+PermitNumber,Permit Number,string
+UnitId,Unit ID,id
+PropertyId,Property ID,id
+OccupancyId,Occupancy ID,id
+TenantId,Tenant ID,id
+RentableItem,Rentable Item,string
+,,
+,,
+Trial Balance,,
+Report Endpoint ID,trial_balance,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Accounting Basis Filter,,
+Columns Endpoint,Description,Type
+AccountName,GL Account,string
+BalanceForward,Balance Forward,decimal
+Debit,Debit,decimal
+Credit,Credit,decimal
+EndingBalance,Ending Balance,decimal
+,,
+,,
+Trust Account Balance,,
+Report Endpoint ID,trust_account_balance,
+Date Range Options,to_date,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Accounting Basis Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+CashBalance,1400-0000: Operating Cash,decimal
+EscrowBalance,1100-0000: Escrow,decimal
+DepositBalance,2100-0000: Security Deposit,decimal
+AdditionalDeposits,Additional Deposits,decimal
+Owner,Owner,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+OwnerIDs,Owner ID(s),string
+UnitDeposits,Unit Deposits,decimal
+UnpaidBillsAmount,Unpaid Bills Amount,decimal
+UnusedPrepaymentAmount,Unused Prepayment Amount,decimal
+OperatingBankAccount,Operating Bank Account,string
+ReserveAmount,Reserve Amount,decimal
+WorkOrderEstimates,Work Order Estimates,decimal
+,,
+,,
+Unit Directory,,
+Report Endpoint ID,unit_directory,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+UnitName,Unit Name,string
+MarketRent,Market Rent,decimal
+DefaultDeposit,Default Deposit,decimal
+SquareFt,Sqft,integer
+Bedrooms,Bedrooms,integer
+Bathrooms,Bathrooms,decimal
+UnitTags,Tags,text
+Rentable,Revenue,yes_no
+Description,Description,mediumtext
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+UnitAddress,Unit Address,string
+UnitStreet1,Unit Street Address 1,string
+UnitStreet2,Unit Street Address 2,string
+UnitCity,Unit City,string
+UnitState,Unit State,string
+UnitZip,Unit Zip,string
+MarketingTitle,Marketing Title,string
+MarketingDescription,Marketing Description,mediumtext
+AdvertisedRent,Advertised Rent,decimal
+PostedToWebsite,Posted To Website,yes_no
+PostedToInternet,Posted To Internet,yes_no
+YouTubeURL,YouTube URL,string
+UnitType,Unit Type,string
+CreatedOn,Created On,date
+RubsEnabled,Utility Billing (RUBS) Enabled,yes_no
+RubsEnabledOn,Utility Billing Start On,date
+RentStatus,Rent Status,string
+LegalRent,Legal Rent,decimal
+ApplicationFee,Application Fee,decimal
+RentReady,Rent Ready,yes_no
+RentDueDay,Rent Due Day,integer
+UnitId,Unit ID,id
+ComputedMarketRent,Computed Market Rent,decimal
+ReadyForShowingOn,Ready For Showing On,date
+Visibility,Visibility,string
+RentableUid,Rentable UID,string
+,,
+,,
+Unit Inspection,,
+Report Endpoint ID,unit_inspection,
+Date Range Options,to_date,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+UnitName,Unit Name,string
+LastInspectionDate,Last Inspection Date,date
+TenantName,Tenant Name,string
+TenantPrimaryPhoneNumber,Tenant Primary Phone Number,string
+MoveInDate,Move In Date,date
+MoveOutDate,Move Out Date,date
+Property,Property,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+UnitId,Unit ID,id
+OccupancyId,Occupancy ID,id
+Rentable,Revenue,yes_no
+UnitTags,Unit Tags,text
+,,
+,,
+Unit Turn Detail,,
+Report Endpoint ID,unit_turn_detail,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+Unit,Unit,string
+UnitTurnId,Unit Turn ID,string
+Notes,Notes,string
+ReferenceUser,Reference User,string
+MoveOutDate,Move Out Date,date
+TurnEndDate,Turn End Date,date
+TargetDaysToComplete,Target Days to Complete,integer
+TotalDaysToComplete,Total Days to Complete,integer
+LaborFromWorkOrders,Labor From Work Orders,decimal
+PurchaseOrdersFromWorkOrders,Purchase Orders From Work Orders,decimal
+BillablesFromWorkOrders,Billables From Work Orders,decimal
+InventoryFromWorkOrders,Inventory From Work Orders,decimal
+TotalBilled,Total Billed,decimal
+PropertyId,Property ID,id
+UnitId,Unit ID,id
+,,
+,,
+Unit Vacancy Detail,,
+Report Endpoint ID,unit_vacancy,
+Date Range Options,none,
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+Unit,Unit,string
+UnitTags,Tags,text
+BedAndBath,Bed/Bath,string
+SqFt,Sqft,integer
+UnitStatus,Unit Status,string
+RentReady,Rent Ready,string
+DaysVacant,Days Vacant,integer
+LastRent,Last Rent,decimal
+SchdRent,Scheduled Rent,decimal
+NewRent,New Rent,decimal
+LastMoveIn,Last Move In,date
+LastMoveOut,Last Move Out,date
+AvailableOn,Available On,date
+NextMoveIn,Next Move In,date
+Description,Description,mediumtext
+AdvertisedRent,Advertised Rent,decimal
+PostedToWebsite,Posted To Website,yes_no
+PostedToInternet,Posted To Internet,yes_no
+Property,Property,string
+PropertyName,Property Name,string
+Amenities,Amenities,string
+Address,Address,string
+UnitStreet1,Unit Street Address 1,string
+UnitStreet2,Unit Street Address 2,string
+UnitCity,Unit City,string
+UnitState,Unit State,string
+UnitZip,Unit Zip,string
+UnitType,Unit Type,string
+AmenitiesPrice,Amenities Price,decimal
+ComputedMarketRent,Computed Market Rent,decimal
+ReadyForShowingOn,Ready For Showing On,date
+PropertyId,Property ID,string
+UnitId,Unit ID,id
+,,
+,,
+Activities Summary,,
+Report Endpoint ID,upcoming_activities,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Columns Endpoint,Description,Type
+ActivityDate,Activity Date,date
+Activity,Activity,string
+ActivityFor,Activity For,string
+Label,Label,string
+Property,Property,string
+AssignedUser,Assigned User,string
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+UnitAddress,Unit Address,string
+UnitStreet,Unit Street Address 1,string
+UnitStreet2,Unit Street Address 2,string
+UnitCity,Unit City,string
+UnitState,Unit State,string
+UnitZip,Unit Zip,string
+CreatedBy,Created By,string
+CompletedBy,Completed By,string
+LastEditedBy,Last Edited By,string
+CreatedOn,Created On,date
+CompletedOn,Completed On,date
+LastEditedOn,Last Edited On,date
+Status,Status,string
+UnitId,Unit ID,string
+OccupancyId,Occupancy ID,string
+OwnerId,Owner ID,string
+,,
+,,
+Vendor Directory,,
+Report Endpoint ID,vendor_directory,
+Date Range Options,none,
+Columns Endpoint,Description,Type
+CompanyName,Company Name,string
+Name,Name,string
+VendorAddress,Vendor Address,string
+PhoneNumbers,Phone Numbers,string
+Email,Email,string
+DefaultGLAccount,Default GL Account,string
+PaymentType,Payment Type,string
+Send1099,Send 1099?,yes_no
+WorkersCompExpires,Worker's Comp. Expiration,date
+LiabilityInsExpires,Liability Insurance Expiration,date
+EPACertExpires,EPA Certification Expiration,date
+AutoInsExpires,Auto Insurance Expiration,date
+StateLicExpires,State License Expiration,date
+ContractExpires,Contract Expiration,date
+Tags,Tags,text
+VendorStreet1,Vendor Street Address 1,string
+VendorStreet2,Vendor Street Address 2,string
+VendorCity,Vendor City,string
+VendorState,Vendor State,string
+VendorZip,Vendor Zip,string
+VendorId,Vendor ID,id
+VendorTrades,Vendor Trades,string
+DoNotUseForWorkOrder,Marked as do not use,yes_no
+Terms,Terms,string
+FirstName,First Name,string
+LastName,Last Name,string
+,,
+,,
+Work Order,,
+Report Endpoint ID,work_order,
+Date Range Options,"from_date, to_date",
+Property Filter,,
+Property Group Filter,,
+Owner Filter,,
+Status Filter,,
+Columns Endpoint,Description,Type
+Property,Property,string
+Priority,Priority,string
+WorkOrderType,Work Order Type,string
+HomeWarrantyExpiration,Home Warranty Expiration,date
+WorkOrderNumber,Work Order Number,string
+JobDescription,Job Description,mediumtext
+Instructions,Instructions,mediumtext
+Status,Status,string
+Vendor,Vendor,string
+UnitName,Unit,string
+PrimaryTenant,Primary Tenant,string
+CreatedAt,Created At,date
+EstimateReqOn,Estimate Req On,date
+EstimatedOn,Estimated On,date
+EstimateAmount,Estimate Amount,decimal
+ScheduledStart,Scheduled Start,string
+ScheduledEnd,Scheduled End,datetime
+WorkCompletedOn,Work Completed On,date
+CompletedOn,Completed On,date
+Amount,Amount,decimal
+Invoice,Invoice,mediumtext
+Recurring,Recurring,yes_no
+PropertyName,Property Name,string
+PropertyId,Property ID,id
+PropertyAddress,Property Address,string
+PropertyStreet1,Property Street Address 1,string
+PropertyStreet2,Property Street Address 2,string
+PropertyCity,Property City,string
+PropertyState,Property State,string
+PropertyZip,Property Zip,string
+UnitAddress,Unit Address,string
+UnitStreet,Unit Street Address 1,string
+UnitStreet2,Unit Street Address 2,string
+UnitCity,Unit City,string
+UnitState,Unit State,string
+UnitZip,Unit Zip,string
+ServiceRequestNumber,Service Request Number,string
+ServiceRequestDescription,Service Request Description,mediumtext
+vendor_id,Vendor ID,id
+UnitId,Unit ID,id
+OccupancyId,Occupancy ID,id
+PrimaryTenantEmail,Primary Tenant Email,string
+PrimaryTenantPhoneNumber,Primary Tenant Phone Number,string
+CreatedBy,Created By,string
+AssignedUser,Assigned User,string
+LastBilledOn,Last Billed On,date
+CanceledOn,Canceled On,date
+WorkOrderId,Work Order ID,string
+ServiceRequestId,Service Request ID,string
+SubmittedByTenant,Submitted By Tenant,yes_no
+RequestingTenant,Requesting Tenant,string
+MaintenanceLimit,Maintenance Limit,string
+StatusNotes,Status Notes,string
+FollowUpOn,Next Followup Date,date
+VendorTrade,Vendor Trade,string
