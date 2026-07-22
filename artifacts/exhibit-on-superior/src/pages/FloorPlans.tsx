@@ -20,7 +20,6 @@ import { AvailableUnits } from '../components/floor-plans/AvailableUnits';
 import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFilters';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { SmartImg } from '../components/SmartImg';
-import { TOUR_URL } from '../data/seo';
 import {
   planGroups,
   filterGroups,
@@ -373,30 +372,6 @@ export function FloorPlans() {
                   See More Photos
                 </Link>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-dark-section px-4 py-16">
-          <div className="container mx-auto max-w-3xl text-center">
-            <SplitHeadline script="Embrace Unbounded" caps="City Living" dark className="mb-6" />
-            <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-white/80">
-              Found a layout you love? Check real-time availability and pricing, or connect with our
-              leasing team to schedule a personal tour.
-            </p>
-            <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <a
-                href="#available-units"
-                className="btn-gold-outline border-white bg-primary text-white hover:bg-primary/90"
-              >
-                Check Availability
-              </a>
-              <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline border-white text-white hover:bg-white hover:text-foreground">
-                Schedule a Tour
-              </a>
-              <Link href="/photo-gallery" className="btn-gold-outline border-white text-white hover:bg-white hover:text-foreground">
-                See More Photos
-              </Link>
             </div>
           </div>
         </section>
