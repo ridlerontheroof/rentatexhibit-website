@@ -176,20 +176,33 @@ async function fetchListingMedia(): Promise<Map<string, ListingMedia>> {
   return parseListingsHtml(await res.text());
 }
 
-/** Fetch unit → YouTube URL from the Unit Directory report (marketing info). */
-async function fetchVideoUrls(auth: string): Promise<Map<string, string>> {
+export interface UnitMarketing {
+  /** Units flagged "Posted to Website" in AppFolio. */
+  posted: Set<string>;
+  /** Unit → YouTube video URL, when set. */
+  videos: Map<string, string>;
+}
+
+/** Fetch posted-to-website flags + YouTube URLs from the Unit Directory report. */
+async function fetchUnitMarketing(auth: string): Promise<UnitMarketing> {
   const response = await postReport(`${APPFOLIO_BASE}/unit_directory.json`, auth, "{}");
+  const posted = new Set<string>();
   const videos = new Map<string, string>();
   for (const row of response.results ?? []) {
     if (!isExhibitRow(row)) continue;
     const unitRaw = pick(row, ["unitname", "unitnumber", "unit"], ["type", "status", "id", "visibility", "tags", "turn"]);
     const unit = typeof unitRaw === "string" ? unitRaw.trim() : typeof unitRaw === "number" ? String(unitRaw) : "";
+    if (!unit) continue;
+    const postedFlag = pick(row, ["postedtowebsite"]);
+    if (typeof postedFlag === "string" && postedFlag.trim().toLowerCase() === "yes") {
+      posted.add(unit);
+    }
     const video = pick(row, ["youtube"]);
-    if (unit && typeof video === "string" && video.trim().startsWith("http")) {
+    if (typeof video === "string" && video.trim().startsWith("http")) {
       videos.set(unit, video.trim());
     }
   }
-  return videos;
+  return { posted, videos };
 }
 
 interface ReportResponse {
@@ -252,25 +265,34 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
     guard += 1;
   }
 
-  const units = rows
+  const allUnits = rows
     .filter(isExhibitRow)
     .map(normalizeRow)
     .filter((u): u is AvailableUnit => u !== null)
     .sort((a, b) => a.unit.localeCompare(b.unit));
 
-  // Enrich with photos + video from the public listings page and the Unit
-  // Directory marketing info. Both are best-effort: availability still
-  // renders without media if either source fails.
-  const [mediaResult, videoResult] = await Promise.allSettled([fetchListingMedia(), fetchVideoUrls(auth)]);
+  // Marketing info (posted-to-website flags + video) and public listing media.
+  const [mediaResult, marketingResult] = await Promise.allSettled([fetchListingMedia(), fetchUnitMarketing(auth)]);
   const media = mediaResult.status === "fulfilled" ? mediaResult.value : new Map<string, ListingMedia>();
-  const videos = videoResult.status === "fulfilled" ? videoResult.value : new Map<string, string>();
+  const marketing = marketingResult.status === "fulfilled" ? marketingResult.value : null;
+
+  // Only show units the leasing team has explicitly posted to the website.
+  // The posted flag comes from the Unit Directory report; presence on the
+  // public listings page means the same thing, so accept either signal.
+  // If both sources failed we cannot know what is posted — fail the refresh
+  // so the route keeps serving the last good snapshot instead of guessing.
+  if (!marketing && media.size === 0) {
+    throw new Error("AppFolio posted-to-website sources unavailable; keeping last snapshot");
+  }
+  const units = allUnits.filter((u) => media.has(u.unit) || marketing?.posted.has(u.unit));
+
   for (const unit of units) {
     const m = media.get(unit.unit);
     if (m) {
       unit.photoUrl = m.photoUrl;
       unit.listingUrl = m.listingUrl;
     }
-    unit.videoUrl = videos.get(unit.unit) ?? null;
+    unit.videoUrl = marketing?.videos.get(unit.unit) ?? null;
   }
 
   return { units, updatedAt: new Date().toISOString() };
