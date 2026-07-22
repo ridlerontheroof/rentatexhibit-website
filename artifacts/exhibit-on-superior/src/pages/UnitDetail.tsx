@@ -14,6 +14,7 @@ import {
   applyUrlForListing,
   contactUrlForListing,
 } from '../components/floor-plans/UnitGalleryLightbox';
+import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { trackOutboundClick } from '../lib/analytics';
 import { APPLY_URL } from '../data/seo';
 
@@ -28,6 +29,8 @@ export function UnitDetail() {
   const params = useParams<{ unit: string }>();
   const { data, isLoading } = useAvailability();
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [planOpen, setPlanOpen] = useState(false);
+  const [planVariant, setPlanVariant] = useState(0);
 
   const unit: AvailableUnit | null = useMemo(
     () => data?.units.find((u) => u.unit === params.unit) ?? null,
@@ -203,12 +206,16 @@ export function UnitDetail() {
             </div>
           )}
           {group && (
-            <Link
-              href="/available-units"
+            <button
+              type="button"
+              onClick={() => {
+                setPlanVariant(0);
+                setPlanOpen(true);
+              }}
               className="mt-8 inline-block border border-border px-6 py-3 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
             >
               View the {group.typeLabel} floor plan
-            </Link>
+            </button>
           )}
         </div>
 
@@ -240,6 +247,16 @@ export function UnitDetail() {
       </div>
 
       {galleryOpen && <UnitGalleryLightbox unit={unit} onClose={() => setGalleryOpen(false)} />}
+      {group && (
+        <PlanLightbox
+          group={planOpen ? group : null}
+          variantIndex={planVariant}
+          position={{ index: 0, total: 1 }}
+          onClose={() => setPlanOpen(false)}
+          onNavigate={() => {}}
+          onVariantChange={setPlanVariant}
+        />
+      )}
     </div>
   );
 }
