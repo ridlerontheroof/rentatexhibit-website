@@ -166,7 +166,7 @@ export function FloorPlans() {
 
         <QuickAnswer path="/available-units" />
 
-        <AvailableUnits onView={handleOpen} />
+        <AvailableUnits />
 
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-3xl text-center">

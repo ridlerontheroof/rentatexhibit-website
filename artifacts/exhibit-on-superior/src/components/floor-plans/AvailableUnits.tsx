@@ -1,8 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { BedDouble, Bath, Ruler, PawPrint } from 'lucide-react';
 import {
-  UnitGalleryLightbox,
   applyUrlForListing,
   tourUrlForListing,
 } from './UnitGalleryLightbox';
@@ -11,10 +10,6 @@ import { useAvailability, type AvailableUnit } from '../../hooks/use-availabilit
 import { planGroups, type PlanGroup } from '../../data/floorPlans';
 import { APPLY_URL } from '../../data/seo';
 import { trackOutboundClick } from '../../lib/analytics';
-
-interface AvailableUnitsProps {
-  onView: (group: PlanGroup) => void;
-}
 
 function UnitThumb({ photoUrl, unit }: { photoUrl: string; unit: string }) {
   return (
@@ -84,9 +79,8 @@ export function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string 
  * on error, or when no units are posted — the page stays fully useful without
  * it, so there is no fallback state to design around.
  */
-export function AvailableUnits({ onView }: AvailableUnitsProps) {
+export function AvailableUnits() {
   const { data } = useAvailability();
-  const [galleryUnit, setGalleryUnit] = useState<AvailableUnit | null>(null);
 
   const rows = useMemo(() => {
     if (!data?.units) return [];
@@ -116,25 +110,14 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                   className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
                 >
                   {u.photoUrl &&
-                    (u.photos.length > 0 ? (
-                      <button
-                        type="button"
-                        onClick={() => setGalleryUnit(u)}
+                    (u.details.length > 0 ? (
+                      <Link
+                        href={`/available-units/${u.unit}`}
                         className="block shrink-0 cursor-pointer self-start overflow-hidden border border-border md:self-center"
-                        aria-label={`View photos of apartment ${u.unit}`}
+                        aria-label={`View details for apartment ${u.unit}`}
                       >
                         <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
-                      </button>
-                    ) : u.listingUrl ? (
-                      <a
-                        href={u.listingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block shrink-0 self-start overflow-hidden border border-border md:self-center"
-                        aria-label={`View photos of apartment ${u.unit}`}
-                      >
-                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
-                      </a>
+                      </Link>
                     ) : (
                       <span className="block shrink-0 self-start overflow-hidden border border-border md:self-center">
                         <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
@@ -196,26 +179,6 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                         View details
                       </a>
                     )}
-                    {u.photos.length > 0 ? (
-                      <button
-                        type="button"
-                        onClick={() => setGalleryUnit(u)}
-                        className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
-                      >
-                        Photos
-                      </button>
-                    ) : (
-                      u.listingUrl && (
-                        <a
-                          href={u.listingUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
-                        >
-                          Photos
-                        </a>
-                      )
-                    )}
                     {u.videoUrl && (
                       <a
                         href={u.videoUrl}
@@ -225,15 +188,6 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                       >
                         Video tour
                       </a>
-                    )}
-                    {u.group && (
-                      <button
-                        type="button"
-                        onClick={() => onView(u.group!)}
-                        className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
-                      >
-                        View floor plan
-                      </button>
                     )}
                     {(() => {
                       // Posted units link to their own AppFolio listing's
@@ -293,9 +247,6 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
         </div>
       </div>
 
-      {galleryUnit && (
-        <UnitGalleryLightbox unit={galleryUnit} onClose={() => setGalleryUnit(null)} />
-      )}
     </section>
   );
 }
