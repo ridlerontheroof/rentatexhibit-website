@@ -25,12 +25,12 @@ publicDir = "artifacts/exhibit-on-superior/dist/public"
 # matches a real asset, so hashed js/css/images are unaffected. The catch-all
 # SPA fallback MUST stay last so client-only paths and unknown URLs still boot.
 [[services.production.rewrites]]
-from = "/floor-plans"
-to = "/floor-plans/index.html"
+from = "/available-units"
+to = "/available-units/index.html"
 
 [[services.production.rewrites]]
-from = "/floor-plans/"
-to = "/floor-plans/index.html"
+from = "/available-units/"
+to = "/available-units/index.html"
 
 [[services.production.rewrites]]
 from = "/photo-gallery"

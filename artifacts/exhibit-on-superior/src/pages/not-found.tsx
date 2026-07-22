@@ -23,8 +23,8 @@ export function NotFound() {
             <Link href="/" className="btn-gold-outline inline-block">
               Return Home
             </Link>
-            <Link href="/floor-plans" className="btn-gold-outline inline-block">
-              View Floor Plans
+            <Link href="/available-units" className="btn-gold-outline inline-block">
+              View Available Units
             </Link>
           </div>
         </div>

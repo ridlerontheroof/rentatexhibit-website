@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { Link } from 'wouter';
 import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
 import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
-import { trackOutboundClick } from '../../lib/analytics';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
 import {
   clampSheetDragHeight,
@@ -12,7 +11,7 @@ import {
   sampleSheetVelocity,
 } from '../../lib/sheetSnap';
 
-import { AVAILABILITY_URL, TOUR_URL } from '../../data/seo';
+import { TOUR_URL } from '../../data/seo';
 
 interface PlanLightboxProps {
   group: PlanGroup | null;
@@ -809,15 +808,9 @@ export function PlanLightbox({
                   </p>
                 </div>
                 <a
-                  href={AVAILABILITY_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#available-units"
                   className="btn-gold-outline flex min-h-11 shrink-0 items-center bg-primary px-4 text-center text-xs text-white hover:bg-primary/90"
-                  onClick={() =>
-                    trackOutboundClick('availability', AVAILABILITY_URL, 'plan_lightbox', {
-                      floorPlan: planLabel,
-                    })
-                  }
+                  onClick={onClose}
                 >
                   Check Availability
                 </a>
@@ -907,15 +900,9 @@ export function PlanLightbox({
 
             <div className="mt-auto flex flex-col gap-3 pt-2">
               <a
-                href={AVAILABILITY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#available-units"
                 className="btn-gold-outline hidden bg-primary text-center text-white hover:bg-primary/90 lg:block"
-                onClick={() =>
-                  trackOutboundClick('availability', AVAILABILITY_URL, 'plan_lightbox', {
-                    floorPlan: planLabel,
-                  })
-                }
+                onClick={onClose}
               >
                 Check Availability
               </a>

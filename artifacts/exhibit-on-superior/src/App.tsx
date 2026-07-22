@@ -54,7 +54,7 @@ export function Redirect({ to, cta }: { to: string; cta?: 'apply' | 'availabilit
 
 /** Legacy Wix/WordPress URLs -> canonical routes (source: migration redirects.csv). */
 const LEGACY_REDIRECTS: Record<string, string> = {
-  '/apartments/il/chicago/floor-plans': '/floor-plans',
+  '/apartments/il/chicago/floor-plans': '/available-units',
   '/apartments/il/chicago/photo-gallery': '/photo-gallery',
   '/apartments/il/chicago/virtual-tour': '/virtual-tour',
   '/apartments/il/chicago/amenities': '/amenities',
@@ -123,8 +123,21 @@ function App() {
           {/* Live availability: per-unit listing pages (client-only, noindex) */}
           <Route path="/available-units/:unit" component={UnitDetail} />
 
-          {/* Clean external CTA URLs preserved from the migration information architecture */}
-          <Route path="/available-units">{() => <Redirect to={AVAILABILITY_URL} cta="availability" />}</Route>
+          {/* /floor-plans is the page's former canonical URL — keep it working,
+              preserving deep-link params like ?plan=<id> (and any hash). */}
+          <Route path="/floor-plans">
+            {() => (
+              <Redirect
+                to={`/available-units${
+                  typeof window === 'undefined'
+                    ? ''
+                    : window.location.search + window.location.hash
+                }`}
+              />
+            )}
+          </Route>
+
+          {/* Clean external CTA URL preserved from the migration information architecture */}
           <Route path="/apply">{() => <Redirect to={APPLY_URL} cta="apply" />}</Route>
 
           {/* Legacy URL redirects */}

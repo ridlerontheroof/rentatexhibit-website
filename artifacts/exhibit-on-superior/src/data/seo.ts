@@ -55,27 +55,27 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
     ],
   },
-  '/floor-plans': {
-    path: '/floor-plans',
+  '/available-units': {
+    path: '/available-units',
     ogImage: `${SITE_URL}/images/og/floor-plans.jpg`,
-    label: 'Floor Plans',
-    title: 'Studio, 1, 2 & 3 Bedroom Apartments in River North | Exhibit On Superior',
+    label: 'Available Units',
+    title: 'Available Units & Floor Plans in River North Chicago | Exhibit On Superior',
     description:
-      'Browse studio, one, two, and three-bedroom floor plans at Exhibit On Superior, a modern high-rise in River North Chicago, then check current availability through Highland.',
+      'Browse available apartments at Exhibit On Superior in River North Chicago with live pricing, photos, and move-in dates, then compare every studio, 1, 2 & 3 bedroom floor plan.',
     quickAnswer:
-      'Exhibit On Superior offers studio, one, two, and three-bedroom floor plans in a modern River North Chicago high-rise. Browse layouts on this page, then check current unit availability through Highland and apply through AppFolio.',
+      'At the top of this page, you can view all currently available Exhibit On Superior apartments with live rent, photos, and move-in dates, updated automatically from the leasing system. Below, you can explore every studio, one, two, and three-bedroom floor plan and apply directly from each available listing.',
     faqs: [
+      {
+        q: 'What apartments are available now at Exhibit On Superior?',
+        a: 'The listings at the top of this page show every residence currently available, with live rent, photos, and move-in dates synced from our leasing system.',
+      },
       {
         q: 'Does Exhibit On Superior have studio apartments?',
         a: 'Yes. Exhibit On Superior includes studio floor plan options along with one, two, and three-bedroom homes.',
       },
       {
-        q: 'Where can I see available units?',
-        a: 'Current availability is handled through Highland Management LLC on the availability page.',
-      },
-      {
-        q: 'Where do I apply?',
-        a: 'Applications should use the AppFolio Apply Now link.',
+        q: 'How do I apply for an apartment?',
+        a: 'Open any available residence on this page and use its Apply Now button — each unit links directly to its own secure online application.',
       },
     ],
   },

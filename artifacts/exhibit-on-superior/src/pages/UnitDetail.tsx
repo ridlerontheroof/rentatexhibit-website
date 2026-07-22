@@ -49,7 +49,7 @@ export function UnitDetail() {
           It may have just been leased. Browse the rest of our available residences below.
         </p>
         <Link
-          href="/floor-plans"
+          href="/available-units"
           className="mt-6 inline-block bg-primary px-6 py-3 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
         >
           View floor plans &amp; availability
@@ -75,7 +75,7 @@ export function UnitDetail() {
       />
 
       <Link
-        href="/floor-plans"
+        href="/available-units"
         className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All available residences
@@ -201,7 +201,7 @@ export function UnitDetail() {
           )}
           {group && (
             <Link
-              href="/floor-plans"
+              href="/available-units"
               className="mt-6 inline-block border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
             >
               View the {group.typeLabel} floor plan

@@ -20,7 +20,7 @@ export interface RouteDef {
 
 export const routes: RouteDef[] = [
   { path: '/', load: () => import('./pages/Home').then((m) => m.Home) },
-  { path: '/floor-plans', load: () => import('./pages/FloorPlans').then((m) => m.FloorPlans) },
+  { path: '/available-units', load: () => import('./pages/FloorPlans').then((m) => m.FloorPlans) },
   { path: '/photo-gallery', load: () => import('./pages/PhotoGallery').then((m) => m.PhotoGallery) },
   { path: '/virtual-tour', load: () => import('./pages/VirtualTour').then((m) => m.VirtualTour) },
   { path: '/amenities', load: () => import('./pages/Amenities').then((m) => m.Amenities) },

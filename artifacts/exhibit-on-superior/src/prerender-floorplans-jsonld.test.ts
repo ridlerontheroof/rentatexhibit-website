@@ -26,9 +26,9 @@ function extractJsonLd(head: string): Record<string, unknown>[] {
   return scripts.map((s) => JSON.parse(s) as Record<string, unknown>);
 }
 
-describe('prerendered /floor-plans JSON-LD matches the shared floorPlans module', () => {
+describe('prerendered /available-units JSON-LD matches the shared floorPlans module', () => {
   it('ships an ItemList that deep-equals floorPlansItemListJsonLd()', async () => {
-    const { head } = await render('/floor-plans');
+    const { head } = await render('/available-units');
 
     const jsonLdBlocks = extractJsonLd(head);
     // Base @graph plus the floor-plans extra block — at minimum two scripts.
@@ -43,7 +43,7 @@ describe('prerendered /floor-plans JSON-LD matches the shared floorPlans module'
   });
 
   it('lists every plan group exactly once, in order, with resolvable deep links', async () => {
-    const { head } = await render('/floor-plans');
+    const { head } = await render('/available-units');
     const itemList = extractJsonLd(head).find((b) => b['@type'] === 'ItemList')!;
     const items = itemList.itemListElement as {
       position: number;
@@ -64,7 +64,7 @@ describe('prerendered /floor-plans JSON-LD matches the shared floorPlans module'
   });
 
   it('prerendered page body visibly shows the same plans the schema claims', async () => {
-    const { html } = await render('/floor-plans');
+    const { html } = await render('/available-units');
 
     // Google requires structured data to reflect visible page content: every
     // group's type label and sq ft range must appear in the prerendered body.

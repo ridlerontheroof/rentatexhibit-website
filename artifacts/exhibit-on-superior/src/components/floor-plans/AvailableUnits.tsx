@@ -95,11 +95,15 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
   if (rows.length === 0) return null;
 
   return (
-    <section className="px-4 pb-6" aria-labelledby="available-units-heading">
+    <section id="available-units" className="px-4 pb-6" aria-labelledby="available-units-heading">
       <div className="container mx-auto">
         <div className="border border-border bg-white p-6 md:p-8">
           <div id="available-units-heading" className="mb-6 text-center">
-            <SplitHeadline script="Move-In Ready" caps="Available Residences" />
+            <SplitHeadline
+              script="Move-In Ready"
+              caps="Available Residences"
+              className="[&_.headline-script]:text-[clamp(22px,3vw,30px)]! [&_.headline-caps]:text-[clamp(18px,2.5vw,24px)]! [&_.headline-caps]:tracking-[clamp(3px,0.6vw,6px)]!"
+            />
             <p className="mt-2 text-sm text-muted-foreground">
               Live availability, updated automatically from our leasing system.
             </p>

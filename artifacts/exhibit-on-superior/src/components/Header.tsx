@@ -2,9 +2,8 @@ import { useState } from 'react';
 import type { FocusEvent, KeyboardEvent } from 'react';
 import { Link } from 'wouter';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import { AVAILABILITY_URL, APPLY_URL, TOUR_URL } from '../data/seo';
+import { TOUR_URL } from '../data/seo';
 import { SmartImg } from './SmartImg';
-import { trackOutboundClick } from '../lib/analytics';
 
 const navLink = 'text-sm uppercase tracking-wider hover:text-primary transition-colors';
 const dropLink =
@@ -120,9 +119,6 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-6" aria-label="Primary">
-            <Link href="/floor-plans" className={navLink}>
-              Floor Plans
-            </Link>
 
             <NavDropdown
               label="Photo Gallery"
@@ -155,24 +151,9 @@ export function Header() {
 
           {/* CTA Buttons - Desktop */}
           <div className="hidden lg:flex items-center gap-4">
-            <a
-              href={AVAILABILITY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${navLink} font-semibold`}
-              onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'nav')}
-            >
+            <Link href="/available-units" className="btn-gold-outline text-sm">
               Available Units
-            </a>
-            <a
-              href={APPLY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-gold-outline text-sm"
-              onClick={() => trackOutboundClick('apply', APPLY_URL, 'nav')}
-            >
-              Apply Now
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -195,7 +176,7 @@ export function Header() {
             className="lg:hidden py-4 border-t border-border overflow-y-auto max-h-[calc(100vh-80px)]"
           >
             <div className="flex flex-col gap-4" onClick={() => setMobileMenuOpen(false)}>
-              <Link href="/floor-plans" className="text-sm uppercase tracking-wider py-2">Floor Plans</Link>
+              <Link href="/available-units" className="text-sm uppercase tracking-wider py-2">Available Units</Link>
               <Link href="/photo-gallery" className="text-sm uppercase tracking-wider py-2">Photo Gallery</Link>
               <Link href="/virtual-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Virtual Tour</Link>
               <Link href="/amenities" className="text-sm uppercase tracking-wider py-2">Amenities</Link>
@@ -208,12 +189,9 @@ export function Header() {
               <Link href="/reviews" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Reviews</Link>
 
               <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
-                <a href={AVAILABILITY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-center" onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'mobile_nav')}>
+                <Link href="/available-units" className="btn-gold-outline text-center">
                   Available Units
-                </a>
-                <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline text-center" onClick={() => trackOutboundClick('apply', APPLY_URL, 'mobile_nav')}>
-                  Apply Now
-                </a>
+                </Link>
               </div>
             </div>
           </nav>

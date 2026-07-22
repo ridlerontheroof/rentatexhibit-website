@@ -19,9 +19,8 @@ import { PlanCard } from '../components/floor-plans/PlanCard';
 import { AvailableUnits } from '../components/floor-plans/AvailableUnits';
 import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFilters';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
-import { trackOutboundClick } from '../lib/analytics';
 import { SmartImg } from '../components/SmartImg';
-import { APPLY_URL, TOUR_URL } from '../data/seo';
+import { TOUR_URL } from '../data/seo';
 import {
   planGroups,
   filterGroups,
@@ -36,7 +35,6 @@ import {
   type SortKey,
 } from '../data/floorPlans';
 
-import { AVAILABILITY_URL } from '../data/seo';
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'featured', label: 'Featured' },
@@ -155,28 +153,28 @@ export function FloorPlans() {
 
   return (
     <>
-      <Seo path="/floor-plans" extraJsonLd={[structuredData]} />
+      <Seo path="/available-units" extraJsonLd={[structuredData]} />
 
       <div>
         <PageHero
           image="/images/image-030-012417-5663-hxwee6.jpg"
-          alt="Floor Plans | Exhibit On Superior in Chicago, Illinois"
-          titleScript="Smartly Designed Residences"
-          title="Studio, 1, 2 & 3 Bedroom Apartments"
-          subtitle="Floor Plans"
+          alt="Available Units | Exhibit On Superior in Chicago, Illinois"
+          titleScript="Move-In Ready Residences"
+          title="Available Units & Floor Plans"
+          subtitle="Studio, 1, 2 & 3 Bedroom Apartments in River North Chicago"
         />
 
-        <QuickAnswer path="/floor-plans" />
+        <QuickAnswer path="/available-units" />
 
         <AvailableUnits onView={handleOpen} />
 
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-3xl text-center">
-            <SplitHeadline script="Live Smart, Live Beautifully" caps="Find Your Floor Plan" className="mb-6" />
+            <SplitHeadline script="Live Smart, Live Beautifully" caps="Explore All Floor Plans" className="mb-6" />
             <p className="text-lg leading-relaxed text-muted-foreground">
-              Explore every layout at Exhibit On Superior. Search by unit or floor, filter by
-              size and bedroom count, then open any plan for a closer look. When you're ready, check
-              live availability and pricing with our leasing team.
+              Looking for a specific layout? Compare all Exhibit On Superior floor plans here,
+              then check current unit availability and pricing above. Filter by bedroom count,
+              square footage, floor range, or unit line to find your best fit.
             </p>
           </div>
         </section>
@@ -325,14 +323,8 @@ export function FloorPlans() {
                   space that&rsquo;s uniquely yours, perfect for both relaxing and entertaining
                   right here at Exhibit.
                 </p>
-                <a
-                  href={APPLY_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-gold-outline inline-block"
-                  onClick={() => trackOutboundClick('apply', APPLY_URL, 'floor_plans_live_smart_section')}
-                >
-                  Apply Now
+                <a href="#available-units" className="btn-gold-outline inline-block">
+                  View Available Residences
                 </a>
               </div>
               <div className="relative lg:order-2">
@@ -394,11 +386,8 @@ export function FloorPlans() {
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <a
-                href={AVAILABILITY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#available-units"
                 className="btn-gold-outline border-white bg-primary text-white hover:bg-primary/90"
-                onClick={() => trackOutboundClick('availability', AVAILABILITY_URL, 'floor_plans_cta')}
               >
                 Check Availability
               </a>
@@ -412,7 +401,7 @@ export function FloorPlans() {
           </div>
         </section>
 
-        <FaqSection path="/floor-plans" />
+        <FaqSection path="/available-units" />
       </div>
 
       <PlanLightbox

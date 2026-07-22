@@ -396,7 +396,7 @@ export function floorPlansItemListJsonLd(): Record<string, unknown> {
           description: `${g.typeLabel} residence line (unit ${String(g.unit).padStart(2, '0')}) at Exhibit On Superior, offered on ${floorRange}, ${
             g.sqftMin === g.sqftMax ? `${g.sqftMin} sq ft` : `${g.sqftMin}\u2013${g.sqftMax} sq ft`
           }.`,
-          url: `https://www.rentatexhibit.com/floor-plans?plan=${encodeURIComponent(g.id)}`,
+          url: `https://www.rentatexhibit.com/available-units?plan=${encodeURIComponent(g.id)}`,
           accommodationCategory: CATEGORY_SCHEMA_LABEL[g.category],
           numberOfBathroomsTotal: g.baths,
           ...(g.beds > 0 ? { numberOfBedrooms: g.beds } : {}),

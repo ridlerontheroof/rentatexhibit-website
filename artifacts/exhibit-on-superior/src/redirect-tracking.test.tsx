@@ -90,6 +90,19 @@ describe('Redirect outbound tracking (/apply, /available-units, legacy apply)', 
     expect(trackSpy).not.toHaveBeenCalled();
   });
 
+  it('keeps query and hash on internal redirects (legacy /floor-plans?plan= deep links)', async () => {
+    // /floor-plans forwards its search + hash to /available-units so plan
+    // lightbox deep links keep auto-opening after the rename.
+    const historySpy = vi.spyOn(window.history, 'replaceState');
+    render(<Redirect to="/available-units?plan=studio-06#available-units" />);
+
+    await waitFor(() => expect(historySpy).toHaveBeenCalled());
+    const target = String(historySpy.mock.calls.at(-1)![2]);
+    expect(target).toContain('/available-units?plan=studio-06#available-units');
+    expect(replaceSpy).not.toHaveBeenCalled(); // internal — no page teardown
+    historySpy.mockRestore();
+  });
+
   it('does not track other external redirects, but still navigates', async () => {
     render(<Redirect to="https://example.com/elsewhere" />);
 

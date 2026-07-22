@@ -20,7 +20,7 @@ export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
 // Page-specific JSON-LD that isn't derivable from PAGE_SEO. Mirrors what the
 // page component passes to <Seo extraJsonLd>; keep in sync with that page.
 const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
-  '/floor-plans': () => [floorPlansItemListJsonLd()],
+  '/available-units': () => [floorPlansItemListJsonLd()],
   // At prerender time there is no live Google feed, so the model resolves to
   // the curated fallback — exactly what the SSR'd page body displays. The
   // client re-emits the schema from the live-merged model after hydration.

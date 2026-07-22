@@ -35,8 +35,8 @@ export function Footer() {
             <h3 className="uppercase tracking-wider font-semibold mb-4 text-sm">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/floor-plans" className="hover:text-primary transition-colors">
-                  Floor Plans
+                <Link href="/available-units" className="hover:text-primary transition-colors">
+                  Available Units
                 </Link>
               </li>
               <li>

@@ -943,7 +943,7 @@ describe('floorPlansItemListJsonLd', () => {
       expect(item['@type']).toBe('Apartment');
       expect(item.name).toBeTruthy();
       expect(item.description).toBeTruthy();
-      expect(String(item.url)).toMatch(/^https:\/\/www\.rentatexhibit\.com\/floor-plans\?plan=/);
+      expect(String(item.url)).toMatch(/^https:\/\/www\.rentatexhibit\.com\/available-units\?plan=/);
       expect(item.accommodationCategory).toBeTruthy();
       expect(typeof item.numberOfBathroomsTotal).toBe('number');
       const floorSize = item.floorSize as Record<string, unknown>;

@@ -45,8 +45,8 @@ export function Home() {
               <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline bg-black/50! text-white border-primary hover:bg-black/70!">
                 Schedule a Tour
               </a>
-              <Link href="/floor-plans" className="btn-gold-outline bg-black/50! text-white hover:bg-black/70!">
-                View Floor Plans
+              <Link href="/available-units" className="btn-gold-outline bg-black/50! text-white hover:bg-black/70!">
+                View Available Units
               </Link>
             </div>
           </div>
@@ -71,8 +71,8 @@ export function Home() {
               <Link href="/amenities" className="btn-gold-outline">
                 View our amenities
               </Link>
-              <Link href="/floor-plans" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90">
-                View floor plans
+              <Link href="/available-units" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90">
+                View available units
               </Link>
             </div>
           </div>
