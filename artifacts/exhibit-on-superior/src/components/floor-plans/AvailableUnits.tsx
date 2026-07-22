@@ -1,4 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import {
+  UnitGalleryLightbox,
+  applyUrlForListing,
+} from './UnitGalleryLightbox';
 import { SplitHeadline } from '../SplitHeadline';
 import { useAvailability, type AvailableUnit } from '../../hooks/use-availability';
 import { planGroups, type PlanGroup } from '../../data/floorPlans';
@@ -7,6 +11,19 @@ import { trackOutboundClick } from '../../lib/analytics';
 
 interface AvailableUnitsProps {
   onView: (group: PlanGroup) => void;
+}
+
+function UnitThumb({ photoUrl, unit }: { photoUrl: string; unit: string }) {
+  return (
+    <img
+      src={photoUrl}
+      alt={`Apartment ${unit} interior`}
+      loading="lazy"
+      width={112}
+      height={84}
+      className="h-[84px] w-[112px] object-cover transition-transform duration-300 hover:scale-105"
+    />
+  );
 }
 
 /**
@@ -54,6 +71,7 @@ function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string {
  */
 export function AvailableUnits({ onView }: AvailableUnitsProps) {
   const { data } = useAvailability();
+  const [galleryUnit, setGalleryUnit] = useState<AvailableUnit | null>(null);
 
   const rows = useMemo(() => {
     if (!data?.units) return [];
@@ -82,24 +100,31 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                   key={u.unit}
                   className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
                 >
-                  {u.photoUrl && (
-                    <a
-                      href={u.listingUrl ?? undefined}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block shrink-0 self-start overflow-hidden border border-border md:self-center"
-                      aria-label={`View photos of apartment ${u.unit}`}
-                    >
-                      <img
-                        src={u.photoUrl}
-                        alt={`Apartment ${u.unit} interior`}
-                        loading="lazy"
-                        width={112}
-                        height={84}
-                        className="h-[84px] w-[112px] object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                    </a>
-                  )}
+                  {u.photoUrl &&
+                    (u.photos.length > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => setGalleryUnit(u)}
+                        className="block shrink-0 cursor-pointer self-start overflow-hidden border border-border md:self-center"
+                        aria-label={`View photos of apartment ${u.unit}`}
+                      >
+                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
+                      </button>
+                    ) : u.listingUrl ? (
+                      <a
+                        href={u.listingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block shrink-0 self-start overflow-hidden border border-border md:self-center"
+                        aria-label={`View photos of apartment ${u.unit}`}
+                      >
+                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
+                      </a>
+                    ) : (
+                      <span className="block shrink-0 self-start overflow-hidden border border-border md:self-center">
+                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
+                      </span>
+                    ))}
                   <div className="flex flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
                     <span className="text-lg font-semibold uppercase tracking-wider text-foreground">
                       Apt {u.unit}
@@ -117,15 +142,25 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                   </div>
 
                   <div className="flex shrink-0 flex-wrap items-center gap-3">
-                    {u.listingUrl && (
-                      <a
-                        href={u.listingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {u.photos.length > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => setGalleryUnit(u)}
                         className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
                       >
                         Photos
-                      </a>
+                      </button>
+                    ) : (
+                      u.listingUrl && (
+                        <a
+                          href={u.listingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                        >
+                          Photos
+                        </a>
+                      )
                     )}
                     {u.videoUrl && (
                       <a
@@ -146,19 +181,27 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                         View floor plan
                       </button>
                     )}
-                    <a
-                      href={APPLY_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() =>
-                        trackOutboundClick('apply', APPLY_URL, 'floor_plans_available_units', {
-                          floorPlan: u.group?.typeLabel,
-                        })
-                      }
-                      className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-                    >
-                      Apply now
-                    </a>
+                    {(() => {
+                      // Posted units apply directly to their own AppFolio
+                      // listing (same target as AppFolio's Apply Now button);
+                      // others use the general application link.
+                      const applyUrl = (u.listingUrl && applyUrlForListing(u.listingUrl)) || APPLY_URL;
+                      return (
+                        <a
+                          href={applyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() =>
+                            trackOutboundClick('apply', applyUrl, 'floor_plans_available_units', {
+                              floorPlan: u.group?.typeLabel,
+                            })
+                          }
+                          className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                        >
+                          Apply now
+                        </a>
+                      );
+                    })()}
                   </div>
                 </li>
               );
@@ -166,6 +209,10 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
           </ul>
         </div>
       </div>
+
+      {galleryUnit && (
+        <UnitGalleryLightbox unit={galleryUnit} onClose={() => setGalleryUnit(null)} />
+      )}
     </section>
   );
 }

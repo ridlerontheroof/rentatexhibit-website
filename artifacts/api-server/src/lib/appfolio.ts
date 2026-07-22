@@ -34,6 +34,8 @@ export interface AvailableUnit {
   listingUrl: string | null;
   /** YouTube video URL from the unit's marketing info, when set. */
   videoUrl: string | null;
+  /** Full listing photo gallery (ordered), from the public listing page. */
+  photos: string[];
 }
 
 export interface AvailabilityPayload {
@@ -133,6 +135,7 @@ export function normalizeRow(row: Row): AvailableUnit | null {
     photoUrl: null,
     listingUrl: null,
     videoUrl: null,
+    photos: [],
   };
 }
 
@@ -162,6 +165,31 @@ export function parseListingsHtml(html: string): Map<string, ListingMedia> {
     }
   }
   return media;
+}
+
+/**
+ * Extract the ordered, deduplicated gallery photo URLs from a public listing
+ * detail page. Gallery images live under leads_marketing_photos/<uuid>/ on
+ * AppFolio's public image CDN.
+ */
+export function parseDetailPhotos(html: string): string[] {
+  const re = /https:\/\/images\.cdn\.appfolio\.com\/[^"'\s>]*leads_marketing_photos\/[a-f0-9-]+\/original\.jpg/g;
+  const seen = new Set<string>();
+  const photos: string[] = [];
+  for (const m of html.match(re) ?? []) {
+    if (!seen.has(m)) {
+      seen.add(m);
+      photos.push(m);
+    }
+  }
+  return photos;
+}
+
+/** Fetch a listing detail page's photo gallery. Public page, no credentials. */
+async function fetchDetailPhotos(listingUrl: string): Promise<string[]> {
+  const res = await fetch(listingUrl, { headers: { Accept: "text/html" } });
+  if (!res.ok) throw new Error(`AppFolio listing detail page failed: status ${res.status}`);
+  return parseDetailPhotos(await res.text());
 }
 
 /**
@@ -293,6 +321,19 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
       unit.listingUrl = m.listingUrl;
     }
     unit.videoUrl = marketing?.videos.get(unit.unit) ?? null;
+  }
+
+  // Pull each posted unit's full photo gallery from its public detail page
+  // (sequential — a handful of pages, and it keeps us polite to their CDN).
+  // Best-effort per unit: a failed gallery leaves photos empty and the
+  // frontend falls back to linking out.
+  for (const unit of units) {
+    if (!unit.listingUrl) continue;
+    try {
+      unit.photos = await fetchDetailPhotos(unit.listingUrl);
+    } catch {
+      unit.photos = [];
+    }
   }
 
   return { units, updatedAt: new Date().toISOString() };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isExhibitRow, isSafeNextPageUrl, normalizeRow, parseListingsHtml } from "./appfolio";
+import { isExhibitRow, isSafeNextPageUrl, normalizeRow, parseDetailPhotos, parseListingsHtml } from "./appfolio";
 
 const NO_MEDIA = { photoUrl: null, listingUrl: null, videoUrl: null };
 
@@ -27,6 +27,24 @@ describe("parseListingsHtml", () => {
 
   it("returns an empty map for markup without listing cards", () => {
     expect(parseListingsHtml("<html><body>No listings</body></html>").size).toBe(0);
+  });
+});
+
+describe("parseDetailPhotos", () => {
+  it("extracts ordered, deduplicated gallery photo URLs", () => {
+    const html = `
+      <img src="https://images.cdn.appfolio.com/db/images/abc/medium.jpg" />
+      <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg">
+        <img src="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg" /></a>
+      <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/bbb-222/original.jpg"></a>`;
+    expect(parseDetailPhotos(html)).toEqual([
+      "https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg",
+      "https://images.cdn.appfolio.com/db/leads_marketing_photos/bbb-222/original.jpg",
+    ]);
+  });
+
+  it("returns empty for pages without gallery photos", () => {
+    expect(parseDetailPhotos("<html></html>")).toEqual([]);
   });
 });
 
@@ -79,6 +97,7 @@ describe("normalizeRow", () => {
       photoUrl: null,
       listingUrl: null,
       videoUrl: null,
+      photos: [],
     });
   });
 
@@ -100,6 +119,7 @@ describe("normalizeRow", () => {
       photoUrl: null,
       listingUrl: null,
       videoUrl: null,
+      photos: [],
     });
   });
 
@@ -142,6 +162,7 @@ describe("normalizeRow", () => {
       photoUrl: null,
       listingUrl: null,
       videoUrl: null,
+      photos: [],
     });
   });
 

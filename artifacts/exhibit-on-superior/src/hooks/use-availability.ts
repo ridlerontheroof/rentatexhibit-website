@@ -15,6 +15,8 @@ export interface AvailableUnit {
   listingUrl: string | null;
   /** YouTube video tour URL, when the leasing team has added one. */
   videoUrl: string | null;
+  /** Full listing photo gallery (ordered), when the unit is posted. */
+  photos: string[];
 }
 
 export interface AvailabilityData {
