@@ -95,7 +95,7 @@ export function AvailableUnits() {
         <div className="border border-border bg-white p-6 md:p-8">
           <div id="available-units-heading" className="mb-6 text-center">
             <SplitHeadline script="Move-In Ready" caps="Available Residences" />
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-lg leading-relaxed text-muted-foreground">
               Live availability, updated automatically from our leasing system.
             </p>
           </div>
