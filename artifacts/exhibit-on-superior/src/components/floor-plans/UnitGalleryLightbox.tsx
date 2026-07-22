@@ -13,16 +13,47 @@ interface UnitGalleryLightboxProps {
  * the same target as the "Apply Now" button on AppFolio's own listing page.
  */
 export function applyUrlForListing(listingUrl: string): string | null {
-  const m = listingUrl.match(/^(https:\/\/[^/]+)\/listings\/detail\/([a-f0-9-]+)/);
+  const parsed = parseListingUrl(listingUrl);
+  if (!parsed) return null;
+  return `${parsed.origin}/listings/rental_applications/new?listable_uid=${parsed.uid}&source=Website`;
+}
+
+/**
+ * Parse and validate a listing URL: must be https on an *.appfolio.com host
+ * (the only place our API server sources listings from) with a
+ * /listings/detail/<uuid> path. Anything else returns null so callers fall
+ * back to internal pages instead of linking off-site.
+ */
+function parseListingUrl(listingUrl: string): { origin: string; uid: string } | null {
+  let url: URL;
+  try {
+    url = new URL(listingUrl);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== 'https:') return null;
+  if (!/(^|\.)appfolio\.com$/.test(url.hostname)) return null;
+  const m = url.pathname.match(/^\/listings\/detail\/([a-f0-9-]+)$/);
   if (!m) return null;
-  return `${m[1]}/listings/rental_applications/new?listable_uid=${m[2]}&source=Website`;
+  return { origin: url.origin, uid: m[1] };
+}
+
+/**
+ * The listing's unit-specific tour scheduling URL — same target as the
+ * "Schedule Showing" button on AppFolio's own listing page, so the showing
+ * request is tied to this exact unit for the leasing team.
+ */
+export function tourUrlForListing(listingUrl: string): string | null {
+  const parsed = parseListingUrl(listingUrl);
+  if (!parsed) return null;
+  return `${parsed.origin}/listings/showings/new?listable_uid=${parsed.uid}&source=Website`;
 }
 
 /** The listing's contact form URL — same target as AppFolio's "Contact Us". */
 export function contactUrlForListing(listingUrl: string): string | null {
-  return /^https:\/\/[^/]+\/listings\/detail\/[a-f0-9-]+/.test(listingUrl)
-    ? `${listingUrl}/contact_us_form`
-    : null;
+  const parsed = parseListingUrl(listingUrl);
+  if (!parsed) return null;
+  return `${parsed.origin}/listings/detail/${parsed.uid}/contact_us_form`;
 }
 
 /**

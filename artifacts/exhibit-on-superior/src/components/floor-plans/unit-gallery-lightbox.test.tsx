@@ -5,6 +5,7 @@ import {
   UnitGalleryLightbox,
   applyUrlForListing,
   contactUrlForListing,
+  tourUrlForListing,
 } from './UnitGalleryLightbox';
 import type { AvailableUnit } from '../../hooks/use-availability';
 
@@ -37,9 +38,29 @@ describe('listing URL derivation', () => {
     expect(contactUrlForListing(LISTING)).toBe(`${LISTING}/contact_us_form`);
   });
 
+  it('derives the same unit-specific Schedule Showing target as the AppFolio listing page', () => {
+    expect(tourUrlForListing(LISTING)).toBe(
+      'https://highlandrealestatepartners.appfolio.com/listings/showings/new?listable_uid=15ac6d84-747c-4aa6-9b02-ce2be59e4d69&source=Website',
+    );
+  });
+
   it('returns null for non-listing URLs', () => {
     expect(applyUrlForListing('https://evil.example.com/listings/detail/x')).toBeNull();
     expect(contactUrlForListing('https://example.com/other')).toBeNull();
+    expect(tourUrlForListing('https://example.com/other')).toBeNull();
+  });
+
+  it('rejects non-AppFolio hosts even with a valid listing path', () => {
+    const spoofed = 'https://evil.example.com/listings/detail/15ac6d84-747c-4aa6-9b02-ce2be59e4d69';
+    expect(applyUrlForListing(spoofed)).toBeNull();
+    expect(tourUrlForListing(spoofed)).toBeNull();
+    expect(contactUrlForListing(spoofed)).toBeNull();
+    // Suffix-spoofing like notappfolio.com must also fail.
+    const suffix = 'https://notappfolio.com/listings/detail/15ac6d84-747c-4aa6-9b02-ce2be59e4d69';
+    expect(tourUrlForListing(suffix)).toBeNull();
+    // Plain http is not trusted either.
+    const insecure = 'http://highlandrealestatepartners.appfolio.com/listings/detail/15ac6d84-747c-4aa6-9b02-ce2be59e4d69';
+    expect(tourUrlForListing(insecure)).toBeNull();
   });
 });
 

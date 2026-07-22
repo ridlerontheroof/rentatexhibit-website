@@ -4,6 +4,7 @@ import { BedDouble, Bath, Ruler, PawPrint } from 'lucide-react';
 import {
   UnitGalleryLightbox,
   applyUrlForListing,
+  tourUrlForListing,
 } from './UnitGalleryLightbox';
 import { SplitHeadline } from '../SplitHeadline';
 import { useAvailability, type AvailableUnit } from '../../hooks/use-availability';
@@ -235,24 +236,52 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                       </button>
                     )}
                     {(() => {
-                      // Posted units apply directly to their own AppFolio
-                      // listing (same target as AppFolio's Apply Now button);
-                      // others use the general application link.
+                      // Posted units link to their own AppFolio listing's
+                      // showing scheduler and application (same targets as the
+                      // buttons on AppFolio's hosted listing page), so tour
+                      // requests and applications arrive tied to this exact
+                      // unit. Units not yet posted fall back to the general
+                      // application link / tour page.
+                      const tourUrl = u.listingUrl ? tourUrlForListing(u.listingUrl) : null;
                       const applyUrl = (u.listingUrl && applyUrlForListing(u.listingUrl)) || APPLY_URL;
                       return (
-                        <a
-                          href={applyUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() =>
-                            trackOutboundClick('apply', applyUrl, 'floor_plans_available_units', {
-                              floorPlan: u.group?.typeLabel,
-                            })
-                          }
-                          className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-                        >
-                          Apply now
-                        </a>
+                        <>
+                          {tourUrl ? (
+                            <a
+                              href={tourUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() =>
+                                trackOutboundClick('tour', tourUrl, 'floor_plans_available_units', {
+                                  floorPlan: u.unit,
+                                })
+                              }
+                              className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
+                            >
+                              Schedule a tour
+                            </a>
+                          ) : (
+                            <Link
+                              href="/schedule-a-tour"
+                              className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
+                            >
+                              Schedule a tour
+                            </Link>
+                          )}
+                          <a
+                            href={applyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() =>
+                              trackOutboundClick('apply', applyUrl, 'floor_plans_available_units', {
+                                floorPlan: u.group?.typeLabel,
+                              })
+                            }
+                            className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                          >
+                            Apply now
+                          </a>
+                        </>
                       );
                     })()}
                   </div>

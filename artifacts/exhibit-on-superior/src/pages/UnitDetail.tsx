@@ -13,6 +13,7 @@ import {
   UnitGalleryLightbox,
   applyUrlForListing,
   contactUrlForListing,
+  tourUrlForListing,
 } from '../components/floor-plans/UnitGalleryLightbox';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { trackOutboundClick } from '../lib/analytics';
@@ -67,6 +68,7 @@ export function UnitDetail() {
   const baths = unit.bathrooms ?? group?.baths ?? null;
   const applyUrl = (unit.listingUrl && applyUrlForListing(unit.listingUrl)) || APPLY_URL;
   const contactUrl = unit.listingUrl ? contactUrlForListing(unit.listingUrl) : null;
+  const tourUrl = unit.listingUrl ? tourUrlForListing(unit.listingUrl) : null;
   const heroPhotos = unit.photos.slice(0, 5);
 
   return (
@@ -171,12 +173,26 @@ export function UnitDetail() {
           >
             Apply now
           </a>
-          <Link
-            href="/schedule-a-tour"
-            className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
-          >
-            Schedule a tour
-          </Link>
+          {tourUrl ? (
+            <a
+              href={tourUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() =>
+                trackOutboundClick('tour', tourUrl, 'unit_detail', { floorPlan: unit.unit })
+              }
+              className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
+            >
+              Schedule a tour
+            </a>
+          ) : (
+            <Link
+              href="/schedule-a-tour"
+              className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
+            >
+              Schedule a tour
+            </Link>
+          )}
           {contactUrl && (
             <a
               href={contactUrl}
