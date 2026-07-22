@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { isExhibitRow, isSafeNextPageUrl, normalizeRow, parseDetailPhotos, parseListingsHtml } from "./appfolio";
+import {
+  isExhibitRow,
+  isSafeNextPageUrl,
+  normalizeRow,
+  parseDetailPhotos,
+  parseDetailSections,
+  parseListingsHtml,
+} from "./appfolio";
 
 const NO_MEDIA = { photoUrl: null, listingUrl: null, videoUrl: null };
 
@@ -45,6 +52,35 @@ describe("parseDetailPhotos", () => {
 
   it("returns empty for pages without gallery photos", () => {
     expect(parseDetailPhotos("<html></html>")).toEqual([]);
+  });
+});
+
+describe("parseDetailSections", () => {
+  it("extracts h3-titled list sections with decoded, tag-stripped items", () => {
+    const html = `
+      <h3 class="fw-normal mt-3">Rental Terms</h3>
+      <ul class="list fw-light js-show-rental-terms">
+        <li class="list__item">Rent: $2,271</li>
+        <li class="list__item">Application Fee: $60</li>
+        <li class="list__item">Available 9/24/26</li>
+      </ul>
+      <h3 class="fw-normal mt-3">Pet Policy</h3>
+      <ul class="list js-pet-policy-list fw-light">
+        <li class="list__item js-pet-policy-item">Cats allowed</li><li class="list__item">Dogs &amp; cats</li>
+      </ul>
+      <h3 class="fw-normal mt-3">Empty Section</h3>
+      <ul class="list"></ul>`;
+    expect(parseDetailSections(html)).toEqual([
+      {
+        title: "Rental Terms",
+        items: ["Rent: $2,271", "Application Fee: $60", "Available 9/24/26"],
+      },
+      { title: "Pet Policy", items: ["Cats allowed", "Dogs & cats"] },
+    ]);
+  });
+
+  it("returns empty for pages without sections", () => {
+    expect(parseDetailSections("<html><body><h3>Title</h3><p>text</p></body></html>")).toEqual([]);
   });
 });
 
@@ -98,6 +134,7 @@ describe("normalizeRow", () => {
       listingUrl: null,
       videoUrl: null,
       photos: [],
+      details: [],
     });
   });
 
@@ -120,6 +157,7 @@ describe("normalizeRow", () => {
       listingUrl: null,
       videoUrl: null,
       photos: [],
+      details: [],
     });
   });
 
@@ -163,6 +201,7 @@ describe("normalizeRow", () => {
       listingUrl: null,
       videoUrl: null,
       photos: [],
+      details: [],
     });
   });
 

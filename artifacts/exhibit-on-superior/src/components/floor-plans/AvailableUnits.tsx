@@ -72,6 +72,7 @@ function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string {
 export function AvailableUnits({ onView }: AvailableUnitsProps) {
   const { data } = useAvailability();
   const [galleryUnit, setGalleryUnit] = useState<AvailableUnit | null>(null);
+  const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
 
   const rows = useMemo(() => {
     if (!data?.units) return [];
@@ -142,6 +143,17 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                   </div>
 
                   <div className="flex shrink-0 flex-wrap items-center gap-3">
+                    {u.details.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setExpandedUnit(expandedUnit === u.unit ? null : u.unit)}
+                        aria-expanded={expandedUnit === u.unit}
+                        aria-controls={`unit-details-${u.unit}`}
+                        className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                      >
+                        {expandedUnit === u.unit ? 'Hide details' : 'Details'}
+                      </button>
+                    )}
                     {u.photos.length > 0 ? (
                       <button
                         type="button"
@@ -203,6 +215,30 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                       );
                     })()}
                   </div>
+
+                  {expandedUnit === u.unit && u.details.length > 0 && (
+                    <div
+                      id={`unit-details-${u.unit}`}
+                      className="w-full basis-full border-t border-border pt-4 md:mt-1"
+                    >
+                      <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {u.details.map((section) => (
+                          <div key={section.title}>
+                            <h4 className="text-xs uppercase tracking-wider text-muted-foreground">
+                              {section.title}
+                            </h4>
+                            <ul className="mt-2 space-y-1">
+                              {section.items.map((item) => (
+                                <li key={item} className="text-sm text-foreground">
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </li>
               );
             })}

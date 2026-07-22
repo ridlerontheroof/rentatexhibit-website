@@ -24,6 +24,7 @@ const unit: AvailableUnit = {
     'https://images.cdn.appfolio.com/db/leads_marketing_photos/a/original.jpg',
     'https://images.cdn.appfolio.com/db/leads_marketing_photos/b/original.jpg',
   ],
+  details: [],
 };
 
 describe('listing URL derivation', () => {

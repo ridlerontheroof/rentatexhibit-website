@@ -36,6 +36,13 @@ export interface AvailableUnit {
   videoUrl: string | null;
   /** Full listing photo gallery (ordered), from the public listing page. */
   photos: string[];
+  /** Listing info sections (Rental Terms, Pet Policy, Amenities, …). */
+  details: DetailSection[];
+}
+
+export interface DetailSection {
+  title: string;
+  items: string[];
 }
 
 export interface AvailabilityPayload {
@@ -136,6 +143,7 @@ export function normalizeRow(row: Row): AvailableUnit | null {
     listingUrl: null,
     videoUrl: null,
     photos: [],
+    details: [],
   };
 }
 
@@ -185,11 +193,42 @@ export function parseDetailPhotos(html: string): string[] {
   return photos;
 }
 
-/** Fetch a listing detail page's photo gallery. Public page, no credentials. */
-async function fetchDetailPhotos(listingUrl: string): Promise<string[]> {
+/** Decode the handful of HTML entities AppFolio uses in list items. */
+function decodeEntities(text: string): string {
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ");
+}
+
+/**
+ * Extract the listing's info sections (Rental Terms, Pet Policy, Amenities,
+ * Utilities Included, Appliances) from a detail page. Each section is an
+ * `<h3>` heading followed by a `<ul>` of `list__item` entries.
+ */
+export function parseDetailSections(html: string): DetailSection[] {
+  const sections: DetailSection[] = [];
+  const sectionRe = /<h3[^>]*>([^<]+)<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/g;
+  let m: RegExpExecArray | null;
+  while ((m = sectionRe.exec(html)) !== null) {
+    const title = decodeEntities(m[1].trim());
+    const items = [...m[2].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)]
+      .map((li) => decodeEntities(li[1].replace(/<[^>]*>/g, "").trim()))
+      .filter((item) => item.length > 0);
+    if (title && items.length > 0) sections.push({ title, items });
+  }
+  return sections;
+}
+
+/** Fetch a listing detail page's photos + info sections. Public page, no credentials. */
+async function fetchDetailInfo(listingUrl: string): Promise<{ photos: string[]; details: DetailSection[] }> {
   const res = await fetch(listingUrl, { headers: { Accept: "text/html" } });
   if (!res.ok) throw new Error(`AppFolio listing detail page failed: status ${res.status}`);
-  return parseDetailPhotos(await res.text());
+  const html = await res.text();
+  return { photos: parseDetailPhotos(html), details: parseDetailSections(html) };
 }
 
 /**
@@ -330,9 +369,12 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
   for (const unit of units) {
     if (!unit.listingUrl) continue;
     try {
-      unit.photos = await fetchDetailPhotos(unit.listingUrl);
+      const info = await fetchDetailInfo(unit.listingUrl);
+      unit.photos = info.photos;
+      unit.details = info.details;
     } catch {
       unit.photos = [];
+      unit.details = [];
     }
   }
 

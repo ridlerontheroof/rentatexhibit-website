@@ -17,6 +17,13 @@ export interface AvailableUnit {
   videoUrl: string | null;
   /** Full listing photo gallery (ordered), when the unit is posted. */
   photos: string[];
+  /** Listing info sections (Rental Terms, Pet Policy, Amenities, …). */
+  details: DetailSection[];
+}
+
+export interface DetailSection {
+  title: string;
+  items: string[];
 }
 
 export interface AvailabilityData {
