@@ -211,6 +211,14 @@ export function parseListingsHtml(html: string): Map<string, ListingMedia> {
  * Only the `images/` group is unit-specific, so prefer it (as large.jpg)
  * and fall back to the marketing set only if no gallery images exist.
  */
+
+/**
+ * Photo IDs to drop from unit galleries. AppFolio appends the Highland
+ * Partners logo (a 338×100 JPEG) as the final photo of every listing's
+ * gallery; it is not a unit photo and should never reach the site.
+ */
+const EXCLUDED_PHOTO_IDS = new Set(["a2d081fb-43de-4bf9-9089-5e9d2525575a"]);
+
 export function parseDetailPhotos(html: string): string[] {
   const galleryRe =
     /https:\/\/images\.cdn\.appfolio\.com\/([^"'\s>]*)\/images\/([a-f0-9-]+)\/(?:medium|large)\.jpg/gi;
@@ -219,7 +227,7 @@ export function parseDetailPhotos(html: string): string[] {
   let m: RegExpExecArray | null;
   while ((m = galleryRe.exec(html)) !== null) {
     const [, db, id] = m;
-    if (!seenIds.has(id)) {
+    if (!seenIds.has(id) && !EXCLUDED_PHOTO_IDS.has(id.toLowerCase())) {
       seenIds.add(id);
       photos.push(`https://images.cdn.appfolio.com/${db}/images/${id}/large.jpg`);
     }

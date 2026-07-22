@@ -75,6 +75,15 @@ describe("parseDetailPhotos", () => {
     ]);
   });
 
+  it("drops the excluded Highland Partners logo photo from the gallery", () => {
+    const html = `
+      <img src="https://images.cdn.appfolio.com/db/images/abc/large.jpg" />
+      <img src="https://images.cdn.appfolio.com/db/images/a2d081fb-43de-4bf9-9089-5e9d2525575a/large.jpg" />`;
+    expect(parseDetailPhotos(html)).toEqual([
+      "https://images.cdn.appfolio.com/db/images/abc/large.jpg",
+    ]);
+  });
+
   it("falls back to the marketing set when no gallery images exist", () => {
     const html = `
       <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg"></a>
