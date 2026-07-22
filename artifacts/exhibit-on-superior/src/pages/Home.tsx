@@ -39,7 +39,7 @@ export function Home() {
               className="mb-6 [&_.headline-script]:text-[clamp(34px,6vw,64px)] [&_.headline-caps]:text-[clamp(28px,5vw,56px)] [&_.headline-caps]:tracking-[clamp(6px,1.5vw,15px)]"
             />
             <p className="text-xl md:text-2xl mb-8 tracking-wide">
-              Sleek Design for Modern Living Chicago Apartments
+              Modern High-Rise Living in the Heart of River North
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline bg-black/50! text-white border-primary hover:bg-black/70!">

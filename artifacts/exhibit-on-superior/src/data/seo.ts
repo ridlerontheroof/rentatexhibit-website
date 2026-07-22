@@ -35,11 +35,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/',
     ogImage: `${SITE_URL}/images/og/home.jpg`,
     label: 'Exhibit On Superior',
-    title: 'River North Chicago Apartments | Exhibit On Superior',
+    title: 'Modern High-Rise Apartments in River North Chicago | Exhibit On Superior',
     description:
-      'Explore Exhibit On Superior, a River North Chicago apartment community with studio, one, two, and three-bedroom homes, skyline views, amenities, and on-site retail.',
+      'Exhibit On Superior is a modern high-rise apartment community in River North Chicago with studio, one, two, and three-bedroom homes, skyline views, luxury amenities, and on-site retail.',
     quickAnswer:
-      'Exhibit On Superior is a River North apartment community at 165 W Superior St in Chicago with studio, one, two, and three-bedroom apartments, full-building amenities, on-site retail, and quick access to downtown neighborhoods.',
+      'Exhibit On Superior is a modern high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
     faqs: [
       {
         q: 'Where is Exhibit On Superior located?',
@@ -59,11 +59,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/floor-plans',
     ogImage: `${SITE_URL}/images/og/floor-plans.jpg`,
     label: 'Floor Plans',
-    title: 'Studio, 1, 2 & 3 Bedroom Floor Plans | Exhibit On Superior',
+    title: 'Studio, 1, 2 & 3 Bedroom Apartments in River North | Exhibit On Superior',
     description:
-      'Review studio, one, two, and three-bedroom floor plan content for Exhibit On Superior in River North Chicago, then check current availability through Highland.',
+      'Browse studio, one, two, and three-bedroom floor plans at Exhibit On Superior, a modern high-rise in River North Chicago, then check current availability through Highland.',
     quickAnswer:
-      'Exhibit On Superior has studio, one, two, and three-bedroom floor plan options in River North Chicago. Browse layouts on this page, then check current unit availability through Highland and apply through AppFolio.',
+      'Exhibit On Superior offers studio, one, two, and three-bedroom floor plans in a modern River North Chicago high-rise. Browse layouts on this page, then check current unit availability through Highland and apply through AppFolio.',
     faqs: [
       {
         q: 'Does Exhibit On Superior have studio apartments?',
@@ -328,7 +328,7 @@ const APARTMENT_COMPLEX_NODE = {
   url: SITE_URL,
   image: `${SITE_URL}/images/image-002-gettyimages-1286580777-nvdupq.jpg`,
   description:
-    'Exhibit On Superior is a River North apartment community at 165 W Superior St in Chicago with studio, one, two, and three-bedroom apartments, full-building amenities, on-site retail, and quick access to downtown neighborhoods.',
+    'Exhibit On Superior is a modern high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
   telephone: '312-450-0635',
   email: 'exhibit@highlandptrs.com',
   address: {
@@ -351,7 +351,7 @@ const APARTMENT_COMPLEX_NODE = {
     { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Sunday'], opens: '12:00', closes: '17:00' },
   ],
   hasMap: 'https://www.google.com/maps?cid=15240815771270963454',
-  tourBookingPage: `${SITE_URL}/schedule-a-tour`,
+  tourBookingPage: TOUR_URL,
   petsAllowed:
     'Cats and dogs are welcome; confirm current pet fees, limits, and policy details with the leasing team.',
   sameAs: [
@@ -360,12 +360,28 @@ const APARTMENT_COMPLEX_NODE = {
     'https://www.youtube.com/@ExhibitonSuperior',
   ],
   amenityFeature: [
-    'Full-floor amenity deck',
-    'Fitness center',
+    'Full-floor amenity deck overlooking the city and private park',
+    'Fitness center with two private training rooms',
+    'Cardio equipment and spin bikes',
+    'Boxing simulator',
     'Lap pool',
+    'Sauna and wet lounge leading to outdoor deck',
     'Outdoor hot tub',
-    'Dog spa',
-    'Work and meeting rooms',
+    'Four grilling stations',
+    'Four fire pits',
+    'Doggie spa and lounge',
+    'Tech lounge with charging stations and kitchen',
+    'Lounge with fireplace and big screen TV',
+    'Game area with arcade games and wall Scrabble',
+    'Private work and meeting rooms',
+    'Private dining room and party suite',
+    'Library nook',
+    'Floor-to-ceiling windows',
+    'Private balconies',
+    'In-home washer/dryer',
+    'Quartz countertops',
+    'Stainless-steel appliances',
+    'Wired for 1GB internet',
   ].map((name) => ({ '@type': 'LocationFeatureSpecification', name })),
 };
 
