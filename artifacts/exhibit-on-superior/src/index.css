@@ -240,6 +240,16 @@
     @apply font-normal uppercase;
     letter-spacing: 10px;
     line-height: 1.1;
+    /* Even out multi-line headings so no line is left with a stray word. */
+    text-wrap: balance;
+  }
+
+  /* Prevent typographic widows/orphans — a single word stranded on the last
+     line — across all body copy, including text fed live from the leasing
+     system. `pretty` lets the browser rebalance the final lines; browsers
+     without support simply fall back to normal wrapping. */
+  p, li, blockquote, figcaption, dt, dd {
+    text-wrap: pretty;
   }
 }
 
