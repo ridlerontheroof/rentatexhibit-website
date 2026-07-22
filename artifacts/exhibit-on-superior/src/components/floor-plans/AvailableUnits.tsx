@@ -139,42 +139,48 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                         <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
                       </span>
                     ))}
-                  <div className="flex flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
-                    <Link
-                      href={`/available-units/${u.unit}`}
-                      className="text-lg font-semibold uppercase tracking-wider text-foreground transition-colors hover:text-primary"
-                    >
-                      Apt {u.unit}
-                    </Link>
-                    <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                      <span className="inline-flex items-center gap-1.5">
-                        <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
-                        {bedBathLabel(u, u.group).split(' · ')[0] ?? ''}
-                      </span>
-                      {(u.bathrooms ?? u.group?.baths) != null && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <Bath className="h-4 w-4 text-primary" aria-hidden="true" />
-                          {u.bathrooms ?? u.group?.baths} Bath
-                        </span>
-                      )}
-                      {sqft !== null && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <Ruler className="h-4 w-4 text-primary" aria-hidden="true" />
-                          {sqft.toLocaleString()} sq ft
-                        </span>
-                      )}
-                      {petsLabel(u) && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <PawPrint className="h-4 w-4 text-primary" aria-hidden="true" />
-                          {petsLabel(u)}
-                        </span>
-                      )}
-                      <span>{formatAvailable(u.availableOn)}</span>
+                  <div className="flex flex-1 flex-wrap items-start gap-x-6 gap-y-1">
+                    {/* Unit number stacked above rent so pricing lines up in
+                        the same spot on every row. */}
+                    <span className="flex w-28 shrink-0 flex-col">
+                      <Link
+                        href={`/available-units/${u.unit}`}
+                        className="text-lg font-semibold uppercase tracking-wider text-foreground transition-colors hover:text-primary"
+                      >
+                        Apt {u.unit}
+                      </Link>
+                      {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
                     </span>
-                    {u.marketingTitle && (
-                      <span className="text-sm text-muted-foreground">{u.marketingTitle}</span>
-                    )}
-                    {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
+                    <span className="flex min-w-0 flex-1 flex-col gap-y-1 pt-0.5">
+                      <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5">
+                          <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
+                          {bedBathLabel(u, u.group).split(' · ')[0] ?? ''}
+                        </span>
+                        {(u.bathrooms ?? u.group?.baths) != null && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Bath className="h-4 w-4 text-primary" aria-hidden="true" />
+                            {u.bathrooms ?? u.group?.baths} Bath
+                          </span>
+                        )}
+                        {sqft !== null && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Ruler className="h-4 w-4 text-primary" aria-hidden="true" />
+                            {sqft.toLocaleString()} sq ft
+                          </span>
+                        )}
+                        {petsLabel(u) && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <PawPrint className="h-4 w-4 text-primary" aria-hidden="true" />
+                            {petsLabel(u)}
+                          </span>
+                        )}
+                        <span>{formatAvailable(u.availableOn)}</span>
+                      </span>
+                      {u.marketingTitle && (
+                        <span className="text-sm text-muted-foreground">{u.marketingTitle}</span>
+                      )}
+                    </span>
                   </div>
 
                   <div className="flex shrink-0 flex-wrap items-center gap-3">
