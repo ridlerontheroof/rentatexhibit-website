@@ -11,7 +11,11 @@
  * matching) instead of hard-coding exact column names.
  */
 
-const APPFOLIO_BASE = "https://highlandptrs.appfolio.com/api/v2/reports";
+// The AppFolio database name comes from the management company's Duda CMS
+// sync ("AppFolio Database: highlandrealestatepartners"), overridable via env
+// if the database is ever renamed.
+const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners";
+const APPFOLIO_BASE = `https://${APPFOLIO_DB}.appfolio.com/api/v2/reports`;
 const PROPERTY_MATCH = "exhibit";
 
 export interface AvailableUnit {

@@ -3,13 +3,14 @@ import { isExhibitRow, isSafeNextPageUrl, normalizeRow } from "./appfolio";
 
 describe("isSafeNextPageUrl", () => {
   it("accepts same-host HTTPS and relative pagination URLs", () => {
-    expect(isSafeNextPageUrl("https://highlandptrs.appfolio.com/api/v2/reports/unit_vacancy.json?page=2")).toBe(true);
+    expect(isSafeNextPageUrl("https://highlandrealestatepartners.appfolio.com/api/v2/reports/unit_vacancy.json?page=2")).toBe(true);
     expect(isSafeNextPageUrl("/api/v2/reports/unit_vacancy.json?page=2")).toBe(true);
   });
 
   it("rejects off-host or non-HTTPS URLs so Basic auth never leaves AppFolio", () => {
     expect(isSafeNextPageUrl("https://evil.example.com/steal")).toBe(false);
-    expect(isSafeNextPageUrl("http://highlandptrs.appfolio.com/api/v2/reports/x.json")).toBe(false);
+    expect(isSafeNextPageUrl("https://highlandptrs.appfolio.com/api/v2/reports/x.json")).toBe(false);
+    expect(isSafeNextPageUrl("http://highlandrealestatepartners.appfolio.com/api/v2/reports/x.json")).toBe(false);
   });
 });
 
