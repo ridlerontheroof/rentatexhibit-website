@@ -12,7 +12,6 @@ import {
 import {
   UnitGalleryLightbox,
   applyUrlForListing,
-  contactUrlForListing,
   tourUrlForListing,
 } from '../components/floor-plans/UnitGalleryLightbox';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
@@ -67,7 +66,6 @@ export function UnitDetail() {
   const sqft = unit.sqft ?? group?.sqftMin ?? null;
   const baths = unit.bathrooms ?? group?.baths ?? null;
   const applyUrl = (unit.listingUrl && applyUrlForListing(unit.listingUrl)) || APPLY_URL;
-  const contactUrl = unit.listingUrl ? contactUrlForListing(unit.listingUrl) : null;
   const tourUrl = unit.listingUrl ? tourUrlForListing(unit.listingUrl) : null;
   const heroPhotos = unit.photos.slice(0, 5);
 
@@ -192,16 +190,6 @@ export function UnitDetail() {
             >
               Schedule a tour
             </Link>
-          )}
-          {contactUrl && (
-            <a
-              href={contactUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
-            >
-              Contact us
-            </a>
           )}
         </div>
 
