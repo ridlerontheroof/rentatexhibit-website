@@ -255,6 +255,43 @@ export function parseDetailTitle(html: string): string | null {
   return title || null;
 }
 
+/**
+ * Property-wide amenities that must not appear in a unit's headline — they
+ * describe the building (sauna, pool, hot tub), not the apartment itself, so
+ * listing them per-unit reads as misleading.
+ */
+const PROPERTY_AMENITY_RE = /^(sauna|pool|hot\s*tub)$/i;
+
+/**
+ * Strip property-level amenities from an AppFolio marketing headline's
+ * "with X, Y & Z" list, e.g. "Luxury 1-Bedroom Apartment with Sauna, Pool &
+ * In-Unit Laundry in River North Chicago" → "Luxury 1-Bedroom Apartment with
+ * In-Unit Laundry in River North Chicago". If nothing unit-specific remains,
+ * the whole "with …" clause is dropped.
+ */
+export function sanitizeMarketingTitle(title: string | null): string | null {
+  if (!title) return null;
+  const withIdx = title.search(/\bwith\b/i);
+  if (withIdx === -1) return title;
+  const afterWith = title.slice(withIdx + 4);
+  // The location tail starts at the last standalone " in " (hyphenated terms
+  // like "In-Unit" don't match).
+  const inIdx = afterWith.toLowerCase().lastIndexOf(" in ");
+  const listPart = inIdx === -1 ? afterWith : afterWith.slice(0, inIdx);
+  const tail = inIdx === -1 ? "" : afterWith.slice(inIdx);
+  const items = listPart
+    .split(/,|&/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  const kept = items.filter((item) => !PROPERTY_AMENITY_RE.test(item));
+  if (kept.length === items.length) return title;
+  const head = title.slice(0, withIdx).trimEnd();
+  if (kept.length === 0) return `${head}${tail}`.replace(/\s{2,}/g, " ").trim();
+  const list =
+    kept.length === 1 ? kept[0] : `${kept.slice(0, -1).join(", ")} & ${kept[kept.length - 1]}`;
+  return `${head} with ${list}${tail}`.replace(/\s{2,}/g, " ").trim();
+}
+
 /** Extract the listing description (`listing-detail__description`) from a detail page. */
 export function parseDetailDescription(html: string): string | null {
   const m = html.match(/<p[^>]*class="[^"]*listing-detail__description[^"]*"[^>]*>([\s\S]*?)<\/p>/);
@@ -278,7 +315,7 @@ async function fetchDetailInfo(listingUrl: string): Promise<DetailInfo> {
   return {
     photos: parseDetailPhotos(html),
     details: parseDetailSections(html),
-    marketingTitle: parseDetailTitle(html),
+    marketingTitle: sanitizeMarketingTitle(parseDetailTitle(html)),
     description: parseDetailDescription(html),
   };
 }

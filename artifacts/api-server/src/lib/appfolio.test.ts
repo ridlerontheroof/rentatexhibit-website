@@ -8,6 +8,7 @@ import {
   parseDetailSections,
   parseDetailTitle,
   parseListingsHtml,
+  sanitizeMarketingTitle,
 } from "./appfolio";
 
 const NO_MEDIA = { photoUrl: null, listingUrl: null, videoUrl: null };
@@ -259,5 +260,40 @@ describe("normalizeRow", () => {
     expect(
       normalizeRow({ unit: "1506", unit_status: "Vacant-Rented", advertised_rent: "3823.00" }),
     ).toBeNull();
+  });
+});
+
+describe("sanitizeMarketingTitle", () => {
+  it("removes property-wide amenities (sauna, pool) from the with-list", () => {
+    expect(
+      sanitizeMarketingTitle(
+        "Luxury 1-Bedroom Apartment with Sauna, Pool & In-Unit Laundry in River North Chicago",
+      ),
+    ).toBe("Luxury 1-Bedroom Apartment with In-Unit Laundry in River North Chicago");
+  });
+
+  it("keeps multiple unit-specific items with correct separators", () => {
+    expect(
+      sanitizeMarketingTitle(
+        "Luxury 2-Bedroom Apartment with Pool, Balcony & In-Unit Laundry in River North Chicago",
+      ),
+    ).toBe("Luxury 2-Bedroom Apartment with Balcony & In-Unit Laundry in River North Chicago");
+  });
+
+  it("drops the whole with-clause when nothing unit-specific remains", () => {
+    expect(sanitizeMarketingTitle("Studio Apartment with Sauna & Pool in River North")).toBe(
+      "Studio Apartment in River North",
+    );
+  });
+
+  it("leaves titles without property amenities untouched", () => {
+    const t = "Smart Living on Display. Call Today and Schedule Your Tour!";
+    expect(sanitizeMarketingTitle(t)).toBe(t);
+    const t2 = "Luxury 1-Bedroom Apartment with In-Unit Laundry in River North Chicago";
+    expect(sanitizeMarketingTitle(t2)).toBe(t2);
+  });
+
+  it("passes through null", () => {
+    expect(sanitizeMarketingTitle(null)).toBeNull();
   });
 });
