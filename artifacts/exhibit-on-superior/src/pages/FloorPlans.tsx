@@ -163,9 +163,9 @@ export function FloorPlans() {
           subtitle="Studio, 1, 2 & 3 Bedroom Apartments in River North Chicago"
         />
 
-        <QuickAnswer path="/available-units" />
-
         <AvailableUnits />
+
+        <QuickAnswer path="/available-units" />
 
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-3xl text-center">

@@ -63,7 +63,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Browse available apartments at Exhibit On Superior in River North Chicago with live pricing, photos, and move-in dates, then compare every studio, 1, 2 & 3 bedroom floor plan.',
     quickAnswer:
-      'At the top of this page, you can view all currently available Exhibit On Superior apartments with live rent, photos, and move-in dates, updated automatically from the leasing system. Below, you can explore every studio, one, two, and three-bedroom floor plan and apply directly from each available listing.',
+      'This page lists every currently available Exhibit On Superior apartment with live rent, photos, and move-in dates, updated automatically from the leasing system. You can also compare every studio, one, two, and three-bedroom floor plan and apply directly from each available listing.',
     faqs: [
       {
         q: 'What apartments are available now at Exhibit On Superior?',
