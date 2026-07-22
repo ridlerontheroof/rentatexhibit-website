@@ -16,6 +16,7 @@ import {
 } from '../components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
 import { PlanCard } from '../components/floor-plans/PlanCard';
+import { AvailableUnits } from '../components/floor-plans/AvailableUnits';
 import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFilters';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { trackOutboundClick } from '../lib/analytics';
@@ -166,6 +167,8 @@ export function FloorPlans() {
         />
 
         <QuickAnswer path="/floor-plans" />
+
+        <AvailableUnits onView={handleOpen} />
 
         <section className="px-4 py-14">
           <div className="container mx-auto max-w-3xl text-center">

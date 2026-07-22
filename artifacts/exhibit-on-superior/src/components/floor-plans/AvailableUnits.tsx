@@ -1,0 +1,133 @@
+import { useMemo } from 'react';
+import { SplitHeadline } from '../SplitHeadline';
+import { useAvailability, type AvailableUnit } from '../../hooks/use-availability';
+import { planGroups, type PlanGroup } from '../../data/floorPlans';
+import { APPLY_URL } from '../../data/seo';
+import { trackOutboundClick } from '../../lib/analytics';
+
+interface AvailableUnitsProps {
+  onView: (group: PlanGroup) => void;
+}
+
+/**
+ * Resolve an AppFolio apartment number ("FFUU", e.g. "0606") to the floor-plan
+ * group for that residence line, using the floor to disambiguate lines offered
+ * with different layouts on different floor bands.
+ */
+export function groupForUnit(unitNumber: string): PlanGroup | null {
+  const digits = unitNumber.replace(/\D/g, '');
+  if (digits.length < 3) return null;
+  const line = Number(digits.slice(-2));
+  const floor = Number(digits.slice(0, -2));
+  if (!Number.isFinite(line) || !Number.isFinite(floor)) return null;
+
+  const candidates = planGroups.filter((g) => g.unit === line);
+  if (candidates.length === 0) return null;
+  return candidates.find((g) => g.floors.includes(floor)) ?? candidates[0];
+}
+
+function formatRent(rent: number | null): string | null {
+  if (rent === null || rent <= 0) return null;
+  return `$${Math.round(rent).toLocaleString()}/mo`;
+}
+
+function formatAvailable(availableOn: string | null): string {
+  if (!availableOn) return 'Available now';
+  const date = new Date(`${availableOn}T12:00:00`);
+  if (Number.isNaN(date.getTime()) || date.getTime() <= Date.now()) return 'Available now';
+  return `Available ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+}
+
+function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string {
+  const beds = u.bedrooms ?? group?.beds ?? null;
+  const baths = u.bathrooms ?? group?.baths ?? null;
+  const parts: string[] = [];
+  if (beds !== null) parts.push(beds === 0 ? 'Studio' : `${beds} Bed`);
+  if (baths !== null) parts.push(`${baths} Bath`);
+  return parts.join(' · ');
+}
+
+/**
+ * Live "available now" strip fed by AppFolio. Renders nothing while loading,
+ * on error, or when no units are posted — the page stays fully useful without
+ * it, so there is no fallback state to design around.
+ */
+export function AvailableUnits({ onView }: AvailableUnitsProps) {
+  const { data } = useAvailability();
+
+  const rows = useMemo(() => {
+    if (!data?.units) return [];
+    return data.units.map((u) => ({ ...u, group: groupForUnit(u.unit) }));
+  }, [data]);
+
+  if (rows.length === 0) return null;
+
+  return (
+    <section className="px-4 pb-6" aria-labelledby="available-units-heading">
+      <div className="container mx-auto">
+        <div className="border border-border bg-white p-6 md:p-8">
+          <div id="available-units-heading" className="mb-6 text-center">
+            <SplitHeadline script="Move-In Ready" caps="Available Residences" />
+            <p className="mt-2 text-sm text-muted-foreground">
+              Live availability, updated automatically from our leasing system.
+            </p>
+          </div>
+
+          <ul className="divide-y divide-border">
+            {rows.map((u) => {
+              const rent = formatRent(u.rent);
+              const sqft = u.sqft ?? u.group?.sqftMin ?? null;
+              return (
+                <li
+                  key={u.unit}
+                  className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
+                >
+                  <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                    <span className="text-lg font-semibold uppercase tracking-wider text-foreground">
+                      Apt {u.unit}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {[
+                        bedBathLabel(u, u.group),
+                        sqft !== null ? `${sqft.toLocaleString()} sq ft` : null,
+                        formatAvailable(u.availableOn),
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                    {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-3">
+                    {u.group && (
+                      <button
+                        type="button"
+                        onClick={() => onView(u.group!)}
+                        className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                      >
+                        View floor plan
+                      </button>
+                    )}
+                    <a
+                      href={APPLY_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() =>
+                        trackOutboundClick('apply', APPLY_URL, 'floor_plans_available_units', {
+                          floorPlan: u.group?.typeLabel,
+                        })
+                      }
+                      className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                    >
+                      Apply now
+                    </a>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}

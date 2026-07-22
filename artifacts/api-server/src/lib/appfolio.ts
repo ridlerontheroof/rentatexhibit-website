@@ -1,0 +1,165 @@
+/**
+ * AppFolio Reports API client for live unit availability.
+ *
+ * Calls the Unit Vacancy report (POST /api/v2/reports/unit_vacancy.json) on
+ * the management company's AppFolio database using HTTP Basic auth, filters
+ * the rows down to the Exhibit On Superior property, and normalizes them into
+ * a small stable shape the web app can render.
+ *
+ * The report's column names are controlled by AppFolio and can drift, so the
+ * normalizer matches keys tolerantly (case/format-insensitive substring
+ * matching) instead of hard-coding exact column names.
+ */
+
+const APPFOLIO_BASE = "https://highlandptrs.appfolio.com/api/v2/reports";
+const PROPERTY_MATCH = "exhibit";
+
+export interface AvailableUnit {
+  /** Apartment number, e.g. "0606" (pad2 floor + pad2 unit line). */
+  unit: string;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  sqft: number | null;
+  /** Advertised monthly rent in dollars. */
+  rent: number | null;
+  /** ISO date the unit becomes available, or null when unknown/now. */
+  availableOn: string | null;
+}
+
+export interface AvailabilityPayload {
+  units: AvailableUnit[];
+  updatedAt: string;
+}
+
+type Row = Record<string, unknown>;
+
+/** Lower-case a key and strip everything that isn't a letter, for tolerant matching. */
+function canon(key: string): string {
+  return key.toLowerCase().replace(/[^a-z]/g, "");
+}
+
+/**
+ * Find the first value in the row whose canonical key contains any needle.
+ * Needles prefixed with "=" must match the canonical key exactly (for short
+ * abbreviations like "bd"/"ba" that would otherwise over-match).
+ */
+function pick(row: Row, needles: string[], exclude: string[] = []): unknown {
+  for (const [key, value] of Object.entries(row)) {
+    const c = canon(key);
+    if (exclude.some((e) => c.includes(e))) continue;
+    if (needles.some((n) => (n.startsWith("=") ? c === n.slice(1) : c.includes(n)))) return value;
+  }
+  return undefined;
+}
+
+function toNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const cleaned = value.replace(/[$,\s]/g, "");
+    if (cleaned === "") return null;
+    const n = Number(cleaned);
+    if (Number.isFinite(n)) return n;
+  }
+  return null;
+}
+
+function toDateString(value: unknown): string | null {
+  if (typeof value !== "string" || value.trim() === "") return null;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 10);
+}
+
+/** True when the row belongs to the Exhibit property. */
+export function isExhibitRow(row: Row): boolean {
+  const prop = pick(row, ["property"], ["group", "id"]);
+  if (typeof prop === "string") return prop.toLowerCase().includes(PROPERTY_MATCH);
+  // When the report is already filtered upstream some views omit the property
+  // column entirely; in that case keep the row.
+  return prop === undefined;
+}
+
+/** Normalize one Unit Vacancy report row into an AvailableUnit. */
+export function normalizeRow(row: Row): AvailableUnit | null {
+  const unitRaw = pick(row, ["unitname", "unitnumber", "unit"], ["type", "status", "id", "visibility"]);
+  const unit = typeof unitRaw === "string" ? unitRaw.trim() : typeof unitRaw === "number" ? String(unitRaw) : "";
+  if (!unit) return null;
+
+  return {
+    unit,
+    bedrooms: toNumber(pick(row, ["bed", "=bd"])),
+    bathrooms: toNumber(pick(row, ["bath", "=ba"])),
+    sqft: toNumber(pick(row, ["sqft", "squarefeet", "squarefootage"])),
+    rent: toNumber(pick(row, ["advertisedrent", "marketrent", "rent"], ["deposit", "historical"])),
+    availableOn: toDateString(pick(row, ["availableon", "availabledate", "available"], ["days"])),
+  };
+}
+
+interface ReportResponse {
+  results?: Row[];
+  next_page_url?: string | null;
+}
+
+/**
+ * Only follow pagination URLs that stay on the AppFolio database host over
+ * HTTPS — the Basic auth header is attached to every page request, so an
+ * unexpected next_page_url must never be able to send credentials elsewhere.
+ */
+export function isSafeNextPageUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url, APPFOLIO_BASE);
+    const base = new URL(APPFOLIO_BASE);
+    return parsed.protocol === "https:" && parsed.host === base.host;
+  } catch {
+    return false;
+  }
+}
+
+async function postReport(url: string, auth: string, body: string): Promise<ReportResponse> {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: auth,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body,
+  });
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!res.ok || !contentType.includes("application/json")) {
+    throw new Error(`AppFolio unit_vacancy request failed: status ${res.status}, content-type ${contentType}`);
+  }
+  return (await res.json()) as ReportResponse;
+}
+
+/** Fetch and normalize the current available units from AppFolio. */
+export async function fetchAvailability(clientId: string, clientSecret: string): Promise<AvailabilityPayload> {
+  const auth = "Basic " + Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+
+  const rows: Row[] = [];
+  let response = await postReport(
+    `${APPFOLIO_BASE}/unit_vacancy.json`,
+    auth,
+    JSON.stringify({ level_of_detail: "detail_view", unit_visibility: "active" }),
+  );
+  rows.push(...(response.results ?? []));
+  // Follow pagination (5,000-row pages; effectively one page for a single
+  // property, but stay correct if the report ever grows).
+  let guard = 0;
+  while (response.next_page_url && guard < 10) {
+    if (!isSafeNextPageUrl(response.next_page_url)) {
+      throw new Error("AppFolio returned an unexpected next_page_url host; refusing to follow it");
+    }
+    response = await postReport(new URL(response.next_page_url, APPFOLIO_BASE).toString(), auth, "{}");
+    rows.push(...(response.results ?? []));
+    guard += 1;
+  }
+
+  const units = rows
+    .filter(isExhibitRow)
+    .map(normalizeRow)
+    .filter((u): u is AvailableUnit => u !== null)
+    .sort((a, b) => a.unit.localeCompare(b.unit));
+
+  return { units, updatedAt: new Date().toISOString() };
+}

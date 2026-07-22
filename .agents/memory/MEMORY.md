@@ -10,4 +10,5 @@
 - [Stale workspace lib dist](stale-workspace-dist.md) — cross-package "property does not exist" errors after merges: rebuild the lib's dist before debugging.
 - [Vite build quirks](vite-build-quirks.md) — env vars only required for serve; no 'use client' directives (RSC-less SPA, they cause sourcemap build warnings).
 - [Image sources live in images-src/](image-source-relocation.md) — originals aren't in public/images; manifest keys are lookup keys, not shipped files; new photos go in images-src/.
+- [AppFolio availability integration](appfolio-availability.md) — unit_vacancy Reports API feeds /availability; AppFolio blocks ALL workspace egress, verify only from production.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.

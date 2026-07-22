@@ -1,0 +1,214 @@
+DYNAMIC PAGE
+
+
+
+
+
+
+Preview
+
+Done
+
+Elements
+Pages
+Theme
+CMS
+AEO/SEO
+More
+
+
+Text Block
+
+
+Connect widgets to data from the content library, collections, store catalog, and more. Updates to the source automatically sync across all connected widgets.
+Connect Text to
+
+appfolio-listings
+marketing_description
+
+COLLECTIONS
+appfolio-listings
+youtube_video_id
+appfolio-listings
+utilities
+appfolio-listings
+updated_at
+appfolio-listings
+square_feet
+appfolio-listings
+revenue_management_property
+appfolio-listings
+rent_or_starting_at
+appfolio-listings
+property_year_built
+appfolio-listings
+property_uid
+appfolio-listings
+property_type
+appfolio-listings
+posted_to_website_at
+appfolio-listings
+posted_to_website
+appfolio-listings
+posted_to_internet
+appfolio-listings
+portfolio_url
+appfolio-listings
+portfolio_state
+appfolio-listings
+portfolio_postal_code
+appfolio-listings
+portfolio_name
+appfolio-listings
+portfolio_country
+appfolio-listings
+portfolio_city
+appfolio-listings
+portfolio_address2
+appfolio-listings
+portfolio_address1
+appfolio-listings
+meta_description
+appfolio-listings
+marketing_title
+appfolio-listings
+marketing_description
+appfolio-listings
+market_rent
+appfolio-listings
+listable_uid
+appfolio-listings
+id
+appfolio-listings
+full_address
+appfolio-listings
+fee_label
+appfolio-listings
+dogs
+appfolio-listings
+deposit
+appfolio-listings
+database_name
+appfolio-listings
+created_at
+appfolio-listings
+cats
+appfolio-listings
+by_the_bed
+appfolio-listings
+bedrooms
+appfolio-listings
+bedroom_type
+appfolio-listings
+bathrooms
+appfolio-listings
+available_date
+appfolio-listings
+available
+appfolio-listings
+application_fee
+appfolio-listings
+appliances
+appfolio-listings
+amenities
+appfolio-listings
+allow_submitting_online_applications
+appfolio-listings
+allow_guest_cards
+appfolio-listings
+advertised_lease_term
+appfolio-listings
+admin_fee
+appfolio-listings
+address_state
+appfolio-listings
+address_postal_code
+appfolio-listings
+address_longitude
+appfolio-listings
+address_latitude
+appfolio-listings
+address_country
+appfolio-listings
+address_city
+appfolio-listings
+address_address2
+appfolio-listings
+address_address1
+appfolio-listings
+portfolio_phone_number
+appfolio-listings
+contact_phone_number
+appfolio-listings
+portfolio_location
+appfolio-listings
+location
+appfolio-listings
+contact_email_address
+CONTENT LIBRARY
+AppFolio Database
+highlandrealestatepartners
+Company Name
+HIGHLAND PARTNERS
+Business Name
+Highland Partners
+Chicago
+(312) 883-5503
+Phone
+555-555-5555
+Phone Number
+(801) 278-0061
+Phone Number
+(773) 348-5106
+Phone Number
+(847) 676-0046
+Phone Number
+385-306-9490
+Phone Number
+847-224-9696
+Phone Number
+847-975-6311
+Phone Number
+888-642-6748
+Phone Number
+800-334-7661
+Phone Number
+888-485-3514
+Phone Number
+800-746-4726
+Phone Number
+866-556-6001
+Phone Number
+888-221-7070
+Phone Number
+800-323-5517
+Phone Number
+312-284-7799
+Phone Number
+(520) 838-1348
+Phone Number
+(520) 623-7711
+Phone Number
+877-860-6020
+Phone Number
+8018969844
+Arizona Email
+tucson@highlandptrs.com
+Chicago Email
+chicago@highlandptrs.com
+Chicago Email
+chicago@highlandptrs.com
+Email
+mymail@mailservice.com
+Exhibit on Superior Email
+exhibit@highlandptrs.com
+Email Address
+office@highlandptrs.com
+Email Address
+grigg@highlandptrs.com
+Email Address
+Utah@highlandptrs.com
+Highland Chicago
+Chicago, Illinois, United States
+Office
+2855 Washington Boulevard, Ogden, Utah 84401, United States
