@@ -96,9 +96,8 @@ export function AvailableUnits() {
           <div id="available-units-heading" className="mb-6 text-center">
             <SplitHeadline script="Move-In Ready" caps="Available Residences" />
             <p className="mt-2 text-lg leading-relaxed text-muted-foreground">
-              Found a layout you love? Check real-time availability and pricing below — updated
-              automatically from our leasing system — or connect with our leasing team to schedule
-              a personal tour.
+              Check real-time availability and pricing below — updated automatically from our
+              leasing system — or connect with our leasing team to schedule a personal tour.
             </p>
           </div>
 
