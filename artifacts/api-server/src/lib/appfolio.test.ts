@@ -61,11 +61,24 @@ describe("parseListingsHtml", () => {
 });
 
 describe("parseDetailPhotos", () => {
-  it("extracts ordered, deduplicated gallery photo URLs", () => {
+  it("prefers the unit-specific images/ gallery (as large.jpg, deduped by id) over the property-wide marketing set", () => {
     const html = `
       <img src="https://images.cdn.appfolio.com/db/images/abc/medium.jpg" />
+      <img src="https://images.cdn.appfolio.com/db/images/abc/large.jpg" />
+      <img src="https://images.cdn.appfolio.com/db/images/def-456/medium.jpg" />
       <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg">
         <img src="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg" /></a>
+      <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/bbb-222/original.jpg"></a>`;
+    expect(parseDetailPhotos(html)).toEqual([
+      "https://images.cdn.appfolio.com/db/images/abc/large.jpg",
+      "https://images.cdn.appfolio.com/db/images/def-456/large.jpg",
+    ]);
+  });
+
+  it("falls back to the marketing set when no gallery images exist", () => {
+    const html = `
+      <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg"></a>
+      <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg"></a>
       <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/bbb-222/original.jpg"></a>`;
     expect(parseDetailPhotos(html)).toEqual([
       "https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg",

@@ -201,17 +201,38 @@ export function parseListingsHtml(html: string): Map<string, ListingMedia> {
 
 /**
  * Extract the ordered, deduplicated gallery photo URLs from a public listing
- * detail page. Gallery images live under leads_marketing_photos/<uuid>/ on
- * AppFolio's public image CDN.
+ * detail page.
+ *
+ * A detail page carries TWO photo groups on the AppFolio image CDN:
+ *  - `<db>/images/<uuid>/(medium|large).jpg` — the unit's own gallery
+ *    (same group the listings-page cover photo comes from), and
+ *  - `<db>/leads_marketing_photos/<uuid>/original.jpg` — a property-wide
+ *    marketing set that is IDENTICAL across every listing.
+ * Only the `images/` group is unit-specific, so prefer it (as large.jpg)
+ * and fall back to the marketing set only if no gallery images exist.
  */
 export function parseDetailPhotos(html: string): string[] {
-  const re = /https:\/\/images\.cdn\.appfolio\.com\/[^"'\s>]*leads_marketing_photos\/[a-f0-9-]+\/original\.jpg/g;
-  const seen = new Set<string>();
+  const galleryRe =
+    /https:\/\/images\.cdn\.appfolio\.com\/([^"'\s>]*)\/images\/([a-f0-9-]+)\/(?:medium|large)\.jpg/gi;
+  const seenIds = new Set<string>();
   const photos: string[] = [];
-  for (const m of html.match(re) ?? []) {
-    if (!seen.has(m)) {
-      seen.add(m);
-      photos.push(m);
+  let m: RegExpExecArray | null;
+  while ((m = galleryRe.exec(html)) !== null) {
+    const [, db, id] = m;
+    if (!seenIds.has(id)) {
+      seenIds.add(id);
+      photos.push(`https://images.cdn.appfolio.com/${db}/images/${id}/large.jpg`);
+    }
+  }
+  if (photos.length > 0) return photos;
+
+  const marketingRe =
+    /https:\/\/images\.cdn\.appfolio\.com\/[^"'\s>]*leads_marketing_photos\/[a-f0-9-]+\/original\.jpg/g;
+  const seen = new Set<string>();
+  for (const url of html.match(marketingRe) ?? []) {
+    if (!seen.has(url)) {
+      seen.add(url);
+      photos.push(url);
     }
   }
   return photos;
