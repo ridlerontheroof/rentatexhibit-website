@@ -82,7 +82,25 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                   key={u.unit}
                   className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
                 >
-                  <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  {u.photoUrl && (
+                    <a
+                      href={u.listingUrl ?? undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block shrink-0 self-start overflow-hidden border border-border md:self-center"
+                      aria-label={`View photos of apartment ${u.unit}`}
+                    >
+                      <img
+                        src={u.photoUrl}
+                        alt={`Apartment ${u.unit} interior`}
+                        loading="lazy"
+                        width={112}
+                        height={84}
+                        className="h-[84px] w-[112px] object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </a>
+                  )}
+                  <div className="flex flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
                     <span className="text-lg font-semibold uppercase tracking-wider text-foreground">
                       Apt {u.unit}
                     </span>
@@ -98,7 +116,27 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                     {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-3">
+                  <div className="flex shrink-0 flex-wrap items-center gap-3">
+                    {u.listingUrl && (
+                      <a
+                        href={u.listingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                      >
+                        Photos
+                      </a>
+                    )}
+                    {u.videoUrl && (
+                      <a
+                        href={u.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                      >
+                        Video tour
+                      </a>
+                    )}
                     {u.group && (
                       <button
                         type="button"

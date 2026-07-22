@@ -9,6 +9,12 @@ export interface AvailableUnit {
   rent: number | null;
   /** ISO date (YYYY-MM-DD) the unit becomes available, or null when now/unknown. */
   availableOn: string | null;
+  /** Cover photo from the public AppFolio listing, when the unit is posted. */
+  photoUrl: string | null;
+  /** Public AppFolio listing page with the full photo gallery, when posted. */
+  listingUrl: string | null;
+  /** YouTube video tour URL, when the leasing team has added one. */
+  videoUrl: string | null;
 }
 
 export interface AvailabilityData {

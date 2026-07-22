@@ -1,5 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { isExhibitRow, isSafeNextPageUrl, normalizeRow } from "./appfolio";
+import { isExhibitRow, isSafeNextPageUrl, normalizeRow, parseListingsHtml } from "./appfolio";
+
+const NO_MEDIA = { photoUrl: null, listingUrl: null, videoUrl: null };
+
+describe("parseListingsHtml", () => {
+  it("maps apartment numbers to cover photo and detail URL, deduplicating repeats", () => {
+    const html = `
+      <a href="/listings/detail/15ac6d84-747c-4aa6-9b02-ce2be59e4d69" class="js-link">
+        <img class="listing-item__image lazy" data-original="https://images.cdn.appfolio.com/db/images/abc/medium.jpg" alt="165 W Superior St, Apt. 1301, Chicago, IL 60654" src="placeholder.png" />
+      </a>
+      <a href="/listings/detail/15ac6d84-747c-4aa6-9b02-ce2be59e4d69">
+        <img data-original="https://images.cdn.appfolio.com/db/images/abc/medium.jpg" alt="165 W Superior St, Apt. 1301, Chicago, IL 60654" src="p.png" />
+      </a>
+      <a href="/listings/detail/57dda21c-7fd6-446a-899a-c4776ceb4afa">
+        <img data-original="https://images.cdn.appfolio.com/db/images/def/medium.jpg" alt="165 W Superior St, Apt. 0807, Chicago, IL 60654" src="p.png" />
+      </a>`;
+    const media = parseListingsHtml(html);
+    expect(media.size).toBe(2);
+    expect(media.get("1301")).toEqual({
+      photoUrl: "https://images.cdn.appfolio.com/db/images/abc/medium.jpg",
+      listingUrl:
+        "https://highlandrealestatepartners.appfolio.com/listings/detail/15ac6d84-747c-4aa6-9b02-ce2be59e4d69",
+    });
+    expect(media.get("0807")?.photoUrl).toContain("/def/");
+  });
+
+  it("returns an empty map for markup without listing cards", () => {
+    expect(parseListingsHtml("<html><body>No listings</body></html>").size).toBe(0);
+  });
+});
 
 describe("isSafeNextPageUrl", () => {
   it("accepts same-host HTTPS and relative pagination URLs", () => {
@@ -47,6 +76,9 @@ describe("normalizeRow", () => {
       sqft: 745,
       rent: 2650,
       availableOn: "2026-08-15",
+      photoUrl: null,
+      listingUrl: null,
+      videoUrl: null,
     });
   });
 
@@ -65,6 +97,9 @@ describe("normalizeRow", () => {
       sqft: 1101,
       rent: 3800,
       availableOn: null,
+      photoUrl: null,
+      listingUrl: null,
+      videoUrl: null,
     });
   });
 
@@ -104,6 +139,9 @@ describe("normalizeRow", () => {
       sqft: 1003,
       rent: 4222,
       availableOn: "2026-09-09",
+      photoUrl: null,
+      listingUrl: null,
+      videoUrl: null,
     });
   });
 

@@ -28,6 +28,12 @@ export interface AvailableUnit {
   rent: number | null;
   /** ISO date the unit becomes available, or null when unknown/now. */
   availableOn: string | null;
+  /** Cover photo from the public AppFolio listing, when the unit is posted. */
+  photoUrl: string | null;
+  /** Public AppFolio listing detail page (full photo gallery), when posted. */
+  listingUrl: string | null;
+  /** YouTube video URL from the unit's marketing info, when set. */
+  videoUrl: string | null;
 }
 
 export interface AvailabilityPayload {
@@ -124,7 +130,66 @@ export function normalizeRow(row: Row): AvailableUnit | null {
     sqft: toNumber(pick(row, ["sqft", "squarefeet", "squarefootage"])),
     rent: toNumber(pick(row, ["advertisedrent", "marketrent", "rent"], ["deposit", "historical", "monthlease", "noleaseterm"])),
     availableOn,
+    photoUrl: null,
+    listingUrl: null,
+    videoUrl: null,
   };
+}
+
+export interface ListingMedia {
+  photoUrl: string | null;
+  listingUrl: string | null;
+}
+
+/**
+ * Parse the public AppFolio listings page (the same page the official
+ * embed widget iframes) into a map of apartment number → cover photo +
+ * listing detail URL. Each card wraps its image in an anchor to
+ * /listings/detail/<uuid>; the image alt text carries "Apt. NNNN".
+ */
+export function parseListingsHtml(html: string): Map<string, ListingMedia> {
+  const media = new Map<string, ListingMedia>();
+  const cardRe =
+    /href="(\/listings\/detail\/[a-f0-9-]+)"[^>]*>[\s\S]*?data-original="(https:\/\/images\.cdn\.appfolio\.com\/[^"]+)"[^>]*alt="[^"]*Apt\.?\s*([0-9]+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = cardRe.exec(html)) !== null) {
+    const [, detailPath, photoUrl, unit] = m;
+    if (!media.has(unit)) {
+      media.set(unit, {
+        photoUrl,
+        listingUrl: `https://${APPFOLIO_DB}.appfolio.com${detailPath}`,
+      });
+    }
+  }
+  return media;
+}
+
+/**
+ * Fetch listing media from the public listings page, filtered to the Exhibit
+ * property group. Public page, no credentials attached. Failures are
+ * non-fatal — availability renders fine without photos.
+ */
+async function fetchListingMedia(): Promise<Map<string, ListingMedia>> {
+  const url = `https://${APPFOLIO_DB}.appfolio.com/listings?${encodeURIComponent("filters[property_list]")}=${encodeURIComponent("Exhibit")}`;
+  const res = await fetch(url, { headers: { Accept: "text/html" } });
+  if (!res.ok) throw new Error(`AppFolio public listings page failed: status ${res.status}`);
+  return parseListingsHtml(await res.text());
+}
+
+/** Fetch unit → YouTube URL from the Unit Directory report (marketing info). */
+async function fetchVideoUrls(auth: string): Promise<Map<string, string>> {
+  const response = await postReport(`${APPFOLIO_BASE}/unit_directory.json`, auth, "{}");
+  const videos = new Map<string, string>();
+  for (const row of response.results ?? []) {
+    if (!isExhibitRow(row)) continue;
+    const unitRaw = pick(row, ["unitname", "unitnumber", "unit"], ["type", "status", "id", "visibility", "tags", "turn"]);
+    const unit = typeof unitRaw === "string" ? unitRaw.trim() : typeof unitRaw === "number" ? String(unitRaw) : "";
+    const video = pick(row, ["youtube"]);
+    if (unit && typeof video === "string" && video.trim().startsWith("http")) {
+      videos.set(unit, video.trim());
+    }
+  }
+  return videos;
 }
 
 interface ReportResponse {
@@ -192,6 +257,21 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
     .map(normalizeRow)
     .filter((u): u is AvailableUnit => u !== null)
     .sort((a, b) => a.unit.localeCompare(b.unit));
+
+  // Enrich with photos + video from the public listings page and the Unit
+  // Directory marketing info. Both are best-effort: availability still
+  // renders without media if either source fails.
+  const [mediaResult, videoResult] = await Promise.allSettled([fetchListingMedia(), fetchVideoUrls(auth)]);
+  const media = mediaResult.status === "fulfilled" ? mediaResult.value : new Map<string, ListingMedia>();
+  const videos = videoResult.status === "fulfilled" ? videoResult.value : new Map<string, string>();
+  for (const unit of units) {
+    const m = media.get(unit.unit);
+    if (m) {
+      unit.photoUrl = m.photoUrl;
+      unit.listingUrl = m.listingUrl;
+    }
+    unit.videoUrl = videos.get(unit.unit) ?? null;
+  }
 
   return { units, updatedAt: new Date().toISOString() };
 }
