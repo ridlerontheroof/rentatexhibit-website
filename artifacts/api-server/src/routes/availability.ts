@@ -20,6 +20,29 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 let cached: { payload: AvailabilityPayload; fetchedAt: number } | null = null;
 let inflight: Promise<AvailabilityPayload> | null = null;
 
+/**
+ * Current availability snapshot for other routes (e.g. attaching a tour lead
+ * to its unit's AppFolio listing). Serves the in-memory cache when present —
+ * even if stale — and only goes upstream when nothing has ever been fetched,
+ * so lead submissions never burn through AppFolio's rate limit.
+ */
+export async function getAvailabilitySnapshot(): Promise<AvailabilityPayload | null> {
+  if (cached) return cached.payload;
+  const clientId = process.env.APPFOLIO_CLIENT_ID;
+  const clientSecret = process.env.APPFOLIO_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return null;
+  try {
+    inflight ??= fetchAvailability(clientId, clientSecret).finally(() => {
+      inflight = null;
+    });
+    const payload = await inflight;
+    cached = { payload, fetchedAt: Date.now() };
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
 router.get("/availability", async (req, res) => {
   const clientId = process.env.APPFOLIO_CLIENT_ID;
   const clientSecret = process.env.APPFOLIO_CLIENT_SECRET;

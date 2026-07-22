@@ -216,7 +216,7 @@ export function AvailableUnits() {
                             </a>
                           ) : (
                             <Link
-                              href="/schedule-a-tour"
+                              href={`/schedule-a-tour?unit=${u.unit}`}
                               className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
                             >
                               Schedule a tour

@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearch } from 'wouter';
 import { PageHero } from '../components/PageHero';
+import { useAvailability } from '../hooks/use-availability';
 import { useCreateLead } from '../hooks/use-create-lead';
 import { useUnsavedChangesWarning } from '../hooks/use-unsaved-changes';
 import { useOnlineStatus } from '../hooks/use-online-status';
@@ -26,6 +28,7 @@ const tourSchema = z.object({
     }, 'Enter a valid phone number'),
   moveInDate: z.string().min(1, 'Move-in date is required'),
   bedrooms: z.string().min(1, 'Please select floor plan preference'),
+  unit: z.string().optional(),
   message: z.string().optional(),
 });
 
@@ -36,21 +39,41 @@ export function ScheduleTour() {
   const createLead = useCreateLead();
   const isOnline = useOnlineStatus();
   const showBackOnline = useBackOnlineNotice();
+  const { data: availability } = useAvailability();
+  const search = useSearch();
+  const requestedUnit = new URLSearchParams(search).get('unit') ?? '';
+  const availableUnits = availability?.units ?? [];
+  // Only trust a prefilled unit that's actually available right now.
+  const defaultUnit = availableUnits.some((u) => u.unit === requestedUnit)
+    ? requestedUnit
+    : '';
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, dirtyFields },
     reset,
+    setValue,
   } = useForm<TourFormData>({
     resolver: zodResolver(tourSchema),
+    defaultValues: { unit: '' },
   });
+
+  // Availability loads after first render; prefill the apartment select from
+  // the ?unit= link once the unit is confirmed available — unless the visitor
+  // already picked one themselves.
+  useEffect(() => {
+    if (defaultUnit && !dirtyFields.unit) {
+      setValue('unit', defaultUnit);
+    }
+  }, [defaultUnit, dirtyFields.unit, setValue]);
 
   useUnsavedChangesWarning(isDirty && !submitted && !createLead.isPending);
 
   const onSubmit = (data: TourFormData) => {
     if (createLead.isPending) return;
     const details = [
+      data.unit ? `Apartment: ${data.unit}` : '',
       data.bedrooms ? `Floor plan preference: ${data.bedrooms}` : '',
       data.message ?? '',
     ]
@@ -65,6 +88,7 @@ export function ScheduleTour() {
         phone: data.phone,
         preferredDate: data.moveInDate,
         message: details || undefined,
+        unit: data.unit || undefined,
       },
       {
         onSuccess: () => {
@@ -288,6 +312,26 @@ export function ScheduleTour() {
                         </p>
                       )}
                     </div>
+
+                    {availableUnits.length > 0 && (
+                      <div>
+                        <label htmlFor="unit" className="block text-sm uppercase tracking-wider mb-2">
+                          Interested in a Specific Apartment?
+                        </label>
+                        <select
+                          id="unit"
+                          {...register('unit')}
+                          className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+                        >
+                          <option value="">No specific apartment</option>
+                          {availableUnits.map((u) => (
+                            <option key={u.unit} value={u.unit}>
+                              Apt {u.unit}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
 
                     <div>
                       <label htmlFor="message" className="block text-sm uppercase tracking-wider mb-2">

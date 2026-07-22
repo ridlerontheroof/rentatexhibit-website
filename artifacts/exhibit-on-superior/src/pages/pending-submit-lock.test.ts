@@ -67,12 +67,19 @@ function mockLeadSubmitPending() {
   const gate = new Promise<void>((res) => {
     resolveFetch = res;
   });
-  const fetchMock = vi.fn(async () => {
+  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    // ScheduleTour also fetches live availability for its apartment select;
+    // answer it immediately so only the lead POST rides the gate.
+    if (String(input).includes('api/availability')) {
+      return { ok: true, json: async () => ({ units: [] }) };
+    }
     await gate;
     return { ok: true, json: async () => ({ id: 1 }) };
   });
   vi.stubGlobal('fetch', fetchMock);
-  return { resolveFetch, fetchMock };
+  const leadCalls = () =>
+    fetchMock.mock.calls.filter(([input]) => String(input).includes('api/leads')).length;
+  return { resolveFetch, fetchMock, leadCalls };
 }
 
 function fillContactForm() {
@@ -101,7 +108,7 @@ afterEach(() => {
 
 describe('pending submit lock (double-click duplicate-lead guard)', () => {
   it('ContactUs: Send is disabled and reads "Sending..." while the request is in flight, then re-enables', async () => {
-    const { resolveFetch, fetchMock } = mockLeadSubmitPending();
+    const { resolveFetch, leadCalls } = mockLeadSubmitPending();
     renderPage(ContactUs);
 
     // Before submit: enabled with the idle label.
@@ -114,20 +121,20 @@ describe('pending submit lock (double-click duplicate-lead guard)', () => {
     // In flight: button locked and labelled, so a second click can't fire.
     await waitFor(() => expect(submitButton().disabled).toBe(true));
     expect(submitButton().textContent).toBe('Sending...');
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(leadCalls()).toBe(1);
 
     // A frantic double-click while pending must not trigger a second POST —
     // the disabled attribute is the guard (clicks on a disabled button are
     // inert, and Enter-in-field routes through this same disabled button).
     fireEvent.click(submitButton());
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(leadCalls()).toBe(1);
 
     // A programmatic submit (form.requestSubmit() from an extension or
     // autofill tool) bypasses the disabled button entirely — the onSubmit
     // handler's own isPending early-return must block the second POST.
     submitForm();
     await waitFor(() => expect(submitButton().disabled).toBe(true));
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(leadCalls()).toBe(1);
 
     // Let the request settle: success banner shows, button re-enables.
     resolveFetch();
@@ -136,11 +143,11 @@ describe('pending submit lock (double-click duplicate-lead guard)', () => {
     );
     expect(submitButton().disabled).toBe(false);
     expect(submitButton().textContent).toBe('Send Message');
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(leadCalls()).toBe(1);
   });
 
   it('ScheduleTour: Request Tour is disabled and reads "Submitting..." while in flight, then the success screen replaces the form', async () => {
-    const { resolveFetch, fetchMock } = mockLeadSubmitPending();
+    const { resolveFetch, leadCalls } = mockLeadSubmitPending();
     renderPage(ScheduleTour);
 
     expect(submitButton().disabled).toBe(false);
@@ -151,22 +158,22 @@ describe('pending submit lock (double-click duplicate-lead guard)', () => {
 
     await waitFor(() => expect(submitButton().disabled).toBe(true));
     expect(submitButton().textContent).toBe('Submitting...');
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(leadCalls()).toBe(1);
 
     fireEvent.click(submitButton());
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(leadCalls()).toBe(1);
 
     // Programmatic submit bypasses the disabled button; the handler's
     // isPending early-return must still block a second POST.
     submitForm();
     await waitFor(() => expect(submitButton().disabled).toBe(true));
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(leadCalls()).toBe(1);
 
     resolveFetch();
     await waitFor(() =>
       expect(document.body.textContent).toContain('Tour Request Received')
     );
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(leadCalls()).toBe(1);
   });
 
   it('ContactUs: button re-enables after a failed request so the visitor can retry', async () => {

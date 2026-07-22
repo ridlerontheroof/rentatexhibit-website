@@ -7,6 +7,7 @@ import {
   parseDetailPhotos,
   parseDetailSections,
   parseDetailTitle,
+  listableUidFromListingUrl,
   parseListingsHtml,
   sanitizeMarketingTitle,
 } from "./appfolio";
@@ -295,5 +296,32 @@ describe("sanitizeMarketingTitle", () => {
 
   it("passes through null", () => {
     expect(sanitizeMarketingTitle(null)).toBeNull();
+  });
+});
+
+describe("listableUidFromListingUrl", () => {
+  it("extracts the uid from a public listing URL", () => {
+    expect(
+      listableUidFromListingUrl(
+        "https://highlandrealestatepartners.appfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+      ),
+    ).toBe("b4a6281b-d2ac-4c79-ac63-ea7dc852df51");
+  });
+
+  it("rejects non-listing and non-https URLs", () => {
+    expect(listableUidFromListingUrl("https://evil.example.com/phish")).toBeNull();
+    expect(
+      listableUidFromListingUrl(
+        "https://notappfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+      ),
+    ).toBeNull();
+    expect(
+      listableUidFromListingUrl(
+        "https://appfolio.com.evil.example/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+      ),
+    ).toBeNull();
+    expect(
+      listableUidFromListingUrl("http://highlandrealestatepartners.appfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51"),
+    ).toBeNull();
   });
 });

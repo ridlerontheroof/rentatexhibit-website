@@ -187,7 +187,7 @@ export function UnitDetail() {
             </a>
           ) : (
             <Link
-              href="/schedule-a-tour"
+              href={`/schedule-a-tour?unit=${unit.unit}`}
               className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
             >
               Schedule a tour

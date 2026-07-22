@@ -8,6 +8,8 @@ export interface CreateLeadPayload {
   phone: string;
   message?: string;
   preferredDate?: string;
+  /** Apartment number (e.g. "0807") when the tour is for a specific unit. */
+  unit?: string;
 }
 
 export interface LeadResponse {

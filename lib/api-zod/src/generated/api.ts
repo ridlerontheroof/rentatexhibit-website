@@ -39,7 +39,8 @@ export const CreateLeadBody = zod.object({
   "email": zod.string().email(),
   "phone": zod.string().min(1).max(createLeadBodyPhoneMax),
   "message": zod.string().max(createLeadBodyMessageMax).optional(),
-  "preferredDate": zod.string().max(createLeadBodyPreferredDateMax).optional()
+  "preferredDate": zod.string().max(createLeadBodyPreferredDateMax).optional(),
+  "unit": zod.string().regex(/^\d{4}$/).optional()
 })
 
 export const CreateLeadResponse = zod.object({

@@ -129,3 +129,7 @@ components:
         preferredDate:
           type: string
           maxLength: 50
+        unit:
+          type: string
+          pattern: '^\d{4}$'
+          description: Apartment number (e.g. "0807") when the tour request is for a specific unit; used to attach the prospect to that unit's AppFolio listing.

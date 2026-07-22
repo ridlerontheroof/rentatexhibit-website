@@ -332,6 +332,57 @@ async function fetchListingMedia(): Promise<Map<string, ListingMedia>> {
   return parseListingsHtml(await res.text());
 }
 
+/**
+ * Extract the listable UID from a public AppFolio listing URL
+ * (…/listings/detail/<uuid>). Returns null for anything else.
+ */
+export function listableUidFromListingUrl(listingUrl: string): string | null {
+  const m = listingUrl.match(
+    /^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.appfolio\.com\/listings\/detail\/([a-f0-9-]+)$/,
+  );
+  return m ? m[1] : null;
+}
+
+export interface GuestCardInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  /** The AppFolio listing UID the prospect is asking about. */
+  listableUid: string;
+}
+
+/**
+ * Create a guest card (prospect record) in AppFolio for a listing — the same
+ * endpoint AppFolio's own hosted listing pages use when a prospect submits
+ * their contact info. This attaches the prospect, with the property and unit
+ * from the listing, directly in AppFolio for the leasing team.
+ *
+ * Returns true when AppFolio accepted the guest card.
+ */
+export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
+  const res = await fetch(`https://${APPFOLIO_DB}.appfolio.com/listings/api/guest_cards`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      firstName: input.firstName,
+      lastName: input.lastName,
+      emailAddress: input.email,
+      phoneNumber: input.phone,
+      listableUid: input.listableUid,
+      source: "Website",
+      skipCtaForNewInquiries: true,
+    }),
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(
+      `AppFolio guest card failed: status ${res.status} ${detail.slice(0, 300)}`,
+    );
+  }
+  return true;
+}
+
 export interface UnitMarketing {
   /** Units flagged "Posted to Website" in AppFolio. */
   posted: Set<string>;
