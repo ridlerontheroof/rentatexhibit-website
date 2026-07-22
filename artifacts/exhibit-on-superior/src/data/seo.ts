@@ -115,7 +115,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Can I still schedule an in-person tour?',
-        a: 'Yes. Prospects can contact the leasing team by phone or email to schedule a tour.',
+        a: 'Yes. Prospects can schedule an in-person tour through the Schedule a Tour form, or contact the leasing team by phone or email.',
       },
     ],
   },
@@ -240,13 +240,13 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Schedule a Tour',
     title: 'Schedule a Tour | Exhibit On Superior Apartments',
     description:
-      'Schedule a tour of Exhibit On Superior in River North Chicago. Email exhibit@highlandptrs.com or call 312-450-0635.',
+      'Schedule a tour of Exhibit On Superior in River North Chicago using the online tour request form, or email exhibit@highlandptrs.com or call 312-450-0635.',
     quickAnswer:
-      'Prospective renters can schedule a tour of Exhibit On Superior by emailing exhibit@highlandptrs.com or calling 312-450-0635.',
+      'Prospective renters can schedule a tour of Exhibit On Superior using the tour request form on this page — including requesting a specific available apartment — or by emailing exhibit@highlandptrs.com or calling 312-450-0635.',
     faqs: [
       {
         q: 'How do I schedule a tour?',
-        a: 'Email exhibit@highlandptrs.com or call 312-450-0635 to schedule a tour.',
+        a: 'Fill out the tour request form on this page with your preferred move-in date and floor plan — you can even request a specific available apartment. You can also email exhibit@highlandptrs.com or call 312-450-0635.',
       },
       {
         q: 'Can I tour online first?',
