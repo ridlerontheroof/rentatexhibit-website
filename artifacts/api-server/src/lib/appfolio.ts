@@ -85,17 +85,45 @@ export function isExhibitRow(row: Row): boolean {
 
 /** Normalize one Unit Vacancy report row into an AvailableUnit. */
 export function normalizeRow(row: Row): AvailableUnit | null {
-  const unitRaw = pick(row, ["unitname", "unitnumber", "unit"], ["type", "status", "id", "visibility"]);
+  const unitRaw = pick(row, ["unitname", "unitnumber", "unit"], ["type", "status", "id", "visibility", "tags", "turn"]);
   const unit = typeof unitRaw === "string" ? unitRaw.trim() : typeof unitRaw === "number" ? String(unitRaw) : "";
   if (!unit) return null;
 
+  // Units already re-rented (status "Vacant-Rented"/"Notice-Rented") are not
+  // available — a new lease is signed, so never advertise them.
+  const status = pick(row, ["unitstatus"]);
+  if (typeof status === "string") {
+    const s = status.toLowerCase();
+    if (s.includes("rented") && !s.includes("unrented")) return null;
+  }
+
+  // Beds/baths arrive combined as "2/2.00" in the unit_vacancy detail view.
+  let bedrooms: number | null = null;
+  let bathrooms: number | null = null;
+  const bedAndBath = pick(row, ["bedandbath"]);
+  if (typeof bedAndBath === "string" && bedAndBath.includes("/")) {
+    const [b, ba] = bedAndBath.split("/");
+    bedrooms = toNumber(b);
+    bathrooms = toNumber(ba);
+  }
+  bedrooms ??= toNumber(pick(row, ["bed", "=bd"], ["bedandbath"]));
+  bathrooms ??= toNumber(pick(row, ["bath", "=ba"], ["bedandbath"]));
+
+  // "available_on" is often null for occupied units on notice; fall back to
+  // the unit-turn target date (day after move-out) so we never claim
+  // "available now" for a home someone still lives in.
+  const availableOn =
+    toDateString(pick(row, ["availableon", "availabledate"], ["days"])) ??
+    toDateString(pick(row, ["unitturntargetdate"])) ??
+    toDateString(pick(row, ["lastmoveout", "moveout"], ["days", "lastmovein"]));
+
   return {
     unit,
-    bedrooms: toNumber(pick(row, ["bed", "=bd"])),
-    bathrooms: toNumber(pick(row, ["bath", "=ba"])),
+    bedrooms,
+    bathrooms,
     sqft: toNumber(pick(row, ["sqft", "squarefeet", "squarefootage"])),
-    rent: toNumber(pick(row, ["advertisedrent", "marketrent", "rent"], ["deposit", "historical"])),
-    availableOn: toDateString(pick(row, ["availableon", "availabledate", "available"], ["days"])),
+    rent: toNumber(pick(row, ["advertisedrent", "marketrent", "rent"], ["deposit", "historical", "monthlease", "noleaseterm"])),
+    availableOn,
   };
 }
 

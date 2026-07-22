@@ -80,4 +80,39 @@ describe("normalizeRow", () => {
   it("returns null when the row has no unit identifier", () => {
     expect(normalizeRow({ advertised_rent: "$2,000.00" })).toBeNull();
   });
+
+  it("normalizes a real unit_vacancy detail row (combined bed/bath, turn-date fallback)", () => {
+    const unit = normalizeRow({
+      advertised_rent: "4222.00",
+      property_name: "Exhibit on Superior",
+      unit: "0208",
+      unit_tags: null,
+      unit_type: "ex2bd08a",
+      bed_and_bath: "2/2.00",
+      sqft: 1003,
+      unit_status: "Notice-Unrented",
+      days_vacant: null,
+      available_on: null,
+      unit_turn_target_date: "2026-09-09",
+      advertised_rent1_month_lease: { id: "1", value: null },
+      unit_id: 4597,
+    });
+    expect(unit).toEqual({
+      unit: "0208",
+      bedrooms: 2,
+      bathrooms: 2,
+      sqft: 1003,
+      rent: 4222,
+      availableOn: "2026-09-09",
+    });
+  });
+
+  it("drops units that are already re-rented", () => {
+    expect(
+      normalizeRow({ unit: "1506", unit_status: "Notice-Rented", advertised_rent: "3823.00" }),
+    ).toBeNull();
+    expect(
+      normalizeRow({ unit: "1506", unit_status: "Vacant-Rented", advertised_rent: "3823.00" }),
+    ).toBeNull();
+  });
 });
