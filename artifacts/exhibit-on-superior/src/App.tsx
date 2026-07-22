@@ -14,6 +14,7 @@ const lazyRoutes = routes.map((r) => ({
 }));
 
 const NotFound = lazy(() => import('./pages/not-found').then((m) => ({ default: m.NotFound })));
+const UnitDetail = lazy(() => import('./pages/UnitDetail').then((m) => ({ default: m.UnitDetail })));
 
 /**
  * Client-side redirect. Handles both internal route changes and external URLs.
@@ -118,6 +119,9 @@ function App() {
           {lazyRoutes.map(({ path, Component }) => (
             <Route key={path} path={path} component={Component} />
           ))}
+
+          {/* Live availability: per-unit listing pages (client-only, noindex) */}
+          <Route path="/available-units/:unit" component={UnitDetail} />
 
           {/* Clean external CTA URLs preserved from the migration information architecture */}
           <Route path="/available-units">{() => <Redirect to={AVAILABILITY_URL} cta="availability" />}</Route>

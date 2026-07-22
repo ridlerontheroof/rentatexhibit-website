@@ -25,6 +25,8 @@ const unit: AvailableUnit = {
     'https://images.cdn.appfolio.com/db/leads_marketing_photos/b/original.jpg',
   ],
   details: [],
+  marketingTitle: null,
+  description: null,
 };
 
 describe('listing URL derivation', () => {

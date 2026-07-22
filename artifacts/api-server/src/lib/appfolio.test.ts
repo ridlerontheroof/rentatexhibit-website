@@ -3,8 +3,10 @@ import {
   isExhibitRow,
   isSafeNextPageUrl,
   normalizeRow,
+  parseDetailDescription,
   parseDetailPhotos,
   parseDetailSections,
+  parseDetailTitle,
   parseListingsHtml,
 } from "./appfolio";
 
@@ -30,6 +32,25 @@ describe("parseListingsHtml", () => {
         "https://highlandrealestatepartners.appfolio.com/listings/detail/15ac6d84-747c-4aa6-9b02-ce2be59e4d69",
     });
     expect(media.get("0807")?.photoUrl).toContain("/def/");
+  });
+
+  it("never pairs a card's link with the next card's address (regression: off-by-one)", () => {
+    // Real page structure: each card's detail link comes FIRST, then its
+    // placeholder <img> (data-original + alt with the unit), then an address
+    // anchor repeating the same link. A greedy cross-card regex would pair
+    // uuid-1 with Apt 2801 here.
+    const html = `
+      <a href="/listings/detail/aaaaaaaa-0000-0000-0000-000000000001"><img src="placeholder.png" alt="165 W Superior St, Apt. 1301, Chicago, IL 60654" /></a>
+      <img data-original="https://images.cdn.appfolio.com/db/images/one/medium.jpg" alt="165 W Superior St, Apt. 1301, Chicago, IL 60654" />
+      <a href="/listings/detail/aaaaaaaa-0000-0000-0000-000000000001">165 W Superior St, Apt. 1301, Chicago, IL 60654</a>
+      <a href="/listings/detail/bbbbbbbb-0000-0000-0000-000000000002"><img src="placeholder.png" alt="165 W Superior St, Apt. 2801, Chicago, IL 60654" /></a>
+      <img data-original="https://images.cdn.appfolio.com/db/images/two/medium.jpg" alt="165 W Superior St, Apt. 2801, Chicago, IL 60654" />
+      <a href="/listings/detail/bbbbbbbb-0000-0000-0000-000000000002">165 W Superior St, Apt. 2801, Chicago, IL 60654</a>`;
+    const media = parseListingsHtml(html);
+    expect(media.get("1301")?.listingUrl).toContain("aaaaaaaa");
+    expect(media.get("1301")?.photoUrl).toContain("/one/");
+    expect(media.get("2801")?.listingUrl).toContain("bbbbbbbb");
+    expect(media.get("2801")?.photoUrl).toContain("/two/");
   });
 
   it("returns an empty map for markup without listing cards", () => {
@@ -77,6 +98,26 @@ describe("parseDetailSections", () => {
       },
       { title: "Pet Policy", items: ["Cats allowed", "Dogs & cats"] },
     ]);
+  });
+
+  it("extracts the listing headline and description", () => {
+    const html = `
+      <h2 class="listing-detail__title">Smart Living on Display. Call Today!</h2>
+      <p class="listing-detail__description hand-hidden fw-light">Exhibit on Superior is a tower.<br/>Second line &amp; more.</p>`;
+    expect(parseDetailTitle(html)).toBe("Smart Living on Display. Call Today!");
+    expect(parseDetailDescription(html)).toBe("Exhibit on Superior is a tower.\nSecond line & more.");
+    expect(parseDetailTitle("<html></html>")).toBeNull();
+    expect(parseDetailDescription("<html></html>")).toBeNull();
+  });
+
+  it("renders hostile encoded content as inert plain text", () => {
+    const html = `
+      <h2 class="listing-detail__title">&lt;script&gt;alert(1)&lt;/script&gt; Tour today</h2>
+      <p class="listing-detail__description">Nice <b>view</b> &amp; more &lt;img src=x onerror=alert(1)&gt;</p>`;
+    expect(parseDetailTitle(html)).toBe("<script>alert(1)</script> Tour today");
+    expect(parseDetailDescription(html)).toBe("Nice view & more <img src=x onerror=alert(1)>");
+    // Values are plain strings; the frontend renders them as React text nodes,
+    // so decoded markup is displayed literally, never executed.
   });
 
   it("returns empty for pages without sections", () => {
@@ -135,6 +176,8 @@ describe("normalizeRow", () => {
       videoUrl: null,
       photos: [],
       details: [],
+      marketingTitle: null,
+      description: null,
     });
   });
 
@@ -158,6 +201,8 @@ describe("normalizeRow", () => {
       videoUrl: null,
       photos: [],
       details: [],
+      marketingTitle: null,
+      description: null,
     });
   });
 
@@ -202,6 +247,8 @@ describe("normalizeRow", () => {
       videoUrl: null,
       photos: [],
       details: [],
+      marketingTitle: null,
+      description: null,
     });
   });
 

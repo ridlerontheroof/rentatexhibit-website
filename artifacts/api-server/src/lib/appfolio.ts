@@ -38,6 +38,10 @@ export interface AvailableUnit {
   photos: string[];
   /** Listing info sections (Rental Terms, Pet Policy, Amenities, …). */
   details: DetailSection[];
+  /** Listing headline from the public detail page, when posted. */
+  marketingTitle: string | null;
+  /** Listing description from the public detail page, when posted. */
+  description: string | null;
 }
 
 export interface DetailSection {
@@ -144,6 +148,8 @@ export function normalizeRow(row: Row): AvailableUnit | null {
     videoUrl: null,
     photos: [],
     details: [],
+    marketingTitle: null,
+    description: null,
   };
 }
 
@@ -160,15 +166,33 @@ export interface ListingMedia {
  */
 export function parseListingsHtml(html: string): Map<string, ListingMedia> {
   const media = new Map<string, ListingMedia>();
-  const cardRe =
-    /href="(\/listings\/detail\/[a-f0-9-]+)"[^>]*>[\s\S]*?data-original="(https:\/\/images\.cdn\.appfolio\.com\/[^"]+)"[^>]*alt="[^"]*Apt\.?\s*([0-9]+)/g;
-  let m: RegExpExecArray | null;
-  while ((m = cardRe.exec(html)) !== null) {
-    const [, detailPath, photoUrl, unit] = m;
-    if (!media.has(unit)) {
+
+  // Each listing card references its own /listings/detail/<uuid> link twice
+  // (photo anchor + address anchor), with the unit address and photo appearing
+  // AFTER the first link occurrence. A single greedy regex can pair one card's
+  // link with the NEXT card's address, so instead: segment the page at each
+  // first occurrence of a distinct detail link, and read that card's unit
+  // number and photo from within its own segment only.
+  const linkRe = /href="(\/listings\/detail\/([a-f0-9-]+))"/g;
+  const firstSeen = new Map<string, { path: string; start: number }>();
+  let lm: RegExpExecArray | null;
+  while ((lm = linkRe.exec(html)) !== null) {
+    const [, detailPath, uid] = lm;
+    if (!firstSeen.has(uid)) firstSeen.set(uid, { path: detailPath, start: lm.index });
+  }
+  const cards = [...firstSeen.values()].sort((a, b) => a.start - b.start);
+  for (let i = 0; i < cards.length; i++) {
+    const segment = html.slice(cards[i].start, cards[i + 1]?.start ?? html.length);
+    const unitMatch = segment.match(/Apt\.?\s*([0-9]+)/);
+    if (!unitMatch) continue;
+    const unit = unitMatch[1];
+    const photoMatch = segment.match(
+      /data-original="(https:\/\/images\.cdn\.appfolio\.com\/[^"]+)"/,
+    );
+    if (!media.has(unit) && photoMatch) {
       media.set(unit, {
-        photoUrl,
-        listingUrl: `https://${APPFOLIO_DB}.appfolio.com${detailPath}`,
+        photoUrl: photoMatch[1],
+        listingUrl: `https://${APPFOLIO_DB}.appfolio.com${cards[i].path}`,
       });
     }
   }
@@ -223,12 +247,40 @@ export function parseDetailSections(html: string): DetailSection[] {
   return sections;
 }
 
+/** Extract the listing headline (`listing-detail__title`) from a detail page. */
+export function parseDetailTitle(html: string): string | null {
+  const m = html.match(/<h2[^>]*class="[^"]*listing-detail__title[^"]*"[^>]*>([\s\S]*?)<\/h2>/);
+  if (!m) return null;
+  const title = decodeEntities(m[1].replace(/<[^>]*>/g, "").trim());
+  return title || null;
+}
+
+/** Extract the listing description (`listing-detail__description`) from a detail page. */
+export function parseDetailDescription(html: string): string | null {
+  const m = html.match(/<p[^>]*class="[^"]*listing-detail__description[^"]*"[^>]*>([\s\S]*?)<\/p>/);
+  if (!m) return null;
+  const text = decodeEntities(m[1].replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").trim());
+  return text || null;
+}
+
+interface DetailInfo {
+  photos: string[];
+  details: DetailSection[];
+  marketingTitle: string | null;
+  description: string | null;
+}
+
 /** Fetch a listing detail page's photos + info sections. Public page, no credentials. */
-async function fetchDetailInfo(listingUrl: string): Promise<{ photos: string[]; details: DetailSection[] }> {
+async function fetchDetailInfo(listingUrl: string): Promise<DetailInfo> {
   const res = await fetch(listingUrl, { headers: { Accept: "text/html" } });
   if (!res.ok) throw new Error(`AppFolio listing detail page failed: status ${res.status}`);
   const html = await res.text();
-  return { photos: parseDetailPhotos(html), details: parseDetailSections(html) };
+  return {
+    photos: parseDetailPhotos(html),
+    details: parseDetailSections(html),
+    marketingTitle: parseDetailTitle(html),
+    description: parseDetailDescription(html),
+  };
 }
 
 /**
@@ -372,6 +424,8 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
       const info = await fetchDetailInfo(unit.listingUrl);
       unit.photos = info.photos;
       unit.details = info.details;
+      unit.marketingTitle = info.marketingTitle;
+      unit.description = info.description;
     } catch {
       unit.photos = [];
       unit.details = [];

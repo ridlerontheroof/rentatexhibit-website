@@ -19,6 +19,10 @@ export interface AvailableUnit {
   photos: string[];
   /** Listing info sections (Rental Terms, Pet Policy, Amenities, …). */
   details: DetailSection[];
+  /** Listing headline from the public detail page, when posted. */
+  marketingTitle: string | null;
+  /** Listing description from the public detail page, when posted. */
+  description: string | null;
 }
 
 export interface DetailSection {

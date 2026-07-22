@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'wouter';
+import { BedDouble, Bath, Ruler, PawPrint } from 'lucide-react';
 import {
   UnitGalleryLightbox,
   applyUrlForListing,
@@ -43,19 +45,31 @@ export function groupForUnit(unitNumber: string): PlanGroup | null {
   return candidates.find((g) => g.floors.includes(floor)) ?? candidates[0];
 }
 
-function formatRent(rent: number | null): string | null {
+export function formatRent(rent: number | null): string | null {
   if (rent === null || rent <= 0) return null;
   return `$${Math.round(rent).toLocaleString()}/mo`;
 }
 
-function formatAvailable(availableOn: string | null): string {
+/** Short pets summary derived from the listing's Pet Policy section. */
+export function petsLabel(u: AvailableUnit): string | null {
+  const policy = u.details.find((s) => /pet/i.test(s.title));
+  if (!policy) return null;
+  const cats = policy.items.some((i) => /cats? allowed/i.test(i));
+  const dogs = policy.items.some((i) => /dogs? allowed/i.test(i));
+  if (cats && dogs) return 'Cats & dogs OK';
+  if (cats) return 'Cats OK';
+  if (dogs) return 'Dogs OK';
+  return null;
+}
+
+export function formatAvailable(availableOn: string | null): string {
   if (!availableOn) return 'Available now';
   const date = new Date(`${availableOn}T12:00:00`);
   if (Number.isNaN(date.getTime()) || date.getTime() <= Date.now()) return 'Available now';
   return `Available ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 }
 
-function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string {
+export function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string {
   const beds = u.bedrooms ?? group?.beds ?? null;
   const baths = u.bathrooms ?? group?.baths ?? null;
   const parts: string[] = [];
@@ -72,7 +86,6 @@ function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string {
 export function AvailableUnits({ onView }: AvailableUnitsProps) {
   const { data } = useAvailability();
   const [galleryUnit, setGalleryUnit] = useState<AvailableUnit | null>(null);
-  const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
 
   const rows = useMemo(() => {
     if (!data?.units) return [];
@@ -127,32 +140,54 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                       </span>
                     ))}
                   <div className="flex flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
-                    <span className="text-lg font-semibold uppercase tracking-wider text-foreground">
+                    <Link
+                      href={`/available-units/${u.unit}`}
+                      className="text-lg font-semibold uppercase tracking-wider text-foreground transition-colors hover:text-primary"
+                    >
                       Apt {u.unit}
+                    </Link>
+                    <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-1.5">
+                        <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
+                        {bedBathLabel(u, u.group).split(' · ')[0] ?? ''}
+                      </span>
+                      {(u.bathrooms ?? u.group?.baths) != null && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <Bath className="h-4 w-4 text-primary" aria-hidden="true" />
+                          {u.bathrooms ?? u.group?.baths} Bath
+                        </span>
+                      )}
+                      {sqft !== null && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <Ruler className="h-4 w-4 text-primary" aria-hidden="true" />
+                          {sqft.toLocaleString()} sq ft
+                        </span>
+                      )}
+                      {petsLabel(u) && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <PawPrint className="h-4 w-4 text-primary" aria-hidden="true" />
+                          {petsLabel(u)}
+                        </span>
+                      )}
+                      <span>{formatAvailable(u.availableOn)}</span>
                     </span>
-                    <span className="text-sm text-muted-foreground">
-                      {[
-                        bedBathLabel(u, u.group),
-                        sqft !== null ? `${sqft.toLocaleString()} sq ft` : null,
-                        formatAvailable(u.availableOn),
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </span>
+                    {u.marketingTitle && (
+                      <span className="text-sm text-muted-foreground">{u.marketingTitle}</span>
+                    )}
                     {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
                   </div>
 
                   <div className="flex shrink-0 flex-wrap items-center gap-3">
                     {u.details.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => setExpandedUnit(expandedUnit === u.unit ? null : u.unit)}
-                        aria-expanded={expandedUnit === u.unit}
-                        aria-controls={`unit-details-${u.unit}`}
+                      <a
+                        href={`/available-units/${u.unit}`}
+                        target="_blank"
+                        rel="noopener"
+                        aria-label={`View details for apartment ${u.unit} (opens in new tab)`}
                         className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
                       >
-                        {expandedUnit === u.unit ? 'Hide details' : 'Details'}
-                      </button>
+                        View details
+                      </a>
                     )}
                     {u.photos.length > 0 ? (
                       <button
@@ -216,29 +251,6 @@ export function AvailableUnits({ onView }: AvailableUnitsProps) {
                     })()}
                   </div>
 
-                  {expandedUnit === u.unit && u.details.length > 0 && (
-                    <div
-                      id={`unit-details-${u.unit}`}
-                      className="w-full basis-full border-t border-border pt-4 md:mt-1"
-                    >
-                      <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
-                        {u.details.map((section) => (
-                          <div key={section.title}>
-                            <h4 className="text-xs uppercase tracking-wider text-muted-foreground">
-                              {section.title}
-                            </h4>
-                            <ul className="mt-2 space-y-1">
-                              {section.items.map((item) => (
-                                <li key={item} className="text-sm text-foreground">
-                                  {item}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </li>
               );
             })}
