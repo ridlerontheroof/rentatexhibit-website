@@ -67,133 +67,136 @@ export function UnitDetail() {
   const heroPhotos = unit.photos.slice(0, 5);
 
   return (
-    <div className="container mx-auto px-4 py-10 md:py-14">
+    <div className="pb-16 pt-10 md:pt-14">
       <Seo
         path={`/available-units/${unit.unit}`}
         title={`Apt ${unit.unit} | Available Residences | Exhibit On Superior`}
         noindex
       />
 
-      <Link
-        href="/available-units"
-        className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All available residences
-      </Link>
-
-      {/* Photo collage */}
-      {heroPhotos.length > 0 && (
-        <button
-          type="button"
-          onClick={() => setGalleryOpen(true)}
-          className="relative mt-4 grid w-full cursor-pointer grid-cols-4 grid-rows-2 gap-1 overflow-hidden"
-          aria-label={`View all ${unit.photos.length} photos of apartment ${unit.unit}`}
+      <div className="container mx-auto px-4">
+        <Link
+          href="/available-units"
+          className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
         >
-          <img
-            src={heroPhotos[0]}
-            alt={`Apartment ${unit.unit} interior`}
-            className="col-span-2 row-span-2 h-full max-h-[420px] w-full object-cover"
-          />
-          {heroPhotos.slice(1).map((p, i) => (
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All available residences
+        </Link>
+
+        {/* Photo collage */}
+        {heroPhotos.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setGalleryOpen(true)}
+            className="relative mt-6 grid w-full cursor-pointer grid-cols-4 grid-rows-2 gap-1 overflow-hidden"
+            aria-label={`View all ${unit.photos.length} photos of apartment ${unit.unit}`}
+          >
             <img
-              key={p}
-              src={p}
-              alt={`Apartment ${unit.unit} interior ${i + 2}`}
-              loading="lazy"
-              className="h-full max-h-[208px] w-full object-cover"
+              src={heroPhotos[0]}
+              alt={`Apartment ${unit.unit} interior`}
+              className="col-span-2 row-span-2 h-full max-h-[420px] w-full object-cover"
             />
-          ))}
-          <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 bg-black/60! px-3 py-1.5 text-xs uppercase tracking-wider text-white">
-            <Images className="h-4 w-4" aria-hidden="true" /> {unit.photos.length} photos
-          </span>
-        </button>
-      )}
-
-      <div className="mt-8 grid gap-10 md:grid-cols-[280px_1fr]">
-        {/* Left column — pricing, actions, listing sections */}
-        <aside>
-          <div className="border border-border p-6 text-center">
-            {rent && <p className="text-3xl font-semibold text-primary">{rent}</p>}
-            <p className="mt-1 text-sm text-muted-foreground">{formatAvailable(unit.availableOn)}</p>
-
-            <div className="mt-4 flex items-center justify-center gap-5 text-sm text-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
-                {bedBathLabel(unit, group).split(' · ')[0] ?? ''}
-              </span>
-              {baths !== null && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Bath className="h-4 w-4 text-primary" aria-hidden="true" /> {baths} ba
-                </span>
-              )}
-              {sqft !== null && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Ruler className="h-4 w-4 text-primary" aria-hidden="true" />
-                  {sqft.toLocaleString()} sqft
-                </span>
-              )}
-            </div>
-
-            <div className="mt-6 flex flex-col gap-3">
-              <a
-                href={applyUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() =>
-                  trackOutboundClick('apply', applyUrl, 'unit_detail', { floorPlan: unit.unit })
-                }
-                className="bg-primary px-4 py-3 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-              >
-                Apply now
-              </a>
-              <Link
-                href="/schedule-a-tour"
-                className="border border-border px-4 py-3 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
-              >
-                Schedule a tour
-              </Link>
-              {contactUrl && (
-                <a
-                  href={contactUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border border-border px-4 py-3 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
-                >
-                  Contact us
-                </a>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-8 space-y-6">
-            {unit.details.map((section) => (
-              <div key={section.title}>
-                <h3 className="text-xs uppercase tracking-wider text-muted-foreground">
-                  {section.title}
-                </h3>
-                <ul className="mt-2 space-y-1">
-                  {section.items.map((item) => (
-                    <li key={item} className="text-sm text-foreground">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {heroPhotos.slice(1).map((p, i) => (
+              <img
+                key={p}
+                src={p}
+                alt={`Apartment ${unit.unit} interior ${i + 2}`}
+                loading="lazy"
+                className="h-full max-h-[208px] w-full object-cover"
+              />
             ))}
-          </div>
-        </aside>
+            <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 bg-black/60 px-3 py-1.5 text-xs uppercase tracking-wider text-white">
+              <Images className="h-4 w-4" aria-hidden="true" /> {unit.photos.length} photos
+            </span>
+          </button>
+        )}
+      </div>
 
-        {/* Right column — title, address, description */}
-        <div>
-          <h1 className="text-2xl font-semibold uppercase tracking-wider text-foreground md:text-3xl">
-            Apt {unit.unit}
+      {/* Key info bar — full-width visual strip */}
+      <div className="mt-10 border-y border-border bg-white py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-center">
+            {rent && (
+              <div>
+                <p className="text-sm uppercase tracking-wider text-muted-foreground">Rent</p>
+                <p className="mt-1 text-3xl font-semibold text-primary">{rent}</p>
+              </div>
+            )}
+            <div>
+              <p className="text-sm uppercase tracking-wider text-muted-foreground">Availability</p>
+              <p className="mt-1 text-lg font-medium text-foreground">{formatAvailable(unit.availableOn)}</p>
+            </div>
+            <div>
+              <p className="text-sm uppercase tracking-wider text-muted-foreground">Bedrooms</p>
+              <p className="mt-1 flex items-center justify-center gap-2 text-lg font-medium text-foreground">
+                <BedDouble className="h-5 w-5 text-primary" aria-hidden="true" />
+                {bedBathLabel(unit, group).split(' · ')[0] ?? ''}
+              </p>
+            </div>
+            {baths !== null && (
+              <div>
+                <p className="text-sm uppercase tracking-wider text-muted-foreground">Bathrooms</p>
+                <p className="mt-1 flex items-center justify-center gap-2 text-lg font-medium text-foreground">
+                  <Bath className="h-5 w-5 text-primary" aria-hidden="true" />
+                  {baths} Bath
+                </p>
+              </div>
+            )}
+            {sqft !== null && (
+              <div>
+                <p className="text-sm uppercase tracking-wider text-muted-foreground">Square Feet</p>
+                <p className="mt-1 flex items-center justify-center gap-2 text-lg font-medium text-foreground">
+                  <Ruler className="h-5 w-5 text-primary" aria-hidden="true" />
+                  {sqft.toLocaleString()}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Primary actions — centered, prominent */}
+      <div className="container mx-auto px-4">
+        <div className="mx-auto mt-10 flex max-w-2xl flex-col items-center justify-center gap-4 sm:flex-row">
+          <a
+            href={applyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() =>
+              trackOutboundClick('apply', applyUrl, 'unit_detail', { floorPlan: unit.unit })
+            }
+            className="w-full bg-primary px-8 py-4 text-center text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90 sm:w-auto"
+          >
+            Apply now
+          </a>
+          <Link
+            href="/schedule-a-tour"
+            className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
+          >
+            Schedule a tour
+          </Link>
+          {contactUrl && (
+            <a
+              href={contactUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
+            >
+              Contact us
+            </a>
+          )}
+        </div>
+
+        {/* Title, address, description — centered content column */}
+        <div className="mx-auto mt-16 max-w-3xl text-center">
+          <h1 className="text-3xl font-semibold uppercase tracking-wider text-foreground md:text-4xl">
+            Apartment {unit.unit}
           </h1>
-          <p className="mt-1 text-muted-foreground">{ADDRESS}</p>
+          <p className="mt-2 text-muted-foreground">{ADDRESS}</p>
           {unit.marketingTitle && (
-            <h2 className="mt-5 text-lg font-medium text-foreground">{unit.marketingTitle}</h2>
+            <h2 className="mt-8 text-xl font-medium text-foreground">{unit.marketingTitle}</h2>
           )}
           {unit.description && (
-            <div className="mt-4 space-y-4 text-sm leading-relaxed text-muted-foreground">
+            <div className="mt-6 space-y-4 text-base leading-relaxed text-muted-foreground">
               {unit.description.split(/\n+/).map((para, i) => (
                 <p key={i}>{para}</p>
               ))}
@@ -202,12 +205,38 @@ export function UnitDetail() {
           {group && (
             <Link
               href="/available-units"
-              className="mt-6 inline-block border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+              className="mt-8 inline-block border border-border px-6 py-3 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
             >
               View the {group.typeLabel} floor plan
             </Link>
           )}
         </div>
+
+        {/* Detail sections — multi-column grid, full width */}
+        {unit.details.length > 0 && (
+          <div className="mx-auto mt-20 max-w-5xl">
+            <div className="mb-10 h-px bg-border" />
+            <h2 className="mb-8 text-center text-xl uppercase tracking-wider text-foreground">
+              Residence Details
+            </h2>
+            <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+              {unit.details.map((section) => (
+                <div key={section.title}>
+                  <h3 className="mb-3 border-l-2 border-primary pl-3 text-sm uppercase tracking-wider text-foreground">
+                    {section.title}
+                  </h3>
+                  <ul className="space-y-2 pl-3">
+                    {section.items.map((item) => (
+                      <li key={item} className="text-sm leading-relaxed text-muted-foreground">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {galleryOpen && <UnitGalleryLightbox unit={unit} onClose={() => setGalleryOpen(false)} />}
