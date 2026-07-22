@@ -170,15 +170,13 @@ export function AvailableUnits() {
 
                   <div className="flex shrink-0 flex-wrap items-center gap-3">
                     {u.details.length > 0 && (
-                      <a
+                      <Link
                         href={`/available-units/${u.unit}`}
-                        target="_blank"
-                        rel="noopener"
-                        aria-label={`View details for apartment ${u.unit} (opens in new tab)`}
+                        aria-label={`View details for apartment ${u.unit}`}
                         className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
                       >
                         View details
-                      </a>
+                      </Link>
                     )}
                     {u.videoUrl && (
                       <a
