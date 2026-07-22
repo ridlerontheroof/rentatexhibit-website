@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { youTubeEmbedUrl, youTubeThumbnailUrl, youTubeVideoId } from './youtube';
+import { youTubeEmbedUrl, youTubeVideoId } from './youtube';
 
 describe('youTubeVideoId', () => {
   it('parses common YouTube URL forms', () => {
@@ -26,13 +26,5 @@ describe('youTubeEmbedUrl', () => {
       'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0',
     );
     expect(youTubeEmbedUrl('https://vimeo.com/12345')).toBeNull();
-  });
-});
-
-describe('youTubeThumbnailUrl', () => {
-  it('builds the default thumbnail URL', () => {
-    expect(youTubeThumbnailUrl('https://youtu.be/dQw4w9WgXcQ')).toBe(
-      'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
-    );
   });
 });

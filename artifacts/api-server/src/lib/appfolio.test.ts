@@ -308,6 +308,24 @@ describe("listableUidFromListingUrl", () => {
     ).toBe("b4a6281b-d2ac-4c79-ac63-ea7dc852df51");
   });
 
+  it("tolerates benign URL variations (query, fragment, trailing slash, uppercase hex)", () => {
+    expect(
+      listableUidFromListingUrl(
+        "https://highlandrealestatepartners.appfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51?source=website",
+      ),
+    ).toBe("b4a6281b-d2ac-4c79-ac63-ea7dc852df51");
+    expect(
+      listableUidFromListingUrl(
+        "https://highlandrealestatepartners.appfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51/#gallery",
+      ),
+    ).toBe("b4a6281b-d2ac-4c79-ac63-ea7dc852df51");
+    expect(
+      listableUidFromListingUrl(
+        "https://highlandrealestatepartners.appfolio.com/listings/detail/B4A6281B-D2AC-4C79-AC63-EA7DC852DF51",
+      ),
+    ).toBe("b4a6281b-d2ac-4c79-ac63-ea7dc852df51");
+  });
+
   it("rejects non-listing and non-https URLs", () => {
     expect(listableUidFromListingUrl("https://evil.example.com/phish")).toBeNull();
     expect(

@@ -245,10 +245,12 @@
   }
 
   /* Prevent typographic widows/orphans — a single word stranded on the last
-     line — across all body copy, including text fed live from the leasing
+     line — across body copy, including text fed live from the leasing
      system. `pretty` lets the browser rebalance the final lines; browsers
-     without support simply fall back to normal wrapping. */
-  p, li, blockquote, figcaption, dt, dd {
+     without support simply fall back to normal wrapping. Scoped to prose
+     elements (not `li`) so tight UI lists like filters and nav are
+     unaffected. */
+  p, blockquote, figcaption, dt, dd {
     text-wrap: pretty;
   }
 }

@@ -36,9 +36,3 @@ export function youTubeEmbedUrl(url: string): string | null {
   const id = youTubeVideoId(url);
   return id ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : null;
 }
-
-/** Default YouTube thumbnail for VideoObject structured data. */
-export function youTubeThumbnailUrl(url: string): string | null {
-  const id = youTubeVideoId(url);
-  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
-}

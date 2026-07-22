@@ -337,10 +337,18 @@ async function fetchListingMedia(): Promise<Map<string, ListingMedia>> {
  * (…/listings/detail/<uuid>). Returns null for anything else.
  */
 export function listableUidFromListingUrl(listingUrl: string): string | null {
-  const m = listingUrl.match(
-    /^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.appfolio\.com\/listings\/detail\/([a-f0-9-]+)$/,
-  );
-  return m ? m[1] : null;
+  let url: URL;
+  try {
+    url = new URL(listingUrl);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:") return null;
+  const host = url.hostname.toLowerCase();
+  if (!host.endsWith(".appfolio.com")) return null;
+  // Match the listing-detail path case-insensitively; ignore query/fragment.
+  const m = url.pathname.match(/^\/listings\/detail\/([A-Fa-f0-9-]+)\/?$/i);
+  return m ? m[1].toLowerCase() : null;
 }
 
 export interface GuestCardInput {

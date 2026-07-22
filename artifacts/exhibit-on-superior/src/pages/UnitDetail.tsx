@@ -16,8 +16,8 @@ import {
 } from '../components/floor-plans/UnitGalleryLightbox';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { trackOutboundClick } from '../lib/analytics';
-import { youTubeEmbedUrl, youTubeThumbnailUrl } from '../lib/youtube';
-import { APPLY_URL, SITE_URL } from '../data/seo';
+import { youTubeEmbedUrl } from '../lib/youtube';
+import { APPLY_URL } from '../data/seo';
 
 const ADDRESS = '165 W Superior St, Chicago, IL 60654';
 
@@ -69,28 +69,10 @@ export function UnitDetail() {
   const applyUrl = (unit.listingUrl && applyUrlForListing(unit.listingUrl)) || APPLY_URL;
   const tourUrl = unit.listingUrl ? tourUrlForListing(unit.listingUrl) : null;
   const heroPhotos = unit.photos.slice(0, 5);
+  // Note: no VideoObject JSON-LD here — Google requires uploadDate, which
+  // AppFolio does not provide, and this page is noindex so the markup would
+  // carry no rich-result value anyway.
   const videoEmbedUrl = unit.videoUrl ? youTubeEmbedUrl(unit.videoUrl) : null;
-  const videoJsonLd =
-    unit.videoUrl && videoEmbedUrl
-      ? [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'VideoObject',
-            name: `Video Tour — Apartment ${unit.unit} at Exhibit On Superior`,
-            description: `Video tour of apartment ${unit.unit} at Exhibit On Superior, ${ADDRESS}.`,
-            embedUrl: videoEmbedUrl,
-            contentUrl: unit.videoUrl,
-            ...(youTubeThumbnailUrl(unit.videoUrl)
-              ? { thumbnailUrl: youTubeThumbnailUrl(unit.videoUrl) }
-              : {}),
-            publisher: {
-              '@type': 'Organization',
-              name: 'Exhibit On Superior',
-              url: SITE_URL,
-            },
-          },
-        ]
-      : undefined;
 
   return (
     <div className="pb-16 pt-10 md:pt-14">
@@ -98,7 +80,6 @@ export function UnitDetail() {
         path={`/available-units/${unit.unit}`}
         title={`Apt ${unit.unit} | Available Residences | Exhibit On Superior`}
         noindex
-        extraJsonLd={videoJsonLd}
       />
 
       <div className="container mx-auto px-4">
