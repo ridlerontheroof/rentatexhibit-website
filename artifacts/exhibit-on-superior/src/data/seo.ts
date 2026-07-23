@@ -37,7 +37,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Exhibit On Superior',
     title: 'Luxury Apartments in River North Chicago | Exhibit On Superior',
     description:
-      'Exhibit On Superior offers luxury apartments in River North Chicago — a modern high-rise with studio, one, two, and three-bedroom homes, skyline views, a full floor of amenities, and on-site retail.',
+      'Luxury apartments in River North Chicago — studio to three-bedroom homes with skyline views, a full floor of amenities, and on-site retail.',
     quickAnswer:
       'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
     faqs: [
