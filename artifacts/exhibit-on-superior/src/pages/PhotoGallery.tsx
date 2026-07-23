@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PageHero } from '../components/PageHero';
-import { X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { SmartImg } from '../components/SmartImg';
 import { QuickAnswer } from '../components/QuickAnswer';
@@ -52,15 +52,40 @@ const galleryImages = [
   { src: '/images/image-073-30-south-kis7bz.jpg', alt: 'View to the South from Exhibit On Superior in Chicago, Illinois', category: 'Views' },
 ];
 
+const categories = ['All', 'Apartment Gallery', 'Community Gallery', 'Views', 'Building', 'Lobby'];
+
+// Lightbox order: every photo on the page, album by album (in tab order), so
+// arrowing from any photo walks the rest of its album and then flows into the
+// next one — the whole page is browsable without closing the lightbox.
+export const lightboxImages = categories
+  .slice(1)
+  .flatMap(category => galleryImages.filter(img => img.category === category));
+
 export function PhotoGallery() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [filter, setFilter] = useState<string>('All');
 
-  const categories = ['All', 'Apartment Gallery', 'Community Gallery', 'Views', 'Building', 'Lobby'];
-  
   const filteredImages = filter === 'All' 
     ? galleryImages 
     : galleryImages.filter(img => img.category === filter);
+
+  const showPrev = useCallback(() => {
+    setSelectedImage(i => (i === null ? i : (i - 1 + lightboxImages.length) % lightboxImages.length));
+  }, []);
+  const showNext = useCallback(() => {
+    setSelectedImage(i => (i === null ? i : (i + 1) % lightboxImages.length));
+  }, []);
+
+  useEffect(() => {
+    if (selectedImage === null) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') showPrev();
+      else if (e.key === 'ArrowRight') showNext();
+      else if (e.key === 'Escape') setSelectedImage(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedImage !== null, showPrev, showNext]);
 
   return (
     <>
@@ -115,7 +140,7 @@ export function PhotoGallery() {
               {filteredImages.map((image, index) => (
                 <button
                   key={index}
-                  onClick={() => setSelectedImage(index)}
+                  onClick={() => setSelectedImage(lightboxImages.findIndex(img => img.src === image.src))}
                   className="relative aspect-square overflow-hidden group cursor-pointer"
                 >
                   <SmartImg
@@ -136,20 +161,39 @@ export function PhotoGallery() {
           <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 text-white hover:text-primary transition-colors"
+              className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
               aria-label="Close"
             >
-              <X className="w-8 h-8" />
+              <X className="w-8 h-8" strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={showPrev}
+              className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-primary hover:bg-primary hover:text-white"
+              aria-label="Previous photo"
+            >
+              <ChevronLeft className="w-6 h-6" strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={showNext}
+              className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-primary hover:bg-primary hover:text-white"
+              aria-label="Next photo"
+            >
+              <ChevronRight className="w-6 h-6" strokeWidth={1.5} />
             </button>
             <SmartImg
-              src={filteredImages[selectedImage].src}
-              alt={filteredImages[selectedImage].alt}
+              src={lightboxImages[selectedImage].src}
+              alt={lightboxImages[selectedImage].alt}
               sizes="100vw"
               loading="eager"
               className="max-w-full max-h-full object-contain"
             />
-            <div className="absolute bottom-4 left-0 right-0 text-center text-white text-sm">
-              {selectedImage + 1} / {filteredImages.length}
+            <div className="absolute bottom-4 left-0 right-0 text-center text-white">
+              <div className="uppercase tracking-[3px] text-xs text-white/70 mb-1">
+                {lightboxImages[selectedImage].category}
+              </div>
+              <div className="text-sm">
+                {selectedImage + 1} / {lightboxImages.length}
+              </div>
             </div>
           </div>
         )}
