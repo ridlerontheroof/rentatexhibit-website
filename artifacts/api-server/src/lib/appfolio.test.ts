@@ -287,6 +287,12 @@ describe("normalizeRow", () => {
 });
 
 describe("sanitizeMarketingTitle", () => {
+  it("rewrites phone-first tour CTAs to point at the on-page button", () => {
+    expect(sanitizeMarketingTitle("Smart Living on Display. Call Today and Schedule Your Tour!")).toBe(
+      "Smart Living on Display. Schedule Your Tour Today!",
+    );
+  });
+
   it("removes property-wide amenities (sauna, pool) from the with-list", () => {
     expect(
       sanitizeMarketingTitle(
@@ -310,7 +316,7 @@ describe("sanitizeMarketingTitle", () => {
   });
 
   it("leaves titles without property amenities untouched", () => {
-    const t = "Smart Living on Display. Call Today and Schedule Your Tour!";
+    const t = "Smart Living on Display. Modern Studio Homes in River North Chicago";
     expect(sanitizeMarketingTitle(t)).toBe(t);
     const t2 = "Luxury 1-Bedroom Apartment with In-Unit Laundry in River North Chicago";
     expect(sanitizeMarketingTitle(t2)).toBe(t2);

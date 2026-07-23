@@ -110,6 +110,11 @@ export function AvailableUnits() {
                   key={u.unit}
                   className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
                 >
+                  {/* On mobile: photo and Apt/rent share the top row and the
+                      detail chips span full width beneath, so no gap is left
+                      beside the photo. md:contents dissolves the wrappers on
+                      desktop so the row layout there is unchanged. */}
+                  <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 md:contents">
                   {u.photoUrl &&
                     (u.details.length > 0 ? (
                       <Link
@@ -124,7 +129,7 @@ export function AvailableUnits() {
                         <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
                       </span>
                     ))}
-                  <div className="flex flex-1 flex-wrap items-start gap-x-6 gap-y-1">
+                  <div className="contents md:flex md:flex-1 md:flex-wrap md:items-start md:gap-x-6 md:gap-y-1">
                     {/* Unit number stacked above rent so pricing lines up in
                         the same spot on every row. */}
                     <span className="flex w-28 shrink-0 flex-col">
@@ -136,7 +141,7 @@ export function AvailableUnits() {
                       </Link>
                       {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
                     </span>
-                    <span className="flex min-w-0 flex-1 flex-col gap-y-1 pt-0.5">
+                    <span className="col-span-2 flex min-w-0 flex-col gap-y-1 pt-0.5 md:col-auto md:flex-1">
                       <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         <span className="inline-flex items-center gap-1.5">
                           <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -166,6 +171,7 @@ export function AvailableUnits() {
                         <span className="text-sm text-muted-foreground">{u.marketingTitle}</span>
                       )}
                     </span>
+                  </div>
                   </div>
 
                   <div className="flex shrink-0 flex-wrap items-center gap-3">

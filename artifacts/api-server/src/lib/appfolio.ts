@@ -300,6 +300,10 @@ const PROPERTY_AMENITY_RE = /^(sauna|pool|hot\s*tub)$/i;
  */
 export function sanitizeMarketingTitle(title: string | null): string | null {
   if (!title) return null;
+  // Rewrite phone-first CTAs: the site funnels prospects to the on-page
+  // "Schedule a Tour" button, so "Call Today and Schedule Your Tour!" would
+  // point people away from it.
+  title = title.replace(/call\s+today\s+and\s+schedule\s+your\s+tour/gi, "Schedule Your Tour Today");
   const withIdx = title.search(/\bwith\b/i);
   if (withIdx === -1) return title;
   const afterWith = title.slice(withIdx + 4);
