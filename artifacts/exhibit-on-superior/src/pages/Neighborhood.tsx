@@ -4,7 +4,6 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
-import { TOUR_URL } from '../data/seo';
 import { SplitHeadline } from '../components/SplitHeadline';
 
 export function Neighborhood() {
@@ -48,12 +47,12 @@ export function Neighborhood() {
                   There’s a reason River North is one of Chicago’s most coveted neighborhoods and at Exhibit on Superior, you’re right in the heart of it. From its vibrant art scene and cutting-edge dining to stylish nightlife and chic cafés, River North delivers nonstop energy with just the right amount of culture and calm.
                 </p>
                 <p className="text-lg leading-relaxed">
-                  Also enjoy quick access to nearby hotspots like Fulton Market, Old Town, and the West Loop. Don't miss out on the action, schedule a tour today
+                  Also enjoy quick access to nearby hotspots like Fulton Market, Old Town, and the West Loop. Don't miss out on the action — see what's available today.
                 </p>
                 <div className="mt-8">
-                  <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
-                    Schedule a Tour
-                  </a>
+                  <Link href="/available-units" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
+                    View Available Units
+                  </Link>
                 </div>
               </div>
               <SmartImg
