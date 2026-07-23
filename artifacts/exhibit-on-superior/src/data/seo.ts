@@ -326,7 +326,7 @@ const APARTMENT_COMPLEX_NODE = {
   '@id': `${SITE_URL}#apartmentcomplex`,
   name: 'Exhibit On Superior',
   url: SITE_URL,
-  image: `${SITE_URL}/images/image-002-gettyimages-1286580777-nvdupq.jpg`,
+  image: `${SITE_URL}/images/image-002-gettyimages-1286580777-nvdupq-2000w.webp`,
   description:
     'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
   telephone: '312-450-0635',
