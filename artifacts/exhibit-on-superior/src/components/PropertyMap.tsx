@@ -131,9 +131,19 @@ export function PropertyMap() {
           zoom: 16,
           mapId: MAP_ID,
         });
+        // Branded pin: custom SVG at 2x the default marker size, brand gold
+        // (--primary #b39a5f) with the Exhibit lowercase "e" glyph.
+        const pin = document.createElement('div');
+        pin.innerHTML = `
+          <svg width="54" height="76" viewBox="0 0 27 38" xmlns="http://www.w3.org/2000/svg" style="display:block">
+            <path d="M13.5 0C6.04 0 0 6.04 0 13.5c0 9.86 12 23.32 12.51 23.89a1.33 1.33 0 0 0 1.98 0C15 36.82 27 23.36 27 13.5 27 6.04 20.96 0 13.5 0Z" fill="#b39a5f" stroke="#8f7a48" stroke-width="1"/>
+            <circle cx="13.5" cy="13.5" r="9.5" fill="#fff"/>
+            <text x="13.5" y="14.2" text-anchor="middle" dominant-baseline="middle" font-family="Georgia, 'Times New Roman', serif" font-size="14" fill="#b39a5f">e</text>
+          </svg>`;
         new AdvancedMarkerElement({
           map,
           position: CENTER,
+          content: pin,
           title: 'Exhibit On Superior — 165 W Superior St, Chicago, IL 60654',
         });
       })
