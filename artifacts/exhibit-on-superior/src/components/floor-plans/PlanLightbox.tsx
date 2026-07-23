@@ -11,7 +11,6 @@ import {
   sampleSheetVelocity,
 } from '../../lib/sheetSnap';
 
-import { TOUR_URL } from '../../data/seo';
 
 interface PlanLightboxProps {
   group: PlanGroup | null;
@@ -908,9 +907,7 @@ export function PlanLightbox({
               </a>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a
-                  href={TOUR_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#available-units"
                   onClick={onClose}
                   className="btn-gold-outline flex-1 text-center"
                 >
