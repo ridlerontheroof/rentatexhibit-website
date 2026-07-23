@@ -1,15 +1,16 @@
 # SEO Strategy — Exhibit On Superior
 
 ## Site overview
-Exhibit On Superior (`https://www.rentatexhibit.com`) is a luxury apartment community marketing site for a River North Chicago property at 165 W Superior St, managed by Highland Management LLC. The site is a React SPA (Vite + Wouter) with `react-helmet-async` for per-route metadata; there is no SSR layer.
+Exhibit On Superior (`https://www.rentatexhibit.com`) is a luxury apartment community marketing site for a River North Chicago property at 165 W Superior St, managed by Highland Management LLC. The site is a React SPA (Vite + Wouter) with build-time prerendering via `scripts/prerender.mjs` and `entry-server.tsx`. Every indexable route is rendered to static HTML at build time, so crawlers and social bots receive full per-page titles, descriptions, canonicals, Open Graph tags, and JSON-LD in the initial HTML response. `react-helmet-async` handles live head updates on client-side navigation.
 
 ## In scope
-- All public marketing pages: Home, Floor Plans, Photo Gallery, Virtual Tour, Amenities, Pet Friendly, Neighborhood, Artist-in-Residence, Contact Us, Map & Directions, Schedule a Tour, Reviews
+- All public marketing pages: Home, Available Units & Floor Plans, Photo Gallery, Virtual Tour, Amenities, Pet Friendly, Neighborhood, Artist-in-Residence (now redirects to /), Contact Us, Map & Directions, Schedule a Tour, Reviews
 - Residents page (public but utility-focused)
 
 ## Out of scope
 - Privacy Policy and Accessibility Statement (intentionally `noindex`'d in source)
 - Authenticated dashboards or admin pages (none present)
+- `/available-units/:unit` detail pages (client-only, `noindex` in source)
 
 ## Target audience
 - Prospective apartment renters searching for luxury apartments in River North / Chicago
@@ -26,5 +27,7 @@ Exhibit On Superior (`https://www.rentatexhibit.com`) is a luxury apartment comm
 - (None yet)
 
 ## Crawler assumptions
-- Googlebot renders JavaScript; per-route metadata eventually indexed but social bots and AI crawlers cannot render JS
+- Static HTML (prerendered at build time) is served to all crawlers — Googlebot, social bots, and AI crawlers all receive full page content in the initial HTML response
 - No Cloudflare proxy configured in source
+- robots.txt: allows all, references sitemap at `https://www.rentatexhibit.com/sitemap.xml`
+- llms.txt: present at `/llms.txt`, links to canonical `/available-units` (fixed as of last scan)
