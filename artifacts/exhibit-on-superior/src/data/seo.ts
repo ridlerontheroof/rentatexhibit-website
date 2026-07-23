@@ -35,11 +35,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/',
     ogImage: `${SITE_URL}/images/og/home.jpg`,
     label: 'Exhibit On Superior',
-    title: 'Modern High-Rise Apartments in River North Chicago | Exhibit On Superior',
+    title: 'Luxury Apartments in River North Chicago | Exhibit On Superior',
     description:
-      'Exhibit On Superior is a modern high-rise apartment community in River North Chicago with studio, one, two, and three-bedroom homes, skyline views, luxury amenities, and on-site retail.',
+      'Exhibit On Superior offers luxury apartments in River North Chicago — a modern high-rise with studio, one, two, and three-bedroom homes, skyline views, a full floor of amenities, and on-site retail.',
     quickAnswer:
-      'Exhibit On Superior is a modern high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
+      'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
     faqs: [
       {
         q: 'Where is Exhibit On Superior located?',
@@ -328,7 +328,7 @@ const APARTMENT_COMPLEX_NODE = {
   url: SITE_URL,
   image: `${SITE_URL}/images/image-002-gettyimages-1286580777-nvdupq.jpg`,
   description:
-    'Exhibit On Superior is a modern high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
+    'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
   telephone: '312-450-0635',
   email: 'exhibit@highlandptrs.com',
   address: {
