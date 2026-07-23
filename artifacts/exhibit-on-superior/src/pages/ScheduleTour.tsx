@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearch } from 'wouter';
+import { Link, useSearch } from 'wouter';
 import { PageHero } from '../components/PageHero';
 import { useAvailability } from '../hooks/use-availability';
 import { useCreateLead } from '../hooks/use-create-lead';
@@ -158,6 +158,14 @@ export function ScheduleTour() {
                     <a href="mailto:exhibit@highlandptrs.com?subject=Schedule%20a%20Tour%20at%20Exhibit%20On%20Superior" className="btn-gold-outline inline-block">
                       Email us to schedule a tour
                     </a>
+                    <div className="mt-4">
+                      <Link
+                        href="/available-units"
+                        className="btn-gold-outline bg-primary! text-white! border-primary! hover:bg-primary/90! inline-block"
+                      >
+                        View Available Units
+                      </Link>
+                    </div>
                   </div>
                 </div>
 
