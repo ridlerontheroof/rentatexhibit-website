@@ -72,7 +72,7 @@ describe('Home page headline regressions', () => {
     const h1 = container.querySelector('h1');
     expect(h1).not.toBeNull();
     expect(h1?.querySelector('.headline-script')?.textContent).toBe('River North Chicago');
-    expect(h1?.querySelector('.headline-caps')?.textContent).toBe('Apartments');
+    expect(h1?.querySelector('.headline-caps')?.textContent).toBe('Luxury Apartments');
     // The home hero is the one headline that must NOT carry the gold rule.
     expect(h1?.querySelector('.headline-rule')).toBeNull();
 
