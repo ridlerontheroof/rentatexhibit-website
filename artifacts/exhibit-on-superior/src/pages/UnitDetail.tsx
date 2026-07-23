@@ -15,6 +15,7 @@ import {
   tourUrlForListing,
 } from '../components/floor-plans/UnitGalleryLightbox';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
+import { variantIndexForUnit } from '../data/floorPlans';
 import { trackOutboundClick } from '../lib/analytics';
 import { youTubeEmbedUrl } from '../lib/youtube';
 import { APPLY_URL } from '../data/seo';
@@ -218,7 +219,7 @@ export function UnitDetail() {
             <button
               type="button"
               onClick={() => {
-                setPlanVariant(0);
+                setPlanVariant(variantIndexForUnit(group, unit.unit));
                 setPlanOpen(true);
               }}
               className="mt-8 inline-block border border-border px-6 py-3 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"

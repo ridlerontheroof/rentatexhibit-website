@@ -21,6 +21,7 @@ import {
   SQFT_MIN,
   unitNumbersForGroup,
   unitNumbersForPlan,
+  variantIndexForUnit,
   type Category,
   type GroupFilterState,
   type Plan,
@@ -68,6 +69,39 @@ function makeGroup(over: Partial<PlanGroup> = {}): PlanGroup {
   };
   return { ...base, ...over };
 }
+
+describe('variantIndexForUnit', () => {
+  const group = makeGroup({
+    floors: [2, 3, 6, 7, 17, 18],
+    variants: [
+      makePlan({ id: 'v-podium', floors: [2, 3], floorMin: 2, floorMax: 3 }),
+      makePlan({ id: 'v-mid', floors: [6, 7], floorMin: 6, floorMax: 7 }),
+      makePlan({ id: 'v-high', floors: [17, 18], floorMin: 17, floorMax: 18 }),
+    ],
+  });
+
+  it('picks the variant whose floor range contains the unit floor', () => {
+    expect(variantIndexForUnit(group, '0201')).toBe(0);
+    expect(variantIndexForUnit(group, '0601')).toBe(1);
+    expect(variantIndexForUnit(group, '1801')).toBe(2);
+  });
+
+  it('falls back to 0 for unparseable or unmatched floors', () => {
+    expect(variantIndexForUnit(group, '01')).toBe(0);
+    expect(variantIndexForUnit(group, 'abc')).toBe(0);
+    expect(variantIndexForUnit(group, '9901')).toBe(0);
+  });
+
+  it('resolves real availability-style unit numbers against real groups', () => {
+    for (const g of planGroups) {
+      for (const [i, v] of g.variants.entries()) {
+        const line = String(g.unit).padStart(2, '0');
+        const unitNumber = `${String(v.floors[0]).padStart(2, '0')}${line}`;
+        expect(variantIndexForUnit(g, unitNumber)).toBe(i);
+      }
+    }
+  });
+});
 
 function makeFilters(over: Partial<GroupFilterState> = {}): GroupFilterState {
   return {

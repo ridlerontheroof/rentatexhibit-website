@@ -235,6 +235,20 @@ export function unitNumbersForPlan(p: Plan): string[] {
   return p.floors.map((f) => `${String(f).padStart(2, '0')}${line}`);
 }
 
+/**
+ * Index of the group variant whose floor range contains the given apartment
+ * unit number ("FFUU", e.g. "0606" -> floor 6). Falls back to 0 when the
+ * floor cannot be parsed or no variant matches.
+ */
+export function variantIndexForUnit(g: PlanGroup, unitNumber: string): number {
+  const digits = unitNumber.replace(/\D/g, '');
+  if (digits.length < 3) return 0;
+  const floor = Number(digits.slice(0, -2));
+  if (!Number.isFinite(floor)) return 0;
+  const idx = g.variants.findIndex((v) => v.floors.includes(floor));
+  return idx >= 0 ? idx : 0;
+}
+
 /** Every apartment unit number across a group's full floor range. */
 export function unitNumbersForGroup(g: PlanGroup): string[] {
   const line = String(g.unit).padStart(2, '0');
