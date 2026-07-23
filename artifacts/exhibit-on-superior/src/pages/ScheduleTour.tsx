@@ -155,13 +155,13 @@ export function ScheduleTour() {
                         312-450-0635
                       </a>
                     </p>
-                    <a href="mailto:exhibit@highlandptrs.com?subject=Schedule%20a%20Tour%20at%20Exhibit%20On%20Superior" className="btn-gold-outline inline-block">
-                      Email us to schedule a tour
-                    </a>
-                    <div className="mt-4">
+                    <div className="flex w-fit flex-col gap-4">
+                      <a href="mailto:exhibit@highlandptrs.com?subject=Schedule%20a%20Tour%20at%20Exhibit%20On%20Superior" className="btn-gold-outline block text-center">
+                        Email us to schedule a tour
+                      </a>
                       <Link
                         href="/available-units"
-                        className="btn-gold-outline bg-primary! text-white! border-primary! hover:bg-primary/90! inline-block"
+                        className="btn-gold-outline bg-primary! text-white! border-primary! hover:bg-primary/90! block text-center"
                       >
                         View Available Units
                       </Link>
