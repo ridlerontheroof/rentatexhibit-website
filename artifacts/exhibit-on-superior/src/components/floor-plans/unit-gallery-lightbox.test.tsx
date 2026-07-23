@@ -33,14 +33,14 @@ const unit: AvailableUnit = {
 describe('listing URL derivation', () => {
   it('derives the same Apply Now and Contact Us targets as the AppFolio listing page', () => {
     expect(applyUrlForListing(LISTING)).toBe(
-      'https://highlandrealestatepartners.appfolio.com/listings/rental_applications/new?listable_uid=15ac6d84-747c-4aa6-9b02-ce2be59e4d69&source=Website',
+      'https://highlandrealestatepartners.appfolio.com/listings/rental_applications/new?listable_uid=15ac6d84-747c-4aa6-9b02-ce2be59e4d69&source=Website%20(Exhibit)',
     );
     expect(contactUrlForListing(LISTING)).toBe(`${LISTING}/contact_us_form`);
   });
 
   it('derives the same unit-specific Schedule Showing target as the AppFolio listing page', () => {
     expect(tourUrlForListing(LISTING)).toBe(
-      'https://highlandrealestatepartners.appfolio.com/listings/showings/new?listable_uid=15ac6d84-747c-4aa6-9b02-ce2be59e4d69&source=Website',
+      'https://highlandrealestatepartners.appfolio.com/listings/showings/new?listable_uid=15ac6d84-747c-4aa6-9b02-ce2be59e4d69&source=Website%20(Exhibit)',
     );
   });
 

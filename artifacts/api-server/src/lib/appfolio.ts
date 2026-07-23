@@ -407,7 +407,9 @@ export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
       emailAddress: input.email,
       phoneNumber: input.phone,
       listableUid: input.listableUid,
-      source: "Website",
+      // Lead attribution shown to the leasing team in AppFolio. Keep in sync
+      // with LEAD_SOURCE on the web app (tour/apply link `source` param).
+      source: "Website (Exhibit)",
       skipCtaForNewInquiries: true,
     }),
   });

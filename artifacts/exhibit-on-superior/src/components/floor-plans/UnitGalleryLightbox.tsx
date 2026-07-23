@@ -9,13 +9,21 @@ interface UnitGalleryLightboxProps {
 }
 
 /**
+ * Lead source reported to AppFolio for tours and applications originating
+ * from this site, so the leasing team can attribute them. Keep in sync with
+ * the guest-card `source` on the api-server.
+ */
+export const LEAD_SOURCE = 'Website (Exhibit)';
+const LEAD_SOURCE_PARAM = encodeURIComponent(LEAD_SOURCE);
+
+/**
  * Derive the AppFolio online rental application URL for a posted listing —
  * the same target as the "Apply Now" button on AppFolio's own listing page.
  */
 export function applyUrlForListing(listingUrl: string): string | null {
   const parsed = parseListingUrl(listingUrl);
   if (!parsed) return null;
-  return `${parsed.origin}/listings/rental_applications/new?listable_uid=${parsed.uid}&source=Website`;
+  return `${parsed.origin}/listings/rental_applications/new?listable_uid=${parsed.uid}&source=${LEAD_SOURCE_PARAM}`;
 }
 
 /**
@@ -46,7 +54,7 @@ function parseListingUrl(listingUrl: string): { origin: string; uid: string } | 
 export function tourUrlForListing(listingUrl: string): string | null {
   const parsed = parseListingUrl(listingUrl);
   if (!parsed) return null;
-  return `${parsed.origin}/listings/showings/new?listable_uid=${parsed.uid}&source=Website`;
+  return `${parsed.origin}/listings/showings/new?listable_uid=${parsed.uid}&source=${LEAD_SOURCE_PARAM}`;
 }
 
 /** The listing's contact form URL — same target as AppFolio's "Contact Us". */
