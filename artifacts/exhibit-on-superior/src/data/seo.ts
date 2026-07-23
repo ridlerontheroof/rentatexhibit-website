@@ -59,7 +59,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/available-units',
     ogImage: `${SITE_URL}/images/og/floor-plans.jpg`,
     label: 'Available Units',
-    title: 'Available Units & Floor Plans in River North Chicago | Exhibit On Superior',
+    title: 'Available Units & Floor Plans | Exhibit On Superior Chicago',
     description:
       'Browse available apartments at Exhibit On Superior in River North Chicago with live pricing, photos, and move-in dates, then compare every studio, 1, 2 & 3 bedroom floor plan.',
     quickAnswer:
