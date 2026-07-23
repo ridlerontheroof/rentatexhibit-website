@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
 import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
@@ -34,6 +34,22 @@ export function PlanLightbox({
   useEffect(() => {
     reducedMotionRef.current = reducedMotion;
   }, [reducedMotion]);
+  const [, navigate] = useLocation();
+  /**
+   * The availability CTAs point at the #available-units section, which only
+   * exists on the Floor Plans page. When the lightbox is opened elsewhere
+   * (e.g. Unit Detail), fall back to navigating to /available-units.
+   */
+  const handleAvailabilityClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      onClose();
+      if (!document.getElementById('available-units')) {
+        event.preventDefault();
+        navigate('/available-units');
+      }
+    },
+    [onClose, navigate],
+  );
   const [zoomed, setZoomed] = useState(false);
   const zoomedRef = useRef(false);
   useEffect(() => {
@@ -809,7 +825,7 @@ export function PlanLightbox({
                 <a
                   href="#available-units"
                   className="btn-gold-outline flex min-h-11 shrink-0 items-center bg-primary px-4 text-center text-xs text-white hover:bg-primary/90"
-                  onClick={onClose}
+                  onClick={handleAvailabilityClick}
                 >
                   Check Availability
                 </a>
@@ -901,14 +917,14 @@ export function PlanLightbox({
               <a
                 href="#available-units"
                 className="btn-gold-outline hidden bg-primary text-center text-white hover:bg-primary/90 lg:block"
-                onClick={onClose}
+                onClick={handleAvailabilityClick}
               >
                 Check Availability
               </a>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a
                   href="#available-units"
-                  onClick={onClose}
+                  onClick={handleAvailabilityClick}
                   className="btn-gold-outline flex-1 text-center"
                 >
                   Schedule a Tour
