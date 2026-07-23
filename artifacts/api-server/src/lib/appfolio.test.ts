@@ -5,6 +5,7 @@ import {
   normalizeRow,
   parseDetailDescription,
   parseDetailPhotos,
+  parseDetailVideo,
   parseDetailSections,
   parseDetailTitle,
   listableUidFromListingUrl,
@@ -61,7 +62,7 @@ describe("parseListingsHtml", () => {
 });
 
 describe("parseDetailPhotos", () => {
-  it("prefers the unit-specific images/ gallery (as large.jpg, deduped by id) over the property-wide marketing set", () => {
+  it("leads with the unit-specific images/ gallery (as large.jpg, deduped by id), then appends the property-wide marketing set", () => {
     const html = `
       <img src="https://images.cdn.appfolio.com/db/images/abc/medium.jpg" />
       <img src="https://images.cdn.appfolio.com/db/images/abc/large.jpg" />
@@ -72,6 +73,8 @@ describe("parseDetailPhotos", () => {
     expect(parseDetailPhotos(html)).toEqual([
       "https://images.cdn.appfolio.com/db/images/abc/large.jpg",
       "https://images.cdn.appfolio.com/db/images/def-456/large.jpg",
+      "https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg",
+      "https://images.cdn.appfolio.com/db/leads_marketing_photos/bbb-222/original.jpg",
     ]);
   });
 
@@ -84,7 +87,16 @@ describe("parseDetailPhotos", () => {
     ]);
   });
 
-  it("falls back to the marketing set when no gallery images exist", () => {
+  it("drops the excluded logo photo from the marketing set too", () => {
+    const html = `
+      <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/a2d081fb-43de-4bf9-9089-5e9d2525575a/original.jpg"></a>
+      <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/bbb-222/original.jpg"></a>`;
+    expect(parseDetailPhotos(html)).toEqual([
+      "https://images.cdn.appfolio.com/db/leads_marketing_photos/bbb-222/original.jpg",
+    ]);
+  });
+
+  it("uses only the marketing set when no gallery images exist", () => {
     const html = `
       <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg"></a>
       <a href="https://images.cdn.appfolio.com/db/leads_marketing_photos/aaa-111/original.jpg"></a>
@@ -97,6 +109,19 @@ describe("parseDetailPhotos", () => {
 
   it("returns empty for pages without gallery photos", () => {
     expect(parseDetailPhotos("<html></html>")).toEqual([]);
+  });
+});
+
+describe("parseDetailVideo", () => {
+  it("extracts the YouTube watch URL from the page", () => {
+    const html = `
+      <img src="https://img.youtube.com/vi/ZC8_gb9stKU/0.jpg" />
+      <a href="https://www.youtube.com/watch?v=ZC8_gb9stKU">Video Tour</a>`;
+    expect(parseDetailVideo(html)).toBe("https://www.youtube.com/watch?v=ZC8_gb9stKU");
+  });
+
+  it("returns null when the page has no video", () => {
+    expect(parseDetailVideo("<html></html>")).toBeNull();
   });
 });
 

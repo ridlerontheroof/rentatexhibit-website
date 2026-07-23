@@ -208,8 +208,9 @@ export function parseListingsHtml(html: string): Map<string, ListingMedia> {
  *    (same group the listings-page cover photo comes from), and
  *  - `<db>/leads_marketing_photos/<uuid>/original.jpg` — a property-wide
  *    marketing set that is IDENTICAL across every listing.
- * Only the `images/` group is unit-specific, so prefer it (as large.jpg)
- * and fall back to the marketing set only if no gallery images exist.
+ * The `images/` group is unit-specific, so it leads the gallery (as
+ * large.jpg); the property-wide marketing set is appended after it so a
+ * unit with only a cover photo still shows the full building gallery.
  */
 
 /**
@@ -232,18 +233,31 @@ export function parseDetailPhotos(html: string): string[] {
       photos.push(`https://images.cdn.appfolio.com/${db}/images/${id}/large.jpg`);
     }
   }
-  if (photos.length > 0) return photos;
-
   const marketingRe =
-    /https:\/\/images\.cdn\.appfolio\.com\/[^"'\s>]*leads_marketing_photos\/[a-f0-9-]+\/original\.jpg/g;
+    /https:\/\/images\.cdn\.appfolio\.com\/[^"'\s>]*leads_marketing_photos\/([a-f0-9-]+)\/original\.jpg/g;
   const seen = new Set<string>();
-  for (const url of html.match(marketingRe) ?? []) {
-    if (!seen.has(url)) {
+  let mm: RegExpExecArray | null;
+  while ((mm = marketingRe.exec(html)) !== null) {
+    const url = mm[0];
+    const id = mm[1].toLowerCase();
+    if (!seen.has(url) && !EXCLUDED_PHOTO_IDS.has(id)) {
       seen.add(url);
       photos.push(url);
     }
   }
   return photos;
+}
+
+/**
+ * Extract the unit's YouTube tour video from a public listing detail page.
+ * AppFolio embeds it as a youtube.com/watch link; the Unit Directory report
+ * doesn't reliably expose it, so the public page is the source of truth.
+ */
+export function parseDetailVideo(html: string): string | null {
+  const m = html.match(
+    /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,20})/,
+  );
+  return m ? `https://www.youtube.com/watch?v=${m[1]}` : null;
 }
 
 /** Decode the handful of HTML entities AppFolio uses in list items. */
@@ -329,7 +343,10 @@ export function sanitizeMarketingTitle(title: string | null): string | null {
 export function parseDetailDescription(html: string): string | null {
   const m = html.match(/<p[^>]*class="[^"]*listing-detail__description[^"]*"[^>]*>([\s\S]*?)<\/p>/);
   if (!m) return null;
-  const text = decodeEntities(m[1].replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").trim());
+  const text = decodeEntities(m[1].replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").trim())
+    // Same phone-first CTA rewrite as sanitizeMarketingTitle — the site
+    // funnels prospects to the on-page Schedule a Tour button.
+    .replace(/call\s+today\s+and\s+schedule\s+your\s+tour/gi, "Schedule Your Tour Today");
   return text || null;
 }
 
@@ -338,6 +355,7 @@ interface DetailInfo {
   details: DetailSection[];
   marketingTitle: string | null;
   description: string | null;
+  videoUrl: string | null;
 }
 
 /** Fetch a listing detail page's photos + info sections. Public page, no credentials. */
@@ -350,6 +368,7 @@ async function fetchDetailInfo(listingUrl: string): Promise<DetailInfo> {
     details: parseDetailSections(html),
     marketingTitle: sanitizeMarketingTitle(parseDetailTitle(html)),
     description: parseDetailDescription(html),
+    videoUrl: parseDetailVideo(html),
   };
 }
 
@@ -557,6 +576,9 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
       unit.details = info.details;
       unit.marketingTitle = info.marketingTitle;
       unit.description = info.description;
+      // The public page is the most reliable video source; the Unit
+      // Directory report is only a fallback when the page has no embed.
+      unit.videoUrl = info.videoUrl ?? unit.videoUrl;
     } catch {
       unit.photos = [];
       unit.details = [];
