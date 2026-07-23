@@ -2,7 +2,6 @@ import { useState } from 'react';
 import type { FocusEvent, KeyboardEvent } from 'react';
 import { Link } from 'wouter';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import { TOUR_URL } from '../data/seo';
 import { SmartImg } from './SmartImg';
 
 const navLink = 'text-sm uppercase tracking-wider hover:text-primary transition-colors';
@@ -143,7 +142,7 @@ export function Header() {
               items={[
                 { href: '/map-directions', label: 'Map + Directions' },
                 { href: '/residents', label: 'Residents' },
-                { href: TOUR_URL, label: 'Schedule a Tour' },
+                { href: '/schedule-a-tour', label: 'Schedule a Tour' },
                 { href: '/reviews', label: 'Reviews' },
               ]}
             />
@@ -185,7 +184,7 @@ export function Header() {
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
               <Link href="/residents" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Residents</Link>
-              <a href={TOUR_URL} target="_blank" rel="noopener noreferrer" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</a>
+              <Link href="/schedule-a-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</Link>
               <Link href="/reviews" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Reviews</Link>
 
               <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">

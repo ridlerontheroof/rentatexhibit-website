@@ -86,6 +86,11 @@ export function Footer() {
                   Reviews
                 </Link>
               </li>
+              <li>
+                <Link href="/schedule-a-tour" className="hover:text-primary transition-colors">
+                  Schedule a Tour
+                </Link>
+              </li>
             </ul>
           </div>
 
