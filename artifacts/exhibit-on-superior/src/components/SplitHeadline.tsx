@@ -10,7 +10,7 @@ interface SplitHeadlineProps {
   /** Short gold rule under the headline. Defaults to true (omit only on the home hero). */
   underline?: boolean;
   align?: 'center' | 'left';
-  /** On dark backgrounds the script line renders gold and the caps line white. */
+  /** On dark backgrounds (hero photos) both lines render white — gold blends into the photos. */
   dark?: boolean;
   /** Override the script line color (e.g. text-white over hero photos). */
   scriptClassName?: string;
@@ -37,7 +37,7 @@ export function SplitHeadline({
     <Tag className={`${centered ? 'text-center' : 'text-left'} ${className}`}>
       {script && (
         <span
-          className={`headline-script block ${scriptClassName ?? (dark ? 'text-primary' : 'text-foreground')}`}
+          className={`headline-script block ${scriptClassName ?? (dark ? 'text-white' : 'text-foreground')}`}
         >
           {script}
         </span>

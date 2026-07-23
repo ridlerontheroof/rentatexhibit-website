@@ -42,7 +42,10 @@ export function Home() {
               Modern High-Rise Living in the Heart of River North
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/available-units" className="btn-gold-outline bg-black/50! text-white hover:bg-black/70!">
+              <Link
+                href="/available-units"
+                className="btn-gold-outline border-white! bg-white/20! text-white! backdrop-blur-sm transition-colors hover:bg-white! hover:text-foreground!"
+              >
                 View Available Units
               </Link>
             </div>

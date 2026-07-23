@@ -44,9 +44,9 @@ describe('SplitHeadline branded typography', () => {
     expect(container.querySelector('.headline-rule')).toBeNull();
   });
 
-  it('uses gold script and white caps on dark backgrounds', () => {
+  it('uses white script and white caps on dark backgrounds (gold blends into hero photos)', () => {
     const { container } = renderHeadline({ script: 'Urban Bliss', caps: 'Downtown', dark: true });
-    expect(container.querySelector('.headline-script')?.className).toContain('text-primary');
+    expect(container.querySelector('.headline-script')?.className).toContain('text-white');
     expect(container.querySelector('.headline-caps')?.className).toContain('text-white');
   });
 
