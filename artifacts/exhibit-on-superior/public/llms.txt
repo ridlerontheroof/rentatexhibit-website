@@ -5,7 +5,7 @@
 ## Key Pages
 
 - [Home](https://www.rentatexhibit.com/): Community overview and lifestyle highlights
-- [Floor Plans](https://www.rentatexhibit.com/floor-plans): Studio, 1, 2, and 3-bedroom layouts
+- [Available Units & Floor Plans](https://www.rentatexhibit.com/available-units): Studio, 1, 2, and 3-bedroom layouts and current availability
 - [Amenities](https://www.rentatexhibit.com/amenities): Full-floor amenity deck, pool, fitness, dog spa
 - [Pet Friendly](https://www.rentatexhibit.com/pet-friendly): Dog- and cat-friendly community with on-site pet amenities
 - [Neighborhood](https://www.rentatexhibit.com/neighborhood): River North location near dining, parks, West Loop
