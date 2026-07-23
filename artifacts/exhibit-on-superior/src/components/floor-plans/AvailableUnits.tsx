@@ -108,28 +108,28 @@ export function AvailableUnits() {
               return (
                 <li
                   key={u.unit}
-                  className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
+                  className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between"
                 >
                   {/* On mobile: photo and Apt/rent share the top row and the
                       detail chips span full width beneath, so no gap is left
-                      beside the photo. md:contents dissolves the wrappers on
-                      desktop so the row layout there is unchanged. */}
-                  <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 md:contents">
+                      beside the photo. lg:contents dissolves the wrappers on
+                      desktop (lg+) so the row layout there is unchanged. */}
+                  <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 lg:contents">
                   {u.photoUrl &&
                     (u.details.length > 0 ? (
                       <Link
                         href={`/available-units/${u.unit}`}
-                        className="block shrink-0 cursor-pointer self-start overflow-hidden border border-border md:self-center"
+                        className="block shrink-0 cursor-pointer self-start overflow-hidden border border-border lg:self-center"
                         aria-label={`View details for apartment ${u.unit}`}
                       >
                         <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
                       </Link>
                     ) : (
-                      <span className="block shrink-0 self-start overflow-hidden border border-border md:self-center">
+                      <span className="block shrink-0 self-start overflow-hidden border border-border lg:self-center">
                         <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
                       </span>
                     ))}
-                  <div className="contents md:flex md:flex-1 md:flex-wrap md:items-start md:gap-x-6 md:gap-y-1">
+                  <div className="contents lg:flex lg:flex-1 lg:flex-wrap lg:items-start lg:gap-x-6 lg:gap-y-1">
                     {/* Unit number stacked above rent so pricing lines up in
                         the same spot on every row. */}
                     <span className="flex w-28 shrink-0 flex-col">
@@ -141,7 +141,7 @@ export function AvailableUnits() {
                       </Link>
                       {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
                     </span>
-                    <span className="col-span-2 flex min-w-0 flex-col gap-y-1 pt-0.5 md:col-auto md:flex-1">
+                    <span className="col-span-2 flex min-w-0 flex-col gap-y-1 pt-0.5 lg:col-auto lg:flex-1">
                       <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         <span className="inline-flex items-center gap-1.5">
                           <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
