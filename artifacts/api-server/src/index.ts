@@ -1,6 +1,7 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { startLeadNotificationRetry } from "./lib/leadNotificationRetry";
+import { startAvailabilityCacheWarmer } from "./routes/availability";
 
 const rawPort = process.env["PORT"];
 
@@ -27,4 +28,8 @@ app.listen(port, (err) => {
   // Durable backstop: periodically retry leasing-team notifications for leads
   // whose fire-and-forget send failed (notified_at still NULL).
   startLeadNotificationRetry();
+
+  // Keep the availability snapshot warm so a first visitor after a quiet
+  // period never waits on a cold AppFolio round-trip.
+  startAvailabilityCacheWarmer(logger);
 });

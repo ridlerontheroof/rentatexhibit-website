@@ -10,6 +10,17 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-KW9LZXL5');</script>
     <!-- End Google Tag Manager -->
+    <!-- Early availability fetch: on /available-units pages, start the
+         availability request from the head so the network round-trip overlaps
+         with the JS chunks downloading instead of following them. The React
+         Query hook (use-availability.ts) consumes this promise at most once;
+         failures fall back to a normal fetch there. -->
+    <script>
+      if (/^\/available-units(\/|$)/.test(location.pathname)) {
+        window.__availabilityPrefetch = fetch('%BASE_URL%api/availability');
+        window.__availabilityPrefetch.catch(function () {});
+      }
+    </script>
     <!-- seo:start -->
     <title>River North Chicago Apartments | Exhibit On Superior</title>
     <meta

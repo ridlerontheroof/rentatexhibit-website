@@ -11,16 +11,51 @@ import { planGroups, type PlanGroup } from '../../data/floorPlans';
 import { APPLY_URL } from '../../data/seo';
 import { trackOutboundClick } from '../../lib/analytics';
 
-function UnitThumb({ photoUrl, unit }: { photoUrl: string; unit: string }) {
+function UnitThumb({ photoUrl, unit, eager = false }: { photoUrl: string; unit: string; eager?: boolean }) {
+  // Eager-load only in the browser: React 19 SSR auto-emits a fixed-href
+  // image preload for any eager plain <img>, which the prerender guard
+  // rejects (and these AppFolio CDN photos shouldn't be preloaded from the
+  // static HTML anyway — the snapshot's photo may have rotated by visit time).
+  const eagerNow = eager && !import.meta.env.SSR;
   return (
     <img
       src={photoUrl}
       alt={`Apartment ${unit} interior`}
-      loading="lazy"
+      loading={eagerNow ? 'eager' : 'lazy'}
+      fetchPriority={eagerNow ? 'high' : undefined}
       width={112}
       height={84}
       className="h-[84px] w-[112px] object-cover transition-transform duration-300 hover:scale-105"
     />
+  );
+}
+
+/**
+ * Skeleton placeholder rows shown while the very first availability response
+ * is still in flight and no baked snapshot exists — the section should never
+ * be a blank gap that pops in late. Matches the real row geometry (thumb +
+ * text lines + action buttons) so the swap to live cards is seamless.
+ */
+function UnitRowsSkeleton() {
+  return (
+    <ul className="divide-y divide-border" aria-hidden="true" data-testid="units-skeleton">
+      {[0, 1, 2].map((i) => (
+        <li key={i} className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-4">
+            <span className="h-[84px] w-[112px] shrink-0 animate-pulse bg-muted" />
+            <span className="flex flex-col gap-2">
+              <span className="h-5 w-24 animate-pulse bg-muted" />
+              <span className="h-5 w-28 animate-pulse bg-muted" />
+            </span>
+            <span className="hidden h-4 w-64 animate-pulse bg-muted lg:block" />
+          </div>
+          <span className="flex shrink-0 gap-3">
+            <span className="h-9 w-32 animate-pulse bg-muted" />
+            <span className="h-9 w-28 animate-pulse bg-muted" />
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -75,19 +110,26 @@ export function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string 
 }
 
 /**
- * Live "available now" strip fed by AppFolio. Renders nothing while loading,
- * on error, or when no units are posted — the page stays fully useful without
- * it, so there is no fallback state to design around.
+ * Live "available now" strip fed by AppFolio. Paints instantly from the
+ * build-time snapshot (via useAvailability's placeholderData) and is silently
+ * replaced by live data; when no snapshot exists it shows skeleton rows while
+ * the first fetch is in flight. Renders nothing on error or when no units are
+ * posted — the page stays fully useful without it.
  */
 export function AvailableUnits() {
-  const { data } = useAvailability();
+  const { data, isPending } = useAvailability();
 
   const rows = useMemo(() => {
     if (!data?.units) return [];
     return data.units.map((u) => ({ ...u, group: groupForUnit(u.unit) }));
   }, [data]);
 
-  if (rows.length === 0) return null;
+  // First browser paint racing the live fetch with no baked snapshot: show
+  // skeletons rather than a blank gap. SSR skips this — prerendered HTML only
+  // carries real snapshot cards, never placeholder chrome for crawlers.
+  const showSkeleton = rows.length === 0 && isPending && !import.meta.env.SSR;
+
+  if (rows.length === 0 && !showSkeleton) return null;
 
   return (
     <section id="available-units" className="px-4 pb-6" aria-labelledby="available-units-heading">
@@ -101,8 +143,10 @@ export function AvailableUnits() {
             </p>
           </div>
 
+          {showSkeleton && <UnitRowsSkeleton />}
+
           <ul className="divide-y divide-border">
-            {rows.map((u) => {
+            {rows.map((u, rowIndex) => {
               const rent = formatRent(u.rent);
               const sqft = u.sqft ?? u.group?.sqftMin ?? null;
               return (
@@ -122,11 +166,11 @@ export function AvailableUnits() {
                         className="block shrink-0 cursor-pointer self-start overflow-hidden border border-border lg:self-center"
                         aria-label={`View details for apartment ${u.unit}`}
                       >
-                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
+                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} eager={rowIndex === 0} />
                       </Link>
                     ) : (
                       <span className="block shrink-0 self-start overflow-hidden border border-border lg:self-center">
-                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} />
+                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} eager={rowIndex === 0} />
                       </span>
                     ))}
                   <div className="contents lg:flex lg:flex-1 lg:flex-wrap lg:items-start lg:gap-x-6 lg:gap-y-1">

@@ -9,6 +9,13 @@ import { memoryLocation } from 'wouter/memory-location';
 import { UnitDetail } from './UnitDetail';
 import type { AvailableUnit } from '../hooks/use-availability';
 
+// Neutralize the build-time availability snapshot: it contains the real
+// units (possibly including 0807 with its own videoUrl), which would paint
+// as placeholder data ahead of the mocked fetch and race these assertions.
+vi.mock('../data/availabilitySnapshot', () => ({
+  getBakedAvailability: () => null,
+}));
+
 // Pins the unit-detail video tour wiring: the embedded player renders only
 // when the unit's videoUrl is a valid YouTube link (privacy-enhanced embed
 // URL), and never for missing or non-YouTube links. jsdom + manual cleanup

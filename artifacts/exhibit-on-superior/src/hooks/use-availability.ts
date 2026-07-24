@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { getBakedAvailability } from '../data/availabilitySnapshot';
 
 export interface AvailableUnit {
   /** Apartment number, e.g. "0606" (pad2 floor + pad2 unit line). */
@@ -35,18 +36,50 @@ export interface AvailabilityData {
   updatedAt: string;
 }
 
-const fetchAvailability = async (): Promise<AvailabilityData> => {
-  const response = await fetch(`${import.meta.env.BASE_URL}api/availability`);
+declare global {
+  interface Window {
+    /**
+     * Early availability fetch kicked off from an inline <script> in the HTML
+     * head (see index.html), so the network round-trip overlaps with the JS
+     * chunks downloading instead of waiting for them. Consumed at most once.
+     */
+    __availabilityPrefetch?: Promise<Response>;
+  }
+}
+
+const parseResponse = async (response: Response): Promise<AvailabilityData> => {
   if (!response.ok) {
     throw new Error('Availability feed unavailable');
   }
   return response.json();
 };
 
+const fetchAvailability = async (): Promise<AvailabilityData> => {
+  // Reuse the head-started request when it's available and succeeded;
+  // otherwise (no prefetch, or it failed at the network level) fetch normally.
+  const prefetch = typeof window !== 'undefined' ? window.__availabilityPrefetch : undefined;
+  if (prefetch) {
+    delete window.__availabilityPrefetch;
+    try {
+      return await parseResponse(await prefetch);
+    } catch {
+      // Fall through to a regular fetch — the prefetch may have raced a
+      // flaky connection; the query's own retry policy governs from here.
+    }
+  }
+  return parseResponse(await fetch(`${import.meta.env.BASE_URL}api/availability`));
+};
+
 /**
  * Live available units from AppFolio (proxied through the API server so
- * credentials stay server-side). Callers should hide live-availability UI
- * when this errors or is loading — the site remains fully useful without it.
+ * credentials stay server-side).
+ *
+ * Until the live response lands, `data` is served from the build-time
+ * snapshot (placeholderData) when one fresh enough exists — so unit cards
+ * paint immediately and are then silently replaced by live data. Callers
+ * should hide live-availability UI on error — the site remains fully useful
+ * without it. `isPlaceholderData` distinguishes the baked snapshot from a
+ * confirmed live payload.
  */
 export const useAvailability = () =>
   useQuery({
@@ -54,4 +87,5 @@ export const useAvailability = () =>
     queryFn: fetchAvailability,
     staleTime: 5 * 60 * 1000,
     retry: 1,
+    placeholderData: () => getBakedAvailability() ?? undefined,
   });

@@ -17,8 +17,61 @@ const router: IRouter = Router();
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
+// Background warmer cadence: slightly inside the TTL so the cache is refreshed
+// just before it would expire — a first visitor after a quiet period is served
+// straight from memory instead of waiting on the AppFolio round-trip.
+const WARM_INTERVAL_MS = CACHE_TTL_MS - 30 * 1000;
+
 let cached: { payload: AvailabilityPayload; fetchedAt: number } | null = null;
 let inflight: Promise<AvailabilityPayload> | null = null;
+
+/**
+ * Refresh the in-memory snapshot from AppFolio, coalescing concurrent callers
+ * into a single upstream request (rate limit: 7 req / 15 s, shared by the
+ * route handler, the snapshot getter, and the background warmer).
+ */
+async function refreshAvailability(
+  clientId: string,
+  clientSecret: string,
+): Promise<AvailabilityPayload> {
+  inflight ??= fetchAvailability(clientId, clientSecret).finally(() => {
+    inflight = null;
+  });
+  const payload = await inflight;
+  cached = { payload, fetchedAt: Date.now() };
+  return payload;
+}
+
+/**
+ * Keep the availability cache warm in the background so a cold cache never
+ * penalizes the first visitor. Failures are logged and the last good snapshot
+ * keeps serving (same stale-on-error behavior as the route). No-op when the
+ * AppFolio credentials are not configured.
+ */
+export function startAvailabilityCacheWarmer(
+  log: { info: (o: object, msg: string) => void; warn: (o: object, msg: string) => void } = {
+    info: () => {},
+    warn: () => {},
+  },
+): NodeJS.Timeout | null {
+  const clientId = process.env.APPFOLIO_CLIENT_ID;
+  const clientSecret = process.env.APPFOLIO_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return null;
+
+  const warm = async (reason: string) => {
+    try {
+      await refreshAvailability(clientId, clientSecret);
+      log.info({ reason }, "Availability cache warmed");
+    } catch (err) {
+      log.warn({ err, reason }, "Availability cache warm-up failed; keeping last good snapshot");
+    }
+  };
+
+  void warm("startup");
+  const timer = setInterval(() => void warm("interval"), WARM_INTERVAL_MS);
+  timer.unref();
+  return timer;
+}
 
 /**
  * Current availability snapshot for other routes (e.g. attaching a tour lead
@@ -32,12 +85,7 @@ export async function getAvailabilitySnapshot(): Promise<AvailabilityPayload | n
   const clientSecret = process.env.APPFOLIO_CLIENT_SECRET;
   if (!clientId || !clientSecret) return null;
   try {
-    inflight ??= fetchAvailability(clientId, clientSecret).finally(() => {
-      inflight = null;
-    });
-    const payload = await inflight;
-    cached = { payload, fetchedAt: Date.now() };
-    return payload;
+    return await refreshAvailability(clientId, clientSecret);
   } catch {
     return null;
   }
@@ -63,11 +111,7 @@ router.get("/availability", async (req, res) => {
 
   try {
     // Coalesce concurrent refreshes into a single upstream request.
-    inflight ??= fetchAvailability(clientId, clientSecret).finally(() => {
-      inflight = null;
-    });
-    const payload = await inflight;
-    cached = { payload, fetchedAt: Date.now() };
+    const payload = await refreshAvailability(clientId, clientSecret);
     res.json(payload);
   } catch (err) {
     req.log.error({ err }, "Failed to refresh AppFolio availability");
