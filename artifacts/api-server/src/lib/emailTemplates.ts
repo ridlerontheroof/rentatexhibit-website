@@ -328,6 +328,55 @@ function formatSubmitted(date: Date): string {
   );
 }
 
+/**
+ * Operational alert: the build-time baked availability seed shipped with the
+ * running instance is older than its max age, so cold starts no longer answer
+ * instantly. Sent to the leasing inbox so someone triggers a redeploy.
+ */
+export function renderSeedStaleAlert(opts: {
+  seedUpdatedAt: string | null;
+  seedAgeHours: number | null;
+  maxAgeHours: number;
+}): RenderedEmail {
+  const { seedUpdatedAt, seedAgeHours, maxAgeHours } = opts;
+  const subject = "Website alert: availability snapshot is out of date";
+  const ageLine =
+    seedAgeHours !== null
+      ? `The snapshot baked into the current website build is about ${seedAgeHours} hours old (limit: ${maxAgeHours} hours).`
+      : `The snapshot baked into the current website build is past its ${maxAgeHours}-hour limit.`;
+  const dataLine = seedUpdatedAt
+    ? `Its data was last refreshed ${escapeHtml(seedUpdatedAt)}.`
+    : "";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(ageLine)} ${dataLine}</p>` +
+    `<p style="${BODY_TEXT}">Visitors still see live availability, but the very first visitor after a quiet period now waits on a slow first load instead of getting an instant answer.</p>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> republish the website. Each publish refreshes the baked snapshot automatically — no other action is needed. This alert is sent at most once per running instance.</p>`;
+
+  const text = [
+    ageLine,
+    seedUpdatedAt ? `Its data was last refreshed ${seedUpdatedAt}.` : "",
+    "",
+    "Visitors still see live availability, but the very first visitor after a quiet period now waits on a slow first load instead of getting an instant answer.",
+    "",
+    "What to do: republish the website. Each publish refreshes the baked snapshot automatically — no other action is needed.",
+    "This alert is sent at most once per running instance.",
+    "",
+    TEXT_FOOTER,
+  ]
+    .filter((line, i, arr) => !(line === "" && arr[i - 1] === ""))
+    .join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "The baked availability snapshot is out of date — republish the website.",
+    kicker: "Website Alert",
+    heading: "Availability Snapshot Out of Date",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
 export function renderLeadNotification(lead: LeadNotification): RenderedEmail {
   const fullName = `${lead.firstName} ${lead.lastName}`.trim();
   const typeLabel = leadTypeLabel(lead.type);

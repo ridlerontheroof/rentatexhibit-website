@@ -4,6 +4,7 @@ import { sendRawEmail, SENDER_EMAIL, warnIfUnconfigured } from "./mailer";
 import {
   renderLeadNotification,
   renderProspectConfirmation,
+  renderSeedStaleAlert,
 } from "./emailTemplates";
 import {
   EMAIL_LOGO_BASE64,
@@ -191,6 +192,41 @@ export async function sendProspectConfirmation(lead: LeadNotification): Promise<
  * Returns `true` when the notification was sent successfully and `false`
  * otherwise, so the caller can record whether the leasing team was notified.
  */
+/**
+ * Recipient for operational stale-seed alerts. Separate from the shared
+ * leasing inbox so operational noise goes to the person who can redeploy.
+ * Configurable via env without a code change.
+ */
+const SEED_ALERT_EMAIL =
+  process.env.SEED_ALERT_EMAIL ?? "ridler@highlandptrs.com";
+
+/**
+ * Alert that the baked availability seed shipped with this instance is past
+ * its max age. Throws when the mailer is unconfigured or the send fails, so
+ * the caller decides how loudly to log.
+ */
+export async function sendSeedStaleAlert(opts: {
+  seedUpdatedAt: string | null;
+  seedAgeHours: number | null;
+  maxAgeHours: number;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderSeedStaleAlert(opts);
+  const { contentType, body } = buildMimeBody("seedalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent stale availability-seed alert email",
+  );
+}
+
 export async function sendLeadNotification(
   lead: LeadNotification,
 ): Promise<boolean> {

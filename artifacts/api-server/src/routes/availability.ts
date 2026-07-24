@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { fetchAvailability, type AvailabilityPayload } from "../lib/appfolio";
+import { sendSeedStaleAlert } from "../lib/email";
 import bakedSeed from "../data/availabilitySeed.json";
 
 const router: IRouter = Router();
@@ -33,6 +34,41 @@ const SEED_MAX_AGE_MS = 48 * 60 * 60 * 1000;
 let cached: { payload: AvailabilityPayload; fetchedAt: number } | null = null;
 let inflight: Promise<AvailabilityPayload> | null = null;
 
+/**
+ * Outcome of the last baked-seed evaluation, surfaced on /healthz so the
+ * leasing team (or an uptime monitor) can see when deploys have become so
+ * infrequent that cold starts no longer benefit from the committed snapshot.
+ *
+ *  - "used":       the seed was fresh and pre-populated the cache
+ *  - "stale":      the seed exists but is past SEED_MAX_AGE_MS — redeploy soon
+ *  - "invalid":    the committed file is malformed/placeholder
+ *  - "superseded": the cache already held live data, seed not needed
+ *  - "unevaluated": the seeding path has not run yet
+ */
+export type BakedSeedStatus = "used" | "stale" | "invalid" | "superseded" | "unevaluated";
+
+export interface BakedSeedHealth {
+  status: BakedSeedStatus;
+  /** ISO timestamp the committed seed claims for its data, when parseable. */
+  seedUpdatedAt: string | null;
+  /** Age of the seed in whole hours at evaluation time, when parseable. */
+  seedAgeHours: number | null;
+  /** Max age in hours before the seed is considered stale. */
+  maxAgeHours: number;
+}
+
+let seedHealth: BakedSeedHealth = {
+  status: "unevaluated",
+  seedUpdatedAt: null,
+  seedAgeHours: null,
+  maxAgeHours: SEED_MAX_AGE_MS / (60 * 60 * 1000),
+};
+
+/** Current baked-seed health, exposed on the /healthz endpoint. */
+export function getBakedSeedHealth(): BakedSeedHealth {
+  return seedHealth;
+}
+
 /** Un-narrowed view of the module-level cache (see route catch block). */
 function getCached(): { payload: AvailabilityPayload; fetchedAt: number } | null {
   return cached;
@@ -45,11 +81,27 @@ function getCached(): { payload: AvailabilityPayload; fetchedAt: number } | null
  * the cache already holds data or the seed is missing/too old.
  */
 export function seedCacheFromBakedSnapshot(now = Date.now()): boolean {
-  if (cached) return false;
+  const maxAgeHours = SEED_MAX_AGE_MS / (60 * 60 * 1000);
+  if (cached) {
+    seedHealth = { status: "superseded", seedUpdatedAt: null, seedAgeHours: null, maxAgeHours };
+    return false;
+  }
   const seed = bakedSeed as unknown as AvailabilityPayload;
-  if (!seed || !Array.isArray(seed.units) || typeof seed.updatedAt !== "string") return false;
+  if (!seed || !Array.isArray(seed.units) || typeof seed.updatedAt !== "string") {
+    seedHealth = { status: "invalid", seedUpdatedAt: null, seedAgeHours: null, maxAgeHours };
+    return false;
+  }
   const updatedAt = Date.parse(seed.updatedAt);
-  if (!Number.isFinite(updatedAt) || now - updatedAt > SEED_MAX_AGE_MS) return false;
+  if (!Number.isFinite(updatedAt)) {
+    seedHealth = { status: "invalid", seedUpdatedAt: null, seedAgeHours: null, maxAgeHours };
+    return false;
+  }
+  const seedAgeHours = Math.floor((now - updatedAt) / (60 * 60 * 1000));
+  if (now - updatedAt > SEED_MAX_AGE_MS) {
+    seedHealth = { status: "stale", seedUpdatedAt: seed.updatedAt, seedAgeHours, maxAgeHours };
+    return false;
+  }
+  seedHealth = { status: "used", seedUpdatedAt: seed.updatedAt, seedAgeHours, maxAgeHours };
   cached = { payload: seed, fetchedAt: updatedAt };
   return true;
 }
@@ -58,6 +110,37 @@ export function seedCacheFromBakedSnapshot(now = Date.now()): boolean {
 export function resetAvailabilityCacheForTests(): void {
   cached = null;
   inflight = null;
+  staleSeedAlertSent = false;
+  seedHealth = {
+    status: "unevaluated",
+    seedUpdatedAt: null,
+    seedAgeHours: null,
+    maxAgeHours: SEED_MAX_AGE_MS / (60 * 60 * 1000),
+  };
+}
+
+/** One alert per process — cold starts are rare, and one email is enough. */
+let staleSeedAlertSent = false;
+
+/**
+ * Email the leasing team (best-effort, once per process) when the baked seed
+ * was rejected for being older than SEED_MAX_AGE_MS. No email when the seed
+ * is fresh, superseded, or the mailer is unconfigured.
+ */
+export async function alertIfSeedStale(
+  log: { warn: (o: object, msg: string) => void } = { warn: () => {} },
+): Promise<void> {
+  if (seedHealth.status !== "stale" || staleSeedAlertSent) return;
+  staleSeedAlertSent = true;
+  log.warn(
+    { seedUpdatedAt: seedHealth.seedUpdatedAt, seedAgeHours: seedHealth.seedAgeHours },
+    "Baked availability seed is stale — cold starts will wait on the first live AppFolio fetch",
+  );
+  try {
+    await sendSeedStaleAlert(seedHealth);
+  } catch (err) {
+    log.warn({ err }, "Failed to send stale-seed alert email");
+  }
 }
 
 /**
@@ -98,6 +181,11 @@ export function startAvailabilityCacheWarmer(
   // visitor is served instantly while the startup warm-up fetches live data.
   if (seedCacheFromBakedSnapshot()) {
     log.info({}, "Availability cache seeded from baked build-time snapshot");
+  } else {
+    // Seed rejected (usually: past its 48h max age because deploys have been
+    // infrequent). Tell the leasing team once so cold starts don't quietly
+    // regress to slow first responses.
+    void alertIfSeedStale(log);
   }
 
   const warm = async (reason: string) => {
