@@ -1,0 +1,79 @@
+Suggested Answer-Engine Questions
+
+These should appear naturally across the site:
+
+Cost
+
+* How much does it cost to live at Exhibit On Superior?
+* What fees are required in addition to rent?
+* Are utilities included?
+* Does Exhibit offer move-in specials?
+* How much is parking?
+
+Apartments
+
+* Does Exhibit On Superior have convertible apartments?
+* Do apartments have in-unit washers and dryers?
+* Which units have balconies?
+* What views are available?
+* What is the largest apartment available?
+* Are furnished apartments available?
+
+Amenities
+
+* Does Exhibit On Superior have a pool?
+* Is there a coworking space?
+* Does the building have a fitness center?
+* Is there a music studio?
+* Does the property have an outdoor dog area?
+* Is there a 24-hour concierge?
+
+Location
+
+* How far is Exhibit from the Chicago CTA station?
+* Is Exhibit close to Whole Foods?
+* Is Exhibit walkable to the Loop?
+* What is near Superior and Wells?
+* Is River North a good neighborhood without a car?
+
+Leasing
+
+* How do I apply?
+* What income is required?
+* Are guarantors accepted?
+* How long does approval take?
+* What lease terms are available?
+* Can I tour virtually?
+
+⸻
+
+Trust and Citation Signals
+
+Answer engines prefer facts that can be corroborated across independent sources.
+
+Exhibit has some third-party presence, including Apartments.com, Birdeye, Facebook, YouTube, Zillow/Trulia-related results, and Google reviews.  
+
+The problem is consistency. At least one third-party listing describes the property as offering studios through two bedrooms, while the website says studios through three bedrooms.  
+
+That inconsistency can reduce confidence.
+
+Directory cleanup checklist
+
+Audit the following fields across every platform:
+
+* Property name
+* Address
+* Phone number
+* Email
+* Office hours
+* Bedroom range
+* Square-footage range
+* Pet policy
+* Amenities
+* Management company
+* Website URL
+* Current photos
+* Tour link
+* Availability link
+
+The phone number deserves immediate attention because an older Facebook result shows a different number from the current website. 

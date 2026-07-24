@@ -13,6 +13,7 @@ import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
 // canonical URLs, and noindex flags straight from the built SSR bundle.
 export { PAGE_SEO, SITE_URL, canonicalFor } from './data/seo';
 export { extractLcpPreload } from './lib/lcpPreload';
+export { LEGACY_REDIRECTS } from './data/legacyRedirects';
 
 /** Content-page paths, exported for the prerenderer's route<->PAGE_SEO parity check. */
 export const ROUTE_PATHS: string[] = routes.map((r) => r.path);

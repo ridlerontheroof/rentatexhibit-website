@@ -146,6 +146,121 @@ to = "/accessibility-statement/index.html"
 from = "/accessibility-statement/"
 to = "/accessibility-statement/index.html"
 
+# Legacy Wix-era URLs and the former /floor-plans canonical: serve build-time
+# generated no-JS meta-refresh redirect stubs (see scripts/prerender.mjs) so
+# crawlers never receive homepage content on these paths.
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/floor-plans"
+to = "/apartments/il/chicago/floor-plans/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/floor-plans/"
+to = "/apartments/il/chicago/floor-plans/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/photo-gallery"
+to = "/apartments/il/chicago/photo-gallery/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/photo-gallery/"
+to = "/apartments/il/chicago/photo-gallery/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/virtual-tour"
+to = "/apartments/il/chicago/virtual-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/virtual-tour/"
+to = "/apartments/il/chicago/virtual-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/amenities"
+to = "/apartments/il/chicago/amenities/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/amenities/"
+to = "/apartments/il/chicago/amenities/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/pet-friendly"
+to = "/apartments/il/chicago/pet-friendly/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/pet-friendly/"
+to = "/apartments/il/chicago/pet-friendly/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/neighborhood"
+to = "/apartments/il/chicago/neighborhood/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/neighborhood/"
+to = "/apartments/il/chicago/neighborhood/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/contact-us"
+to = "/apartments/il/chicago/contact-us/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/contact-us/"
+to = "/apartments/il/chicago/contact-us/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/map-directions"
+to = "/apartments/il/chicago/map-directions/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/map-directions/"
+to = "/apartments/il/chicago/map-directions/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/residents"
+to = "/apartments/il/chicago/residents/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/residents/"
+to = "/apartments/il/chicago/residents/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/schedule-a-tour"
+to = "/apartments/il/chicago/schedule-a-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/schedule-a-tour/"
+to = "/apartments/il/chicago/schedule-a-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/reviews"
+to = "/apartments/il/chicago/reviews/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/reviews/"
+to = "/apartments/il/chicago/reviews/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/magellan-rewards"
+to = "/apartments/il/chicago/magellan-rewards/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/magellan-rewards/"
+to = "/apartments/il/chicago/magellan-rewards/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans"
+to = "/floor-plans/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/"
+to = "/floor-plans/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/apply"
+to = "/apartments/il/chicago/apply/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/apply/"
+to = "/apartments/il/chicago/apply/index.html"
+
 [[services.production.rewrites]]
 from = "/*"
 to = "/index.html"

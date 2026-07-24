@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { initAnalytics, trackPageView, trackOutboundClick } from './lib/analytics';
 import { APPLY_URL, AVAILABILITY_URL } from './data/seo';
 import { routes } from './routes';
+import { LEGACY_REDIRECTS as SHARED_LEGACY_REDIRECTS } from './data/legacyRedirects';
 
 // Route-based code splitting: each page ships in its own chunk. The page list is
 // shared with the build-time prerenderer via `routes.tsx`; here each loader is
@@ -52,23 +53,16 @@ export function Redirect({ to, cta }: { to: string; cta?: 'apply' | 'availabilit
   return null;
 }
 
-/** Legacy Wix/WordPress URLs -> canonical routes (source: migration redirects.csv). */
+/**
+ * Legacy Wix/WordPress URLs -> canonical routes. The shared map lives in
+ * data/legacyRedirects.ts (also consumed by the build-time redirect-stub
+ * generator); the artist-in-residence variants are client-side-only extras
+ * because their no-JS stub is hand-written in public/.
+ */
 const LEGACY_REDIRECTS: Record<string, string> = {
-  '/apartments/il/chicago/floor-plans': '/available-units',
-  '/apartments/il/chicago/photo-gallery': '/photo-gallery',
-  '/apartments/il/chicago/virtual-tour': '/virtual-tour',
-  '/apartments/il/chicago/amenities': '/amenities',
-  '/apartments/il/chicago/pet-friendly': '/pet-friendly',
-  '/apartments/il/chicago/neighborhood': '/neighborhood',
+  ...SHARED_LEGACY_REDIRECTS,
   '/apartments/il/chicago/artist-in-residence': '/',
   '/artist-in-residence': '/',
-  '/apartments/il/chicago/contact-us': '/contact-us',
-  '/apartments/il/chicago/map-directions': '/map-directions',
-  '/apartments/il/chicago/residents': '/residents',
-  '/apartments/il/chicago/schedule-a-tour': '/schedule-a-tour',
-  '/apartments/il/chicago/reviews': '/reviews',
-  '/apartments/il/chicago/apply': APPLY_URL,
-  '/apartments/il/chicago/magellan-rewards': '/',
 };
 
 /**

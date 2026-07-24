@@ -13,9 +13,8 @@ const root = path.resolve(scriptDir, '..');
 const publicDir = path.join(root, 'dist', 'public');
 const serverEntry = path.join(root, 'dist', 'server', 'entry-server.js');
 
-const { render, PAGE_SEO, canonicalFor, ROUTE_PATHS, extractLcpPreload } = await import(
-  pathToFileURL(serverEntry).href
-);
+const { render, PAGE_SEO, canonicalFor, ROUTE_PATHS, extractLcpPreload, LEGACY_REDIRECTS } =
+  await import(pathToFileURL(serverEntry).href);
 
 // Parity guard: every indexable page must have a route to render it, and every
 // content route must have SEO metadata. Fail the build on any mismatch so a new
@@ -209,6 +208,72 @@ for (const routePath of seoPaths) {
   }
   console.log(`LCP preload verified on ${seoPaths.length} pages.`);
 }
+
+// Legacy URL redirect stubs: crawlers that hit old Wix-era URLs (or the former
+// /floor-plans canonical) must receive an explicit redirect signal — never the
+// homepage document (which reads as duplicate/soft-404 content). Each stub is a
+// no-JS meta-refresh (Google treats refresh=0 as a permanent redirect) with a
+// canonical pointing at the destination. artifact.toml rewrites route the
+// legacy paths to these files; the SPA's client-side <Redirect> routes remain
+// as a belt-and-braces fallback for JS-enabled visitors.
+// Source of truth: src/data/legacyRedirects.ts (shared with App.tsx).
+const LEGACY_REDIRECT_STUBS = LEGACY_REDIRECTS;
+
+// Parity guard: every legacy path must have BOTH rewrite forms (bare and
+// trailing slash) in artifact.toml pointing at its stub, or crawlers would
+// fall through to the /* -> /index.html catch-all and receive homepage
+// content (the soft-duplicate failure this whole block exists to prevent).
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const missing = [];
+  for (const from of Object.keys(LEGACY_REDIRECT_STUBS)) {
+    for (const form of [from, `${from}/`]) {
+      const rule = `from = "${form}"\nto = "${from}/index.html"`;
+      if (!toml.includes(rule)) missing.push(form);
+    }
+  }
+  if (missing.length) {
+    throw new Error(
+      `Prerender aborted: artifact.toml is missing legacy redirect rewrite(s) for: ${missing.join(', ')}.\n` +
+        'Add [[services.production.rewrites]] entries (bare + trailing slash) ahead of the /* catch-all.',
+    );
+  }
+}
+
+for (const [from, to] of Object.entries(LEGACY_REDIRECT_STUBS)) {
+  const isExternal = /^https?:\/\//i.test(to);
+  // /floor-plans deep links carry ?plan=<id>; a meta refresh cannot forward the
+  // query string, so that stub also ships a tiny inline script that preserves
+  // search + hash for JS-enabled agents (the meta refresh stays as fallback).
+  const preserveQuery = from === '/floor-plans';
+  const stub = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Exhibit On Superior</title>
+    <meta name="robots" content="noindex" />${
+      isExternal ? '' : `\n    <link rel="canonical" href="${canonicalFor(to)}" />`
+    }
+    <meta http-equiv="refresh" content="0;url=${to}" />${
+      preserveQuery
+        ? `\n    <script>location.replace(${JSON.stringify(to)} + location.search + location.hash);</script>`
+        : ''
+    }
+  </head>
+  <body>
+    <p>This page has moved. <a href="${to}">Continue to Exhibit On Superior</a>.</p>
+  </body>
+</html>
+`;
+  // Same layout as the public/artist-in-residence stub: the file lives at the
+  // legacy path itself, and artifact.toml rewrites route both the bare and
+  // trailing-slash forms to it.
+  const stubPath = path.join(publicDir, from.replace(/^\//, ''), 'index.html');
+  await fs.mkdir(path.dirname(stubPath), { recursive: true });
+  await fs.writeFile(stubPath, stub, 'utf8');
+}
+console.log(`Wrote ${Object.keys(LEGACY_REDIRECT_STUBS).length} legacy redirect stubs.`);
 
 // Sitemap: indexable pages only (noindex pages excluded). Redirect routes such
 // as /available-units are absent from PAGE_SEO, so they're excluded by design.
