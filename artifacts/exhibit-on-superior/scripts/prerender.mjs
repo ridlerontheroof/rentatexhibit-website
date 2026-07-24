@@ -7,13 +7,14 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { extractJsonLdPayloads, validateJsonLdPayloads } from './validate-jsonld.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(scriptDir, '..');
 const publicDir = path.join(root, 'dist', 'public');
 const serverEntry = path.join(root, 'dist', 'server', 'entry-server.js');
 
-const { render, PAGE_SEO, canonicalFor, ROUTE_PATHS, extractLcpPreload, LEGACY_REDIRECTS } =
+const { render, PAGE_SEO, SITE_URL, canonicalFor, ROUTE_PATHS, extractLcpPreload, LEGACY_REDIRECTS } =
   await import(pathToFileURL(serverEntry).href);
 
 // Parity guard: every indexable page must have a route to render it, and every
@@ -207,6 +208,36 @@ for (const routePath of seoPaths) {
     );
   }
   console.log(`LCP preload verified on ${seoPaths.length} pages.`);
+}
+
+// Post-build guard: structured-data validation. Re-read every written page and
+// validate ALL of its JSON-LD blocks — parseable JSON, schema.org @context,
+// @type on every node, and no dangling internal @id references. A malformed
+// node on ANY prerendered route fails the build before Google ever sees it.
+{
+  const problems = [];
+  for (const routePath of seoPaths) {
+    const outPath =
+      routePath === '/'
+        ? path.join(publicDir, 'index.html')
+        : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
+    const page = await fs.readFile(outPath, 'utf8');
+    const payloads = extractJsonLdPayloads(page);
+    // Every indexable page must ship structured data; noindex pages skip it.
+    if (!PAGE_SEO[routePath].noindex && payloads.length === 0) {
+      problems.push(`${routePath}: indexable page has no JSON-LD blocks`);
+    }
+    for (const problem of validateJsonLdPayloads(payloads, SITE_URL)) {
+      problems.push(`${routePath}: ${problem}`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: JSON-LD validation failed on ${problems.length} issue(s):\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`JSON-LD validated on ${seoPaths.length} pages.`);
 }
 
 // Legacy URL redirect stubs: crawlers that hit old Wix-era URLs (or the former
