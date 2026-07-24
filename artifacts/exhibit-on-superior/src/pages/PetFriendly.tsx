@@ -36,6 +36,7 @@ export function PetFriendly() {
               <SmartImg
                 src="/images/image-080-gettyimages-1386939001-lrrzhc.jpg"
                 alt="Happy dog on a walk outside at Exhibit On Superior in Chicago, Illinois"
+                loading="eager"
                 sizes="(min-width: 768px) 50vw, 100vw"
                 className="w-full h-[500px] object-cover"
               />

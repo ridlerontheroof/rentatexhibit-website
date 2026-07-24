@@ -123,7 +123,9 @@ describe('ApartmentComplex entity carries the full recommended property set', ()
 
     expect(complex.alternateName).toBe('Exhibit on Superior Apartments');
     expect(complex.mainEntityOfPage).toBe(`${SITE_URL}/`);
-    expect((complex.logo as { url: string }).url).toContain('/images/');
+    // Organization/ApartmentComplex logo must be a plain URL string —
+    // Google's validator rejects the ImageObject form here.
+    expect(complex.logo as string).toContain('/images/');
     expect(complex.isAccessibleForFree).toBe(true);
 
     // River North -> Chicago place chain.

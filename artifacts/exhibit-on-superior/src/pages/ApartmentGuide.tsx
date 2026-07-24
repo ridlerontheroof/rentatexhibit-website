@@ -90,6 +90,7 @@ export function ApartmentGuide() {
               <SmartImg
                 src="/images/image-016-012417-6396-e1vomm.jpg"
                 alt="Apartment interior finishes at Exhibit On Superior in Chicago, Illinois"
+                loading="eager"
                 sizes="(min-width: 768px) 50vw, 100vw"
                 className="w-full h-[500px] object-cover"
               />

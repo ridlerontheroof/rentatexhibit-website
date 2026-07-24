@@ -50,6 +50,8 @@ export function VirtualTour() {
               <div className="aspect-video bg-black border border-border">
                 <iframe
                   src={lifeAtExhibitVideo.embedUrl}
+                  width={1280}
+                  height={720}
                   className="w-full h-full"
                   allowFullScreen
                   title={lifeAtExhibitVideo.name}
@@ -66,6 +68,8 @@ export function VirtualTour() {
                 <div className="aspect-video bg-black border border-border">
                   <iframe
                     src={tour.url}
+                    width={1280}
+                    height={720}
                     className="w-full h-full"
                     allowFullScreen
                     allow="xr-spatial-tracking"

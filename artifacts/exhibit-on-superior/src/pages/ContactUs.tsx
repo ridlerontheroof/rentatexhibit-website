@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'wouter';
 import { PageHero } from '../components/PageHero';
 import { useCreateLead } from '../hooks/use-create-lead';
 import { useUnsavedChangesWarning } from '../hooks/use-unsaved-changes';
@@ -131,6 +132,24 @@ export function ContactUs() {
                   </div>
                 </div>
 
+                <div className="space-y-4 text-muted-foreground leading-relaxed">
+                  <p>
+                    Exhibit On Superior is located at 165 W Superior St in Chicago&apos;s River North
+                    neighborhood, at the corner of Superior and Wells — steps from the CTA Brown and
+                    Purple Line at Chicago Avenue and a short walk to the Magnificent Mile, the
+                    Gallery District, and some of the city&apos;s best dining.
+                  </p>
+                  <p>
+                    Call or email us with questions about studio, convertible, one-, two-, and
+                    three-bedroom apartments, pricing, pet policies, or parking — or use the form on
+                    this page and our leasing team will follow up with you directly. Ready to see a
+                    specific home? Browse current homes on the{' '}
+                    <Link href="/available-units" className="text-primary hover:underline">
+                      Available Units
+                    </Link>{' '}
+                    page and schedule a tour right from the residence you like.
+                  </p>
+                </div>
               </div>
 
               {/* Contact Form */}

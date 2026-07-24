@@ -38,7 +38,14 @@ export function Reviews() {
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
             <p className="text-lg leading-relaxed mb-6">
-              Reviews mean a lot to us Exhibit On Superior and are the best way to let others know if our team has provided a great experience.
+              Reviews mean a lot to us at Exhibit On Superior and are the best way to let others know if our team has provided a great experience.
+            </p>
+            <p className="leading-relaxed text-muted-foreground">
+              The ratings below come straight from our Google Business Profile, so what you see here
+              is what residents and visitors have actually posted — feedback about our River North
+              apartments, the leasing and touring experience, building amenities, and day-to-day
+              life at 165 W Superior St. If you&apos;ve lived at or toured Exhibit On Superior, we&apos;d love
+              to hear from you too.
             </p>
           </div>
         </section>

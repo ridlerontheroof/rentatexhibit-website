@@ -43,6 +43,7 @@ export function Amenities() {
                 <SmartImg
                   src="/images/image-009-34-southeast-levwhc.jpg"
                   alt="Views for days"
+                  loading="eager"
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />

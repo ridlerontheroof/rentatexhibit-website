@@ -58,6 +58,7 @@ export function Neighborhood() {
               <SmartImg
                 src="/images/image-082-bt7b3562-adimkf.jpg"
                 alt="Street view of the city near Exhibit On Superior in Chicago, Illinois"
+                loading="eager"
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 className="w-full h-auto object-cover"
               />

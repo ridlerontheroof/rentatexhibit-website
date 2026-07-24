@@ -62,8 +62,15 @@ export function PhotoGallery() {
             <p className="text-lg leading-relaxed mb-6">
               Discover your next home at Exhibit On Superior and put yourself in the picture. After all, if life is art, you might as well make it a masterpiece.
             </p>
-            <p className="text-lg leading-relaxed">
+            <p className="text-lg leading-relaxed mb-6">
               Our modern apartments and curated community spaces set the standard for ideal urban living. Whether you’re an always on-the-go mover and shaker or more of a quiet homebody, you’ll find your new happy here at Exhibit On Superior.
+            </p>
+            <p className="leading-relaxed text-muted-foreground">
+              Browse photos of our apartment interiors — open-concept layouts, modern kitchens, and
+              floor-to-ceiling windows with skyline views — alongside community amenities like the
+              fitness center and resident lounge, plus the River North streets right outside our
+              door at 165 W Superior St. Use the filters below to jump to apartment, community, view,
+              building, or lobby photos, and click any photo to view it full-screen.
             </p>
           </div>
         </section>

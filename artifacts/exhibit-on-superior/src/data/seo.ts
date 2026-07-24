@@ -241,7 +241,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Apartment Guide',
     title: 'Apartment Guide: Layouts, Finishes & Views | Exhibit On Superior',
     description:
-      'A complete guide to Exhibit On Superior apartments — studio, convertible, 1, 2 & 3 bedroom layouts, finishes, appliances, in-home laundry, balconies, and skyline views.',
+      'A complete guide to Exhibit On Superior apartments — studio, convertible, 1, 2 & 3 bedroom layouts, finishes, in-home laundry, and skyline views.',
     quickAnswer:
       'Exhibit On Superior offers studio, convertible, one, two, and three-bedroom apartments from about 448 to 1,528 square feet across floors 2\u201334, finished with driftwood plank floors, quartz countertops, stainless-steel appliances, in-home washers and dryers, floor-to-ceiling windows, and private balconies.',
     faqs: [
@@ -281,7 +281,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Fees & Leasing Costs',
     title: 'Fees, Utilities & Leasing Costs | Exhibit On Superior Chicago',
     description:
-      'What it costs to lease at Exhibit On Superior in River North Chicago — application fees, utilities included with rent, and how to confirm parking and other charges.',
+      'What it costs to lease at Exhibit On Superior in River North Chicago — application fees, utilities included with rent, plus parking and other charges.',
     quickAnswer:
       'Beyond monthly rent, Exhibit On Superior charges a per-application fee (shown on each unit\u2019s listing), a $500 non-refundable administration fee per apartment, and a monthly Utility & Service Amenity fee of $95\u2013$195 by floor plan covering heat, air conditioning, and natural gas for cooking and the dryer. There is no security deposit. Water, sewer, and trash are included with rent; electricity is billed directly by ComEd. Garage parking is $335/month and on-site storage is $25/month.',
     faqs: [
@@ -325,7 +325,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Parking & Transportation',
     title: 'Parking & Transportation | Exhibit On Superior River North',
     description:
-      'Getting around from Exhibit On Superior at 165 W Superior St — CTA Brown, Purple & Red Line stations, bus routes, highway access, and how to confirm on-site parking.',
+      'Getting around from Exhibit On Superior at 165 W Superior St — CTA Brown, Purple & Red Line stops, bus routes, highway access, and on-site parking.',
     quickAnswer:
       'Exhibit On Superior has an attached indoor multi-level garage with unreserved parking at $335/month (subject to availability), plus EV charging and complimentary ground-floor bike storage. It sits about two blocks from the CTA Chicago (Brown/Purple Line) station at Chicago & Franklin and about 0.3 miles from the Chicago (Red Line) station at Chicago & State, with the #66 Chicago Avenue bus one block north and the Loop roughly a mile south.',
     faqs: [
@@ -373,7 +373,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Application Guide',
     title: 'Application & Qualification Guide | Exhibit On Superior',
     description:
-      'How to apply for an apartment at Exhibit On Superior — the online application process, what to have ready, and how to confirm screening, guarantor, and lease-term details.',
+      'How to apply for an apartment at Exhibit On Superior — the online application process, what to have ready, plus screening, guarantor, and lease-term details.',
     quickAnswer:
       'To apply for an apartment at Exhibit On Superior, open any residence on the Available Units page and use its Apply Now button \u2014 each unit links to its own secure online application through the AppFolio leasing system. A minimum credit score of 700 is required (600+ with a qualified co-signer), approval typically takes 1\u20133 business days, and 12+ month lease terms are available.',
     faqs: [
@@ -413,7 +413,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'FAQ',
     title: 'Frequently Asked Questions | Exhibit On Superior Chicago',
     description:
-      'Answers to the most common questions about Exhibit On Superior in River North Chicago — apartments, pricing and fees, amenities, pets, the neighborhood, touring, and applying.',
+      'Answers to common questions about Exhibit On Superior in River North Chicago — pricing and fees, amenities, pets, the neighborhood, touring, and applying.',
     quickAnswer:
       'This FAQ hub collects verified answers to the questions renters ask most about Exhibit On Superior \u2014 covering apartments and floor plans, pricing and fees, amenities, pet policy, the River North neighborhood, and how to tour and apply \u2014 each linking to a detail page with more depth.',
     faqs: [], // populated from FAQ_HUB_TOPICS below
@@ -760,12 +760,7 @@ const ORGANIZATION_NODE = {
   url: SITE_URL,
   email: 'exhibit@highlandptrs.com',
   telephone: '312-450-0635',
-  logo: {
-    '@type': 'ImageObject',
-    url: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
-    width: 1805,
-    height: 621,
-  },
+  logo: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
 };
 
 const APARTMENT_COMPLEX_NODE = {
@@ -775,12 +770,7 @@ const APARTMENT_COMPLEX_NODE = {
   alternateName: 'Exhibit on Superior Apartments',
   url: SITE_URL,
   mainEntityOfPage: `${SITE_URL}/`,
-  logo: {
-    '@type': 'ImageObject',
-    url: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
-    width: 1805,
-    height: 621,
-  },
+  logo: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
   containedInPlace: {
     '@type': 'Place',
     name: 'River North',

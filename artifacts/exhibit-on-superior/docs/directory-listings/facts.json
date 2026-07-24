@@ -11,7 +11,7 @@
   "bedroomRange": "Studio, Convertible / Jr. Convertible, 1 Bed, 2 Bed, 3 Bed",
   "bedroomSummary": "Studio, Convertible, 1, 2 & 3 Bedroom Apartments",
   "sqftRange": "448–1528 sq ft",
-  "petPolicy": "Cats and dogs are welcome; confirm current pet fees, limits, and policy details with the leasing team.",
+  "petPolicy": "Cats and dogs are welcome (maximum 2 pets). One-time non-refundable pet fee: $650 for one dog or $750 for two, $325 for cats. No pet deposit or monthly pet rent; no weight limits; breed restrictions apply.",
   "managementCompany": "Exhibit On Superior",
   "website": "https://www.rentatexhibit.com",
   "tourLink": "https://www.highlandptrs.com/exhibit-on-superior",
@@ -49,6 +49,6 @@
     "Stainless-steel appliances",
     "Wired for 1GB internet"
   ],
-  "factsHash": "0fa2028b9549729ad8ac5ed26a385429920ab620cef91eebeb4371ff4ffc36f4",
+  "factsHash": "ec3103ce816de39750ccdd59e9a9151fa1ccacb2c578e65c1de263bb8a95bafa",
   "generated": "2026-07-24"
 }
