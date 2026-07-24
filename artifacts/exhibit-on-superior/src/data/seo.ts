@@ -281,9 +281,9 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Fees & Leasing Costs',
     title: 'Fees, Utilities & Leasing Costs | Exhibit On Superior Chicago',
     description:
-      'What it costs to lease at Exhibit On Superior in River North Chicago — application fees, utilities included with rent, plus parking and other charges.',
+      'What it costs to lease at Exhibit On Superior in River North Chicago — application fees, the monthly utility bundle, plus parking and other charges.',
     quickAnswer:
-      'Beyond monthly rent, Exhibit On Superior charges a per-application fee (shown on each unit\u2019s listing), a $500 non-refundable administration fee per apartment, and a monthly Utility & Service Amenity fee of $95\u2013$195 by floor plan covering heat, air conditioning, and natural gas for cooking and the dryer. There is no security deposit. Water, sewer, and trash are included with rent; electricity is billed directly by ComEd. Garage parking is $335/month and on-site storage is $25/month.',
+      'Beyond monthly rent, Exhibit On Superior charges a per-application fee (shown on each unit\u2019s listing), a $500 non-refundable administration fee per apartment, and a monthly Utility & Service Amenity fee of $95\u2013$195 by floor plan covering water, sewer, trash, heat, air conditioning, and natural gas for cooking and the dryer. There is no security deposit. Electricity is billed directly by ComEd. Garage parking is $335/month and on-site storage is $25/month.',
     faqs: [
       {
         q: 'How much does it cost to live at Exhibit On Superior?',
@@ -299,7 +299,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Are utilities included?',
-        a: 'Water, sewer, and trash are included with rent. A monthly Utility & Service Amenity fee ($95 for studios up to $195 for three-bedrooms) covers heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed to the resident directly by ComEd.',
+        a: 'A monthly Utility & Service Amenity fee ($95 for studios up to $195 for three-bedrooms) covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed to the resident directly by ComEd.',
       },
       {
         q: 'What internet options are available?',
@@ -609,7 +609,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       },
       {
         q: 'Are utilities included?',
-        a: 'Water, sewer, and trash are included with rent. The monthly Utility & Service Amenity fee covers heat, A/C, and natural gas for cooking and the dryer; electricity is billed directly by ComEd.',
+        a: 'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, A/C, and natural gas for cooking and the dryer; electricity is billed directly by ComEd.',
       },
       {
         q: 'Does Exhibit offer move-in specials?',

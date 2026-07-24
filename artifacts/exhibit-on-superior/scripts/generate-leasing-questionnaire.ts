@@ -42,7 +42,7 @@ const TOPICS: Topic[] = [
   {
     title: 'Fees & Costs',
     intro:
-      'Already verified from listings (no answer needed): application fee $60\u2013$75 per unit; water, sewer, trash & gas included with rent.',
+      'Already verified from listings (no answer needed): application fee $60\u2013$75 per unit; water, sewer, trash & gas covered by the monthly utility bundle.',
     items: [
       {
         question: 'What fees are required in addition to rent?',

@@ -74,9 +74,9 @@ export function Fees() {
               <div className="bg-white border border-border p-8 md:col-span-2">
                 <h2 className="text-xl uppercase tracking-wider mb-4">Utilities &amp; Service Amenity Bundle</h2>
                 <p className="leading-relaxed text-muted-foreground mb-4">
-                  Water, sewer, and trash are included with rent. Each home also carries a monthly
-                  Utility &amp; Service Amenity fee covering heat, air conditioning, and natural gas
-                  for cooking and the clothes dryer:
+                  Each home carries a monthly Utility &amp; Service Amenity fee covering water,
+                  sewer, trash, heat, air conditioning, and natural gas for cooking and the
+                  clothes dryer:
                 </p>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">

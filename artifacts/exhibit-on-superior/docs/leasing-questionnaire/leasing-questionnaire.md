@@ -80,7 +80,7 @@ engines that reward specific facts).
 
 **2. Monthly parking rate (and reserved vs unreserved pricing if applicable)**
    - Visitors currently see: “How much is parking?” _(Fees page FAQ + Parking & Transportation page)_
-   - Answer: Garage parking is $335/month per space (unreserved), subject to availability.
+   - Answer: Garage parking is $335 per month per space (unreserved), subject to availability.
 
    `________________________________________________________________`
 
