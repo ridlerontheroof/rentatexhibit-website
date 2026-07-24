@@ -18,6 +18,31 @@ describe('availabilitySnapshot.json', () => {
   });
 });
 
+// Staleness signal: warns loudly in test output when the committed snapshot
+// has aged past the 48h guard in getBakedAvailability, but never fails —
+// staleness only degrades to today's skeleton behavior, and every real build
+// refreshes the file via scripts/fetch-availability-snapshot.mjs.
+describe('availabilitySnapshot freshness (warning only)', () => {
+  it('reports the committed snapshot age against the 48h max age', () => {
+    const updated = Date.parse((raw as { updatedAt: string }).updatedAt);
+    const ageMs = Date.now() - updated;
+    const ageHours = (ageMs / 3_600_000).toFixed(1);
+    if (ageMs > SNAPSHOT_MAX_AGE_MS) {
+      console.warn(
+        `WARN baked availability snapshot is STALE: ${ageHours}h old (max 48h). ` +
+          'getBakedAvailability will ignore it and visitors will see skeleton cards ' +
+          'until the live fetch lands — rebuild the site to refresh the snapshot.',
+      );
+      expect(getBakedAvailability()).toBeNull();
+    } else {
+      console.log(
+        `Baked availability snapshot is ${ageHours}h old (fresh; 48h max age).`,
+      );
+      expect(getBakedAvailability()).not.toBeNull();
+    }
+  });
+});
+
 describe('getBakedAvailability', () => {
   const updated = Date.parse((raw as { updatedAt: string }).updatedAt);
 

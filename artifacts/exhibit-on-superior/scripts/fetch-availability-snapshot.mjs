@@ -38,4 +38,39 @@ try {
     `WARN availability snapshot refresh failed (${err?.message ?? err}); ` +
       'keeping the existing baked snapshot. Unit cards still hydrate from live data.',
   );
+  await reportExistingSnapshotAge();
+}
+
+// Staleness signal (never fails the build): when the refresh above fails we
+// keep shipping the committed snapshot, so report how old it is relative to
+// the 48h max age enforced by getBakedAvailability. Past that age the baked
+// cards are ignored and visitors see skeletons until the live fetch lands.
+async function reportExistingSnapshotAge() {
+  const MAX_AGE_MS = 48 * 60 * 60 * 1000; // keep in sync with SNAPSHOT_MAX_AGE_MS
+  try {
+    const existing = JSON.parse(await fs.readFile(outPath, 'utf8'));
+    const updated = Date.parse(existing?.updatedAt);
+    if (!Number.isFinite(updated)) {
+      console.warn('WARN existing baked snapshot has no parseable updatedAt; it will be ignored at runtime.');
+      return;
+    }
+    const ageMs = Date.now() - updated;
+    const ageHours = (ageMs / 3_600_000).toFixed(1);
+    if (ageMs > MAX_AGE_MS) {
+      console.warn(
+        `WARN baked availability snapshot is STALE: ${ageHours}h old (max 48h). ` +
+          'It will be ignored at runtime and visitors will see skeleton cards until the live fetch lands. ' +
+          'Trigger a rebuild once the live API is reachable to refresh it.',
+      );
+    } else {
+      const remaining = ((MAX_AGE_MS - ageMs) / 3_600_000).toFixed(1);
+      console.warn(
+        `NOTE baked availability snapshot is ${ageHours}h old; it expires in ${remaining}h (48h max age).`,
+      );
+    }
+  } catch (readErr) {
+    console.warn(
+      `WARN could not read existing baked snapshot (${readErr?.message ?? readErr}); it may be missing or malformed.`,
+    );
+  }
 }
