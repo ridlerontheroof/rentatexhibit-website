@@ -53,7 +53,9 @@ function NavDropdown({
         <button
           type="button"
           aria-expanded={open}
-          aria-controls={menuId}
+          // Only reference the menu id while the menu is actually in the DOM;
+          // a dangling aria-controls is an accessibility error.
+          aria-controls={open ? menuId : undefined}
           aria-label={`${label} submenu`}
           onClick={() => setOpen((v) => !v)}
           className="p-1 hover:text-primary transition-colors"
@@ -169,7 +171,7 @@ export function Header() {
             className="lg:hidden p-2"
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
-            aria-controls="mobile-nav"
+            aria-controls={mobileMenuOpen ? 'mobile-nav' : undefined}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>

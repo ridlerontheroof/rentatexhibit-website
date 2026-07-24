@@ -12,7 +12,7 @@ const STEPS = [
   },
   {
     title: 'Tour it — in person or online',
-    body: 'Request an in-person visit through the Schedule a Tour page, or preview homes remotely with the video and Matterport tours on the Virtual Tour page.',
+    body: 'Schedule a tour directly from the residence you\u2019re interested in on the Available Units page \u2014 every listing has its own Schedule a Tour button \u2014 or preview homes remotely with the video and Matterport tours on the Virtual Tour page.',
   },
   {
     title: 'Apply online',

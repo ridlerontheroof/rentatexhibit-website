@@ -301,6 +301,32 @@ to = "/faq/index.html"
 from = "/faq/"
 to = "/faq/index.html"
 
+# Legacy Wix-era sitemap URLs: serve the real sitemap instead of the SPA
+# fallback so crawlers do not see soft-404 HTML at .xml paths.
+[[services.production.rewrites]]
+from = "/news-sitemap.xml"
+to = "/sitemap.xml"
+
+[[services.production.rewrites]]
+from = "/page-sitemap.xml"
+to = "/sitemap.xml"
+
+[[services.production.rewrites]]
+from = "/post-sitemap.xml"
+to = "/sitemap.xml"
+
+[[services.production.rewrites]]
+from = "/sitemap1.xml"
+to = "/sitemap.xml"
+
+[[services.production.rewrites]]
+from = "/sitemap-index.xml"
+to = "/sitemap.xml"
+
+[[services.production.rewrites]]
+from = "/sitemap_index.xml"
+to = "/sitemap.xml"
+
 [[services.production.rewrites]]
 from = "/*"
 to = "/index.html"

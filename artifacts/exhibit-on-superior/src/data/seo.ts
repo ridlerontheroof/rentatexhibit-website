@@ -61,7 +61,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Available Units',
     title: 'Available Units & Floor Plans | Exhibit On Superior Chicago',
     description:
-      'Browse available apartments at Exhibit On Superior in River North Chicago with live pricing, photos, and move-in dates, then compare every studio, 1, 2 & 3 bedroom floor plan.',
+      'Browse available apartments at Exhibit On Superior in River North Chicago — live pricing, photos, move-in dates, and every studio to 3 bedroom floor plan.',
     quickAnswer:
       'This page lists every currently available Exhibit On Superior apartment with live rent, photos, and move-in dates, updated automatically from the leasing system. You can also compare every studio, one, two, and three-bedroom floor plan and apply directly from each available listing.',
     faqs: [
@@ -85,7 +85,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Photo Gallery',
     title: 'Photo Gallery | Exhibit On Superior Chicago Apartments',
     description:
-      "View apartment, amenity, skyline, and community photos for Exhibit On Superior in Chicago's River North neighborhood.",
+      "View apartment, amenity, skyline, and community photos of Exhibit On Superior, a luxury high-rise at 165 W Superior St in Chicago's River North neighborhood.",
     quickAnswer:
       'The Exhibit On Superior photo gallery shows apartment interiors, amenity spaces, skyline views, and community areas for the River North Chicago property.',
     faqs: [
@@ -371,7 +371,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Can I tour before applying?',
-        a: 'Yes. Schedule an in-person tour through the Schedule a Tour page, or preview homes remotely with the video and Matterport tours on the Virtual Tour page.',
+        a: 'Yes. Schedule a tour directly from the residence you\u2019re interested in on the Available Units page, or preview homes remotely with the video and Matterport tours on the Virtual Tour page.',
       },
     ],
   },
@@ -392,7 +392,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Contact Us',
     title: 'Contact Exhibit On Superior | River North Chicago Apartments',
     description:
-      "Contact Exhibit On Superior in Chicago's River North neighborhood. Email exhibit@highlandptrs.com or call 312-450-0635.",
+      "Contact Exhibit On Superior in Chicago's River North neighborhood — email exhibit@highlandptrs.com, call 312-450-0635, or send a message with the online form.",
     quickAnswer:
       'To contact Exhibit On Superior, email exhibit@highlandptrs.com, call 312-450-0635, or visit 165 W Superior St, Chicago, IL 60654.',
     faqs: [
@@ -407,7 +407,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Map + Directions',
     title: 'Map & Directions | Exhibit On Superior Chicago IL',
     description:
-      "Get map and direction information for Exhibit On Superior at 165 W Superior St in Chicago's River North neighborhood.",
+      "Get map and direction information for Exhibit On Superior at 165 W Superior St in Chicago's River North, including transit, driving, and parking options.",
     quickAnswer:
       'Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654. Use the map on this page for driving directions from anywhere in the Chicago area.',
     faqs: [
@@ -427,7 +427,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Residents',
     title: 'Resident Resources | Exhibit On Superior',
     description:
-      'Resident resource page for Exhibit On Superior with portal, payment, maintenance, and contact information.',
+      'Resident resource page for Exhibit On Superior in River North Chicago with online portal access, rent payments, maintenance requests, and contact information.',
     quickAnswer:
       'The residents page helps current residents find portal, payment, maintenance, and contact resources for Exhibit On Superior.',
     faqs: [
@@ -669,7 +669,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'How do I schedule a tour?',
-        a: 'Use the tour request form on the Schedule a Tour page, email exhibit@highlandptrs.com, or call 312-450-0635.',
+        a: 'Choose the residence you\u2019re interested in on the Available Units page and use its Schedule a Tour button, email exhibit@highlandptrs.com, or call 312-450-0635.',
       },
       {
         q: 'Can I tour virtually?',

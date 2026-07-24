@@ -264,7 +264,7 @@ export function FloorPlans() {
                       </Sheet>
 
                       <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
-                        <SelectTrigger className="w-[170px]">
+                        <SelectTrigger className="w-[170px]" aria-label="Sort plans">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
