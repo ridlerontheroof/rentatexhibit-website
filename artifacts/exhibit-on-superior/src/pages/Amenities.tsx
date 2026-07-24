@@ -184,10 +184,14 @@ export function Amenities() {
               <div className="bg-white border border-border p-6">
                 <h3 className="text-lg uppercase tracking-wider mb-2">Access & Hours</h3>
                 <p className="leading-relaxed text-muted-foreground">
-                  Amenity hours and reservation details (like the private dining room and training
-                  rooms) aren&rsquo;t published here &mdash; the leasing team can walk you through
-                  them on a <Link href="/available-units" className="text-primary underline">tour</Link>,
-                  or see homes and finishes in the{' '}
+                  The front desk is staffed 24 hours a day. Indoor amenities are open 24/7, and
+                  outdoor amenities close during quiet hours (10pm&ndash;6am). Grills and fire pits
+                  are available year-round; the pool and hot tub are seasonal &mdash; the pool
+                  closes in late September and the hot tub at the first snowfall. The Party Room is
+                  reservable through the leasing/management office at $50/hour, and residents may
+                  bring up to 2 guests to the pool. See it all on a{' '}
+                  <Link href="/available-units" className="text-primary underline">tour</Link>, or
+                  explore homes in the{' '}
                   <Link href="/apartment-guide" className="text-primary underline">Apartment Guide</Link>.
                 </p>
               </div>

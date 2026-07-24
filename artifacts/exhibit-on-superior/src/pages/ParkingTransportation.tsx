@@ -81,9 +81,14 @@ export function ParkingTransportation() {
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Kennedy Expressway (I-90/94) via the Ohio Street feeder, about a mile southwest</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Lake Shore Drive (US-41) east via Ontario and Ohio Streets</span></li>
                 </ul>
+                <ul className="mt-4 space-y-3">
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>On-site garage</strong> &mdash; indoor, attached multi-level garage; unreserved spaces are <strong>$335/month</strong>, subject to availability</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>EV charging</strong> &mdash; 3 charging stations serving 6 designated alternative-fuel/EV spaces</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Guest parking</strong> &mdash; not offered; we recommend SpotHero or street parking</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Bike storage</strong> &mdash; complimentary, on the ground floor</span></li>
+                </ul>
                 <p className="mt-4 text-sm text-muted-foreground">
-                  On-site parking options, availability, and rates are not published here &mdash;
-                  confirm current details with the leasing team at{' '}
+                  For current garage availability, contact the leasing team at{' '}
                   <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline">exhibit@highlandptrs.com</a>{' '}
                   or <a href="tel:312-450-0635" className="text-primary underline">312-450-0635</a>.
                 </p>

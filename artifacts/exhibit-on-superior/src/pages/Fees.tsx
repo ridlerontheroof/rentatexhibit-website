@@ -7,9 +7,20 @@ import { SplitHeadline } from '../components/SplitHeadline';
 
 /**
  * Fees & Leasing Costs. Accuracy rule: every figure on this page comes from
- * live AppFolio listing data (application fee, utilities included); anything
- * not verifiable is explicitly deferred to the leasing team — no guesses.
+ * live AppFolio listing data or the leasing-approved questionnaire
+ * (docs/leasing-questionnaire/leasing-questionnaire.md); anything still
+ * unconfirmed is explicitly deferred to the leasing team — no guesses.
  */
+const UTILITY_BUNDLE = [
+  { type: 'Studio', size: '484 sq ft', fee: '$95' },
+  { type: 'Jr. Convertible', size: '450\u2013478 sq ft', fee: '$95' },
+  { type: 'Convertible', size: '554 sq ft', fee: '$105' },
+  { type: '1 Bedroom', size: '619\u2013768 sq ft', fee: '$115' },
+  { type: '2 Bedroom / 1 Bath', size: '776\u2013821 sq ft', fee: '$125' },
+  { type: '2 Bedroom / 2 Bath', size: '899\u20131,135 sq ft', fee: '$150' },
+  { type: '2 Bedroom + Den', size: '983 sq ft', fee: '$165' },
+  { type: '3 Bedroom / 3 Bath', size: '1,455\u20131,528 sq ft', fee: '$195' },
+];
 export function Fees() {
   return (
     <>
@@ -43,41 +54,82 @@ export function Fees() {
               <div className="bg-white border border-border p-8">
                 <h2 className="text-xl uppercase tracking-wider mb-4">Application Fee</h2>
                 <p className="leading-relaxed text-muted-foreground">
-                  Each unit&rsquo;s listing shows its own application fee &mdash; recent listings
-                  ranged from <strong className="text-foreground">$60 to $75 per application</strong>.
-                  The exact fee is displayed on the unit&rsquo;s secure online application before
-                  you pay anything.
+                  Each unit&rsquo;s listing shows its own application fee &mdash; currently{' '}
+                  <strong className="text-foreground">$60 per application</strong>. The exact fee is
+                  displayed on the unit&rsquo;s secure online application before you pay anything.
                 </p>
               </div>
               <div className="bg-white border border-border p-8">
-                <h2 className="text-xl uppercase tracking-wider mb-4">Utilities Included</h2>
+                <h2 className="text-xl uppercase tracking-wider mb-4">Administration Fee &amp; Deposit</h2>
                 <p className="leading-relaxed text-muted-foreground mb-4">
-                  Current listings include the following utilities with rent:
+                  The non-refundable administration fee is{' '}
+                  <strong className="text-foreground">$500 per apartment</strong>. It is fully
+                  refunded if your application is denied, but retained if you choose to cancel.
                 </p>
-                <ul className="space-y-2">
-                  {['Water', 'Sewer', 'Trash', 'Gas'].map((u) => (
-                    <li key={u} className="flex items-start gap-3">
-                      <span className="text-primary mt-1">•</span>
-                      <span>{u}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  Confirm electricity, internet, and any other utility arrangements with the
-                  leasing team.
+                <p className="leading-relaxed text-muted-foreground">
+                  Exhibit does <strong className="text-foreground">not</strong> currently collect a
+                  security deposit.
                 </p>
               </div>
               <div className="bg-white border border-border p-8 md:col-span-2">
-                <h2 className="text-xl uppercase tracking-wider mb-4">Everything Else &mdash; Ask Us Directly</h2>
+                <h2 className="text-xl uppercase tracking-wider mb-4">Utilities &amp; Service Amenity Bundle</h2>
+                <p className="leading-relaxed text-muted-foreground mb-4">
+                  Water, sewer, and trash are included with rent. Each home also carries a monthly
+                  Utility &amp; Service Amenity fee covering heat, air conditioning, and natural gas
+                  for cooking and the clothes dryer:
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-border uppercase tracking-wider">
+                        <th scope="col" className="py-2 pr-4">Type</th>
+                        <th scope="col" className="py-2 pr-4">Size</th>
+                        <th scope="col" className="py-2">Monthly Fee</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {UTILITY_BUNDLE.map((r) => (
+                        <tr key={r.type} className="border-b border-border/50">
+                          <td className="py-2 pr-4">{r.type}</td>
+                          <td className="py-2 pr-4 text-muted-foreground">{r.size}</td>
+                          <td className="py-2">{r.fee}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Electricity is billed to the resident directly by ComEd. Internet: Exhibit is
+                  implementing bulk internet through a partnership with Zentro, with symmetrical
+                  speeds up to 2 Gig.
+                </p>
+              </div>
+              <div className="bg-white border border-border p-8">
+                <h2 className="text-xl uppercase tracking-wider mb-4">Parking, Storage &amp; Specials</h2>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1">•</span>
+                    <span>Garage parking: <strong>$335/month</strong> per unreserved space, subject to availability &mdash; see <Link href="/parking-transportation" className="text-primary underline">Parking &amp; Transportation</Link></span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1">•</span>
+                    <span>On-site storage: <strong>$25/month</strong></span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1">•</span>
+                    <span>Move-in specials: no concessions offered at this time</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-white border border-border p-8">
+                <h2 className="text-xl uppercase tracking-wider mb-4">Pet Fees</h2>
                 <p className="leading-relaxed text-muted-foreground">
-                  Administrative or move-in fees, security deposits, pet fees, parking rates, and
-                  current move-in specials are not published on this site because they can change.
-                  For accurate, up-to-date amounts, contact the leasing team at{' '}
-                  <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline">exhibit@highlandptrs.com</a>{' '}
-                  or <a href="tel:312-450-0635" className="text-primary underline">312-450-0635</a>{' '}
-                  before you apply. See also{' '}
-                  <Link href="/pet-friendly" className="text-primary underline">Pet Policy</Link>,{' '}
-                  <Link href="/parking-transportation" className="text-primary underline">Parking &amp; Transportation</Link>, and the{' '}
+                  One-time non-refundable pet fee: <strong className="text-foreground">$650 for one
+                  dog or $750 for two</strong> (two-dog maximum) and{' '}
+                  <strong className="text-foreground">$325 for cats</strong> (two-cat maximum). No
+                  pet deposit and no monthly pet rent. Breed restrictions apply &mdash; details on
+                  the <Link href="/pet-friendly" className="text-primary underline">Pet Policy</Link>{' '}
+                  page. Reviewing qualification? See the{' '}
                   <Link href="/application-guide" className="text-primary underline">Application Guide</Link>.
                 </p>
               </div>

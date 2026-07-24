@@ -142,7 +142,15 @@ export function PetFriendly() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-primary mt-1 flex-shrink-0">•</span>
-                  <span>Confirm current pet fees, deposits, and any breed or weight guidelines with the leasing team before applying</span>
+                  <span>One-time non-refundable pet fee: $650 for one dog or $750 for two (two-dog maximum); $325 for cats (two-cat maximum)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1 flex-shrink-0">•</span>
+                  <span>No refundable pet deposit and no monthly pet rent</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1 flex-shrink-0">•</span>
+                  <span>No weight limits &mdash; breed restrictions apply, please see a leasing consultant for details</span>
                 </li>
               </ul>
               <p className="mt-6 text-sm text-muted-foreground text-center">

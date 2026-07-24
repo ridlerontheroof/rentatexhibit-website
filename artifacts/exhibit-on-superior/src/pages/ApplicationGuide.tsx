@@ -65,17 +65,20 @@ export function ApplicationGuide() {
           <div className="container mx-auto max-w-4xl">
             <div className="bg-white border border-border p-8">
               <h2 className="text-xl uppercase tracking-wider mb-4">Qualification & Screening</h2>
-              <p className="leading-relaxed text-muted-foreground mb-4">
-                Income requirements, credit criteria, guarantor and co-signer policies, approval
-                timing, and available lease terms are not published on this site because they can
-                change. To know exactly what to expect before you pay an application fee, contact
-                the leasing team at{' '}
+              <ul className="space-y-3 mb-4">
+                <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Credit score</strong> &mdash; minimum 700 without a co-signer, or 600+ with a qualified co-signer</span></li>
+                <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Co-signers</strong> &mdash; qualified co-signers are accepted</span></li>
+                <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Approval timeline</strong> &mdash; typically 1&ndash;3 business days</span></li>
+                <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Lease terms</strong> &mdash; 12+ month terms available; short-term leases based on availability (see a leasing consultant)</span></li>
+                <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Renters insurance</strong> &mdash; minimum liability-to-landlord (LLI) coverage of $300,000</span></li>
+                <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Occupancy</strong> &mdash; Exhibit complies with Chicago Building Code occupancy requirements</span></li>
+              </ul>
+              <p className="leading-relaxed text-muted-foreground">
+                Have a state or federal government-issued photo ID ready when you apply. Questions
+                before you pay an application fee? Contact the leasing team at{' '}
                 <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline">exhibit@highlandptrs.com</a>{' '}
                 or <a href="tel:312-450-0635" className="text-primary underline">312-450-0635</a>.
-              </p>
-              <p className="leading-relaxed text-muted-foreground">
-                Have what most online applications ask for ready: government-issued ID, proof of
-                income, and rental history contacts. Reviewing costs first? See{' '}
+                Reviewing costs first? See{' '}
                 <Link href="/fees" className="text-primary underline">Fees &amp; Leasing Costs</Link>{' '}
                 and the <Link href="/pet-friendly" className="text-primary underline">Pet Policy</Link>.
               </p>

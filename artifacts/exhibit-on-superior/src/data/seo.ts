@@ -159,7 +159,15 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Is there a 24-hour concierge?',
-        a: 'Front-desk and concierge staffing details are not published on this site \u2014 confirm current service hours with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+        a: 'Yes. The front desk is staffed 24 hours a day.',
+      },
+      {
+        q: 'What are the amenity hours?',
+        a: 'Indoor amenities are open 24/7. Outdoor amenities close during quiet hours, 10pm\u20136am. The pool and hot tub are seasonal \u2014 the pool closes in late September and the hot tub closes at the first snowfall \u2014 while the grills and fire pits are available year-round.',
+      },
+      {
+        q: 'Can amenity spaces be reserved?',
+        a: 'Yes. The Party Room is reservable through the leasing/management office at $50 per hour, and residents may bring up to 2 guests to the pool. Full rules are available on request.',
       },
     ],
   },
@@ -171,7 +179,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Learn about pet-friendly living at Exhibit On Superior in Chicago, including dog and cat-friendly apartment content and on-site pet amenities.',
     quickAnswer:
-      'Exhibit On Superior is a pet-friendly River North apartment community for cats and dogs, with pet-focused amenities such as a dog spa and outdoor dog walk. Confirm current pet fees, limits, and breed policies with the leasing team.',
+      'Exhibit On Superior is a pet-friendly River North apartment community for cats and dogs (maximum 2 pets), with pet amenities including a dog spa and gated outdoor dog walk. There is a one-time non-refundable pet fee \u2014 $650 for one dog or $750 for two, and $325 for cats \u2014 with no pet deposit, no monthly pet rent, and no weight limits. Breed restrictions apply; see the leasing team for details.',
     faqs: [
       {
         q: 'Is Exhibit On Superior pet-friendly?',
@@ -187,11 +195,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What are the pet fees?',
-        a: 'Pet fees, deposits, and any breed or weight guidelines are not published on this site \u2014 confirm current amounts with the leasing team at exhibit@highlandptrs.com or 312-450-0635 before applying.',
+        a: 'There is a one-time non-refundable pet fee: $650 for one dog or $750 for two dogs (two-dog maximum), and $325 for cats (two-cat maximum). There is no refundable pet deposit and no monthly pet rent.',
       },
       {
-        q: 'Should renters confirm current pet rules?',
-        a: 'Yes. Pet fees, limits, and breed policies should be confirmed with the leasing team before applying.',
+        q: 'Are there breed or weight restrictions?',
+        a: 'There are no weight limits. Breed restrictions do apply \u2014 please see a leasing consultant for the current details before applying.',
       },
     ],
   },
@@ -247,7 +255,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Which units have balconies?',
-        a: 'Private balconies are a signature apartment feature at Exhibit On Superior. Whether a specific residence includes one varies by floor plan \u2014 check the floor-plan sheet on the Available Units page or confirm with the leasing team.',
+        a: 'Nearly every home has a private balcony. The only homes without balconies are the 02 Convertible and 03 Convertible plans \u2014 units ending in 02 or 03 on floors 6\u201329.',
       },
       {
         q: 'What views are available?',
@@ -259,11 +267,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Are furnished apartments available?',
-        a: 'Furnished apartments are not advertised on the site. Ask the leasing team at exhibit@highlandptrs.com or 312-450-0635 about current options.',
+        a: 'No. Apartments at Exhibit On Superior are offered unfurnished only.',
       },
       {
         q: 'Is storage or accessibility information available?',
-        a: 'Select homes include closet organizers and double vanities. For storage options and accessible-unit details, confirm with the leasing team before applying.',
+        a: 'Yes. On-site storage is available for $25 per month, and more than 20% of the homes at Exhibit are ADA accessible. Select homes also include closet organizers and double vanities.',
       },
     ],
   },
@@ -275,7 +283,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'What it costs to lease at Exhibit On Superior in River North Chicago — application fees, utilities included with rent, and how to confirm parking and other charges.',
     quickAnswer:
-      'Beyond monthly rent, current Exhibit On Superior listings show a per-application fee (recently $60\u2013$75 depending on the unit), and water, sewer, trash, and gas are included with rent. Confirm any other charges \u2014 such as move-in, administrative, pet, or parking fees \u2014 with the leasing team before applying.',
+      'Beyond monthly rent, Exhibit On Superior charges a per-application fee (shown on each unit\u2019s listing), a $500 non-refundable administration fee per apartment, and a monthly Utility & Service Amenity fee of $95\u2013$195 by floor plan covering heat, air conditioning, and natural gas for cooking and the dryer. There is no security deposit. Water, sewer, and trash are included with rent; electricity is billed directly by ComEd. Garage parking is $335/month and on-site storage is $25/month.',
     faqs: [
       {
         q: 'How much does it cost to live at Exhibit On Superior?',
@@ -283,19 +291,31 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What fees are required in addition to rent?',
-        a: 'Each unit\u2019s listing shows its application fee \u2014 recent listings ranged from $60 to $75 per application. For any other charges, such as administrative or move-in fees, confirm with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+        a: 'Each unit\u2019s listing shows its application fee. There is also a $500 non-refundable administration fee per apartment \u2014 fully refunded if your application is denied, but retained if you choose to cancel \u2014 and a monthly Utility & Service Amenity fee of $95\u2013$195 depending on floor plan.',
+      },
+      {
+        q: 'Is there a security deposit?',
+        a: 'No. Exhibit does not currently collect a security deposit.',
       },
       {
         q: 'Are utilities included?',
-        a: 'Yes, in part. Current listings include water, sewer, trash, and gas with rent. Confirm electricity, internet, and any other utility arrangements with the leasing team.',
+        a: 'Water, sewer, and trash are included with rent. A monthly Utility & Service Amenity fee ($95 for studios up to $195 for three-bedrooms) covers heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed to the resident directly by ComEd.',
+      },
+      {
+        q: 'What internet options are available?',
+        a: 'Exhibit is implementing bulk internet through a partnership with Zentro, with symmetrical download and upload speeds up to 2 Gig.',
+      },
+      {
+        q: 'Is storage available?',
+        a: 'Yes. On-site storage is available for $25 per month.',
       },
       {
         q: 'Does Exhibit offer move-in specials?',
-        a: 'Move-in specials change over time and are not published on this site. Ask the leasing team at exhibit@highlandptrs.com or 312-450-0635 about current offers.',
+        a: 'Exhibit is not offering move-in concessions at this time. Ask the leasing team at exhibit@highlandptrs.com or 312-450-0635 about future offers.',
       },
       {
         q: 'How much is parking?',
-        a: 'Parking rates are not published on this site. Contact the leasing team for current parking options and pricing, and see the Parking & Transportation page for transit alternatives.',
+        a: 'Garage parking in the attached indoor garage is $335 per month per unreserved space, subject to availability. See the Parking & Transportation page for details and transit alternatives.',
       },
     ],
   },
@@ -307,11 +327,23 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Getting around from Exhibit On Superior at 165 W Superior St — CTA Brown, Purple & Red Line stations, bus routes, highway access, and how to confirm on-site parking.',
     quickAnswer:
-      'Exhibit On Superior sits about two blocks from the CTA Chicago (Brown/Purple Line) station at Chicago & Franklin and about 0.3 miles from the Chicago (Red Line) station at Chicago & State, with the #66 Chicago Avenue bus one block north and the Loop roughly a mile south. Confirm on-site parking options and rates with the leasing team.',
+      'Exhibit On Superior has an attached indoor multi-level garage with unreserved parking at $335/month (subject to availability), plus EV charging and complimentary ground-floor bike storage. It sits about two blocks from the CTA Chicago (Brown/Purple Line) station at Chicago & Franklin and about 0.3 miles from the Chicago (Red Line) station at Chicago & State, with the #66 Chicago Avenue bus one block north and the Loop roughly a mile south.',
     faqs: [
       {
         q: 'Does Exhibit On Superior have on-site parking?',
-        a: 'Parking options, availability, and rates are not published on this site \u2014 confirm current details with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+        a: 'Yes. Indoor, attached multi-level garage parking is available at $335 per month per unreserved space, subject to availability \u2014 contact the leasing team at exhibit@highlandptrs.com or 312-450-0635 for current availability.',
+      },
+      {
+        q: 'Is there EV charging?',
+        a: 'Yes. The garage has 3 EV charging stations serving 6 designated alternative-fuel/EV parking spaces.',
+      },
+      {
+        q: 'Is there guest parking?',
+        a: 'Exhibit does not offer guest parking \u2014 we recommend using SpotHero or street parking nearby.',
+      },
+      {
+        q: 'Is there bike storage?',
+        a: 'Yes. Exhibit has complimentary bike storage on the ground floor.',
       },
       {
         q: 'How far is Exhibit from the CTA?',
@@ -343,31 +375,31 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'How to apply for an apartment at Exhibit On Superior — the online application process, what to have ready, and how to confirm screening, guarantor, and lease-term details.',
     quickAnswer:
-      'To apply for an apartment at Exhibit On Superior, open any residence on the Available Units page and use its Apply Now button \u2014 each unit links to its own secure online application through the AppFolio leasing system. Income requirements, guarantor policies, and lease terms are confirmed by the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+      'To apply for an apartment at Exhibit On Superior, open any residence on the Available Units page and use its Apply Now button \u2014 each unit links to its own secure online application through the AppFolio leasing system. A minimum credit score of 700 is required (600+ with a qualified co-signer), approval typically takes 1\u20133 business days, and 12+ month lease terms are available.',
     faqs: [
       {
         q: 'How do I apply for an apartment at Exhibit On Superior?',
         a: 'Open any available residence on the Available Units page and use its Apply Now button \u2014 each unit links directly to its own secure online application through the AppFolio leasing system.',
       },
       {
-        q: 'What income is required to qualify?',
-        a: 'Income and credit screening criteria are not published on this site. Contact the leasing team at exhibit@highlandptrs.com or 312-450-0635 before applying so you know exactly what to expect.',
+        q: 'What credit score is required to qualify?',
+        a: 'A minimum credit score of 700 is required without a co-signer, or 600+ with a qualified co-signer.',
       },
       {
         q: 'Are guarantors accepted?',
-        a: 'Guarantor and co-signer policies are confirmed by the leasing team \u2014 reach out at exhibit@highlandptrs.com or 312-450-0635 before you apply.',
+        a: 'Yes. Qualified co-signers are accepted \u2014 applicants with a 600+ credit score can qualify with one.',
       },
       {
         q: 'How long does approval take?',
-        a: 'Approval timing varies with screening and verification. The leasing team can walk you through the current timeline when you apply.',
+        a: 'Approval typically takes 1\u20133 business days.',
       },
       {
         q: 'What lease terms are available?',
-        a: 'Available lease terms vary by unit and season and are confirmed by the leasing team \u2014 ask about the terms offered for the residence you\u2019re interested in.',
+        a: '12+ month lease terms are available. Short-term leases are offered based on availability \u2014 see a leasing consultant for details.',
       },
       {
         q: 'What should I have ready to apply?',
-        a: 'Online rental applications typically ask for government-issued ID, proof of income, and rental history contacts. The leasing team will confirm the exact documents required for your application.',
+        a: 'Have a state or federal government-issued photo ID ready. Renters insurance with minimum liability-to-landlord (LLI) coverage of $300,000 is required.',
       },
       {
         q: 'Can I tour before applying?',
@@ -558,7 +590,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       },
       {
         q: 'Are furnished apartments available?',
-        a: 'Furnished apartments are not advertised on the site \u2014 ask the leasing team about current options.',
+        a: 'No. Apartments are offered unfurnished only.',
       },
     ],
   },
@@ -573,19 +605,19 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       },
       {
         q: 'What fees are required in addition to rent?',
-        a: 'Each unit\u2019s listing shows its application fee (recently $60\u2013$75 per application). Confirm any other charges with the leasing team.',
+        a: 'Each unit\u2019s listing shows its application fee. There is also a $500 non-refundable administration fee per apartment and a monthly Utility & Service Amenity fee of $95\u2013$195 by floor plan. There is no security deposit.',
       },
       {
         q: 'Are utilities included?',
-        a: 'Current listings include water, sewer, trash, and gas with rent. Confirm electricity, internet, and other utilities with the leasing team.',
+        a: 'Water, sewer, and trash are included with rent. The monthly Utility & Service Amenity fee covers heat, A/C, and natural gas for cooking and the dryer; electricity is billed directly by ComEd.',
       },
       {
         q: 'Does Exhibit offer move-in specials?',
-        a: 'Specials change over time and are not published here \u2014 ask the leasing team about current offers.',
+        a: 'Exhibit is not offering move-in concessions at this time \u2014 ask the leasing team about future offers.',
       },
       {
         q: 'How much is parking?',
-        a: 'Parking rates are not published on this site; contact the leasing team for current options and pricing.',
+        a: 'Garage parking in the attached indoor garage is $335 per month per unreserved space, subject to availability.',
       },
     ],
   },
@@ -612,7 +644,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       },
       {
         q: 'Is there a 24-hour concierge?',
-        a: 'Front-desk and concierge staffing details are not published on this site \u2014 confirm with the leasing team.',
+        a: 'Yes. The front desk is staffed 24 hours a day, and indoor amenities are open 24/7.',
       },
     ],
   },
@@ -631,7 +663,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       },
       {
         q: 'What are the pet fees and breed rules?',
-        a: 'Pet fees, limits, and breed policies should be confirmed with the leasing team before applying.',
+        a: 'One-time non-refundable pet fee: $650 for one dog or $750 for two, $325 for cats. No pet deposit, no monthly pet rent, no weight limits. Breed restrictions apply \u2014 see a leasing consultant for details.',
       },
     ],
   },
@@ -680,12 +712,12 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
         a: 'Open any available residence on the Available Units page and use its Apply Now button \u2014 each unit links directly to its own secure online application.',
       },
       {
-        q: 'What income is required and are guarantors accepted?',
-        a: 'Screening criteria and guarantor policies are not published on this site \u2014 confirm with the leasing team before applying.',
+        q: 'What credit score is required and are guarantors accepted?',
+        a: 'A minimum credit score of 700 is required, or 600+ with a qualified co-signer. Qualified co-signers are accepted.',
       },
       {
         q: 'What lease terms are available?',
-        a: 'Lease terms vary by unit and season and are confirmed by the leasing team.',
+        a: '12+ month lease terms are available; short-term leases are offered based on availability. Approval typically takes 1\u20133 business days.',
       },
     ],
   },
@@ -804,7 +836,7 @@ const APARTMENT_COMPLEX_NODE = {
   hasMap: 'https://www.google.com/maps?cid=15240815771270963454',
   tourBookingPage: TOUR_URL,
   petsAllowed:
-    'Cats and dogs are welcome; confirm current pet fees, limits, and policy details with the leasing team.',
+    'Cats and dogs are welcome (maximum 2 pets). One-time non-refundable pet fee: $650 for one dog or $750 for two, $325 for cats. No pet deposit or monthly pet rent; no weight limits; breed restrictions apply.',
   sameAs: [
     'https://www.facebook.com/exhibitonsuperior',
     'https://www.instagram.com/exhibitonsuperior',

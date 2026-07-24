@@ -97,7 +97,7 @@ export function ApartmentGuide() {
                 <h2 className="text-2xl uppercase tracking-wider mb-6">Inside Every Home</h2>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Floor-to-ceiling windows with skyline views &mdash; outlooks vary by floor and unit position</span></li>
-                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private balconies (presence varies by floor plan &mdash; check the plan sheet or ask the leasing team)</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private balconies in nearly every home &mdash; only the 02 and 03 Convertible plans (units ending in 02 or 03 on floors 6&ndash;29) are without one</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>In-home washer/dryer in every residence</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Driftwood plank floors throughout &mdash; durable and pet-friendly</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Quartz countertops, tiled backsplash, undermount sinks</span></li>
@@ -107,8 +107,9 @@ export function ApartmentGuide() {
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Wired for 1GB internet</span></li>
                 </ul>
                 <p className="mt-6 text-sm text-muted-foreground">
-                  Curious about storage options or accessible-unit details? Those vary by
-                  residence &mdash; <Link href="/contact-us" className="text-primary underline">ask the leasing team</Link> before you apply.
+                  On-site storage is available for $25 per month, more than 20% of homes are ADA
+                  accessible, and apartments are offered unfurnished only. For details on a
+                  specific residence, <Link href="/contact-us" className="text-primary underline">ask the leasing team</Link> before you apply.
                 </p>
               </div>
             </div>
