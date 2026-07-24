@@ -9,6 +9,8 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { resolveSizes } from '../lib/resolveSizes';
 import { IMAGE_MANIFEST } from '../data/imageManifest';
+import { HERO_SLIDES } from '../pages/Home';
+import { galleryImages } from '../data/gallery';
 
 const SRC_ROOT = join(__dirname, '..');
 const PHONE_VIEWPORT_CSS_PX = 390;
@@ -162,6 +164,46 @@ export function checkLargestRung(site: CallSite): string | null {
   );
 }
 
+// --- Data-driven images: entries rendered via arrays, not literal src. -----
+// The call-site scan above skips dynamic src (src={slide.src}), so images fed
+// from data arrays (HERO_SLIDES, galleryImages) would ship blurry with no
+// test failure. This checks every entry against the manifest's largest rung
+// at its known rendered sizes.
+
+/** Core largest-rung check for a known src + sizes pair (data-driven images). */
+export function checkImageRung(src: string, sizes: string, where: string): string | null {
+  const meta = IMAGE_MANIFEST[src];
+  if (!meta) {
+    return `${where}: ${src} is not in the image manifest, so SmartImg renders a plain un-optimized <img>.`;
+  }
+  const renderedCssPx = resolveSizes(sizes, DESKTOP_VIEWPORT_CSS_PX);
+  const neededDevicePx = renderedCssPx * DESKTOP_DPR;
+  const largestRung = Math.max(...meta.variants.map((v) => v.w));
+  if (largestRung * BLUR_SHORTFALL >= neededDevicePx) return null;
+  if (KNOWN_SMALL_ORIGINALS.has(src) && largestRung >= meta.width) return null;
+  return (
+    `${where}: ${src} renders at sizes="${sizes}" (~${Math.round(renderedCssPx)}px CSS at a ` +
+    `${DESKTOP_VIEWPORT_CSS_PX}px viewport, ~${Math.round(neededDevicePx)} device px at ` +
+    `${DESKTOP_DPR}x DPR) but its largest manifest rung is only ${largestRung}w, so it ` +
+    `renders soft/blurry on large screens. Fix: regenerate a larger rung via ` +
+    `scripts/optimize-images.mjs (source a bigger original in images-src/ if the current ` +
+    `one is only ${meta.width}px wide), or replace the photo.`
+  );
+}
+
+/** The sizes attribute a component actually passes at a dynamic-src SmartImg
+ *  call site, so the data-driven checks below can never drift from the code. */
+function sizesAtDynamicCallSite(fileRelToSrc: string, srcExpr: string): string {
+  const source = readFileSync(join(SRC_ROOT, fileRelToSrc), 'utf8');
+  const sites = findSmartImgCallSites(source, fileRelToSrc).filter((s) =>
+    new RegExp(`\\bsrc\\s*=\\s*\\{\\s*${srcExpr.replace(/[.[\]()]/g, '\\$&')}`).test(s.attrs),
+  );
+  expect(sites, `expected exactly one <SmartImg src={${srcExpr}}> in ${fileRelToSrc}`).toHaveLength(1);
+  const sizes = getStringAttr(sites[0].attrs, 'sizes');
+  expect(sizes, `<SmartImg src={${srcExpr}}> in ${fileRelToSrc} must have a literal sizes`).toBeTruthy();
+  return sizes!;
+}
+
 describe('every SmartImg call site declares an honest sizes attribute', () => {
   const files = walkTsxFiles(SRC_ROOT);
   const sites = files.flatMap((f) =>
@@ -283,6 +325,63 @@ describe('the largest-rung guard catches big renders shipping small files', () =
       'synthetic.tsx',
     );
     expect(checkLargestRung(unknown)).toBeNull();
+  });
+});
+
+describe('data-driven hero and gallery images ship sharp largest rungs', () => {
+  const heroSizes = sizesAtDynamicCallSite('components/HeroSlider.tsx', 'slide.src');
+  const gridSizes = sizesAtDynamicCallSite('pages/PhotoGallery.tsx', 'image.src');
+  const lightboxSizes = sizesAtDynamicCallSite(
+    'pages/PhotoGallery.tsx',
+    'lightboxImages[selectedImage].src',
+  );
+
+  it('every HERO_SLIDES entry covers the hero render sharply', () => {
+    const violations = HERO_SLIDES.map((s) =>
+      checkImageRung(s.src, heroSizes, 'HERO_SLIDES (Home hero)'),
+    ).filter((v): v is string => v !== null);
+    expect(violations, `\n${violations.join('\n\n')}\n`).toEqual([]);
+  });
+
+  it('every galleryImages entry covers both the grid and the lightbox sharply', () => {
+    const violations = galleryImages
+      .flatMap((img) => [
+        checkImageRung(img.src, gridSizes, 'galleryImages (gallery grid)'),
+        checkImageRung(img.src, lightboxSizes, 'galleryImages (lightbox)'),
+      ])
+      .filter((v): v is string => v !== null);
+    expect(violations, `\n${violations.join('\n\n')}\n`).toEqual([]);
+  });
+
+  it('the hero and lightbox render full-width (guard checks the real worst case)', () => {
+    // If these renders ever stop being 100vw, the check silently weakens —
+    // this assertion forces a conscious review of the data-driven guard.
+    expect(resolveSizes(heroSizes, DESKTOP_VIEWPORT_CSS_PX)).toBe(DESKTOP_VIEWPORT_CSS_PX);
+    expect(resolveSizes(lightboxSizes, DESKTOP_VIEWPORT_CSS_PX)).toBe(DESKTOP_VIEWPORT_CSS_PX);
+  });
+
+  it('self-test: a synthetic undersized entry is flagged', () => {
+    // image-004 has a 1477w largest rung — far short of the ~2880 device px a
+    // 100vw hero needs — so a hypothetical HERO_SLIDES entry must flag.
+    const violation = checkImageRung(
+      '/images/image-004-012417-5732-pu4fo5.jpg',
+      heroSizes,
+      'synthetic HERO_SLIDES entry',
+    );
+    expect(violation).toMatch(/largest manifest rung is only 1477w/);
+    expect(violation).toMatch(/synthetic HERO_SLIDES entry/);
+  });
+
+  it('self-test: an entry missing from the manifest is flagged', () => {
+    expect(checkImageRung('/images/not-in-manifest.jpg', heroSizes, 'synthetic')).toMatch(
+      /not in the image manifest/,
+    );
+  });
+
+  it('self-test: a well-rung entry passes', () => {
+    expect(
+      checkImageRung('/images/image-002-gettyimages-1286580777-nvdupq.jpg', heroSizes, 'synthetic'),
+    ).toBeNull();
   });
 });
 
