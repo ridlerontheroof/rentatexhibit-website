@@ -66,3 +66,15 @@ id = "9_HIX5A-mch523nHZiwec"
 uri = "file://artifacts/exhibit-on-superior/docs/directory-listings/fact-sheet.txt"
 type = "text"
 title = "Fact Sheet — Copy-Paste Text Version"
+
+[[outputs]]
+id = "4xnWGMLI6pTkBskCDrhqB"
+uri = "file://artifacts/exhibit-on-superior/docs/leasing-questionnaire/Exhibit-Leasing-Facts-Questionnaire.pdf"
+type = "pdf"
+title = "Leasing Facts Questionnaire (print/PDF)"
+
+[[outputs]]
+id = "pu5GYkmiax-ckFYiylUNU"
+uri = "file://artifacts/exhibit-on-superior/docs/leasing-questionnaire/leasing-questionnaire.md"
+type = "text"
+title = "Leasing Facts Questionnaire (editable)"
