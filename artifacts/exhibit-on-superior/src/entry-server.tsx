@@ -8,6 +8,8 @@ import { NotFound } from './pages/not-found';
 import { buildSeoModel, renderHeadTags } from './data/seo';
 import { floorPlansItemListJsonLd } from './data/floorPlans';
 import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
+import { photoGalleryJsonLd } from './data/gallery';
+import { virtualToursJsonLd } from './data/virtualTours';
 
 // Re-exported so the (browserless) prerender script can read the route list,
 // canonical URLs, and noindex flags straight from the built SSR bundle.
@@ -26,6 +28,8 @@ const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
   // the curated fallback — exactly what the SSR'd page body displays. The
   // client re-emits the schema from the live-merged model after hydration.
   '/reviews': () => [reviewsJsonLd(buildReviewsPageModel())],
+  '/photo-gallery': () => [photoGalleryJsonLd()],
+  '/virtual-tour': () => [virtualToursJsonLd()],
 };
 
 export interface RenderResult {

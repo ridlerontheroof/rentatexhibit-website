@@ -4,11 +4,12 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { SplitHeadline } from '../components/SplitHeadline';
+import { matterportTours, virtualToursJsonLd } from '../data/virtualTours';
 
 export function VirtualTour() {
   return (
     <>
-      <Seo path="/virtual-tour" />
+      <Seo path="/virtual-tour" extraJsonLd={[virtualToursJsonLd()]} />
       <div>
         <PageHero
           image="/images/image-074-game-area-with-arcade-games-and-wall-scrabble-ej.jpg"
@@ -49,45 +50,23 @@ export function VirtualTour() {
               </div>
             </div>
 
-            {/* Matterport Embeds */}
-            <div className="mb-12">
-              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Exhibit 2104</h3>
-              <div className="aspect-video bg-black border border-border">
-                <iframe
-                  src="https://my.matterport.com/show/?m=773kQcHxLnz"
-                  className="w-full h-full"
-                  allowFullScreen
-                  allow="xr-spatial-tracking"
-                  title="Virtual Tour of Exhibit 2104"
-                />
+            {/* Matterport Embeds — rendered from the same shared data that
+                feeds the page's JSON-LD (virtualToursJsonLd), so the visible
+                headings and the schema can never drift. */}
+            {matterportTours.map((tour) => (
+              <div key={tour.url} className="mb-12">
+                <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">{tour.name}</h3>
+                <div className="aspect-video bg-black border border-border">
+                  <iframe
+                    src={tour.url}
+                    className="w-full h-full"
+                    allowFullScreen
+                    allow="xr-spatial-tracking"
+                    title={`Virtual Tour of ${tour.name}`}
+                  />
+                </div>
               </div>
-            </div>
-
-            <div className="mb-12">
-              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Exhibit 605</h3>
-              <div className="aspect-video bg-black border border-border">
-                <iframe
-                  src="https://my.matterport.com/show/?m=kthJKtuPTJ4"
-                  className="w-full h-full"
-                  allowFullScreen
-                  allow="xr-spatial-tracking"
-                  title="Virtual Tour of Exhibit 605"
-                />
-              </div>
-            </div>
-
-            <div className="mb-12">
-              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Amenities at Exhibit On Superior</h3>
-              <div className="aspect-video bg-black border border-border">
-                <iframe
-                  src="https://my.matterport.com/show/?m=CiWCwCJuZ9c"
-                  className="w-full h-full"
-                  allowFullScreen
-                  allow="xr-spatial-tracking"
-                  title="Virtual Tour of Amenities"
-                />
-              </div>
-            </div>
+            ))}
 
             <div className="text-center mt-16">
               <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" className="mb-6" />

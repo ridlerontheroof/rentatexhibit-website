@@ -325,7 +325,43 @@ const APARTMENT_COMPLEX_NODE = {
   '@type': 'ApartmentComplex',
   '@id': `${SITE_URL}#apartmentcomplex`,
   name: 'Exhibit On Superior',
+  alternateName: 'Exhibit on Superior Apartments',
   url: SITE_URL,
+  mainEntityOfPage: `${SITE_URL}/`,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
+    width: 1805,
+    height: 621,
+  },
+  containedInPlace: {
+    '@type': 'Place',
+    name: 'River North',
+    containedInPlace: {
+      '@type': 'City',
+      name: 'Chicago',
+      containedInPlace: {
+        '@type': 'State',
+        name: 'Illinois',
+        containedInPlace: { '@type': 'Country', name: 'United States' },
+      },
+    },
+  },
+  // Touring/visiting the leasing office is free; this disambiguates the
+  // entity from paid-admission venues for AI answer engines.
+  isAccessibleForFree: true,
+  potentialAction: [
+    {
+      '@type': 'ScheduleAction',
+      name: 'Schedule a Tour',
+      target: `${SITE_URL}/schedule-a-tour`,
+    },
+    {
+      '@type': 'ViewAction',
+      name: 'View Available Units',
+      target: `${SITE_URL}/available-units`,
+    },
+  ],
   image: `${SITE_URL}/images/image-002-gettyimages-1286580777-nvdupq-2000w.webp`,
   description:
     'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
