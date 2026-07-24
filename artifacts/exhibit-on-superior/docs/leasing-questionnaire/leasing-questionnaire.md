@@ -66,7 +66,7 @@ engines that reward specific facts).
          2 Bedroom + Den;   983 square feet;   $165
          3 Bedroom / 3 Bath;   1,455-1,528 square feet;   $195
 
-         *Tenant shall be responsible for a monthly Utility and Service Amenity fee which includes the cost of: heat, air conditioning, natural gas for cooking, natural gas for the clothes dryer. The tenant is responsible for electricity separately.
+         *Tenant shall be responsible for a monthly Utility and Service Amenity fee which includes the cost of: water, sewer, trash, heat, air conditioning, natural gas for cooking, natural gas for the clothes dryer. The tenant is responsible for electricity separately.
 
    `________________________________________________________________`
 
