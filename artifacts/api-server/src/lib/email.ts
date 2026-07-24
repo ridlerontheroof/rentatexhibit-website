@@ -1,6 +1,6 @@
-import { ReplitConnectors } from "@replit/connectors-sdk";
 import { logger } from "./logger";
 import { allowProspectConfirmation } from "./emailThrottle";
+import { sendRawEmail, SENDER_EMAIL, warnIfUnconfigured } from "./mailer";
 
 /**
  * The leasing inbox that should be notified whenever a new lead comes in.
@@ -93,6 +93,7 @@ function buildRawMessage(lead: LeadNotification): string {
 
   const boundary = `lead_boundary_${Date.now().toString(36)}`;
   const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
     `To: ${LEASING_INBOX_EMAIL}`,
     // Let the leasing team reply straight back to the prospect.
     `Reply-To: ${encodeHeader(fullName)} <${sanitizeHeaderValue(lead.email)}>`,
@@ -116,13 +117,8 @@ function buildRawMessage(lead: LeadNotification): string {
     "",
   ].join("\r\n");
 
-  const raw = `${headers}\r\n\r\n${body}`;
-  // Gmail expects a base64url-encoded RFC 2822 message.
-  return Buffer.from(raw, "utf-8")
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+  // Full RFC 2822 message; the SMTP transport sends it as-is.
+  return `${headers}\r\n\r\n${body}`;
 }
 
 /**
@@ -177,7 +173,9 @@ function buildProspectConfirmationMessage(lead: LeadNotification): string {
   const boundary = `confirm_boundary_${Date.now().toString(36)}`;
   const headers = [
     `To: ${encodeHeader(fullName)} <${sanitizeHeaderValue(lead.email)}>`,
-    `From: ${encodeHeader(PROPERTY_NAME)} <${LEASING_INBOX_EMAIL}>`,
+    // Sent as the website's dedicated account, but replies go to the leasing
+    // team's shared inbox so prospects always reach a human.
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
     `Reply-To: ${encodeHeader(PROPERTY_NAME)} <${LEASING_INBOX_EMAIL}>`,
     `Subject: ${encodeHeader(subject)}`,
     "MIME-Version: 1.0",
@@ -199,12 +197,8 @@ function buildProspectConfirmationMessage(lead: LeadNotification): string {
     "",
   ].join("\r\n");
 
-  const raw = `${headers}\r\n\r\n${body}`;
-  return Buffer.from(raw, "utf-8")
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+  // Full RFC 2822 message; the SMTP transport sends it as-is.
+  return `${headers}\r\n\r\n${body}`;
 }
 
 /**
@@ -222,27 +216,8 @@ export async function sendProspectConfirmation(lead: LeadNotification): Promise<
   }
 
   try {
-    const connectors = new ReplitConnectors();
-    const raw = buildProspectConfirmationMessage(lead);
-    const response = await connectors.proxy(
-      "google-mail",
-      "/gmail/v1/users/me/messages/send",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ raw }),
-      },
-    );
-
-    if (!response.ok) {
-      const detail = await response.text().catch(() => "");
-      logger.error(
-        { status: response.status, detail: detail.slice(0, 500) },
-        "Failed to send prospect confirmation email",
-      );
-      return;
-    }
-
+    warnIfUnconfigured();
+    await sendRawEmail(buildProspectConfirmationMessage(lead));
     logger.info(
       { leadType: lead.type },
       "Sent prospect confirmation email",
@@ -265,27 +240,8 @@ export async function sendLeadNotification(
   lead: LeadNotification,
 ): Promise<boolean> {
   try {
-    const connectors = new ReplitConnectors();
-    const raw = buildRawMessage(lead);
-    const response = await connectors.proxy(
-      "google-mail",
-      "/gmail/v1/users/me/messages/send",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ raw }),
-      },
-    );
-
-    if (!response.ok) {
-      const detail = await response.text().catch(() => "");
-      logger.error(
-        { status: response.status, detail: detail.slice(0, 500) },
-        "Failed to send lead notification email",
-      );
-      return false;
-    }
-
+    warnIfUnconfigured();
+    await sendRawEmail(buildRawMessage(lead));
     logger.info(
       { leasingInbox: LEASING_INBOX_EMAIL, leadType: lead.type },
       "Sent lead notification email",
