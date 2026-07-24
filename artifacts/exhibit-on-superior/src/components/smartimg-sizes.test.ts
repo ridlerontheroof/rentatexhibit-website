@@ -188,15 +188,15 @@ describe('the largest-rung guard catches big renders shipping small files', () =
   // 1200w largest rung, so it passes on its own merits (no allowlist entry).
   const smallSrc = '/images/image-009-34-southeast-levwhc.jpg';
 
-  it('flags a full-width desktop render backed only by a 1000w rung', () => {
-    // image-004 has a 1000px original / 1000w largest rung and is NOT on the
+  it('flags a full-width desktop render backed only by a 1477w rung', () => {
+    // image-004 has a 1477px original / 1477w largest rung and is NOT on the
     // small-originals allowlist, so a 100vw claim (2880 device px) must flag.
     const [site] = findSmartImgCallSites(
       `<SmartImg src="/images/image-004-012417-5732-pu4fo5.jpg" alt="x" sizes="100vw" className="w-full" />`,
       'synthetic.tsx',
     );
     const violation = checkLargestRung(site);
-    expect(violation).toMatch(/largest rung for this image is only 1000w/);
+    expect(violation).toMatch(/largest rung for this image is only 1477w/);
     expect(violation).toMatch(/synthetic\.tsx:1/);
     expect(violation).toMatch(/optimize-images\.mjs/);
   });
@@ -215,7 +215,7 @@ describe('the largest-rung guard catches big renders shipping small files', () =
   it('the allowlist suppression path still works for a synthetic small original', () => {
     // Keep the escape hatch tested even while the allowlist is empty: register
     // a fake entry, verify it suppresses, then remove it.
-    const fake = '/images/image-004-012417-5732-pu4fo5.jpg'; // 1000px original, 1000w rung
+    const fake = "/images/image-004-012417-5732-pu4fo5.jpg"; // 1477px original, 1477w rung
     const [site] = findSmartImgCallSites(
       `<SmartImg src="${fake}" alt="x" sizes="100vw" className="w-full" />`,
       'synthetic.tsx',

@@ -110,8 +110,8 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
     ]
   },
   "/images/image-004-012417-5732-pu4fo5.jpg": {
-    "width": 1000,
-    "height": 1000,
+    "width": 1477,
+    "height": 1477,
     "variants": [
       {
         "src": "/images/image-004-012417-5732-pu4fo5-800w.webp",
@@ -119,9 +119,14 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-004-012417-5732-pu4fo5-1000w.webp",
-        "avif": "/images/image-004-012417-5732-pu4fo5-1000w.avif",
-        "w": 1000
+        "src": "/images/image-004-012417-5732-pu4fo5-1280w.webp",
+        "avif": "/images/image-004-012417-5732-pu4fo5-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-004-012417-5732-pu4fo5-1477w.webp",
+        "avif": "/images/image-004-012417-5732-pu4fo5-1477w.avif",
+        "w": 1477
       }
     ]
   },
@@ -254,8 +259,8 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
     ]
   },
   "/images/image-013-20170808-0861-n4esrp.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-013-20170808-0861-n4esrp-800w.webp",
@@ -263,15 +268,20 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-013-20170808-0861-n4esrp-1200w.webp",
-        "avif": "/images/image-013-20170808-0861-n4esrp-1200w.avif",
-        "w": 1200
+        "src": "/images/image-013-20170808-0861-n4esrp-1280w.webp",
+        "avif": "/images/image-013-20170808-0861-n4esrp-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-013-20170808-0861-n4esrp-2000w.webp",
+        "avif": "/images/image-013-20170808-0861-n4esrp-2000w.avif",
+        "w": 2000
       }
     ]
   },
   "/images/image-014-exhibit-living-room-n5xrna.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-014-exhibit-living-room-n5xrna-800w.webp",
@@ -279,15 +289,20 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-014-exhibit-living-room-n5xrna-1200w.webp",
-        "avif": "/images/image-014-exhibit-living-room-n5xrna-1200w.avif",
-        "w": 1200
+        "src": "/images/image-014-exhibit-living-room-n5xrna-1280w.webp",
+        "avif": "/images/image-014-exhibit-living-room-n5xrna-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-014-exhibit-living-room-n5xrna-2000w.webp",
+        "avif": "/images/image-014-exhibit-living-room-n5xrna-2000w.avif",
+        "w": 2000
       }
     ]
   },
   "/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq-800w.webp",
@@ -295,15 +310,20 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq-1200w.webp",
-        "avif": "/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq-1200w.avif",
-        "w": 1200
+        "src": "/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq-1280w.webp",
+        "avif": "/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq-2000w.webp",
+        "avif": "/images/image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq-2000w.avif",
+        "w": 2000
       }
     ]
   },
   "/images/image-016-012417-6396-e1vomm.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-016-012417-6396-e1vomm-800w.webp",
@@ -311,15 +331,20 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-016-012417-6396-e1vomm-1200w.webp",
-        "avif": "/images/image-016-012417-6396-e1vomm-1200w.avif",
-        "w": 1200
+        "src": "/images/image-016-012417-6396-e1vomm-1280w.webp",
+        "avif": "/images/image-016-012417-6396-e1vomm-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-016-012417-6396-e1vomm-2000w.webp",
+        "avif": "/images/image-016-012417-6396-e1vomm-2000w.avif",
+        "w": 2000
       }
     ]
   },
   "/images/image-017-012417-6521-i8yuom.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-017-012417-6521-i8yuom-800w.webp",
@@ -327,15 +352,20 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-017-012417-6521-i8yuom-1200w.webp",
-        "avif": "/images/image-017-012417-6521-i8yuom-1200w.avif",
-        "w": 1200
+        "src": "/images/image-017-012417-6521-i8yuom-1280w.webp",
+        "avif": "/images/image-017-012417-6521-i8yuom-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-017-012417-6521-i8yuom-2000w.webp",
+        "avif": "/images/image-017-012417-6521-i8yuom-2000w.avif",
+        "w": 2000
       }
     ]
   },
   "/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom-800w.webp",
@@ -343,15 +373,20 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom-1200w.webp",
-        "avif": "/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom-1200w.avif",
-        "w": 1200
+        "src": "/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom-1280w.webp",
+        "avif": "/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom-2000w.webp",
+        "avif": "/images/image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom-2000w.avif",
+        "w": 2000
       }
     ]
   },
   "/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz-800w.webp",
@@ -359,15 +394,20 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz-1200w.webp",
-        "avif": "/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz-1200w.avif",
-        "w": 1200
+        "src": "/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz-1280w.webp",
+        "avif": "/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz-2000w.webp",
+        "avif": "/images/image-019-game-area-with-arcade-games-and-wall-scrabble-oz-2000w.avif",
+        "w": 2000
       }
     ]
   },
   "/images/image-020-dsc00806-yr6rhk.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-020-dsc00806-yr6rhk-800w.webp",
@@ -375,15 +415,20 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-020-dsc00806-yr6rhk-1200w.webp",
-        "avif": "/images/image-020-dsc00806-yr6rhk-1200w.avif",
-        "w": 1200
+        "src": "/images/image-020-dsc00806-yr6rhk-1280w.webp",
+        "avif": "/images/image-020-dsc00806-yr6rhk-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-020-dsc00806-yr6rhk-2000w.webp",
+        "avif": "/images/image-020-dsc00806-yr6rhk-2000w.avif",
+        "w": 2000
       }
     ]
   },
   "/images/image-021-20170808-0852-sw1ncm.jpg": {
-    "width": 1200,
-    "height": 700,
+    "width": 2000,
+    "height": 1167,
     "variants": [
       {
         "src": "/images/image-021-20170808-0852-sw1ncm-800w.webp",
@@ -391,9 +436,14 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 800
       },
       {
-        "src": "/images/image-021-20170808-0852-sw1ncm-1200w.webp",
-        "avif": "/images/image-021-20170808-0852-sw1ncm-1200w.avif",
-        "w": 1200
+        "src": "/images/image-021-20170808-0852-sw1ncm-1280w.webp",
+        "avif": "/images/image-021-20170808-0852-sw1ncm-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/image-021-20170808-0852-sw1ncm-2000w.webp",
+        "avif": "/images/image-021-20170808-0852-sw1ncm-2000w.avif",
+        "w": 2000
       }
     ]
   },
