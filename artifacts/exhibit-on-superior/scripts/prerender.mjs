@@ -7,7 +7,12 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { extractJsonLdPayloads, validateJsonLdPayloads } from './validate-jsonld.mjs';
+import {
+  extractJsonLdPayloads,
+  validateJsonLdPayloads,
+  checkRecommendedProperties,
+  SITE_RECOMMENDED_ALLOWLIST,
+} from './validate-jsonld.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(scriptDir, '..');
@@ -238,6 +243,38 @@ for (const routePath of seoPaths) {
     );
   }
   console.log(`JSON-LD validated on ${seoPaths.length} pages.`);
+}
+
+// Soft check: recommended schema.org properties (WARNINGS ONLY — never fails
+// the build). Google's rich-result eligibility improves with per-type
+// recommended properties (FAQ answers, ApartmentComplex address/telephone/
+// image, VideoObject uploadDate, ...). Missing ones are printed per page so
+// thin listings are visible in build output; intentional omissions live in
+// SITE_RECOMMENDED_ALLOWLIST (scripts/validate-jsonld.mjs). The vitest suite
+// (src/prerender-jsonld-recommended.test.ts) pins these to zero beyond the
+// allowlist, so this printout doubles as a diagnostic when that test fails.
+{
+  let warned = 0;
+  for (const routePath of seoPaths) {
+    const outPath =
+      routePath === '/'
+        ? path.join(publicDir, 'index.html')
+        : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
+    const page = await fs.readFile(outPath, 'utf8');
+    const warnings = checkRecommendedProperties(extractJsonLdPayloads(page), {
+      allowlist: SITE_RECOMMENDED_ALLOWLIST,
+    });
+    if (warnings.length) {
+      warned += warnings.length;
+      console.warn(`WARN ${routePath}: structured data missing recommended properties:`);
+      for (const w of warnings) console.warn(`  - ${w}`);
+    }
+  }
+  console.log(
+    warned
+      ? `Recommended-property check: ${warned} warning(s) — see above (build not failed).`
+      : `Recommended-property check: all pages carry the properties Google rewards.`,
+  );
 }
 
 // Legacy URL redirect stubs: crawlers that hit old Wix-era URLs (or the former

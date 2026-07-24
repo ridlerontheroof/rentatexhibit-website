@@ -98,3 +98,164 @@ export function validateJsonLdPayloads(payloads, siteUrl) {
 
   return problems;
 }
+
+// ---------------------------------------------------------------------------
+// Soft check: recommended properties per schema.org @type.
+//
+// Beyond structural validity, Google's rich-result eligibility depends on
+// *recommended* properties (e.g. FAQPage Questions need acceptedAnswer text;
+// an ApartmentComplex listing is far stronger with address/telephone/image).
+// This layer reports where the site's structured data could be strengthened.
+// It returns WARNINGS, never build failures — callers print them (prerender)
+// or assert them against an explicit allowlist (tests).
+// ---------------------------------------------------------------------------
+
+/**
+ * Per-@type checklist of recommended properties for the types this site emits.
+ * Each entry is either a property name (must be present and non-empty) or an
+ * array of alternatives (at least ONE must be present, e.g. VideoObject needs
+ * contentUrl OR embedUrl).
+ *
+ * Types not listed here are never warned about.
+ * @type {Record<string, Array<string | string[]>>}
+ */
+export const RECOMMENDED_PROPERTIES = {
+  WebSite: ['name', 'url', 'publisher'],
+  Organization: ['name', 'url', 'logo', ['telephone', 'contactPoint'], 'email'],
+  ApartmentComplex: [
+    'name',
+    'url',
+    'address',
+    'telephone',
+    'image',
+    'description',
+    'geo',
+    'petsAllowed',
+    'sameAs',
+    'amenityFeature',
+  ],
+  WebPage: ['name', 'description', 'url', 'isPartOf', 'breadcrumb'],
+  BreadcrumbList: ['itemListElement'],
+  // A ListItem either names its target inline (breadcrumbs: name + item URL)
+  // or nests a typed item that carries its own name (carousels) — so `name`
+  // and `item` are alternatives, not both required.
+  ListItem: ['position', ['name', 'item']],
+  FAQPage: ['mainEntity'],
+  Question: ['name', 'acceptedAnswer'],
+  Answer: ['text'],
+  ItemList: ['name', 'itemListElement'],
+  ImageGallery: ['name', 'image'],
+  ImageObject: [['contentUrl', 'url']],
+  VideoObject: [
+    'name',
+    'description',
+    'thumbnailUrl',
+    'uploadDate',
+    ['contentUrl', 'embedUrl'],
+    'duration',
+  ],
+};
+
+/**
+ * Intentional omissions for THIS site, as "Type.prop" entries (any-of groups
+ * use "Type.propA|propB"). Shared by scripts/prerender.mjs (which silences
+ * them in build output) and the vitest suite (which asserts nothing beyond
+ * this list is missing, and that no entry here is stale).
+ * @type {string[]}
+ */
+export const SITE_RECOMMENDED_ALLOWLIST = [];
+
+/** True when a property value is meaningfully present (not null/''/[]). */
+function hasValue(v) {
+  if (v === null || v === undefined) return false;
+  if (typeof v === 'string') return v.trim().length > 0;
+  if (Array.isArray(v)) return v.length > 0;
+  return true;
+}
+
+/**
+ * Report missing recommended properties across all JSON-LD payloads of a page.
+ *
+ * @param {string[]} payloads raw JSON-LD script contents for one page
+ * @param {object} [opts]
+ * @param {string[]} [opts.allowlist] intentional omissions, as "Type.prop"
+ *   entries (for alternative groups, "Type.propA|propB"). Allowlisted pairs
+ *   are silenced everywhere they occur.
+ * @param {Record<string, Array<string | string[]>>} [opts.checklist]
+ * @returns {string[]} human-readable warnings; empty when nothing is missing
+ */
+export function checkRecommendedProperties(payloads, opts = {}) {
+  const allow = new Set(opts.allowlist ?? []);
+  const checklist = opts.checklist ?? RECOMMENDED_PROPERTIES;
+  const warnings = [];
+
+  // Crawlers merge every node carrying the same @id across ALL blocks on a
+  // page into one entity (e.g. a reviews block re-opens the ApartmentComplex
+  // @id just to attach aggregateRating). Mirror that: collect id-keyed nodes
+  // first, merge their properties, then check the merged view. Anonymous
+  // (id-less) nodes are checked individually where they appear.
+  /** @type {Map<string, {type: string, props: Record<string, unknown>}>} */
+  const byId = new Map();
+  /** @type {Array<{node: Record<string, unknown>, where: string}>} */
+  const anonymous = [];
+
+  const collect = (node, where) => {
+    if (Array.isArray(node)) {
+      node.forEach((v, i) => collect(v, `${where}[${i}]`));
+      return;
+    }
+    if (node === null || typeof node !== 'object') return;
+    const keys = Object.keys(node);
+    const id = node['@id'];
+    // Pure { "@id" } reference nodes are pointers, not definitions — the
+    // recommended props live on the defining node, which is checked there.
+    if (typeof id === 'string' && keys.length === 1) return;
+
+    if (typeof id === 'string') {
+      const entry = byId.get(id) ?? { type: '', props: {} };
+      if (typeof node['@type'] === 'string') entry.type = entry.type || node['@type'];
+      for (const k of keys) {
+        if (!k.startsWith('@') && hasValue(node[k])) entry.props[k] = node[k];
+      }
+      byId.set(id, entry);
+    } else {
+      anonymous.push({ node, where });
+    }
+    for (const k of keys) {
+      if (k.startsWith('@')) continue;
+      collect(node[k], `${where}.${k}`);
+    }
+  };
+
+  payloads.forEach((raw, i) => {
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      return; // structural validation reports unparseable blocks; skip here
+    }
+    const nodes = Array.isArray(parsed?.['@graph']) ? parsed['@graph'] : [parsed];
+    nodes.forEach((node, j) => collect(node, `block ${i} node ${j}`));
+  });
+
+  const check = (type, props, label) => {
+    const recommended = checklist[type];
+    if (!recommended) return;
+    for (const entry of recommended) {
+      const alternatives = Array.isArray(entry) ? entry : [entry];
+      if (alternatives.some((prop) => hasValue(props[prop]))) continue;
+      const propLabel = alternatives.join('|');
+      if (allow.has(`${type}.${propLabel}`)) continue;
+      warnings.push(`${type} ${label}: missing recommended property "${propLabel}"`);
+    }
+  };
+
+  for (const [id, entry] of byId) {
+    check(entry.type, entry.props, `(id ${id})`);
+  }
+  for (const { node, where } of anonymous) {
+    if (typeof node['@type'] === 'string') check(node['@type'], node, `at ${where}`);
+  }
+
+  return warnings;
+}
