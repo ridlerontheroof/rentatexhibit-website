@@ -97,11 +97,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/available-units" className="hover:text-primary transition-colors">
-                  Schedule a Tour
-                </Link>
-              </li>
-              <li>
                 <Link href="/fees" className="hover:text-primary transition-colors">
                   Fees &amp; Leasing Costs
                 </Link>
