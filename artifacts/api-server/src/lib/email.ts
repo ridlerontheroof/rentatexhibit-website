@@ -217,7 +217,10 @@ export async function sendProspectConfirmation(lead: LeadNotification): Promise<
 
   try {
     warnIfUnconfigured();
-    await sendRawEmail(buildProspectConfirmationMessage(lead));
+    await sendRawEmail(
+      buildProspectConfirmationMessage(lead),
+      sanitizeHeaderValue(lead.email),
+    );
     logger.info(
       { leadType: lead.type },
       "Sent prospect confirmation email",
@@ -241,7 +244,7 @@ export async function sendLeadNotification(
 ): Promise<boolean> {
   try {
     warnIfUnconfigured();
-    await sendRawEmail(buildRawMessage(lead));
+    await sendRawEmail(buildRawMessage(lead), LEASING_INBOX_EMAIL);
     logger.info(
       { leasingInbox: LEASING_INBOX_EMAIL, leadType: lead.type },
       "Sent lead notification email",

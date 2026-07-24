@@ -15,4 +15,5 @@
 - [Headless Chromium PDF printing](fact-sheet-pdf-headless.md) — nix store ships playwright-browsers chromium; CLI `--print-to-pdf` works with no library; fact-sheet PDF reprints itself.
 - [OG share-card generation](og-card-recipe.md) — share cards are script-generated from a page→photo/tagline map; edit the map + rerun, never hand-run ImageMagick.
 - [Matterport signed asset URLs expire in CDN cache](matterport-signed-urls.md) — player-models `image` URLs can be stale-signed (410 content.gone); cache-bust the API call for fresh URLs.
+- [Gmail SMTP sending](gmail-smtp-sending.md) — api-server mails via app-password SMTP (connector is one-account, owned by DealVault); nodemailer raw needs explicit envelope recipients; DKIM/DMARC live in AppFolio DNS.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.

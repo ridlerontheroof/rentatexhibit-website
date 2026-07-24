@@ -45,14 +45,19 @@ export function mailerConfigured(): boolean {
  * whether the failure should be recorded (lead-notification retry) or
  * swallowed (best-effort confirmations).
  */
-export async function sendRawEmail(raw: string): Promise<void> {
+export async function sendRawEmail(raw: string, to: string): Promise<void> {
   const t = getTransporter();
   if (!t) {
     throw new Error(
       "Email is not configured: GMAIL_APP_PASSWORD secret is missing",
     );
   }
-  const options: Mail.Options = { raw, envelope: undefined };
+  // With `raw`, nodemailer does not parse recipients out of the headers — the
+  // SMTP envelope must be provided explicitly.
+  const options: Mail.Options = {
+    raw,
+    envelope: { from: SENDER_EMAIL, to: [to] },
+  };
   await t.sendMail(options);
 }
 
