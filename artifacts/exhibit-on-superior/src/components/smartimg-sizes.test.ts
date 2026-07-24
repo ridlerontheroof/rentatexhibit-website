@@ -127,16 +127,7 @@ const BLUR_SHORTFALL = 1.5;
 // An "original" wider than this is big enough to regenerate useful rungs
 // from, so it never belongs on the allowlist.
 const SMALL_ORIGINAL_MAX_PX = 400;
-export const KNOWN_SMALL_ORIGINALS = new Set([
-  '/images/image-009-34-southeast-levwhc.jpg',
-  '/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg',
-  '/images/image-011-20170808-0713-n8k48b.jpg',
-  '/images/image-012-012417-6415-hgfghu.jpg',
-  '/images/image-023-gettyimages-639122762-qpfmh0.jpg',
-  '/images/image-024-gettyimages-1464613356-q7z583.jpg',
-  '/images/image-025-gettyimages-1694195877-kb4dln.jpg',
-  '/images/image-026-gettyimages-2169911981-his7ly.jpg',
-]);
+export const KNOWN_SMALL_ORIGINALS = new Set<string>([]);
 
 /** Returns a violation when the call site renders wider than its manifest's
  *  largest rung can sharply cover at a desktop viewport, or null if fine. */
@@ -193,7 +184,8 @@ describe('every SmartImg call site declares an honest sizes attribute', () => {
 });
 
 describe('the largest-rung guard catches big renders shipping small files', () => {
-  // /images/image-009-34-southeast-levwhc.jpg has a single 400w rung.
+  // Once source-limited at 400px, image-009 now has a 1200px original and a
+  // 1200w largest rung, so it passes on its own merits (no allowlist entry).
   const smallSrc = '/images/image-009-34-southeast-levwhc.jpg';
 
   it('flags a full-width desktop render backed only by a 1000w rung', () => {
@@ -209,15 +201,32 @@ describe('the largest-rung guard catches big renders shipping small files', () =
     expect(violation).toMatch(/optimize-images\.mjs/);
   });
 
-  it('suppresses a source-limited image only via the audited allowlist', () => {
-    // image-009 over-renders too, but its original is itself 400px; the
-    // allowlist (verified below) is the only reason it passes.
+  it('passes a half-width render now backed by a 1200w rung, with no allowlist', () => {
+    // image-009 used to need the allowlist (400px original); after sourcing a
+    // 1200px original it must pass on rung size alone.
     const [site] = findSmartImgCallSites(
       `<SmartImg src="${smallSrc}" alt="x" sizes="(min-width: 1024px) 50vw, 100vw" className="w-full" />`,
       'synthetic.tsx',
     );
-    expect(KNOWN_SMALL_ORIGINALS.has(smallSrc)).toBe(true);
+    expect(KNOWN_SMALL_ORIGINALS.has(smallSrc)).toBe(false);
     expect(checkLargestRung(site)).toBeNull();
+  });
+
+  it('the allowlist suppression path still works for a synthetic small original', () => {
+    // Keep the escape hatch tested even while the allowlist is empty: register
+    // a fake entry, verify it suppresses, then remove it.
+    const fake = '/images/image-004-012417-5732-pu4fo5.jpg'; // 1000px original, 1000w rung
+    const [site] = findSmartImgCallSites(
+      `<SmartImg src="${fake}" alt="x" sizes="100vw" className="w-full" />`,
+      'synthetic.tsx',
+    );
+    expect(checkLargestRung(site)).not.toBeNull(); // flags without allowlist
+    KNOWN_SMALL_ORIGINALS.add(fake);
+    try {
+      expect(checkLargestRung(site)).toBeNull(); // allowlist suppresses
+    } finally {
+      KNOWN_SMALL_ORIGINALS.delete(fake);
+    }
   });
 
   it('accepts the same image rendered in an honest small box', () => {

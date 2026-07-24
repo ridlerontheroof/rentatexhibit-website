@@ -9,6 +9,7 @@
 - [Google reviews listing discrepancy](google-reviews-listing.md) — live feed reads the correct listing; the old 4.2/136 lives on a duplicate profile awaiting a Google merge, not a proxy bug.
 - [Stale workspace lib dist](stale-workspace-dist.md) — cross-package "property does not exist" errors after merges: rebuild the lib's dist before debugging.
 - [Vite build quirks](vite-build-quirks.md) — env vars only required for serve; no 'use client' directives (RSC-less SPA, they cause sourcemap build warnings).
+- [Recovering larger originals via Cloudinary](cloudinary-source-recovery.md) — WXR files in the migration bundle hold Cloudinary URLs; bump the h_400,w_400 transform to fetch sharp same-crop originals.
 - [Image sources live in images-src/](image-source-relocation.md) — originals aren't in public/images; manifest keys are lookup keys, not shipped files; new photos go in images-src/.
 - [AppFolio guest-card lead push](appfolio-guest-cards.md) — tour leads become AppFolio prospects via the public listings guest_cards endpoint; resolve unit→listableUid server-side only.
 - [AppFolio availability integration](appfolio-availability.md) — unit_vacancy Reports API feeds /availability; AppFolio blocks ALL workspace egress, verify only from production.

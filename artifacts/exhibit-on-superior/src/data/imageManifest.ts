@@ -190,46 +190,66 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
     ]
   },
   "/images/image-009-34-southeast-levwhc.jpg": {
-    "width": 400,
-    "height": 400,
+    "width": 1200,
+    "height": 1200,
     "variants": [
       {
-        "src": "/images/image-009-34-southeast-levwhc-400w.webp",
-        "avif": "/images/image-009-34-southeast-levwhc-400w.avif",
-        "w": 400
+        "src": "/images/image-009-34-southeast-levwhc-800w.webp",
+        "avif": "/images/image-009-34-southeast-levwhc-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/image-009-34-southeast-levwhc-1200w.webp",
+        "avif": "/images/image-009-34-southeast-levwhc-1200w.avif",
+        "w": 1200
       }
     ]
   },
   "/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg": {
-    "width": 400,
-    "height": 400,
+    "width": 1200,
+    "height": 1200,
     "variants": [
       {
-        "src": "/images/image-010-full-floor-amenity-deck-overlooking-the-city-and-400w.webp",
-        "avif": "/images/image-010-full-floor-amenity-deck-overlooking-the-city-and-400w.avif",
-        "w": 400
+        "src": "/images/image-010-full-floor-amenity-deck-overlooking-the-city-and-800w.webp",
+        "avif": "/images/image-010-full-floor-amenity-deck-overlooking-the-city-and-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/image-010-full-floor-amenity-deck-overlooking-the-city-and-1200w.webp",
+        "avif": "/images/image-010-full-floor-amenity-deck-overlooking-the-city-and-1200w.avif",
+        "w": 1200
       }
     ]
   },
   "/images/image-011-20170808-0713-n8k48b.jpg": {
-    "width": 400,
-    "height": 400,
+    "width": 1200,
+    "height": 1200,
     "variants": [
       {
-        "src": "/images/image-011-20170808-0713-n8k48b-400w.webp",
-        "avif": "/images/image-011-20170808-0713-n8k48b-400w.avif",
-        "w": 400
+        "src": "/images/image-011-20170808-0713-n8k48b-800w.webp",
+        "avif": "/images/image-011-20170808-0713-n8k48b-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/image-011-20170808-0713-n8k48b-1200w.webp",
+        "avif": "/images/image-011-20170808-0713-n8k48b-1200w.avif",
+        "w": 1200
       }
     ]
   },
   "/images/image-012-012417-6415-hgfghu.jpg": {
-    "width": 400,
-    "height": 400,
+    "width": 1200,
+    "height": 1200,
     "variants": [
       {
-        "src": "/images/image-012-012417-6415-hgfghu-400w.webp",
-        "avif": "/images/image-012-012417-6415-hgfghu-400w.avif",
-        "w": 400
+        "src": "/images/image-012-012417-6415-hgfghu-800w.webp",
+        "avif": "/images/image-012-012417-6415-hgfghu-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/image-012-012417-6415-hgfghu-1200w.webp",
+        "avif": "/images/image-012-012417-6415-hgfghu-1200w.avif",
+        "w": 1200
       }
     ]
   },
@@ -394,46 +414,66 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
     ]
   },
   "/images/image-023-gettyimages-639122762-qpfmh0.jpg": {
-    "width": 400,
-    "height": 400,
+    "width": 1200,
+    "height": 1200,
     "variants": [
       {
-        "src": "/images/image-023-gettyimages-639122762-qpfmh0-400w.webp",
-        "avif": "/images/image-023-gettyimages-639122762-qpfmh0-400w.avif",
-        "w": 400
+        "src": "/images/image-023-gettyimages-639122762-qpfmh0-800w.webp",
+        "avif": "/images/image-023-gettyimages-639122762-qpfmh0-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/image-023-gettyimages-639122762-qpfmh0-1200w.webp",
+        "avif": "/images/image-023-gettyimages-639122762-qpfmh0-1200w.avif",
+        "w": 1200
       }
     ]
   },
   "/images/image-024-gettyimages-1464613356-q7z583.jpg": {
-    "width": 400,
-    "height": 400,
+    "width": 1200,
+    "height": 1200,
     "variants": [
       {
-        "src": "/images/image-024-gettyimages-1464613356-q7z583-400w.webp",
-        "avif": "/images/image-024-gettyimages-1464613356-q7z583-400w.avif",
-        "w": 400
+        "src": "/images/image-024-gettyimages-1464613356-q7z583-800w.webp",
+        "avif": "/images/image-024-gettyimages-1464613356-q7z583-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/image-024-gettyimages-1464613356-q7z583-1200w.webp",
+        "avif": "/images/image-024-gettyimages-1464613356-q7z583-1200w.avif",
+        "w": 1200
       }
     ]
   },
   "/images/image-025-gettyimages-1694195877-kb4dln.jpg": {
-    "width": 400,
-    "height": 400,
+    "width": 1200,
+    "height": 1200,
     "variants": [
       {
-        "src": "/images/image-025-gettyimages-1694195877-kb4dln-400w.webp",
-        "avif": "/images/image-025-gettyimages-1694195877-kb4dln-400w.avif",
-        "w": 400
+        "src": "/images/image-025-gettyimages-1694195877-kb4dln-800w.webp",
+        "avif": "/images/image-025-gettyimages-1694195877-kb4dln-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/image-025-gettyimages-1694195877-kb4dln-1200w.webp",
+        "avif": "/images/image-025-gettyimages-1694195877-kb4dln-1200w.avif",
+        "w": 1200
       }
     ]
   },
   "/images/image-026-gettyimages-2169911981-his7ly.jpg": {
-    "width": 400,
-    "height": 400,
+    "width": 1200,
+    "height": 1200,
     "variants": [
       {
-        "src": "/images/image-026-gettyimages-2169911981-his7ly-400w.webp",
-        "avif": "/images/image-026-gettyimages-2169911981-his7ly-400w.avif",
-        "w": 400
+        "src": "/images/image-026-gettyimages-2169911981-his7ly-800w.webp",
+        "avif": "/images/image-026-gettyimages-2169911981-his7ly-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/image-026-gettyimages-2169911981-his7ly-1200w.webp",
+        "avif": "/images/image-026-gettyimages-2169911981-his7ly-1200w.avif",
+        "w": 1200
       }
     ]
   },
