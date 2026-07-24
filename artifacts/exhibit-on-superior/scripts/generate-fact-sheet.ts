@@ -18,6 +18,12 @@
  *     the hash automatically. Only if no browser is available does the build
  *     FAIL with instructions to print fact-sheet.html manually and re-run
  *     with --accept-pdf.
+ *   - Deployment builds (REPLIT_DEPLOYMENT=1 / CI=true) never fail on a stale
+ *     PDF: they compile committed code, the deploy image may not ship a
+ *     browser, and the PDF is a docs artifact, not part of the served site.
+ *     There a stale PDF logs a loud warning and the publish continues.
+ *     Freshness is enforced in the workspace, where a browser exists and the
+ *     reprinted PDF gets committed.
  */
 import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -299,6 +305,15 @@ const pdfHashPath = join(outDir, 'fact-sheet.pdf.hash');
 const pdfPath = join(outDir, 'Exhibit-On-Superior-Fact-Sheet.pdf');
 const acceptPdf = process.argv.includes('--accept-pdf');
 
+// A Replit deployment build compiles from already-committed code, where the
+// workspace-side guard has (or should have) kept the PDF fresh. The deploy
+// image is not guaranteed to ship a Chromium, and a docs PDF must never block
+// a publish — so in deployment builds a missing browser downgrades the hash
+// failure to a loud warning instead of exiting non-zero.
+// FACT_SHEET_FORCE_NO_BROWSER=1 is a test hook to simulate a browser-less env.
+const isDeployBuild = process.env.REPLIT_DEPLOYMENT === '1' || process.env.CI === 'true';
+const forceNoBrowser = process.env.FACT_SHEET_FORCE_NO_BROWSER === '1';
+
 /** Locate a headless-capable Chromium/Chrome binary, or null if none exists. */
 function findChromium(): string | null {
   const candidates: string[] = [];
@@ -382,13 +397,36 @@ if (acceptPdf) {
   console.log('Recorded current facts hash for the PDF (fact-sheet.pdf.hash).');
 } else {
   const recorded = existsSync(pdfHashPath) ? readFileSync(pdfHashPath, 'utf8').trim() : null;
+  // Always report browser availability so a deployment build log answers
+  // "does the deploy image ship a Chromium?" even when the PDF is up to date.
+  const chrome = forceNoBrowser ? null : findChromium();
+  console.log(
+    chrome
+      ? `Headless Chromium available for PDF printing: ${chrome}`
+      : 'No headless Chromium found in this environment (PDF reprint unavailable here).',
+  );
   if (recorded !== factsHash || !existsSync(pdfPath)) {
     // Try to reprint the PDF ourselves with a headless Chromium before
     // bothering a human.
-    const chrome = findChromium();
     if (chrome && printPdf(chrome)) {
       writeFileSync(pdfHashPath, `${factsHash}\n`);
       console.log(`Reprinted ${pdfPath} with headless Chromium (${chrome}) and updated fact-sheet.pdf.hash.`);
+      process.exit(0);
+    }
+    if (isDeployBuild) {
+      console.warn(
+        [
+          '',
+          'WARNING: FACT SHEET PDF IS STALE and no headless Chromium is available in',
+          'this deployment build. NOT failing the publish (the PDF is a docs artifact,',
+          'not part of the served site). Reprint it from the workspace, where a',
+          'browser exists, by running the site build (or this script) and committing',
+          'the refreshed Exhibit-On-Superior-Fact-Sheet.pdf + fact-sheet.pdf.hash.',
+          `  expected facts hash: ${factsHash}`,
+          `  PDF printed from:    ${recorded ?? '(no fact-sheet.pdf.hash recorded)'}`,
+          '',
+        ].join('\n'),
+      );
       process.exit(0);
     }
     console.error(
