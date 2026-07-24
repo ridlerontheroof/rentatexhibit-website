@@ -17,4 +17,5 @@
 - [Matterport signed asset URLs expire in CDN cache](matterport-signed-urls.md) — player-models `image` URLs can be stale-signed (410 content.gone); cache-bust the API call for fresh URLs.
 - [Gmail SMTP sending](gmail-smtp-sending.md) — api-server mails via app-password SMTP (connector is one-account, owned by DealVault); nodemailer raw needs explicit envelope recipients; DKIM/DMARC live in AppFolio DNS.
 - [Baked availability snapshot](availability-snapshot.md) — build fetches prod /api/availability into a committed JSON (non-fatal on failure); placeholderData + head-inline prefetch; renderToString splits text with `<!-- -->`, grep accordingly.
+- [Above-the-fold guard via raw CDP](fold-check-cdp.md) — real-layout viewport checks drive nix chromium over CDP with Node's built-in WebSocket; no Playwright dep; vite.config needs PORT env even with --port.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.

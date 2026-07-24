@@ -8,7 +8,8 @@
     "build": "node scripts/fetch-availability-snapshot.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs && tsx scripts/generate-fact-sheet.ts",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check:fold": "node scripts/check-units-above-fold.mjs"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
