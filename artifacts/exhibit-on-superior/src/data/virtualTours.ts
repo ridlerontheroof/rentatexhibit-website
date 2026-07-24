@@ -15,6 +15,12 @@ export interface MatterportTour {
   name: string;
   /** Public Matterport player URL (same URL the iframe embeds). */
   url: string;
+  /**
+   * The space's `name` as reported by Matterport's public player-models API.
+   * Defaults to `name` when omitted. The live guard test pins this so a
+   * re-used/mis-shared space id (same URL, different apartment) is caught.
+   */
+  matterportName?: string;
 }
 
 /**
@@ -65,7 +71,12 @@ export function virtualTourVideoJsonLd(): Record<string, unknown> {
 export const matterportTours: MatterportTour[] = [
   { name: 'Exhibit 2104', url: 'https://my.matterport.com/show/?m=773kQcHxLnz' },
   { name: 'Exhibit 605', url: 'https://my.matterport.com/show/?m=kthJKtuPTJ4' },
-  { name: 'Amenities at Exhibit On Superior', url: 'https://my.matterport.com/show/?m=CiWCwCJuZ9c' },
+  {
+    name: 'Amenities at Exhibit On Superior',
+    url: 'https://my.matterport.com/show/?m=CiWCwCJuZ9c',
+    // Matterport names this space just "Exhibit"; the heading is friendlier.
+    matterportName: 'Exhibit',
+  },
 ];
 
 /**
