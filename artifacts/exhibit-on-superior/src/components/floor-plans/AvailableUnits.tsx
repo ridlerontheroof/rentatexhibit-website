@@ -134,12 +134,17 @@ export function AvailableUnits() {
   return (
     <section id="available-units" className="px-4 pb-6" aria-labelledby="available-units-heading">
       <div className="container mx-auto">
-        <div className="border border-border bg-white p-6 md:p-8">
-          <div id="available-units-heading" className="mb-6 text-center">
-            <SplitHeadline script="Move-In Ready" caps="Available Residences" />
-            <p className="mt-2 text-lg leading-relaxed text-muted-foreground">
-              Check real-time availability and pricing below — updated automatically from our
-              leasing system — or connect with our leasing team to schedule a personal tour.
+        <div className="border border-border bg-white p-4 md:p-6">
+          <div id="available-units-heading" className="mb-3 text-center">
+            {/* Sized down from the default section headline so the first unit
+                card clears the fold on short laptop viewports (~520px). */}
+            <SplitHeadline
+              script="Move-In Ready"
+              caps="Available Residences"
+              className="[&_.headline-script]:text-[26px]! [&_.headline-caps]:text-[22px]! [&_.headline-rule]:mt-2!"
+            />
+            <p className="mt-1 text-sm leading-snug text-muted-foreground">
+              Real-time availability and pricing, updated automatically from our leasing system.
             </p>
           </div>
 

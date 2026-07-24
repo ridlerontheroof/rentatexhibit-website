@@ -161,6 +161,7 @@ export function FloorPlans() {
           titleScript="Move-In Ready Residences"
           title="Available Units & Floor Plans"
           subtitle="Studio, 1, 2 & 3 Bedroom Apartments in River North Chicago"
+          compact
         />
 
         <AvailableUnits />

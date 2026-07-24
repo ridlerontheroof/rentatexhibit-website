@@ -9,11 +9,21 @@ interface PageHeroProps {
   /** All-caps main line of the headline. */
   title: string;
   subtitle?: string;
+  /**
+   * Compact halves the hero height so pages whose real content lives directly
+   * below (e.g. Available Units cards) keep it above the fold on short
+   * laptop viewports. Default stays the full-height treatment.
+   */
+  compact?: boolean;
 }
 
-export function PageHero({ image, alt, titleScript, title, subtitle }: PageHeroProps) {
+export function PageHero({ image, alt, titleScript, title, subtitle, compact = false }: PageHeroProps) {
   return (
-    <div className="relative h-[400px] lg:h-[500px] overflow-hidden">
+    <div
+      className={`relative overflow-hidden ${
+        compact ? 'h-[240px] lg:h-[210px]' : 'h-[400px] lg:h-[500px]'
+      }`}
+    >
       {/* The page hero is the LCP element on every subpage — load it eagerly. */}
       <SmartImg
         src={image}
@@ -30,10 +40,18 @@ export function PageHero({ image, alt, titleScript, title, subtitle }: PageHeroP
             script={titleScript}
             caps={title}
             dark
-            className="mb-4 [&_.headline-rule]:mx-auto"
+            className={`${compact ? 'mb-2' : 'mb-4'} [&_.headline-rule]:mx-auto`}
           />
           {subtitle && (
-            <p className="text-lg md:text-xl max-w-2xl mx-auto">{subtitle}</p>
+            <p
+              className={
+                compact
+                  ? 'text-base md:text-lg max-w-2xl mx-auto'
+                  : 'text-lg md:text-xl max-w-2xl mx-auto'
+              }
+            >
+              {subtitle}
+            </p>
           )}
         </div>
       </div>
