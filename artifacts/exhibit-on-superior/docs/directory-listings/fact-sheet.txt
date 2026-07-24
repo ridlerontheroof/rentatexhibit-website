@@ -1,0 +1,121 @@
+EXHIBIT ON SUPERIOR — CANONICAL PROPERTY FACT SHEET
+Generated 2026-07-24 from the website's structured-data source of truth.
+Use these EXACT values on every directory listing. If a platform shows anything
+different, correct it to match this sheet.
+
+PROPERTY NAME
+Exhibit On Superior
+
+ADDRESS
+165 W Superior St, Chicago, IL 60654
+
+PHONE
+312-450-0635
+
+EMAIL
+exhibit@highlandptrs.com
+
+OFFICE HOURS
+Mon–Fri: 9 AM – 6 PM
+Sat: 10 AM – 5 PM
+Sun: 12 PM – 5 PM
+
+BEDROOM RANGE  (** most common listing error — must say through THREE bedrooms **)
+Studio, Convertible, 1, 2 & 3 Bedroom Apartments
+
+SQUARE FOOTAGE RANGE
+448–1528 sq ft
+
+PET POLICY
+Cats and dogs are welcome; confirm current pet fees, limits, and policy details with the leasing team.
+
+MANAGEMENT COMPANY
+Highland Management LLC
+
+WEBSITE
+https://www.rentatexhibit.com
+
+SCHEDULE A TOUR
+https://www.highlandptrs.com/exhibit-on-superior
+
+CURRENT AVAILABILITY
+https://www.highlandptrs.com/exhibit-on-superior
+
+GOOGLE MAPS LISTING
+https://www.google.com/maps?cid=15240815771270963454
+
+SOCIAL PROFILES
+https://www.facebook.com/exhibitonsuperior
+https://www.instagram.com/exhibitonsuperior
+https://www.youtube.com/@ExhibitonSuperior
+
+SHORT DESCRIPTION (copy-paste for "About" fields)
+Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago’s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.
+
+AMENITIES (copy-paste list)
+- Full-floor amenity deck overlooking the city and private park
+- Fitness center with two private training rooms
+- Cardio equipment and spin bikes
+- Boxing simulator
+- Lap pool
+- Sauna and wet lounge leading to outdoor deck
+- Outdoor hot tub
+- Four grilling stations
+- Four fire pits
+- Doggie spa and lounge
+- Tech lounge with charging stations and kitchen
+- Lounge with fireplace and big screen TV
+- Game area with arcade games and wall Scrabble
+- Private work and meeting rooms
+- Private dining room and party suite
+- Library nook
+- Floor-to-ceiling windows
+- Private balconies
+- In-home washer/dryer
+- Quartz countertops
+- Stainless-steel appliances
+- Wired for 1GB internet
+
+================================================================
+PER-PLATFORM CHECKLIST
+Verify every field above on each platform. Known defects are flagged.
+================================================================
+
+[!] TOP PRIORITY — KNOWN DEFECTS
+1. BEDROOM RANGE: at least one listing (Apartments.com-style copy) says
+   "studios through two bedrooms". The property offers studios THROUGH THREE
+   bedrooms. Fix everywhere it appears.
+2. FACEBOOK PHONE: an older Facebook result shows an outdated phone number.
+   The only correct phone is 312-450-0635.
+
+APARTMENTS.COM
+[ ] Property name, address, phone (312-450-0635)
+[!] Bedroom range — verify it says Studio–3 Bedroom (known "through two bedrooms" error)
+[ ] Square footage 448–1528 sq ft, pet policy, office hours
+[ ] Website + tour + availability links point to https://www.rentatexhibit.com
+
+FACEBOOK (facebook.com/exhibitonsuperior)
+[!] Phone number — replace any old number with 312-450-0635  (known stale-phone defect)
+[ ] Address, email, office hours, website link
+[ ] "About" text matches the short description above (studio–3 BR)
+
+GOOGLE BUSINESS PROFILE
+[ ] Name, address, phone exactly as above (NAP consistency)
+[ ] Office hours match the three ranges above
+[ ] Website https://www.rentatexhibit.com; appointment/tour link https://www.highlandptrs.com/exhibit-on-superior
+[ ] Category: Apartment complex; description mentions studio–3 bedroom
+
+ZILLOW / TRULIA
+[ ] Bedroom range Studio–3 BR and sqft 448–1528 sq ft
+[ ] Phone, email, pet policy, management company (Highland Management LLC)
+[ ] Listing links to https://www.rentatexhibit.com
+
+BIRDEYE
+[ ] Business name, address, phone, email, hours
+[ ] Website + review-destination links correct
+[ ] Synced categories/description say studio–3 bedroom
+
+YOUTUBE (@ExhibitonSuperior)
+[ ] Channel "About" description matches the short description (studio–3 BR)
+[ ] Channel links: https://www.rentatexhibit.com and https://www.highlandptrs.com/exhibit-on-superior
+[ ] Contact email exhibit@highlandptrs.com

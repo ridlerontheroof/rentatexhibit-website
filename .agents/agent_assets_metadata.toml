@@ -54,3 +54,15 @@ id = "qJ-BxuuC3ooGhS8TJ-NRp"
 uri = "file://realync-backup/download_realync_videos.sh"
 type = "unspecified"
 title = "Fixed download script — HTTP/1.1 + auto-resume"
+
+[[outputs]]
+id = "wnR8EGqpSwnfu5Azh1hRD"
+uri = "file://artifacts/exhibit-on-superior/docs/directory-listings/Exhibit-On-Superior-Fact-Sheet.pdf"
+type = "pdf"
+title = "Canonical Property Fact Sheet (PDF)"
+
+[[outputs]]
+id = "9_HIX5A-mch523nHZiwec"
+uri = "file://artifacts/exhibit-on-superior/docs/directory-listings/fact-sheet.txt"
+type = "text"
+title = "Fact Sheet — Copy-Paste Text Version"
