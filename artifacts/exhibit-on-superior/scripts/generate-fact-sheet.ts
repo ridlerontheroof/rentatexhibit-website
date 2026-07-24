@@ -6,8 +6,19 @@
  * Outputs (docs/directory-listings/):
  *   - fact-sheet.txt   plain text optimized for copy-paste into directory forms
  *   - fact-sheet.html  branded one-pager (printed to PDF by the caller)
+ *
+ * Freshness contract (runs automatically at the end of `pnpm build`):
+ *   - facts.json / fact-sheet.txt / fact-sheet.html are always rewritten from the
+ *     live schema model, so they can never go stale. The `generated` date is only
+ *     bumped when the facts actually change, keeping rebuilds diff-free.
+ *   - The PDF cannot be reprinted headlessly in this environment, so its
+ *     freshness is enforced by hash: fact-sheet.pdf.hash records the facts hash
+ *     the PDF was printed from. If the facts change, the build FAILS with clear
+ *     instructions until the PDF is reprinted (print fact-sheet.html to PDF)
+ *     and the run is repeated with --accept-pdf.
  */
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -51,7 +62,12 @@ const bedroomRange = CATEGORIES.filter((c: any) => beds.has(c.id))
   .join(', ');
 const amenities: string[] = complex.amenityFeature.map((a: any) => a.name);
 
-const facts = {
+const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'directory-listings');
+mkdirSync(outDir, { recursive: true });
+
+// Stable hash of every fact EXCEPT the generated date, so the date itself
+// never makes the sheet look changed.
+const coreFacts = {
   propertyName: complex.name as string,
   address: fullAddress,
   phone: complex.telephone as string,
@@ -69,12 +85,25 @@ const facts = {
   description: complex.description as string,
   socialProfiles: complex.sameAs as string[],
   amenities,
-  generated: new Date().toISOString().slice(0, 10),
 };
 
-const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'directory-listings');
-mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, 'facts.json'), JSON.stringify(facts, null, 2));
+const factsHash = createHash('sha256').update(JSON.stringify(coreFacts)).digest('hex');
+
+// Only bump the generated date when the facts actually changed, so a rebuild
+// with unchanged facts produces byte-identical output (no spurious diffs).
+const factsJsonPath = join(outDir, 'facts.json');
+let generated = new Date().toISOString().slice(0, 10);
+if (existsSync(factsJsonPath)) {
+  try {
+    const prev = JSON.parse(readFileSync(factsJsonPath, 'utf8'));
+    if (prev.factsHash === factsHash && typeof prev.generated === 'string') generated = prev.generated;
+  } catch {
+    /* unreadable previous file — regenerate with today's date */
+  }
+}
+
+const facts = { ...coreFacts, factsHash, generated };
+writeFileSync(factsJsonPath, JSON.stringify(facts, null, 2));
 
 /* ---------------- plain text ---------------- */
 const txt = `EXHIBIT ON SUPERIOR — CANONICAL PROPERTY FACT SHEET
@@ -258,3 +287,43 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
 </div></body></html>`;
 writeFileSync(join(outDir, 'fact-sheet.html'), html);
 console.log('Wrote facts.json, fact-sheet.txt, fact-sheet.html to', outDir);
+
+/* ---------------- PDF freshness guard ---------------- */
+// fact-sheet.pdf.hash records the facts hash the committed PDF was printed
+// from. When the facts change, the two hashes diverge and the build fails
+// until the PDF is reprinted and re-accepted.
+const pdfHashPath = join(outDir, 'fact-sheet.pdf.hash');
+const pdfPath = join(outDir, 'Exhibit-On-Superior-Fact-Sheet.pdf');
+const acceptPdf = process.argv.includes('--accept-pdf');
+
+if (acceptPdf) {
+  if (!existsSync(pdfPath)) {
+    console.error(`--accept-pdf given but ${pdfPath} does not exist.`);
+    process.exit(1);
+  }
+  writeFileSync(pdfHashPath, `${factsHash}\n`);
+  console.log('Recorded current facts hash for the PDF (fact-sheet.pdf.hash).');
+} else {
+  const recorded = existsSync(pdfHashPath) ? readFileSync(pdfHashPath, 'utf8').trim() : null;
+  if (recorded !== factsHash || !existsSync(pdfPath)) {
+    console.error(
+      [
+        '',
+        'FACT SHEET PDF IS STALE: the site facts (src/data/seo.ts / floorPlans.ts) have',
+        'changed since Exhibit-On-Superior-Fact-Sheet.pdf was printed.',
+        '',
+        'fact-sheet.txt / fact-sheet.html / facts.json were just regenerated and are',
+        'up to date. To fix the PDF:',
+        '  1. Open docs/directory-listings/fact-sheet.html in a browser and print it to',
+        '     PDF (Letter, no margins) as docs/directory-listings/Exhibit-On-Superior-Fact-Sheet.pdf',
+        '  2. Re-run: pnpm --filter @workspace/exhibit-on-superior exec tsx scripts/generate-fact-sheet.ts --accept-pdf',
+        '',
+        `  expected facts hash: ${factsHash}`,
+        `  PDF printed from:    ${recorded ?? '(no fact-sheet.pdf.hash recorded)'}`,
+        '',
+      ].join('\n'),
+    );
+    process.exit(1);
+  }
+  console.log('PDF is up to date with the current site facts.');
+}
