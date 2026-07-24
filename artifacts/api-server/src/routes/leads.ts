@@ -67,6 +67,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
       message: row.message,
       preferredDate: row.preferredDate,
       createdAt: row.createdAt,
+      unit: input.type === "tour" ? (input.unit ?? null) : null,
     };
 
     // Notify the leasing team out-of-band. This is intentionally not awaited

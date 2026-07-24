@@ -84,3 +84,27 @@ id = "k45vhROaVH6RAMtjjvVU8"
 uri = "file://artifacts/exhibit-on-superior/docs/floor-plan-map/exhibit-floor-plan-map.md"
 type = "text"
 title = "Floor Plan Logic & Unit Map (for ChatGPT)"
+
+[[outputs]]
+id = "QnyDhYO3bi1uEYzogq1DU"
+uri = "file://artifacts/api-server/email-previews/shots/confirmation-contact.png"
+type = "image"
+title = "Contact confirmation — funnel to Available Units"
+
+[[outputs]]
+id = "IkhkG_AE_2yE1XOYx3EdH"
+uri = "file://artifacts/api-server/email-previews/shots/confirmation-tour.png"
+type = "image"
+title = "Tour email — unit booking is now the confirmation step"
+
+[[outputs]]
+id = "9mevzBGc2ccmP551xuU2_"
+uri = "file://artifacts/api-server/email-previews/shots/lead-notification-tour.png"
+type = "image"
+title = "Leasing team lead notification (tour)"
+
+[[outputs]]
+id = "VGLHO_xvHx1OI6s_DVuJ5"
+uri = "file://artifacts/api-server/email-previews/shots/confirmation-tour-unit.png"
+type = "image"
+title = "Tour email — 'Request a Showing' variant (unit named)"

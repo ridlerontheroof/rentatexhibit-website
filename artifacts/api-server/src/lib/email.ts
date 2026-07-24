@@ -1,6 +1,15 @@
 import { logger } from "./logger";
 import { allowProspectConfirmation } from "./emailThrottle";
 import { sendRawEmail, SENDER_EMAIL, warnIfUnconfigured } from "./mailer";
+import {
+  renderLeadNotification,
+  renderProspectConfirmation,
+} from "./emailTemplates";
+import {
+  EMAIL_LOGO_BASE64,
+  EMAIL_LOGO_CONTENT_ID,
+  EMAIL_LOGO_MIME,
+} from "./emailLogo";
 
 /**
  * The leasing inbox that should be notified whenever a new lead comes in.
@@ -20,17 +29,12 @@ export interface LeadNotification {
   message: string | null;
   preferredDate: string | null;
   createdAt: Date;
-}
-
-function leadTypeLabel(type: string): string {
-  switch (type) {
-    case "contact":
-      return "Contact form";
-    case "tour":
-      return "Schedule a tour";
-    default:
-      return type;
-  }
+  /**
+   * Apartment number the tour lead named, when it came through the
+   * "Request a Showing" fallback form (units without a posted AppFolio
+   * listing). Not persisted on the leads table, so retry re-sends omit it.
+   */
+  unit?: string | null;
 }
 
 /**
@@ -52,46 +56,58 @@ function encodeHeader(value: string): string {
   return `=?UTF-8?B?${Buffer.from(safe, "utf-8").toString("base64")}?=`;
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+/**
+ * Assemble the MIME body shared by every branded email:
+ * multipart/related wrapping (a) a multipart/alternative text+HTML pair and
+ * (b) the white wordmark PNG attached inline via Content-ID, so the header
+ * logo renders in every client with no external hosting or image download.
+ */
+function buildMimeBody(
+  boundaryPrefix: string,
+  textBody: string,
+  htmlBody: string,
+): { contentType: string; body: string } {
+  const stamp = Date.now().toString(36);
+  const related = `${boundaryPrefix}_rel_${stamp}`;
+  const alternative = `${boundaryPrefix}_alt_${stamp}`;
+
+  const body = [
+    `--${related}`,
+    `Content-Type: multipart/alternative; boundary="${alternative}"`,
+    "",
+    `--${alternative}`,
+    "Content-Type: text/plain; charset=UTF-8",
+    "Content-Transfer-Encoding: base64",
+    "",
+    Buffer.from(textBody, "utf-8").toString("base64"),
+    `--${alternative}`,
+    "Content-Type: text/html; charset=UTF-8",
+    "Content-Transfer-Encoding: base64",
+    "",
+    Buffer.from(htmlBody, "utf-8").toString("base64"),
+    `--${alternative}--`,
+    `--${related}`,
+    `Content-Type: ${EMAIL_LOGO_MIME}; name="exhibit-logo.png"`,
+    "Content-Transfer-Encoding: base64",
+    `Content-ID: <${EMAIL_LOGO_CONTENT_ID}>`,
+    `Content-Disposition: inline; filename="exhibit-logo.png"`,
+    "",
+    EMAIL_LOGO_BASE64,
+    `--${related}--`,
+    "",
+  ].join("\r\n");
+
+  return {
+    contentType: `multipart/related; boundary="${related}"; type="multipart/alternative"`,
+    body,
+  };
 }
 
 function buildRawMessage(lead: LeadNotification): string {
   const fullName = `${lead.firstName} ${lead.lastName}`.trim();
-  const typeLabel = leadTypeLabel(lead.type);
-  const subject = `New ${typeLabel.toLowerCase()} lead: ${fullName}`;
+  const { subject, html: htmlBody, text: textBody } = renderLeadNotification(lead);
 
-  const rows: Array<[string, string | null]> = [
-    ["Type", typeLabel],
-    ["Name", fullName],
-    ["Email", lead.email],
-    ["Phone", lead.phone],
-    ["Preferred date", lead.preferredDate],
-    ["Message", lead.message],
-    ["Submitted", lead.createdAt.toISOString()],
-  ];
-
-  const textBody = rows
-    .map(([label, value]) => `${label}: ${value ?? "—"}`)
-    .join("\n");
-
-  const htmlRows = rows
-    .map(
-      ([label, value]) =>
-        `<tr><td style="padding:4px 12px 4px 0;font-weight:600;vertical-align:top;">${escapeHtml(
-          label,
-        )}</td><td style="padding:4px 0;">${escapeHtml(value ?? "—")}</td></tr>`,
-    )
-    .join("");
-  const htmlBody = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;"><h2 style="margin:0 0 12px;">New ${escapeHtml(
-    typeLabel.toLowerCase(),
-  )} lead</h2><table style="border-collapse:collapse;font-size:14px;">${htmlRows}</table></div>`;
-
-  const boundary = `lead_boundary_${Date.now().toString(36)}`;
+  const { contentType, body } = buildMimeBody("lead", textBody, htmlBody);
   const headers = [
     `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
     `To: ${LEASING_INBOX_EMAIL}`,
@@ -99,22 +115,7 @@ function buildRawMessage(lead: LeadNotification): string {
     `Reply-To: ${encodeHeader(fullName)} <${sanitizeHeaderValue(lead.email)}>`,
     `Subject: ${encodeHeader(subject)}`,
     "MIME-Version: 1.0",
-    `Content-Type: multipart/alternative; boundary="${boundary}"`,
-  ].join("\r\n");
-
-  const body = [
-    `--${boundary}`,
-    "Content-Type: text/plain; charset=UTF-8",
-    "Content-Transfer-Encoding: base64",
-    "",
-    Buffer.from(textBody, "utf-8").toString("base64"),
-    `--${boundary}`,
-    "Content-Type: text/html; charset=UTF-8",
-    "Content-Transfer-Encoding: base64",
-    "",
-    Buffer.from(htmlBody, "utf-8").toString("base64"),
-    `--${boundary}--`,
-    "",
+    `Content-Type: ${contentType}`,
   ].join("\r\n");
 
   // Full RFC 2822 message; the SMTP transport sends it as-is.
@@ -128,49 +129,15 @@ function buildRawMessage(lead: LeadNotification): string {
 const PROPERTY_NAME = "Exhibit on Superior";
 
 /**
- * Build the subject and body copy for the prospect confirmation email,
- * tailored to the kind of form the prospect submitted.
- */
-function buildProspectConfirmationCopy(lead: LeadNotification): {
-  subject: string;
-  intro: string;
-} {
-  if (lead.type === "tour") {
-    const when = lead.preferredDate?.trim();
-    const datePhrase = when ? `for ${when}` : "";
-    return {
-      subject: "We received your tour request",
-      intro: `Your tour request${
-        datePhrase ? ` ${datePhrase}` : ""
-      } was received — we'll confirm your time soon.`,
-    };
-  }
-
-  return {
-    subject: "Thanks for reaching out",
-    intro: "Thanks for reaching out — we'll be in touch within one business day.",
-  };
-}
-
-/**
  * Build the base64url-encoded RFC 2822 message for the prospect confirmation
  * email. Sent to the address the prospect submitted.
  */
 function buildProspectConfirmationMessage(lead: LeadNotification): string {
   const fullName = `${lead.firstName} ${lead.lastName}`.trim();
-  const { subject, intro } = buildProspectConfirmationCopy(lead);
+  const { subject, html: htmlBody, text: textBody } =
+    renderProspectConfirmation(lead);
 
-  const greeting = lead.firstName.trim() ? `Hi ${lead.firstName.trim()},` : "Hi,";
-  const signoff = `— The ${PROPERTY_NAME} team`;
-
-  const textBody = [greeting, "", intro, "", signoff].join("\n");
-  const htmlBody = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;font-size:14px;line-height:1.5;"><p style="margin:0 0 12px;">${escapeHtml(
-    greeting,
-  )}</p><p style="margin:0 0 12px;">${escapeHtml(
-    intro,
-  )}</p><p style="margin:0;">${escapeHtml(signoff)}</p></div>`;
-
-  const boundary = `confirm_boundary_${Date.now().toString(36)}`;
+  const { contentType, body } = buildMimeBody("confirm", textBody, htmlBody);
   const headers = [
     `To: ${encodeHeader(fullName)} <${sanitizeHeaderValue(lead.email)}>`,
     // Sent as the website's dedicated account, but replies go to the leasing
@@ -179,22 +146,7 @@ function buildProspectConfirmationMessage(lead: LeadNotification): string {
     `Reply-To: ${encodeHeader(PROPERTY_NAME)} <${LEASING_INBOX_EMAIL}>`,
     `Subject: ${encodeHeader(subject)}`,
     "MIME-Version: 1.0",
-    `Content-Type: multipart/alternative; boundary="${boundary}"`,
-  ].join("\r\n");
-
-  const body = [
-    `--${boundary}`,
-    "Content-Type: text/plain; charset=UTF-8",
-    "Content-Transfer-Encoding: base64",
-    "",
-    Buffer.from(textBody, "utf-8").toString("base64"),
-    `--${boundary}`,
-    "Content-Type: text/html; charset=UTF-8",
-    "Content-Transfer-Encoding: base64",
-    "",
-    Buffer.from(htmlBody, "utf-8").toString("base64"),
-    `--${boundary}--`,
-    "",
+    `Content-Type: ${contentType}`,
   ].join("\r\n");
 
   // Full RFC 2822 message; the SMTP transport sends it as-is.

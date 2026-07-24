@@ -97,7 +97,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/schedule-a-tour" className="hover:text-primary transition-colors">
+                <Link href="/available-units" className="hover:text-primary transition-colors">
                   Schedule a Tour
                 </Link>
               </li>

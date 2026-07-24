@@ -10,3 +10,5 @@ The generate-fact-sheet script reprints its PDF automatically when facts change:
 **Why:** Replit's workspace nix store ships playwright-browsers-chromium even though playwright isn't installed; the CLI print honors `@page { size: Letter; margin: 0 }` and yields a single Letter page. The deploy pipeline may be pure Node without a browser — hence the fallback must stay.
 
 **How to apply:** Any future "render HTML to PDF/image at build time" need can use the same binary-discovery + CLI approach instead of adding a browser dependency. D-Bus errors on stderr are harmless.
+
+**Update (Jul 2026):** the `~/.cache/ms-playwright/chromium-*` copy fails with missing `libglib-2.0.so.0`; use the `/nix/store/*-playwright-browsers-chromium/chromium-*/chrome-linux/chrome` binary instead — it also works for `--screenshot=` captures of local HTML (used for email template previews).

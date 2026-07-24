@@ -69,7 +69,7 @@ export function FaqHub() {
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
             <SplitHeadline script="Still Curious?" caps="Come See It in Person" dark className="mb-6" />
-            <Link href="/schedule-a-tour" className="btn-gold-outline inline-block">
+            <Link href="/available-units" className="btn-gold-outline inline-block">
               Schedule a Tour
             </Link>
           </div>

@@ -225,7 +225,7 @@ describe('site-wide static images', () => {
       }
     }
     expect(bad, `corrupted or empty images: ${bad.join(', ')}`).toEqual([]);
-  });
+  }, 30_000); // full-disk image scan can exceed the 5s default under parallel test load
 
   it('every IMAGE_MANIFEST entry matches the real pixel dimensions on disk', () => {
     // Manifest dimensions reserve layout space; if a re-exported image drifts
@@ -354,6 +354,10 @@ describe('site-wide static images', () => {
     const orphans = listFiles(IMAGES_DIR)
       .map((f) => '/' + relative(PUBLIC_DIR, f).split('\\').join('/'))
       .filter((p) => !p.startsWith('/images/floor-plans/')) // covered by floorPlans.test.ts
+      // Referenced externally by the API server's branded lead emails
+      // (artifacts/api-server/src/lib/emailTemplates.ts BRAND.logoUrl), not by
+      // web source code — hosted here so email clients load an absolute URL.
+      .filter((p) => !p.startsWith('/images/email/'))
       .filter((p) => /\.(?:png|jpe?g|webp|gif|svg|avif)$/i.test(p)) // ignore non-image files (e.g. optimizer's CSV report)
       .filter((p) => !known.has(p));
 

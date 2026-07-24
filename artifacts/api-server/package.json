@@ -8,7 +8,8 @@
     "build": "node ./build.mjs",
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "preview:emails": "esbuild scripts/render-email-previews.ts --bundle --platform=node --format=esm --outfile=/tmp/render-email-previews.mjs --log-level=warning && node /tmp/render-email-previews.mjs"
   },
   "dependencies": {
     "@replit/connectors-sdk": "^0.4.1",

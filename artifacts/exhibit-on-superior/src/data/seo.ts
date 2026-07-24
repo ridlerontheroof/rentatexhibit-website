@@ -445,7 +445,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Schedule a tour of Exhibit On Superior in River North Chicago using the online tour request form, or email exhibit@highlandptrs.com or call 312-450-0635.',
     quickAnswer:
-      'Prospective renters can schedule a tour of Exhibit On Superior using the tour request form on this page — including requesting a specific available apartment — or by emailing exhibit@highlandptrs.com or calling 312-450-0635.',
+      'Prospective renters can schedule a tour of Exhibit On Superior by choosing an available apartment on this page and booking directly from its listing, or by requesting a showing with the leasing team — also reachable at exhibit@highlandptrs.com or 312-450-0635.',
     faqs: [
       {
         q: 'How do I schedule a tour?',

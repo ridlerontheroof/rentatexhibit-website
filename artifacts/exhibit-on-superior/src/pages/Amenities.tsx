@@ -186,7 +186,7 @@ export function Amenities() {
                 <p className="leading-relaxed text-muted-foreground">
                   Amenity hours and reservation details (like the private dining room and training
                   rooms) aren&rsquo;t published here &mdash; the leasing team can walk you through
-                  them on a <Link href="/schedule-a-tour" className="text-primary underline">tour</Link>,
+                  them on a <Link href="/available-units" className="text-primary underline">tour</Link>,
                   or see homes and finishes in the{' '}
                   <Link href="/apartment-guide" className="text-primary underline">Apartment Guide</Link>.
                 </p>

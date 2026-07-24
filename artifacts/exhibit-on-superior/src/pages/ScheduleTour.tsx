@@ -11,7 +11,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Seo } from '../components/Seo';
-import { trackLead } from '../lib/analytics';
+import { trackLead, trackOutboundClick } from '../lib/analytics';
+import { tourUrlForListing } from '../components/floor-plans/UnitGalleryLightbox';
+import { formatRent, groupForUnit } from '../components/floor-plans/AvailableUnits';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 
@@ -114,7 +116,77 @@ export function ScheduleTour() {
 
         <QuickAnswer path="/schedule-a-tour" />
 
-        <section className="py-16 px-4">
+        {/* Primary path: book a tour from a specific residence so the
+            request lands in the leasing system attached to that unit. */}
+        {availableUnits.length > 0 && (
+          <section className="py-16 px-4 bg-muted">
+            <div className="container mx-auto max-w-5xl">
+              <h2 className="text-3xl uppercase tracking-wider mb-3 text-center">
+                Pick the Residence You'd Like to See
+              </h2>
+              <p className="text-lg leading-relaxed mb-10 text-center max-w-2xl mx-auto">
+                Choose an available apartment and book your tour right from its
+                listing — the time you pick there goes straight onto our
+                calendar, attached to that exact home.
+              </p>
+              <ul className="divide-y divide-border border border-border bg-white">
+                {availableUnits.map((u) => {
+                  const group = groupForUnit(u.unit);
+                  const rent = formatRent(u.rent);
+                  const tourUrl = u.listingUrl ? tourUrlForListing(u.listingUrl) : null;
+                  return (
+                    <li
+                      key={u.unit}
+                      className="flex flex-wrap items-center justify-between gap-4 p-5"
+                    >
+                      <div>
+                        <p className="uppercase tracking-wider font-semibold">
+                          Apartment {u.unit}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {[group?.typeLabel, rent].filter(Boolean).join(' · ')}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Link
+                          href={`/available-units/${u.unit}`}
+                          className="border border-border px-4 py-2 text-xs uppercase tracking-wider transition-colors hover:border-primary hover:text-primary"
+                        >
+                          View details
+                        </Link>
+                        {tourUrl ? (
+                          <a
+                            href={tourUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() =>
+                              trackOutboundClick('tour', tourUrl, 'schedule_tour_page', {
+                                floorPlan: u.unit,
+                              })
+                            }
+                            className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                          >
+                            Schedule a tour
+                          </a>
+                        ) : (
+                          <a
+                            href="#request-a-showing"
+                            onClick={() => setValue('unit', u.unit)}
+                            className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                          >
+                            Schedule a tour
+                          </a>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </section>
+        )}
+
+        <section id="request-a-showing" className="py-16 px-4">
           <div className="container mx-auto max-w-5xl">
             {submitted ? (
               <div
@@ -141,10 +213,10 @@ export function ScheduleTour() {
                 {/* Left Column - Info */}
                 <div>
                   <p className="text-lg leading-relaxed mb-8">
-                    Ready to find your next home in the heart of River North? Schedule a virtual or in-person tour today and see for yourself what makes Exhibit on Superior stand out. Step inside to experience our stylish finishes, expansive amenities, and a location that puts the very best of Chicago right at your doorstep.
-                  </p>
-                  <p className="text-lg leading-relaxed mb-8 font-semibold">
-                    Your future home is waiting.
+                    Don't see the right fit above, or not sure which residence
+                    you want to see yet? Tell us what you're looking for and a
+                    member of our leasing team will arrange a showing with you
+                    directly.
                   </p>
 
                   <div className="bg-dark-section text-white p-6 mb-8">
@@ -171,7 +243,7 @@ export function ScheduleTour() {
 
                 {/* Right Column - Form */}
                 <div className="bg-muted p-8 border border-border">
-                  <h2 className="text-2xl uppercase tracking-wider mb-6">Request a Tour</h2>
+                  <h2 className="text-2xl uppercase tracking-wider mb-6">Request a Showing</h2>
 
                   {!isOnline && (
                     <div
