@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "check:fold": "node scripts/check-units-above-fold.mjs",
-    "check:fold:built": "node scripts/check-units-above-fold.mjs --built"
+    "check:fold:built": "node scripts/check-units-above-fold.mjs --built",
+    "check:prepublish": "pnpm run build && pnpm run check:fold:built"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
