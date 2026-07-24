@@ -38,7 +38,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Pre-publish layout guard: the `fold` validation step (`pnpm --filter @workspace/exhibit-on-superior run check:fold`) runs `scripts/check-units-above-fold.mjs` in headless Chromium and blocks publish if the first unit card falls below the fold or the skeleton geometry drifts. It requires a Chromium binary (CHROME_BIN, PATH, ms-playwright cache, or nix store playwright-browsers) and fails loudly — never silently skips — when none is found.
 
 ## Pointers
 
