@@ -93,13 +93,16 @@ function UnitRowsSkeleton() {
 }
 
 /**
- * Dev-only layout probe used by scripts/check-units-above-fold.mjs to verify
- * the skeleton rows share the real rows' geometry. `?layoutProbe=skeleton`
+ * Layout probe used by scripts/check-units-above-fold.mjs to verify the
+ * skeleton rows share the real rows' geometry. `?layoutProbe=skeleton`
  * forces the skeleton; `?layoutProbe=mock` renders deterministic mock unit
- * rows through the real row markup. Compiled out of production builds.
+ * rows through the real row markup. Kept in production builds too so the
+ * guard's `--built` mode can run the identical checks against the exact
+ * bundle visitors receive; it only activates via the query param, which
+ * normal visitors never set, and never runs during SSR/prerender.
  */
 function layoutProbeMode(): 'skeleton' | 'mock' | null {
-  if (!import.meta.env.DEV || import.meta.env.SSR) return null;
+  if (import.meta.env.SSR) return null;
   const value = new URLSearchParams(window.location.search).get('layoutProbe');
   return value === 'skeleton' || value === 'mock' ? value : null;
 }

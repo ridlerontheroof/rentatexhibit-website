@@ -16,7 +16,15 @@
 // does (nix store playwright-browsers derivations on Replit), and speaks the
 // Chrome DevTools Protocol over Node's built-in WebSocket.
 //
-// Run: node scripts/check-units-above-fold.mjs
+// Two modes:
+//   - Dev (default): spawns the Vite dev server, matching what you see in
+//     the workspace preview.
+//       node scripts/check-units-above-fold.mjs          (pnpm run check:fold)
+//   - Built (--built): serves the prerendered production build in dist/ via
+//     `vite preview` — the exact HTML/CSS/JS visitors receive (prerendered
+//     head/body, baked availability snapshot, minified CSS) — and runs the
+//     identical assertions. Requires a prior `pnpm run build`.
+//       node scripts/check-units-above-fold.mjs --built  (pnpm run check:fold:built)
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
@@ -25,6 +33,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+// --built: measure the prerendered production build (dist/) instead of the
+// dev server, so the guard checks the exact pages visitors will see.
+const BUILT = process.argv.includes('--built');
 
 const VIEWPORTS = [
   { name: 'short laptop', width: 1024, height: 520 },
@@ -179,22 +191,41 @@ async function main() {
     );
   }
 
-  // 1. Throwaway Vite dev server for this artifact.
+  // 1. Throwaway app server for this artifact: the Vite dev server by
+  // default, or `vite preview` over the prerendered production build when
+  // --built is passed.
+  if (BUILT) {
+    const missing = ['index.html', path.join('available-units', 'index.html')].filter(
+      (f) => !existsSync(path.join(root, 'dist', 'public', f)),
+    );
+    if (missing.length) {
+      throw new Error(
+        `--built requires a production build, but dist/public is missing ${missing.join(', ')}. ` +
+          'Run `pnpm --filter @workspace/exhibit-on-superior run build` first.',
+      );
+    }
+  }
   const appPort = await freePort();
-  const vite = spawn(
-    path.join(root, 'node_modules', '.bin', 'vite'),
-    ['--config', 'vite.config.ts', '--host', '127.0.0.1', '--port', String(appPort), '--strictPort'],
-    {
-      cwd: root,
-      // vite.config.ts requires PORT; --port/--strictPort above still win.
-      env: { ...process.env, PORT: String(appPort) },
-      stdio: ['ignore', 'pipe', 'pipe'],
-    },
-  );
+  const viteArgs = BUILT
+    ? ['preview', '--config', 'vite.config.ts', '--host', '127.0.0.1', '--port', String(appPort), '--strictPort']
+    : ['--config', 'vite.config.ts', '--host', '127.0.0.1', '--port', String(appPort), '--strictPort'];
+  const vite = spawn(path.join(root, 'node_modules', '.bin', 'vite'), viteArgs, {
+    cwd: root,
+    // vite.config.ts requires PORT; --port/--strictPort above still win.
+    env: { ...process.env, PORT: String(appPort) },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
   children.push(vite);
   vite.on('exit', (code) => {
-    if (code !== null && code !== 0) console.error(`vite dev server exited with code ${code}`);
+    if (code !== null && code !== 0) {
+      console.error(`vite ${BUILT ? 'preview' : 'dev'} server exited with code ${code}`);
+    }
   });
+  console.log(
+    BUILT
+      ? 'Checking the prerendered production build (dist/public via vite preview).'
+      : 'Checking the Vite dev server (run with --built to check the production build).',
+  );
   const pageUrl = `http://127.0.0.1:${appPort}/available-units`;
   await waitForHttp(`http://127.0.0.1:${appPort}/`);
 
