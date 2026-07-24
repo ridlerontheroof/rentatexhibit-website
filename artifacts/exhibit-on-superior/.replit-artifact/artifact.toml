@@ -262,6 +262,46 @@ from = "/apartments/il/chicago/apply/"
 to = "/apartments/il/chicago/apply/index.html"
 
 [[services.production.rewrites]]
+from = "/apartment-guide"
+to = "/apartment-guide/index.html"
+
+[[services.production.rewrites]]
+from = "/apartment-guide/"
+to = "/apartment-guide/index.html"
+
+[[services.production.rewrites]]
+from = "/fees"
+to = "/fees/index.html"
+
+[[services.production.rewrites]]
+from = "/fees/"
+to = "/fees/index.html"
+
+[[services.production.rewrites]]
+from = "/parking-transportation"
+to = "/parking-transportation/index.html"
+
+[[services.production.rewrites]]
+from = "/parking-transportation/"
+to = "/parking-transportation/index.html"
+
+[[services.production.rewrites]]
+from = "/application-guide"
+to = "/application-guide/index.html"
+
+[[services.production.rewrites]]
+from = "/application-guide/"
+to = "/application-guide/index.html"
+
+[[services.production.rewrites]]
+from = "/faq"
+to = "/faq/index.html"
+
+[[services.production.rewrites]]
+from = "/faq/"
+to = "/faq/index.html"
+
+[[services.production.rewrites]]
 from = "/*"
 to = "/index.html"
 

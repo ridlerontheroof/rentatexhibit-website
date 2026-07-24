@@ -108,31 +108,34 @@ engines that reward specific facts).
 
 **1. One-time pet fee amount**
    - Visitors currently see: “What are the pet fees?” _(Pet Friendly page — FAQ)_
-   - Answer:
+   - Answer: One time pet fee (non-refundable)
+      - Dog*: $650/$750 - two dog maximum
+      - Cat: $325 - two cat maxmimum
+      *Breed Restrictions. Please see Leasing Consultant for details.
 
    `________________________________________________________________`
 
 **2. Pet deposit amount (if separate from the fee)**
    - Visitors currently see: “What are the pet fees?” _(Pet Friendly page — FAQ)_
-   - Answer:
+   - Answer: No refundable deposit necessary.
 
    `________________________________________________________________`
 
 **3. Monthly pet rent per pet**
    - Visitors currently see: “What are the pet fees?” _(Pet Friendly page — FAQ)_
-   - Answer:
+   - Answer: 
 
    `________________________________________________________________`
 
 **4. Restricted breeds list (or "no breed restrictions")**
    - Visitors currently see: “Should renters confirm current pet rules?” _(Pet Friendly page — policy list)_
-   - Answer:
+   - Answer: Breed restrictions apply. Please see Leasing Consultant for details.
 
    `________________________________________________________________`
 
 **5. Weight limit (or "no weight limit")**
    - Visitors currently see: “Should renters confirm current pet rules?” _(Pet Friendly page — policy list)_
-   - Answer:
+   - Answer: No weight limits.
 
    `________________________________________________________________`
 
@@ -140,19 +143,19 @@ engines that reward specific facts).
 
 **1. Income requirement (e.g. monthly income ≥ 3× rent) and acceptable proof**
    - Visitors currently see: “What income is required to qualify?” _(Application Guide — FAQ)_
-   - Answer:
+   - Answer: 3:1 income to rent ratio without co-signer.
 
    `________________________________________________________________`
 
 **2. Credit screening: minimum score or criteria, and what causes denial**
    - Visitors currently see: “What income is required to qualify?” _(Application Guide — Qualification & Screening)_
-   - Answer:
+   - Answer: Minimum credit score: 700 without co-signer. 600+ with qualified co-signer.
 
    `________________________________________________________________`
 
 **3. Guarantor/co-signer policy (accepted? income multiple? services like TheGuarantors?)**
    - Visitors currently see: “Are guarantors accepted?” _(Application Guide — FAQ)_
-   - Answer:
+   - Answer: Yes, we will accept qualified co-signers.
 
    `________________________________________________________________`
 
@@ -164,19 +167,19 @@ engines that reward specific facts).
 
 **5. Typical approval timeline (e.g. 2–3 business days)**
    - Visitors currently see: “How long does approval take?” _(Application Guide — FAQ)_
-   - Answer:
+   - Answer: 1-2 business days
 
    `________________________________________________________________`
 
 **6. Offered lease terms (e.g. 6–18 months) and any short-term premium**
    - Visitors currently see: “What lease terms are available?” _(Application Guide — FAQ)_
-   - Answer:
+   - Answer: 12+ month terms available. See leasing consultant for details.
 
    `________________________________________________________________`
 
 **7. Exact documents required with an application**
    - Visitors currently see: “What should I have ready to apply?” _(Application Guide — FAQ)_
-   - Answer:
+   - Answer: State or Federal issued ID with photo. 
 
    `________________________________________________________________`
 
@@ -188,7 +191,7 @@ engines that reward specific facts).
 
 **9. Renters insurance: required? minimum liability? must the property be listed as interested party?**
    - Visitors currently see: “(not yet answered on site)” _(Application Guide / Fees page)_
-   - Answer:
+   - Answer: Minimum liability to landlord insurance (LLI) coverage is $300,000
 
    `________________________________________________________________`
 
@@ -196,7 +199,7 @@ engines that reward specific facts).
 
 **1. Furnished options (or partner like Landing/Blueground), or confirm "unfurnished only"**
    - Visitors currently see: “Are furnished apartments available?” _(Apartment Guide — FAQ)_
-   - Answer:
+   - Answer: Unfurnished only.
 
    `________________________________________________________________`
 
@@ -216,13 +219,13 @@ engines that reward specific facts).
 
 **1. Front desk / concierge: 24-hour? staffed hours?**
    - Visitors currently see: “Is there a 24-hour concierge?” _(Amenities page — FAQ)_
-   - Answer:
+   - Answer: The front desk is staffed 24-hours a day.
 
    `________________________________________________________________`
 
 **2. Amenity floor hours (fitness center, pool, lounges)**
    - Visitors currently see: “(site copy defers hours)” _(Amenities page — Access & Hours)_
-   - Answer:
+   - Answer: 
 
    `________________________________________________________________`
 
