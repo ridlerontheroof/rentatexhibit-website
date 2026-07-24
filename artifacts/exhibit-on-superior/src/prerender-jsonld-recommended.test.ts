@@ -8,6 +8,7 @@ import {
   checkRecommendedProperties,
   RECOMMENDED_PROPERTIES,
   SITE_RECOMMENDED_ALLOWLIST,
+  NO_CHECKLIST_TYPES,
 } from '../scripts/validate-jsonld.mjs';
 
 // Task: beyond structural validity, schema.org types have *recommended*
@@ -97,6 +98,57 @@ describe('recommended-property checklist', () => {
       }),
     ]) as string[];
     expect(warnings).toEqual([]);
+  });
+});
+
+describe('no emitted @type escapes the checklist decision', () => {
+  // The soft check silently skips any @type without a RECOMMENDED_PROPERTIES
+  // entry. This guard keeps that honest: every distinct @type emitted by any
+  // route must either have a checklist or be explicitly declared "no
+  // checklist needed". A brand-new type (Event, Offer, Review, ...) fails
+  // here until someone decides which bucket it belongs in.
+  const collectTypes = (value: unknown, into: Set<string>): void => {
+    if (Array.isArray(value)) {
+      value.forEach((v) => collectTypes(v, into));
+      return;
+    }
+    if (value === null || typeof value !== 'object') return;
+    const node = value as Record<string, unknown>;
+    const type = node['@type'];
+    if (typeof type === 'string' && type.length > 0) into.add(type);
+    if (Array.isArray(type)) type.forEach((t) => typeof t === 'string' && into.add(t));
+    for (const [k, v] of Object.entries(node)) {
+      if (!k.startsWith('@') || k === '@graph') collectTypes(v, into);
+    }
+  };
+
+  it('every emitted @type has a checklist or is explicitly checklist-free', async () => {
+    const emitted = new Set<string>();
+    for (const routePath of Object.keys(PAGE_SEO)) {
+      const { head } = await render(routePath);
+      for (const raw of extractJsonLdPayloads(head) as string[]) {
+        collectTypes(JSON.parse(raw), emitted);
+      }
+    }
+    expect(emitted.size).toBeGreaterThan(0);
+
+    const noChecklist = new Set(NO_CHECKLIST_TYPES as string[]);
+    const undecided = [...emitted].filter(
+      (t) => !(t in RECOMMENDED_PROPERTIES) && !noChecklist.has(t),
+    );
+    expect(
+      undecided,
+      `New structured-data type(s) emitted without a quality decision: ${undecided.join(', ')}. ` +
+        'Add a RECOMMENDED_PROPERTIES checklist in scripts/validate-jsonld.mjs, or — if schema.org ' +
+        'recommends nothing extra for it — add it to NO_CHECKLIST_TYPES.',
+    ).toEqual([]);
+
+    // Keep the "no checklist needed" list honest too: entries must still be
+    // emitted somewhere and must not ALSO have a checklist.
+    for (const t of noChecklist) {
+      expect(emitted.has(t), `stale NO_CHECKLIST_TYPES entry: ${t} is no longer emitted`).toBe(true);
+      expect(t in RECOMMENDED_PROPERTIES, `${t} is in both lists; remove it from one`).toBe(false);
+    }
   });
 });
 

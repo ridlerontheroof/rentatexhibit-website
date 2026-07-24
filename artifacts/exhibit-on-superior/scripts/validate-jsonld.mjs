@@ -154,7 +154,45 @@ export const RECOMMENDED_PROPERTIES = {
     ['contentUrl', 'embedUrl'],
     'duration',
   ],
+  // Matterport tours ship as MediaObject (VideoObject would demand
+  // uploadDate/thumbnail we cannot source truthfully).
+  MediaObject: ['name', 'description', ['contentUrl', 'embedUrl']],
+  // Floor-plan groups on /floor-plans.
+  Apartment: ['name', 'image', 'floorSize'],
+  // Review snippets on /reviews. No datePublished checklist entry: quotes are
+  // curated + live-merged without reliable per-review dates.
+  Review: ['author', 'reviewRating', 'reviewBody'],
+  AggregateRating: ['ratingValue', ['reviewCount', 'ratingCount'], 'bestRating', 'worstRating'],
+  Rating: ['ratingValue', 'bestRating', 'worstRating'],
 };
+
+/**
+ * @types the site emits that deliberately carry NO recommended-property
+ * checklist — small leaf/value nodes where schema.org recommends nothing
+ * beyond what the structural validator already enforces. Every emitted @type
+ * must appear either in RECOMMENDED_PROPERTIES or here; the vitest suite
+ * fails when a brand-new type ships without that decision being made.
+ * @type {string[]}
+ */
+export const NO_CHECKLIST_TYPES = [
+  // Value/leaf nodes: the structural validator already requires @type, and
+  // schema.org recommends nothing further for how this site uses them.
+  'PostalAddress',
+  'GeoCoordinates',
+  'LocationFeatureSpecification',
+  'QuantitativeValue',
+  'OpeningHoursSpecification',
+  // containedInPlace chain (Place → City → State → Country): name-only by design.
+  'Place',
+  'City',
+  'State',
+  'Country',
+  // potentialAction entries carry only a target URL + name.
+  'ScheduleAction',
+  'ViewAction',
+  // Review authors: name-only Person nodes per Google review-snippet docs.
+  'Person',
+];
 
 /**
  * Intentional omissions for THIS site, as "Type.prop" entries (any-of groups
