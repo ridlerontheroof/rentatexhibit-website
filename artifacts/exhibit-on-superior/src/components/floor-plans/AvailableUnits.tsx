@@ -36,28 +36,91 @@ function UnitThumb({ photoUrl, unit, eager = false }: { photoUrl: string; unit: 
  * be a blank gap that pops in late. Matches the real row geometry (thumb +
  * text lines + action buttons) so the swap to live cards is seamless.
  */
+function SkeletonText({ className = '', children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <span className={`animate-pulse select-none bg-muted text-transparent ${className}`}>
+      {children}
+    </span>
+  );
+}
+
 function UnitRowsSkeleton() {
+  // The li mirrors the real unit-row markup below (same wrappers, spacing and
+  // typography classes) with transparent placeholder text, so its geometry
+  // tracks the real rows automatically at every breakpoint. Verified by the
+  // skeleton-geometry phase of scripts/check-units-above-fold.mjs.
   return (
     <ul className="divide-y divide-border" aria-hidden="true" data-testid="units-skeleton">
       {[0, 1, 2].map((i) => (
         <li key={i} className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-4">
-            <span className="h-[84px] w-[112px] shrink-0 animate-pulse bg-muted" />
-            <span className="flex flex-col gap-2">
-              <span className="h-5 w-24 animate-pulse bg-muted" />
-              <span className="h-5 w-28 animate-pulse bg-muted" />
-            </span>
-            <span className="hidden h-4 w-64 animate-pulse bg-muted lg:block" />
+          <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 lg:contents">
+            <span className="block h-[84px] w-[112px] shrink-0 animate-pulse self-start border border-border bg-muted lg:self-center" />
+            <div className="contents lg:flex lg:flex-1 lg:flex-wrap lg:items-start lg:gap-x-6 lg:gap-y-1">
+              <span className="flex w-28 shrink-0 flex-col">
+                <SkeletonText className="text-lg font-semibold uppercase tracking-wider">Apt 0000</SkeletonText>
+                <SkeletonText className="text-lg font-semibold">$0,000/mo</SkeletonText>
+              </span>
+              <span className="col-span-2 flex min-w-0 flex-col gap-y-1 pt-0.5 lg:col-auto lg:flex-1">
+                <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                  {['0 Bed', '0 Bath', '0,000 sq ft', 'Cats & dogs OK'].map((label) => (
+                    <span
+                      key={label}
+                      className="inline-flex animate-pulse select-none items-center gap-1.5 bg-muted text-transparent"
+                    >
+                      <span className="h-4 w-4" />
+                      {label}
+                    </span>
+                  ))}
+                  <SkeletonText>Available now</SkeletonText>
+                </span>
+                <SkeletonText className="text-sm">Placeholder listing headline</SkeletonText>
+              </span>
+            </div>
           </div>
-          <span className="flex shrink-0 gap-3">
-            <span className="h-9 w-32 animate-pulse bg-muted" />
-            <span className="h-9 w-28 animate-pulse bg-muted" />
+          <span className="flex shrink-0 flex-wrap items-center gap-3">
+            <SkeletonText className="border border-transparent px-4 py-2 text-xs uppercase tracking-wider">
+              View details
+            </SkeletonText>
+            <SkeletonText className="border border-transparent px-4 py-2 text-xs uppercase tracking-wider">
+              Schedule a tour
+            </SkeletonText>
+            <SkeletonText className="px-4 py-2 text-xs uppercase tracking-wider">Apply now</SkeletonText>
           </span>
         </li>
       ))}
     </ul>
   );
 }
+
+/**
+ * Dev-only layout probe used by scripts/check-units-above-fold.mjs to verify
+ * the skeleton rows share the real rows' geometry. `?layoutProbe=skeleton`
+ * forces the skeleton; `?layoutProbe=mock` renders deterministic mock unit
+ * rows through the real row markup. Compiled out of production builds.
+ */
+function layoutProbeMode(): 'skeleton' | 'mock' | null {
+  if (!import.meta.env.DEV || import.meta.env.SSR) return null;
+  const value = new URLSearchParams(window.location.search).get('layoutProbe');
+  return value === 'skeleton' || value === 'mock' ? value : null;
+}
+
+/** Representative units for `?layoutProbe=mock` — typical posted-unit fields. */
+const probeUnits: AvailableUnit[] = [0, 1, 2].map((i) => ({
+  unit: ['0606', '0704', '0902'][i],
+  bedrooms: [1, 2, 0][i],
+  bathrooms: [1, 2, 1][i],
+  sqft: [745, 1120, 512][i],
+  rent: [2450, 3350, 1895][i],
+  availableOn: null,
+  // 1x1 transparent GIF: no network fetch, and the thumb has fixed dimensions.
+  photoUrl: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+  listingUrl: null,
+  videoUrl: null,
+  photos: [],
+  details: [{ title: 'Pet Policy', items: ['Cats allowed', 'Dogs allowed'] }],
+  marketingTitle: 'Sun-lit residence with lake views',
+  description: null,
+}));
 
 /**
  * Resolve an AppFolio apartment number ("FFUU", e.g. "0606") to the floor-plan
@@ -118,16 +181,19 @@ export function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string 
  */
 export function AvailableUnits() {
   const { data, isPending } = useAvailability();
+  const probe = layoutProbeMode();
 
   const rows = useMemo(() => {
-    if (!data?.units) return [];
-    return data.units.map((u) => ({ ...u, group: groupForUnit(u.unit) }));
-  }, [data]);
+    const units = probe === 'skeleton' ? [] : probe === 'mock' ? probeUnits : data?.units;
+    if (!units) return [];
+    return units.map((u) => ({ ...u, group: groupForUnit(u.unit) }));
+  }, [data, probe]);
 
   // First browser paint racing the live fetch with no baked snapshot: show
   // skeletons rather than a blank gap. SSR skips this — prerendered HTML only
   // carries real snapshot cards, never placeholder chrome for crawlers.
-  const showSkeleton = rows.length === 0 && isPending && !import.meta.env.SSR;
+  const showSkeleton =
+    probe === 'skeleton' || (rows.length === 0 && isPending && !import.meta.env.SSR);
 
   if (rows.length === 0 && !showSkeleton) return null;
 

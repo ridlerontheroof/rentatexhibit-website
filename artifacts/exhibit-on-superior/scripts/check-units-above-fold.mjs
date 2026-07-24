@@ -237,6 +237,81 @@ async function main() {
 
   const failures = [];
 
+  /**
+   * Navigate to `url`, wait for the first row matching `selector`, and return
+   * its bounding box plus the row count in the strip's list.
+   */
+  async function measureFirstRow(url, selector, description) {
+    await cdp.send('Page.navigate', { url });
+    await cdp.eval(`
+      new Promise((resolve, reject) => {
+        const started = Date.now();
+        (function poll() {
+          if (document.querySelector(${JSON.stringify(selector)})) return resolve(true);
+          if (Date.now() - started > 30000) {
+            return reject(new Error(${JSON.stringify(`Timed out waiting for ${description} (${selector})`)}));
+          }
+          setTimeout(poll, 100);
+        })();
+      })`);
+    await sleep(500); // let fonts/layout settle
+    return cdp.eval(`(() => {
+      const rows = document.querySelectorAll(${JSON.stringify(selector)});
+      const rect = rows[0].getBoundingClientRect();
+      return {
+        top: Math.round(rect.top),
+        height: Math.round(rect.height),
+        width: Math.round(rect.width),
+        count: rows.length,
+      };
+    })()`);
+  }
+
+  // Phase 1: skeleton rows must share the real rows' geometry, so the fold
+  // measurement below is honest whichever variant it lands on, and the
+  // skeleton→live swap doesn't visibly jump. Renders both variants through
+  // the dev-only ?layoutProbe hook in AvailableUnits and compares the first
+  // row's bounding box.
+  const GEOMETRY_TOLERANCE_PX = 6;
+  for (const vp of VIEWPORTS) {
+    await cdp.send('Emulation.setDeviceMetricsOverride', {
+      width: vp.width,
+      height: vp.height,
+      deviceScaleFactor: 1,
+      mobile: vp.width < 768,
+    });
+    const real = await measureFirstRow(
+      `${pageUrl}?layoutProbe=mock`,
+      '#available-units ul:not([data-testid="units-skeleton"]) li',
+      'a mock real unit row',
+    );
+    const skeleton = await measureFirstRow(
+      `${pageUrl}?layoutProbe=skeleton`,
+      '#available-units ul[data-testid="units-skeleton"] li',
+      'a skeleton unit row',
+    );
+    const diffs = [];
+    if (Math.abs(real.top - skeleton.top) > GEOMETRY_TOLERANCE_PX) {
+      diffs.push(`first-row top: real ${real.top}px vs skeleton ${skeleton.top}px`);
+    }
+    if (Math.abs(real.height - skeleton.height) > GEOMETRY_TOLERANCE_PX) {
+      diffs.push(`row height: real ${real.height}px vs skeleton ${skeleton.height}px`);
+    }
+    if (diffs.length) {
+      failures.push(
+        `[${vp.name} ${vp.width}x${vp.height}] UnitRowsSkeleton no longer matches real unit-row geometry — ` +
+          `${diffs.join('; ')} (tolerance ${GEOMETRY_TOLERANCE_PX}px). ` +
+          `Update UnitRowsSkeleton in AvailableUnits.tsx to mirror the redesigned row (or vice versa).`,
+      );
+    } else {
+      console.log(
+        `✓ [${vp.name} ${vp.width}x${vp.height}] skeleton row geometry matches real row ` +
+          `(top ${skeleton.top}px vs ${real.top}px, height ${skeleton.height}px vs ${real.height}px).`,
+      );
+    }
+  }
+
+  // Phase 2: the original above-the-fold measurement.
   for (const vp of VIEWPORTS) {
     await cdp.send('Emulation.setDeviceMetricsOverride', {
       width: vp.width,
