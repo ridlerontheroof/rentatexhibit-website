@@ -14,7 +14,7 @@ engines that reward specific facts).
 
 ## Fees & Costs
 
-> Already verified from listings (no answer needed): application fee $60–$75 per unit; water, sewer, trash & gas included with rent.
+> Already verified from listings (no answer needed): application fee $60 per unit; water, sewer & trash included with rent.
 
 **1. Administrative fee amount (if any)**
    - Visitors currently see: “What fees are required in addition to rent?” _(Fees & Leasing Costs page — FAQ)_
@@ -24,37 +24,49 @@ engines that reward specific facts).
 
 **2. Security deposit and/or move-in fee amount**
    - Visitors currently see: “What fees are required in addition to rent?” _(Fees & Leasing Costs page — "Everything Else" section)_
-   - Answer:
+   - Answer: 
 
    `________________________________________________________________`
 
-**3. How electricity is billed (direct with ComEd? third-party?)**
+**3. How electricity is billed?**
    - Visitors currently see: “Are utilities included?” _(Fees & Leasing Costs page — FAQ)_
-   - Answer:
+   - Answer: The tenant is responsible for electricity directly with ComEd.
 
    `________________________________________________________________`
 
 **4. Internet options: available providers, any building package or required provider, typical cost**
    - Visitors currently see: “Are utilities included?” _(Fees & Leasing Costs page — FAQ)_
-   - Answer:
+   - Answer: Building is in the process of implementing bulk internet through partnership with Zentro. Internet speed: Symmetrical download and upload speeds up to 2 Gig.
 
    `________________________________________________________________`
 
 **5. On-site storage: available? monthly cost? waitlist?**
    - Visitors currently see: “Is storage or accessibility information available?” _(Apartment Guide + Fees pages)_
-   - Answer:
+   - Answer: On-site storage available for $25/month
 
    `________________________________________________________________`
 
 **6. Current specials policy — do you want specials published on the site, and if so, the current offer**
    - Visitors currently see: “Does Exhibit offer move-in specials?” _(Fees & Leasing Costs page — FAQ)_
-   - Answer:
+   - Answer: We are not offering any move-in concessions at this time.
 
    `________________________________________________________________`
 
 **7. Any other mandatory charges (amenity fee, technology fee, trash/valet fee, etc.)**
    - Visitors currently see: “What fees are required in addition to rent?” _(Fees & Leasing Costs page)_
    - Answer:
+     - Utilities & Service Amenity Bundle Prices: 
+        -TYPE;   SIZE;   UTILITY FEE*
+         Studio;   484 square feet;   $95
+         Jr. Convertible;   450-478 square feet;   $95
+         Convertible;   554 square feet;   $105
+         1 Bedroom;   619-768 square feet;   $115
+         2 Bedroom / 1 Bath;   776-821 square feet;   $125
+         2 Bedroom / 2 Bath;   899-1135 square feet;   $150
+         2 Bedroom + Den;   983 square feet;   $165
+         3 Bedroom / 3 Bath;   1,455-1,528 square feet;   $195
+
+         *Tenant shall be responsible for a monthly Utility and Service Amenity fee which includes the cost of: heat, air conditioning, natural gas for cooking, natural gas for the clothes dryer. The tenant is responsible for electricity separately.
 
    `________________________________________________________________`
 
@@ -62,19 +74,19 @@ engines that reward specific facts).
 
 **1. Garage on site? Attached or nearby? Number of spaces / waitlist status**
    - Visitors currently see: “Does Exhibit On Superior have on-site parking?” _(Parking & Transportation page — FAQ)_
-   - Answer:
+   - Answer: Indoor, attached multi-level garage parking available. See leasing team for current availability.
 
    `________________________________________________________________`
 
 **2. Monthly parking rate (and reserved vs unreserved pricing if applicable)**
    - Visitors currently see: “How much is parking?” _(Fees page FAQ + Parking & Transportation page)_
-   - Answer:
+   - Answer: $335/month per space (unreserved)
 
    `________________________________________________________________`
 
 **3. EV charging: available? how many chargers? cost?**
    - Visitors currently see: “(site copy defers all parking details)” _(Parking & Transportation page)_
-   - Answer:
+   - Answer: EV charging parking is available
 
    `________________________________________________________________`
 

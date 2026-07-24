@@ -78,3 +78,9 @@ id = "pu5GYkmiax-ckFYiylUNU"
 uri = "file://artifacts/exhibit-on-superior/docs/leasing-questionnaire/leasing-questionnaire.md"
 type = "text"
 title = "Leasing Facts Questionnaire (editable)"
+
+[[outputs]]
+id = "k45vhROaVH6RAMtjjvVU8"
+uri = "file://artifacts/exhibit-on-superior/docs/floor-plan-map/exhibit-floor-plan-map.md"
+type = "text"
+title = "Floor Plan Logic & Unit Map (for ChatGPT)"
