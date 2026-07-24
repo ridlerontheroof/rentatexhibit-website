@@ -147,7 +147,7 @@ ${escapeHtml(BRAND.address)}
 <tr><td bgcolor="${BRAND.nearBlack}" align="center" style="background-color:${BRAND.nearBlack};padding:22px 24px;">
 <p style="margin:0 0 6px;font-family:${BRAND.font};font-size:12px;letter-spacing:2px;text-transform:uppercase;color:${BRAND.gold};">${escapeHtml(BRAND.propertyName)}</p>
 <p style="margin:0 0 6px;font-family:${BRAND.font};font-size:12px;line-height:1.6;color:#b9b3a6;">${escapeHtml(BRAND.address)}</p>
-<p style="margin:0;font-family:${BRAND.font};font-size:12px;line-height:1.6;color:#8d8779;">Managed by Highland Management LLC &middot; <a href="${BRAND.siteUrl}" style="color:#b9b3a6;text-decoration:underline;">rentatexhibit.com</a></p>
+<p style="margin:0;font-family:${BRAND.font};font-size:12px;line-height:1.6;color:#8d8779;"><a href="${BRAND.siteUrl}" style="color:#b9b3a6;text-decoration:underline;">rentatexhibit.com</a></p>
 </td></tr>
 
 </table>

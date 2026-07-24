@@ -11,7 +11,7 @@ export function AccessibilityStatement() {
         <div className="space-y-8 text-base leading-relaxed text-foreground/90">
           <section className="space-y-3">
             <p>
-              Exhibit On Superior and Highland Management LLC are committed to ensuring digital
+              Exhibit On Superior is committed to ensuring digital
               accessibility for people with disabilities. We are continually improving the user
               experience for everyone and applying the relevant accessibility standards.
             </p>

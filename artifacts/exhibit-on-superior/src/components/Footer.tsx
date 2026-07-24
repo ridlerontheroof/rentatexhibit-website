@@ -148,7 +148,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-white/20 mt-8 pt-8 text-center text-sm flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="mb-2 md:mb-0">
-            Managed by <span className="text-primary">Highland Management LLC</span>
+            <span className="text-primary">Exhibit On Superior</span>
           </p>
           <div className="flex items-center gap-4 text-white/60">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
@@ -156,7 +156,7 @@ export function Footer() {
             <Link href="/accessibility-statement" className="hover:text-white transition-colors">Accessibility Statement</Link>
           </div>
           <p className="text-white/60">
-            Copyright &copy; 2026 Highland Management LLC
+            Copyright &copy; 2026 Exhibit On Superior
           </p>
         </div>
       </div>

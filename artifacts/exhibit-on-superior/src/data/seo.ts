@@ -47,11 +47,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What apartment sizes are available at Exhibit On Superior?',
-        a: 'The community offers studio, one, two, and three-bedroom apartment homes. Current availability is maintained through Highland Management LLC.',
+        a: 'The community offers studio, one, two, and three-bedroom apartment homes. Current availability is maintained by the on-site leasing team.',
       },
       {
         q: 'How do I check current availability?',
-        a: 'Use the Available Units link to view current Exhibit On Superior availability through Highland Management LLC.',
+        a: 'Use the Available Units link to view current Exhibit On Superior availability with live pricing and move-in dates.',
       },
     ],
   },
@@ -478,9 +478,9 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Privacy Policy',
     title: 'Privacy Policy | Exhibit On Superior',
     description:
-      'Read the privacy policy for Exhibit On Superior, managed by Highland Management LLC, covering how we collect, use, and protect your information.',
+      'Read the privacy policy for Exhibit On Superior in River North Chicago, covering how we collect, use, and protect your information.',
     quickAnswer:
-      'This page explains how Exhibit On Superior and Highland Management LLC collect, use, and protect the information you share through the website.',
+      'This page explains how Exhibit On Superior collects, uses, and protects the information you share through the website.',
     faqs: [],
     noindex: true,
   },
@@ -531,7 +531,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       },
       {
         q: 'Who manages Exhibit On Superior?',
-        a: 'The community is managed by Highland Management LLC.',
+        a: 'The community is professionally managed on site; contact the leasing office at exhibit@highlandptrs.com or 312-450-0635.',
       },
     ],
   },
@@ -724,7 +724,7 @@ const WEBSITE_NODE = {
 const ORGANIZATION_NODE = {
   '@type': 'Organization',
   '@id': `${SITE_URL}#organization`,
-  name: 'Highland Management LLC',
+  name: 'Exhibit On Superior',
   url: SITE_URL,
   email: 'exhibit@highlandptrs.com',
   telephone: '312-450-0635',

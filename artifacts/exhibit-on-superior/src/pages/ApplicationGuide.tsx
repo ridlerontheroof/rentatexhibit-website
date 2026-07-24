@@ -81,7 +81,7 @@ export function ApplicationGuide() {
               </p>
             </div>
             <p className="mt-8 text-sm text-muted-foreground text-center max-w-3xl mx-auto">
-              Exhibit On Superior and Highland Management LLC comply with the federal Fair Housing
+              Exhibit On Superior complies with the federal Fair Housing
               Act and applicable state and local fair-housing laws. We do not discriminate on the
               basis of race, color, religion, national origin, sex, familial status, or disability.
             </p>

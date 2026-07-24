@@ -41,7 +41,7 @@ export function PrivacyPolicy() {
             <h2 className="text-xl uppercase tracking-wider">How We Share Information</h2>
             <p>
               We do not sell your personal information. We may share the information you provide
-              with Highland Management LLC and trusted service providers (such as our leasing and
+              with our property management team and trusted service providers (such as our leasing and
               application platforms) solely to respond to your request and manage the leasing
               process. Applications are processed through our third-party partner, AppFolio, which
               maintains its own privacy practices.

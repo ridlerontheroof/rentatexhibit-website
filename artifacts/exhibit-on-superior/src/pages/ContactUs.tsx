@@ -131,10 +131,6 @@ export function ContactUs() {
                   </div>
                 </div>
 
-                <div className="bg-muted p-6 border border-border">
-                  <h3 className="text-lg uppercase tracking-wider mb-2">Managed By</h3>
-                  <p className="text-primary font-semibold">Highland Management LLC</p>
-                </div>
               </div>
 
               {/* Contact Form */}
