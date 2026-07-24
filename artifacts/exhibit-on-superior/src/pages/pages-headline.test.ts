@@ -6,6 +6,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 
 import { Amenities } from './Amenities';
+import { ApartmentGuide } from './ApartmentGuide';
+import { ApplicationGuide } from './ApplicationGuide';
+import { FaqHub } from './FaqHub';
+import { Fees } from './Fees';
+import { ParkingTransportation } from './ParkingTransportation';
 import { ContactUs } from './ContactUs';
 import { FloorPlans } from './FloorPlans';
 import { MapDirections } from './MapDirections';
@@ -22,6 +27,11 @@ import { VirtualTour } from './VirtualTour';
 // plus the hero script/caps copy that must survive page-level edits.
 const PAGES: Array<{ name: string; Component: ComponentType }> = [
   { name: 'Amenities', Component: Amenities },
+  { name: 'ApartmentGuide', Component: ApartmentGuide },
+  { name: 'ApplicationGuide', Component: ApplicationGuide },
+  { name: 'FaqHub', Component: FaqHub },
+  { name: 'Fees', Component: Fees },
+  { name: 'ParkingTransportation', Component: ParkingTransportation },
   { name: 'ContactUs', Component: ContactUs },
   { name: 'FloorPlans', Component: FloorPlans },
   { name: 'MapDirections', Component: MapDirections },

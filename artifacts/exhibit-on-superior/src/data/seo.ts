@@ -137,6 +137,30 @@ export const PAGE_SEO: Record<string, PageSeo> = {
         q: 'Does Exhibit On Superior have on-site retail?',
         a: 'Yes. The property content references on-site retail and wellness options including fitness, food, and spa services.',
       },
+      {
+        q: 'Does Exhibit On Superior have a pool?',
+        a: 'Yes. The amenity floor includes a 75-foot lap pool, plus an outdoor hot tub and a sauna with a wet lounge leading to the outdoor deck.',
+      },
+      {
+        q: 'Is there a coworking space?',
+        a: 'Yes. Residents can work from private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves.',
+      },
+      {
+        q: 'Does the building have a fitness center?',
+        a: 'Yes. The fitness center includes two private training rooms, cardio equipment, spin bikes, free weights, and a boxing simulator.',
+      },
+      {
+        q: 'Is there a music studio?',
+        a: 'Yes. Exhibit On Superior\u2019s amenity spaces include a music studio room.',
+      },
+      {
+        q: 'Does the property have an outdoor dog area?',
+        a: 'Yes. There is a gated outdoor dog walk, plus a doggie spa and lounge inside the building.',
+      },
+      {
+        q: 'Is there a 24-hour concierge?',
+        a: 'Front-desk and concierge staffing details are not published on this site \u2014 confirm current service hours with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+      },
     ],
   },
   '/pet-friendly': {
@@ -156,6 +180,14 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       {
         q: 'Are there pet amenities?',
         a: 'The amenities content includes a dog spa and gated outdoor dog walk.',
+      },
+      {
+        q: 'How many pets are allowed?',
+        a: 'A maximum of 2 pets per apartment. All pets must be registered with management, and dog owners must acknowledge the Dog Rider before application approval.',
+      },
+      {
+        q: 'What are the pet fees?',
+        a: 'Pet fees, deposits, and any breed or weight guidelines are not published on this site \u2014 confirm current amounts with the leasing team at exhibit@highlandptrs.com or 312-450-0635 before applying.',
       },
       {
         q: 'Should renters confirm current pet rules?',
@@ -181,7 +213,173 @@ export const PAGE_SEO: Record<string, PageSeo> = {
         q: 'What is nearby?',
         a: 'The property is close to cafes, restaurants, shops, parks, the Chicago River, West Loop, Old Town, and Fulton Market.',
       },
+      {
+        q: 'Is Exhibit close to Whole Foods?',
+        a: 'Yes. Whole Foods Market at 3 W Chicago Ave is about 0.3 miles away, with Trader Joe\u2019s (44 E Ontario St) and Jewel-Osco (550 N State St) also within roughly half a mile.',
+      },
+      {
+        q: 'What is near Superior and Wells?',
+        a: 'The blocks around Superior and Wells hold River North\u2019s gallery district, cafes and restaurants, the CTA Chicago Brown/Purple Line station about two blocks west, and Whole Foods a few blocks northeast.',
+      },
+      {
+        q: 'Is River North a good neighborhood without a car?',
+        a: 'Yes. Groceries, gyms, parks, restaurants, and two CTA rail stations are all within about a half-mile walk of Exhibit On Superior, and the Loop is roughly a mile south.',
+      },
     ],
+  },
+  '/apartment-guide': {
+    path: '/apartment-guide',
+    label: 'Apartment Guide',
+    title: 'Apartment Guide: Layouts, Finishes & Views | Exhibit On Superior',
+    description:
+      'A complete guide to Exhibit On Superior apartments — studio, convertible, 1, 2 & 3 bedroom layouts, finishes, appliances, in-home laundry, balconies, and skyline views.',
+    quickAnswer:
+      'Exhibit On Superior offers studio, convertible, one, two, and three-bedroom apartments from about 448 to 1,528 square feet across floors 2\u201334, finished with driftwood plank floors, quartz countertops, stainless-steel appliances, in-home washers and dryers, floor-to-ceiling windows, and private balconies.',
+    faqs: [
+      {
+        q: 'Does Exhibit On Superior have convertible apartments?',
+        a: 'Yes. Exhibit On Superior offers convertible and junior convertible floor plans of roughly 450\u2013554 square feet, alongside studio, one, two, and three-bedroom homes.',
+      },
+      {
+        q: 'Do apartments have in-unit washers and dryers?',
+        a: 'Yes. In-home washer/dryers are a standard apartment feature at Exhibit On Superior.',
+      },
+      {
+        q: 'Which units have balconies?',
+        a: 'Private balconies are a signature apartment feature at Exhibit On Superior. Whether a specific residence includes one varies by floor plan \u2014 check the floor-plan sheet on the Available Units page or confirm with the leasing team.',
+      },
+      {
+        q: 'What views are available?',
+        a: 'Homes feature dramatic floor-to-ceiling windows with panoramic views of the Chicago skyline; outlooks vary by floor and unit position within the 34-story tower.',
+      },
+      {
+        q: 'What is the largest apartment available?',
+        a: 'The largest floor plan is a three-bedroom, three-bath residence of 1,528 square feet, offered on the penthouse-level floors 30\u201334.',
+      },
+      {
+        q: 'Are furnished apartments available?',
+        a: 'Furnished apartments are not advertised on the site. Ask the leasing team at exhibit@highlandptrs.com or 312-450-0635 about current options.',
+      },
+      {
+        q: 'Is storage or accessibility information available?',
+        a: 'Select homes include closet organizers and double vanities. For storage options and accessible-unit details, confirm with the leasing team before applying.',
+      },
+    ],
+  },
+  '/fees': {
+    path: '/fees',
+    label: 'Fees & Leasing Costs',
+    title: 'Fees, Utilities & Leasing Costs | Exhibit On Superior Chicago',
+    description:
+      'What it costs to lease at Exhibit On Superior in River North Chicago — application fees, utilities included with rent, and how to confirm parking and other charges.',
+    quickAnswer:
+      'Beyond monthly rent, current Exhibit On Superior listings show a per-application fee (recently $60\u2013$75 depending on the unit), and water, sewer, trash, and gas are included with rent. Confirm any other charges \u2014 such as move-in, administrative, pet, or parking fees \u2014 with the leasing team before applying.',
+    faqs: [
+      {
+        q: 'How much does it cost to live at Exhibit On Superior?',
+        a: 'Rent depends on the floor plan, floor, and move-in date. Live pricing for every available residence is published on the Available Units page, synced automatically from the leasing system.',
+      },
+      {
+        q: 'What fees are required in addition to rent?',
+        a: 'Each unit\u2019s listing shows its application fee \u2014 recent listings ranged from $60 to $75 per application. For any other charges, such as administrative or move-in fees, confirm with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+      },
+      {
+        q: 'Are utilities included?',
+        a: 'Yes, in part. Current listings include water, sewer, trash, and gas with rent. Confirm electricity, internet, and any other utility arrangements with the leasing team.',
+      },
+      {
+        q: 'Does Exhibit offer move-in specials?',
+        a: 'Move-in specials change over time and are not published on this site. Ask the leasing team at exhibit@highlandptrs.com or 312-450-0635 about current offers.',
+      },
+      {
+        q: 'How much is parking?',
+        a: 'Parking rates are not published on this site. Contact the leasing team for current parking options and pricing, and see the Parking & Transportation page for transit alternatives.',
+      },
+    ],
+  },
+  '/parking-transportation': {
+    path: '/parking-transportation',
+    label: 'Parking & Transportation',
+    title: 'Parking & Transportation | Exhibit On Superior River North',
+    description:
+      'Getting around from Exhibit On Superior at 165 W Superior St — CTA Brown, Purple & Red Line stations, bus routes, highway access, and how to confirm on-site parking.',
+    quickAnswer:
+      'Exhibit On Superior sits about two blocks from the CTA Chicago (Brown/Purple Line) station at Chicago & Franklin and about 0.3 miles from the Chicago (Red Line) station at Chicago & State, with the #66 Chicago Avenue bus one block north and the Loop roughly a mile south. Confirm on-site parking options and rates with the leasing team.',
+    faqs: [
+      {
+        q: 'Does Exhibit On Superior have on-site parking?',
+        a: 'Parking options, availability, and rates are not published on this site \u2014 confirm current details with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+      },
+      {
+        q: 'How far is Exhibit from the CTA?',
+        a: 'The CTA Chicago station on the Brown and Purple Lines (Chicago & Franklin) is about two blocks away, and the Chicago Red Line station at Chicago & State is roughly 0.3 miles \u2014 both an easy walk.',
+      },
+      {
+        q: 'Is Exhibit walkable to the Loop?',
+        a: 'Yes. The Loop is roughly a mile south \u2014 about a 20-minute walk, or one short ride on the Brown Line from the Chicago station toward the Loop.',
+      },
+      {
+        q: 'What bus routes serve the area?',
+        a: 'The CTA #66 Chicago Avenue bus runs one block north, with the #156 LaSalle and #22 Clark routes within a few blocks \u2014 all connecting River North to the rest of the city.',
+      },
+      {
+        q: 'How do drivers reach the highways?',
+        a: 'The Ohio Street feeder to the Kennedy Expressway (I-90/94) is about a mile southwest, and Lake Shore Drive (US-41) is reachable to the east via Ontario and Ohio Streets.',
+      },
+      {
+        q: 'Can you live at Exhibit On Superior without a car?',
+        a: 'Yes. With two CTA rail stations, several bus routes, and groceries like Whole Foods, Trader Joe\u2019s, and Jewel-Osco all within about half a mile, River North is one of Chicago\u2019s most practical neighborhoods for car-free living.',
+      },
+    ],
+  },
+  '/application-guide': {
+    path: '/application-guide',
+    label: 'Application Guide',
+    title: 'Application & Qualification Guide | Exhibit On Superior',
+    description:
+      'How to apply for an apartment at Exhibit On Superior — the online application process, what to have ready, and how to confirm screening, guarantor, and lease-term details.',
+    quickAnswer:
+      'To apply for an apartment at Exhibit On Superior, open any residence on the Available Units page and use its Apply Now button \u2014 each unit links to its own secure online application through the AppFolio leasing system. Income requirements, guarantor policies, and lease terms are confirmed by the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+    faqs: [
+      {
+        q: 'How do I apply for an apartment at Exhibit On Superior?',
+        a: 'Open any available residence on the Available Units page and use its Apply Now button \u2014 each unit links directly to its own secure online application through the AppFolio leasing system.',
+      },
+      {
+        q: 'What income is required to qualify?',
+        a: 'Income and credit screening criteria are not published on this site. Contact the leasing team at exhibit@highlandptrs.com or 312-450-0635 before applying so you know exactly what to expect.',
+      },
+      {
+        q: 'Are guarantors accepted?',
+        a: 'Guarantor and co-signer policies are confirmed by the leasing team \u2014 reach out at exhibit@highlandptrs.com or 312-450-0635 before you apply.',
+      },
+      {
+        q: 'How long does approval take?',
+        a: 'Approval timing varies with screening and verification. The leasing team can walk you through the current timeline when you apply.',
+      },
+      {
+        q: 'What lease terms are available?',
+        a: 'Available lease terms vary by unit and season and are confirmed by the leasing team \u2014 ask about the terms offered for the residence you\u2019re interested in.',
+      },
+      {
+        q: 'What should I have ready to apply?',
+        a: 'Online rental applications typically ask for government-issued ID, proof of income, and rental history contacts. The leasing team will confirm the exact documents required for your application.',
+      },
+      {
+        q: 'Can I tour before applying?',
+        a: 'Yes. Schedule an in-person tour through the Schedule a Tour page, or preview homes remotely with the video and Matterport tours on the Virtual Tour page.',
+      },
+    ],
+  },
+  '/faq': {
+    path: '/faq',
+    label: 'FAQ',
+    title: 'Frequently Asked Questions | Exhibit On Superior Chicago',
+    description:
+      'Answers to the most common questions about Exhibit On Superior in River North Chicago — apartments, pricing and fees, amenities, pets, the neighborhood, touring, and applying.',
+    quickAnswer:
+      'This FAQ hub collects verified answers to the questions renters ask most about Exhibit On Superior \u2014 covering apartments and floor plans, pricing and fees, amenities, pet policy, the River North neighborhood, and how to tour and apply \u2014 each linking to a detail page with more depth.',
+    faqs: [], // populated from FAQ_HUB_TOPICS below
   },
   '/contact-us': {
     path: '/contact-us',
@@ -293,6 +491,218 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     noindex: true,
   },
 };
+
+// ---------------------------------------------------------------------------
+// FAQ hub (/faq): verified Q&As aggregated by topic. Each topic links to its
+// detail page; the hub's FAQPage schema is fed from these via PAGE_SEO['/faq'].
+// Sources: leasing-approved FAQ answer bank + verified per-page FAQs only.
+// ---------------------------------------------------------------------------
+
+export interface FaqHubTopic {
+  title: string;
+  /** Detail page for this topic. */
+  link: string;
+  linkLabel: string;
+  faqs: Faq[];
+}
+
+export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
+  {
+    title: 'Location & Contact',
+    link: '/contact-us',
+    linkLabel: 'Contact Us',
+    faqs: [
+      {
+        q: 'Where is Exhibit On Superior located?',
+        a: 'Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654 in the River North area.',
+      },
+      {
+        q: 'What is the phone number for Exhibit On Superior?',
+        a: 'The phone number is 312-450-0635.',
+      },
+      {
+        q: 'What is the email for Exhibit On Superior?',
+        a: 'The contact email is exhibit@highlandptrs.com.',
+      },
+      {
+        q: 'Who manages Exhibit On Superior?',
+        a: 'The community is managed by Highland Management LLC.',
+      },
+    ],
+  },
+  {
+    title: 'Apartments & Floor Plans',
+    link: '/apartment-guide',
+    linkLabel: 'Apartment Guide',
+    faqs: [
+      {
+        q: 'What apartment sizes are available?',
+        a: 'The community offers studio, convertible, one, two, and three-bedroom apartment homes from about 448 to 1,528 square feet across floors 2\u201334.',
+      },
+      {
+        q: 'Do apartments have in-unit laundry?',
+        a: 'Yes. In-home washer/dryers are a standard apartment feature.',
+      },
+      {
+        q: 'What finishes do apartments have?',
+        a: 'Homes feature driftwood plank floors, quartz countertops, tiled backsplashes, stainless-steel appliances, floor-to-ceiling windows, and private balconies.',
+      },
+      {
+        q: 'What is the largest apartment?',
+        a: 'A three-bedroom, three-bath residence of 1,528 square feet on the penthouse-level floors 30\u201334.',
+      },
+      {
+        q: 'Are furnished apartments available?',
+        a: 'Furnished apartments are not advertised on the site \u2014 ask the leasing team about current options.',
+      },
+    ],
+  },
+  {
+    title: 'Pricing & Fees',
+    link: '/fees',
+    linkLabel: 'Fees & Leasing Costs',
+    faqs: [
+      {
+        q: 'How do I check current pricing and availability?',
+        a: 'The Available Units page lists every available residence with live rent, photos, and move-in dates synced from the leasing system.',
+      },
+      {
+        q: 'What fees are required in addition to rent?',
+        a: 'Each unit\u2019s listing shows its application fee (recently $60\u2013$75 per application). Confirm any other charges with the leasing team.',
+      },
+      {
+        q: 'Are utilities included?',
+        a: 'Current listings include water, sewer, trash, and gas with rent. Confirm electricity, internet, and other utilities with the leasing team.',
+      },
+      {
+        q: 'Does Exhibit offer move-in specials?',
+        a: 'Specials change over time and are not published here \u2014 ask the leasing team about current offers.',
+      },
+      {
+        q: 'How much is parking?',
+        a: 'Parking rates are not published on this site; contact the leasing team for current options and pricing.',
+      },
+    ],
+  },
+  {
+    title: 'Amenities',
+    link: '/amenities',
+    linkLabel: 'Amenities',
+    faqs: [
+      {
+        q: 'What amenities does Exhibit On Superior offer?',
+        a: 'Amenities include a full-floor amenity deck, fitness center, 75-foot lap pool, outdoor hot tub, sauna, lounges, work and meeting rooms, music studio, dog spa, grilling stations, fire pits, and outdoor areas.',
+      },
+      {
+        q: 'Does Exhibit On Superior have a pool?',
+        a: 'Yes \u2014 a 75-foot lap pool on the amenity floor, plus an outdoor hot tub and sauna.',
+      },
+      {
+        q: 'Is there space to work from home?',
+        a: 'Yes. Private work and meeting rooms, a tech lounge with charging stations and kitchen, a library nook, and reading alcoves.',
+      },
+      {
+        q: 'Does Exhibit have on-site retail?',
+        a: 'Yes. On-site retail and wellness options include fitness, food, and spa services.',
+      },
+      {
+        q: 'Is there a 24-hour concierge?',
+        a: 'Front-desk and concierge staffing details are not published on this site \u2014 confirm with the leasing team.',
+      },
+    ],
+  },
+  {
+    title: 'Pets',
+    link: '/pet-friendly',
+    linkLabel: 'Pet Friendly',
+    faqs: [
+      {
+        q: 'Is Exhibit On Superior pet-friendly?',
+        a: 'Yes. Cats and dogs are welcome, with a maximum of 2 pets per apartment.',
+      },
+      {
+        q: 'Are there pet amenities?',
+        a: 'Yes \u2014 a doggie spa and lounge inside the building and a gated outdoor dog walk.',
+      },
+      {
+        q: 'What are the pet fees and breed rules?',
+        a: 'Pet fees, limits, and breed policies should be confirmed with the leasing team before applying.',
+      },
+    ],
+  },
+  {
+    title: 'Neighborhood & Getting Around',
+    link: '/neighborhood',
+    linkLabel: 'Neighborhood',
+    faqs: [
+      {
+        q: 'What neighborhood is Exhibit On Superior in?',
+        a: 'Exhibit On Superior is in River North in Chicago.',
+      },
+      {
+        q: 'How close is the CTA?',
+        a: 'The Chicago Brown/Purple Line station (Chicago & Franklin) is about two blocks away; the Chicago Red Line station (Chicago & State) is roughly 0.3 miles.',
+      },
+      {
+        q: 'Is Exhibit close to a grocery store?',
+        a: 'Yes. Whole Foods (3 W Chicago Ave), Jewel-Osco (550 N State St), and Trader Joe\u2019s (44 E Ontario St) are all within about half a mile.',
+      },
+      {
+        q: 'Is Exhibit walkable to the Loop?',
+        a: 'Yes \u2014 the Loop is roughly a mile south, about a 20-minute walk or one Brown Line stop.',
+      },
+      {
+        q: 'What is nearby?',
+        a: 'Cafes, restaurants, shops, parks, the Chicago River, West Loop, Old Town, and Fulton Market.',
+      },
+    ],
+  },
+  {
+    title: 'Touring & Applying',
+    link: '/application-guide',
+    linkLabel: 'Application Guide',
+    faqs: [
+      {
+        q: 'How do I schedule a tour?',
+        a: 'Use the tour request form on the Schedule a Tour page, email exhibit@highlandptrs.com, or call 312-450-0635.',
+      },
+      {
+        q: 'Can I tour virtually?',
+        a: 'Yes. The Virtual Tour page includes video and Matterport tour embeds for apartment and amenity previews.',
+      },
+      {
+        q: 'How do I apply?',
+        a: 'Open any available residence on the Available Units page and use its Apply Now button \u2014 each unit links directly to its own secure online application.',
+      },
+      {
+        q: 'What income is required and are guarantors accepted?',
+        a: 'Screening criteria and guarantor policies are not published on this site \u2014 confirm with the leasing team before applying.',
+      },
+      {
+        q: 'What lease terms are available?',
+        a: 'Lease terms vary by unit and season and are confirmed by the leasing team.',
+      },
+    ],
+  },
+  {
+    title: 'Residents',
+    link: '/residents',
+    linkLabel: 'Residents',
+    faqs: [
+      {
+        q: 'Who should residents contact?',
+        a: 'Residents can contact Exhibit On Superior at exhibit@highlandptrs.com or 312-450-0635.',
+      },
+      {
+        q: 'Where should residents log in?',
+        a: 'Current residents use the resident portal linked from the Residents page for payments and maintenance requests.',
+      },
+    ],
+  },
+];
+
+// The hub page's FAQPage schema carries every hub Q&A.
+PAGE_SEO['/faq'].faqs = FAQ_HUB_TOPICS.flatMap((t) => t.faqs);
 
 function canonicalFor(path: string): string {
   return path === '/' ? `${SITE_URL}/` : `${SITE_URL}${path}`;
@@ -409,6 +819,8 @@ const APARTMENT_COMPLEX_NODE = {
     'Tech lounge with charging stations and kitchen',
     'Lounge with fireplace and big screen TV',
     'Game area with arcade games and wall Scrabble',
+    'Music studio room',
+    'Gated outdoor dog walk',
     'Private work and meeting rooms',
     'Private dining room and party suite',
     'Library nook',

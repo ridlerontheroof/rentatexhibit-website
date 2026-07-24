@@ -59,6 +59,16 @@ export function Footer() {
                   Neighborhood
                 </Link>
               </li>
+              <li>
+                <Link href="/apartment-guide" className="hover:text-primary transition-colors">
+                  Apartment Guide
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="hover:text-primary transition-colors">
+                  FAQ
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -89,6 +99,21 @@ export function Footer() {
               <li>
                 <Link href="/schedule-a-tour" className="hover:text-primary transition-colors">
                   Schedule a Tour
+                </Link>
+              </li>
+              <li>
+                <Link href="/fees" className="hover:text-primary transition-colors">
+                  Fees &amp; Leasing Costs
+                </Link>
+              </li>
+              <li>
+                <Link href="/parking-transportation" className="hover:text-primary transition-colors">
+                  Parking &amp; Transportation
+                </Link>
+              </li>
+              <li>
+                <Link href="/application-guide" className="hover:text-primary transition-colors">
+                  Application Guide
                 </Link>
               </li>
             </ul>

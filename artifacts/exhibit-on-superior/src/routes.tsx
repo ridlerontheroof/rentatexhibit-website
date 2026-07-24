@@ -24,6 +24,20 @@ export const routes: RouteDef[] = [
   { path: '/photo-gallery', load: () => import('./pages/PhotoGallery').then((m) => m.PhotoGallery) },
   { path: '/virtual-tour', load: () => import('./pages/VirtualTour').then((m) => m.VirtualTour) },
   { path: '/amenities', load: () => import('./pages/Amenities').then((m) => m.Amenities) },
+  {
+    path: '/apartment-guide',
+    load: () => import('./pages/ApartmentGuide').then((m) => m.ApartmentGuide),
+  },
+  { path: '/fees', load: () => import('./pages/Fees').then((m) => m.Fees) },
+  {
+    path: '/parking-transportation',
+    load: () => import('./pages/ParkingTransportation').then((m) => m.ParkingTransportation),
+  },
+  {
+    path: '/application-guide',
+    load: () => import('./pages/ApplicationGuide').then((m) => m.ApplicationGuide),
+  },
+  { path: '/faq', load: () => import('./pages/FaqHub').then((m) => m.FaqHub) },
   { path: '/pet-friendly', load: () => import('./pages/PetFriendly').then((m) => m.PetFriendly) },
   { path: '/neighborhood', load: () => import('./pages/Neighborhood').then((m) => m.Neighborhood) },
   { path: '/contact-us', load: () => import('./pages/ContactUs').then((m) => m.ContactUs) },

@@ -128,6 +128,7 @@ export function Amenities() {
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Tech Lounge With Charging Station And Kitchen</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Lounge With Fireplace And Big Screen TV</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Game Area With Arcade Games And Wall Scrabble</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Music Studio Room</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private Work And Meeting Rooms</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Library Nook</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private Dining Room And Party Suite</span></li>
@@ -144,6 +145,51 @@ export function Amenities() {
                 <Link href="/photo-gallery" className="btn-gold-outline inline-block">
                   View Photo Gallery
                 </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Where everything lives */}
+        <section className="py-16 px-4 bg-muted">
+          <div className="container mx-auto max-w-4xl">
+            <SplitHeadline script="Find Your Way" caps="Where Everything Lives" className="mb-8" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-2">The Amenity Floor</h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  A full floor dedicated to amenities, overlooking the city and the private park:
+                  the fitness center with two private training rooms, cardio and spin equipment,
+                  the boxing simulator, the sauna and wet lounge leading to the outdoor deck, the
+                  75-foot lap pool, and the outdoor hot tub.
+                </p>
+              </div>
+              <div className="bg-white border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-2">Lounge & Work Spaces</h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  The tech lounge with charging stations and kitchen, the fireplace lounge with
+                  big-screen TV, the game area with arcade games and wall Scrabble, the music
+                  studio room, private work and meeting rooms, the library nook, and a private
+                  dining room and party suite for hosting.
+                </p>
+              </div>
+              <div className="bg-white border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-2">Outdoors</h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  Four grilling stations and four fire pits on the outdoor deck, the gated outdoor
+                  dog walk, and the private park with a one-of-a-kind sculpture by internationally
+                  acclaimed sculptor Pal Svensson.
+                </p>
+              </div>
+              <div className="bg-white border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-2">Access & Hours</h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  Amenity hours and reservation details (like the private dining room and training
+                  rooms) aren&rsquo;t published here &mdash; the leasing team can walk you through
+                  them on a <Link href="/schedule-a-tour" className="text-primary underline">tour</Link>,
+                  or see homes and finishes in the{' '}
+                  <Link href="/apartment-guide" className="text-primary underline">Apartment Guide</Link>.
+                </p>
               </div>
             </div>
           </div>

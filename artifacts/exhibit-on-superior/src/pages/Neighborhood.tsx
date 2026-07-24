@@ -65,6 +65,73 @@ export function Neighborhood() {
           </div>
         </section>
 
+        {/* River North Living Guide — every named place verified via maps */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <SplitHeadline script="Your Daily Orbit" caps="River North Living Guide" className="mb-4" />
+            <p className="text-center text-lg leading-relaxed max-w-3xl mx-auto mb-10">
+              Everything below is within roughly half a mile of your front door at 165 W Superior
+              St &mdash; close enough that most days never need a car.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-3">Groceries</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>Whole Foods Market &mdash; 3 W Chicago Ave (~0.3 mi)</li>
+                  <li>Jewel-Osco &mdash; 550 N State St (~0.3 mi)</li>
+                  <li>Trader Joe&rsquo;s &mdash; 44 E Ontario St (~0.4 mi)</li>
+                  <li>Eataly &mdash; 43 E Ohio St (~0.4 mi)</li>
+                </ul>
+              </div>
+              <div className="border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-3">Transit</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>CTA Brown/Purple Line &mdash; Chicago &amp; Franklin (~2 blocks)</li>
+                  <li>CTA Red Line &mdash; Chicago &amp; State (~0.3 mi)</li>
+                  <li>#66 Chicago Ave bus &mdash; one block north</li>
+                </ul>
+                <p className="mt-3 text-sm">
+                  <Link href="/parking-transportation" className="text-primary underline">
+                    Full parking &amp; transportation guide &rarr;
+                  </Link>
+                </p>
+              </div>
+              <div className="border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-3">Fitness</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>CycleBar, Club Pilates, Train Moment &mdash; in the building</li>
+                  <li>East Bank Club &mdash; 500 N Kingsbury St (~0.5 mi)</li>
+                  <li>Equinox Gold Coast &mdash; 900 N Michigan Ave (~0.6 mi)</li>
+                </ul>
+              </div>
+              <div className="border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-3">Parks & Dogs</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>Washington Square Park &mdash; 901 N Clark St (~0.3 mi)</li>
+                  <li>A. Montgomery Ward Park &mdash; 630 N Kingsbury St (~0.5 mi)</li>
+                  <li>Ohio Place Dog Park &mdash; 360 W Ohio St (~0.3 mi)</li>
+                  <li>Larrabee Dog Park &mdash; 652 N Larrabee St (~0.5 mi)</li>
+                </ul>
+              </div>
+              <div className="border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-3">Healthcare</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>Northwestern Memorial Hospital &mdash; 251 E Huron St (~0.6 mi)</li>
+                  <li>Northwestern Medicine Arkes Pavilion &mdash; 676 N St Clair St (~0.6 mi)</li>
+                </ul>
+              </div>
+              <div className="border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-3">Work & Entertainment</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>THE MART (Merchandise Mart) &mdash; ~0.5 mi</li>
+                  <li>The Loop &mdash; ~1 mi south, one Brown Line stop</li>
+                  <li>River North gallery district, rooftop bars, and chef-driven dining &mdash; steps away</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
             <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" dark className="mb-6" />

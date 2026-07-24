@@ -147,6 +147,8 @@ export function PetFriendly() {
               </ul>
               <p className="mt-6 text-sm text-muted-foreground text-center">
                 Have questions about our pet policy? Contact our friendly leasing team in Chicago today.
+                Reviewing all leasing costs? See{' '}
+                <Link href="/fees" className="text-primary underline">Fees &amp; Leasing Costs</Link>.
               </p>
             </div>
           </div>

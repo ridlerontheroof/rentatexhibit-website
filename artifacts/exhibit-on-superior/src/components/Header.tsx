@@ -128,12 +128,17 @@ export function Header() {
             <NavDropdown
               label="Amenities"
               href="/amenities"
-              items={[{ href: '/pet-friendly', label: 'Pet Friendly' }]}
+              items={[
+                { href: '/pet-friendly', label: 'Pet Friendly' },
+                { href: '/apartment-guide', label: 'Apartment Guide' },
+              ]}
             />
 
-            <Link href="/neighborhood" className={navLink}>
-              Neighborhood
-            </Link>
+            <NavDropdown
+              label="Neighborhood"
+              href="/neighborhood"
+              items={[{ href: '/parking-transportation', label: 'Parking + Transportation' }]}
+            />
 
             <NavDropdown
               label="Contact Us"
@@ -144,6 +149,9 @@ export function Header() {
                 { href: '/residents', label: 'Residents' },
                 { href: '/schedule-a-tour', label: 'Schedule a Tour' },
                 { href: '/reviews', label: 'Reviews' },
+                { href: '/faq', label: 'FAQ' },
+                { href: '/fees', label: 'Fees & Leasing Costs' },
+                { href: '/application-guide', label: 'Application Guide' },
               ]}
             />
           </nav>
@@ -180,12 +188,17 @@ export function Header() {
               <Link href="/virtual-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Virtual Tour</Link>
               <Link href="/amenities" className="text-sm uppercase tracking-wider py-2">Amenities</Link>
               <Link href="/pet-friendly" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Pet Friendly</Link>
+              <Link href="/apartment-guide" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Apartment Guide</Link>
               <Link href="/neighborhood" className="text-sm uppercase tracking-wider py-2">Neighborhood</Link>
+              <Link href="/parking-transportation" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Parking + Transportation</Link>
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
               <Link href="/residents" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Residents</Link>
               <Link href="/schedule-a-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</Link>
               <Link href="/reviews" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Reviews</Link>
+              <Link href="/faq" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">FAQ</Link>
+              <Link href="/fees" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Fees &amp; Leasing Costs</Link>
+              <Link href="/application-guide" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Application Guide</Link>
 
               <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
                 <Link href="/available-units" className="btn-gold-outline text-center">
