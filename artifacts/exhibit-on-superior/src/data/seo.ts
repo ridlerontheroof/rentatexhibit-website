@@ -229,6 +229,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/apartment-guide': {
     path: '/apartment-guide',
+    ogImage: `${SITE_URL}/images/og/apartment-guide.jpg`,
     label: 'Apartment Guide',
     title: 'Apartment Guide: Layouts, Finishes & Views | Exhibit On Superior',
     description:
@@ -268,6 +269,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/fees': {
     path: '/fees',
+    ogImage: `${SITE_URL}/images/og/fees.jpg`,
     label: 'Fees & Leasing Costs',
     title: 'Fees, Utilities & Leasing Costs | Exhibit On Superior Chicago',
     description:
@@ -299,6 +301,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/parking-transportation': {
     path: '/parking-transportation',
+    ogImage: `${SITE_URL}/images/og/parking-transportation.jpg`,
     label: 'Parking & Transportation',
     title: 'Parking & Transportation | Exhibit On Superior River North',
     description:
@@ -334,6 +337,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/application-guide': {
     path: '/application-guide',
+    ogImage: `${SITE_URL}/images/og/application-guide.jpg`,
     label: 'Application Guide',
     title: 'Application & Qualification Guide | Exhibit On Superior',
     description:
@@ -373,6 +377,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/faq': {
     path: '/faq',
+    ogImage: `${SITE_URL}/images/og/faq.jpg`,
     label: 'FAQ',
     title: 'Frequently Asked Questions | Exhibit On Superior Chicago',
     description:
