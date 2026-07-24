@@ -2,18 +2,64 @@
 // prerenderer (entry-server.tsx). The visible Matterport embeds and the
 // JSON-LD are both built from `matterportTours`, so they can never drift.
 //
-// NOTE: The Vimeo "Life at Exhibit On Superior" video is deliberately NOT
-// emitted as a VideoObject: Google requires uploadDate and thumbnailUrl, and
-// neither can be sourced truthfully from our side of the embed. Add it only
-// if/when those properties become available from the video's owner.
+// The Vimeo "Life at Exhibit On Superior" video IS emitted as a VideoObject:
+// Google requires a truthful uploadDate and thumbnailUrl, and both are now
+// sourced from Vimeo's oEmbed API, cached into vimeo-oembed.json (refresh via
+// scripts/fetch-vimeo-oembed.mjs) so builds stay deterministic.
 
 import { SITE_URL, canonicalFor } from './seo';
+import vimeoOembed from './vimeo-oembed.json';
 
 export interface MatterportTour {
   /** Visible <h3> heading on /virtual-tour — schema `name` must match it. */
   name: string;
   /** Public Matterport player URL (same URL the iframe embeds). */
   url: string;
+}
+
+/**
+ * The "Life at Exhibit On Superior" Vimeo video, shared by the visible embed
+ * on /virtual-tour and its VideoObject JSON-LD so they can never drift.
+ * uploadDate/thumbnail come from the cached Vimeo oEmbed response.
+ */
+export const lifeAtExhibitVideo = {
+  /** Visible <h3> heading on /virtual-tour — schema `name` must match it. */
+  name: 'Life at Exhibit On Superior',
+  /** Same player URL the iframe embeds. */
+  embedUrl: `https://player.vimeo.com/video/${vimeoOembed.videoId}?rel=0`,
+  contentUrl: vimeoOembed.videoUrl,
+  uploadDate: vimeoOembed.uploadDate,
+  thumbnailUrl: vimeoOembed.thumbnailUrl,
+  durationSeconds: vimeoOembed.durationSeconds,
+} as const;
+
+/** ISO-8601 duration (e.g. PT1M38S) from the oEmbed duration in seconds. */
+function isoDuration(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `PT${minutes > 0 ? `${minutes}M` : ''}${seconds}S`;
+}
+
+/**
+ * VideoObject for the Vimeo video on /virtual-tour. uploadDate and
+ * thumbnailUrl are sourced truthfully from Vimeo's oEmbed API (cached in
+ * vimeo-oembed.json), which is what qualifies the video for rich results.
+ */
+export function virtualTourVideoJsonLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    '@id': `${SITE_URL}/virtual-tour#life-at-exhibit-video`,
+    name: lifeAtExhibitVideo.name,
+    description:
+      'A video tour of life at Exhibit On Superior, luxury apartments in River North, Chicago — residences, amenities, and the surrounding neighborhood.',
+    contentUrl: lifeAtExhibitVideo.contentUrl,
+    embedUrl: lifeAtExhibitVideo.embedUrl,
+    uploadDate: lifeAtExhibitVideo.uploadDate,
+    thumbnailUrl: lifeAtExhibitVideo.thumbnailUrl,
+    duration: isoDuration(lifeAtExhibitVideo.durationSeconds),
+    about: { '@id': `${SITE_URL}#apartmentcomplex` },
+  };
 }
 
 export const matterportTours: MatterportTour[] = [

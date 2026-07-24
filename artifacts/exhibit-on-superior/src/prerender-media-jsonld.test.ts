@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { render } from './entry-server';
 import { galleryImages, photoGalleryJsonLd } from './data/gallery';
-import { matterportTours, virtualToursJsonLd } from './data/virtualTours';
+import {
+  lifeAtExhibitVideo,
+  matterportTours,
+  virtualToursJsonLd,
+  virtualTourVideoJsonLd,
+} from './data/virtualTours';
 import { SITE_URL } from './data/seo';
 
 // Task: Google must see the SAME gallery images and virtual tours in the
@@ -84,9 +89,28 @@ describe('prerendered /virtual-tour JSON-LD matches the shared virtualTours modu
     });
   });
 
-  it('emits no VideoObject (uploadDate/thumbnail cannot be sourced truthfully)', async () => {
+  it('ships a VideoObject that deep-equals virtualTourVideoJsonLd()', async () => {
     const { head } = await render('/virtual-tour');
-    expect(JSON.stringify(extractJsonLd(head))).not.toContain('VideoObject');
+    const videos = extractJsonLd(head).filter((b) => b['@type'] === 'VideoObject');
+    expect(videos).toHaveLength(1);
+    expect(videos[0]).toEqual(virtualTourVideoJsonLd());
+  });
+
+  it('VideoObject carries a truthful uploadDate and thumbnail (from cached Vimeo oEmbed) and mirrors the visible embed', async () => {
+    const { head, html } = await render('/virtual-tour');
+    const video = extractJsonLd(head).find((b) => b['@type'] === 'VideoObject')!;
+
+    // Required-for-rich-results properties, sourced from Vimeo oEmbed.
+    expect(video.uploadDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(video.thumbnailUrl).toMatch(/^https:\/\/i\.vimeocdn\.com\//);
+    expect(video.duration).toMatch(/^PT(\d+M)?\d+S$/);
+
+    // Schema mirrors the visible page: heading and iframe src come from the
+    // same shared lifeAtExhibitVideo object.
+    expect(video.name).toBe(lifeAtExhibitVideo.name);
+    expect(video.embedUrl).toBe(lifeAtExhibitVideo.embedUrl);
+    expect(html).toContain(`>${lifeAtExhibitVideo.name}</h3>`);
+    expect(html).toContain(lifeAtExhibitVideo.embedUrl.replace(/&/g, '&amp;'));
   });
 });
 

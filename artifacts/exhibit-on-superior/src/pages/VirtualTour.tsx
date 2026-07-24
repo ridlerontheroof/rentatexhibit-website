@@ -4,12 +4,17 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { SplitHeadline } from '../components/SplitHeadline';
-import { matterportTours, virtualToursJsonLd } from '../data/virtualTours';
+import {
+  lifeAtExhibitVideo,
+  matterportTours,
+  virtualToursJsonLd,
+  virtualTourVideoJsonLd,
+} from '../data/virtualTours';
 
 export function VirtualTour() {
   return (
     <>
-      <Seo path="/virtual-tour" extraJsonLd={[virtualToursJsonLd()]} />
+      <Seo path="/virtual-tour" extraJsonLd={[virtualToursJsonLd(), virtualTourVideoJsonLd()]} />
       <div>
         <PageHero
           image="/images/image-074-game-area-with-arcade-games-and-wall-scrabble-ej.jpg"
@@ -37,15 +42,17 @@ export function VirtualTour() {
               </div>
             </div>
 
-            {/* Video Tours */}
+            {/* Video Tours — rendered from the same shared data that feeds
+                the page's VideoObject JSON-LD (virtualTourVideoJsonLd), so
+                the visible embed and the schema can never drift. */}
             <div className="mb-12">
-              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">Life at Exhibit On Superior</h3>
+              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">{lifeAtExhibitVideo.name}</h3>
               <div className="aspect-video bg-black border border-border">
                 <iframe
-                  src="https://player.vimeo.com/video/968009600?rel=0"
+                  src={lifeAtExhibitVideo.embedUrl}
                   className="w-full h-full"
                   allowFullScreen
-                  title="Life at Exhibit On Superior"
+                  title={lifeAtExhibitVideo.name}
                 />
               </div>
             </div>
