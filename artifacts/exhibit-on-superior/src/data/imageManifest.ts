@@ -110,7 +110,7 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
     ]
   },
   "/images/image-004-012417-5732-pu4fo5.jpg": {
-    "width": 1477,
+    "width": 2000,
     "height": 1477,
     "variants": [
       {
@@ -124,9 +124,9 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "w": 1280
       },
       {
-        "src": "/images/image-004-012417-5732-pu4fo5-1477w.webp",
-        "avif": "/images/image-004-012417-5732-pu4fo5-1477w.avif",
-        "w": 1477
+        "src": "/images/image-004-012417-5732-pu4fo5-2000w.webp",
+        "avif": "/images/image-004-012417-5732-pu4fo5-2000w.avif",
+        "w": 2000
       }
     ]
   },

@@ -230,15 +230,15 @@ describe('the largest-rung guard catches big renders shipping small files', () =
   // 1200w largest rung, so it passes on its own merits (no allowlist entry).
   const smallSrc = '/images/image-009-34-southeast-levwhc.jpg';
 
-  it('flags a full-width desktop render backed only by a 1477w rung', () => {
-    // image-004 has a 1477px original / 1477w largest rung and is NOT on the
+  it('flags a full-width desktop render backed only by a 1200w rung', () => {
+    // image-012 has a 1200px original / 1200w largest rung and is NOT on the
     // small-originals allowlist, so a 100vw claim (2880 device px) must flag.
     const [site] = findSmartImgCallSites(
-      `<SmartImg src="/images/image-004-012417-5732-pu4fo5.jpg" alt="x" sizes="100vw" className="w-full" />`,
+      `<SmartImg src="/images/image-012-012417-6415-hgfghu.jpg" alt="x" sizes="100vw" className="w-full" />`,
       'synthetic.tsx',
     );
     const violation = checkLargestRung(site);
-    expect(violation).toMatch(/largest rung for this image is only 1477w/);
+    expect(violation).toMatch(/largest rung for this image is only 1200w/);
     expect(violation).toMatch(/synthetic\.tsx:1/);
     expect(violation).toMatch(/optimize-images\.mjs/);
   });
@@ -257,7 +257,7 @@ describe('the largest-rung guard catches big renders shipping small files', () =
   it('the allowlist suppression path still works for a synthetic small original', () => {
     // Keep the escape hatch tested even while the allowlist is empty: register
     // a fake entry, verify it suppresses, then remove it.
-    const fake = "/images/image-004-012417-5732-pu4fo5.jpg"; // 1477px original, 1477w rung
+    const fake = "/images/image-012-012417-6415-hgfghu.jpg"; // 1200px original, 1200w rung
     const [site] = findSmartImgCallSites(
       `<SmartImg src="${fake}" alt="x" sizes="100vw" className="w-full" />`,
       'synthetic.tsx',
@@ -361,14 +361,14 @@ describe('data-driven hero and gallery images ship sharp largest rungs', () => {
   });
 
   it('self-test: a synthetic undersized entry is flagged', () => {
-    // image-004 has a 1477w largest rung — far short of the ~2880 device px a
+    // image-012 has a 1200w largest rung — far short of the ~2880 device px a
     // 100vw hero needs — so a hypothetical HERO_SLIDES entry must flag.
     const violation = checkImageRung(
-      '/images/image-004-012417-5732-pu4fo5.jpg',
+      '/images/image-012-012417-6415-hgfghu.jpg',
       heroSizes,
       'synthetic HERO_SLIDES entry',
     );
-    expect(violation).toMatch(/largest manifest rung is only 1477w/);
+    expect(violation).toMatch(/largest manifest rung is only 1200w/);
     expect(violation).toMatch(/synthetic HERO_SLIDES entry/);
   });
 
@@ -382,6 +382,120 @@ describe('data-driven hero and gallery images ship sharp largest rungs', () => {
     expect(
       checkImageRung('/images/image-002-gettyimages-1286580777-nvdupq.jpg', heroSizes, 'synthetic'),
     ).toBeNull();
+  });
+});
+
+// --- PageHero images: literal image="..." props across pages feed a dynamic
+// <SmartImg src={image}> inside PageHero, so the static call-site scan never
+// sees them. Enumerate every <PageHero image="..."> and validate each photo
+// against the sizes PageHero actually passes.
+
+interface PageHeroUsage {
+  file: string;
+  line: number;
+  image: string;
+}
+
+export function findPageHeroUsages(): PageHeroUsage[] {
+  const usages: PageHeroUsage[] = [];
+  for (const full of walkTsxFiles(SRC_ROOT)) {
+    const source = readFileSync(full, 'utf8');
+    const file = relative(SRC_ROOT, full);
+    const re = /<PageHero\b([\s\S]*?)\/?>/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(source)) !== null) {
+      const line = source.slice(0, m.index).split('\n').length;
+      const image = getStringAttr(m[1], 'image');
+      expect(
+        image,
+        `${file}:${line} <PageHero> must pass a literal image="..." so the ` +
+          `data-driven largest-rung guard can check it`,
+      ).toBeTruthy();
+      usages.push({ file, line, image: image! });
+    }
+  }
+  return usages;
+}
+
+describe('data-driven PageHero images ship sharp largest rungs', () => {
+  const pageHeroSizes = sizesAtDynamicCallSite('components/PageHero.tsx', 'image');
+  const usages = findPageHeroUsages();
+
+  it('finds PageHero usages to check (scan is not silently broken)', () => {
+    expect(usages.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it('PageHero renders full-width (guard checks the real worst case)', () => {
+    expect(resolveSizes(pageHeroSizes, DESKTOP_VIEWPORT_CSS_PX)).toBe(DESKTOP_VIEWPORT_CSS_PX);
+  });
+
+  it('every PageHero image covers the full-width hero render sharply', () => {
+    const violations = usages
+      .map((u) => checkImageRung(u.image, pageHeroSizes, `${u.file}:${u.line} <PageHero>`))
+      .filter((v): v is string => v !== null);
+    expect(violations, `\n${violations.join('\n\n')}\n`).toEqual([]);
+  });
+});
+
+// --- Completeness: no dynamic-src SmartImg call site may exist outside the
+// data-driven checks above. A new src={expr} call site fed by an unchecked
+// array would re-open the exact gap that let the hero slides ship blurry, so
+// it must fail here until a data-driven check is added for it.
+
+/** Extract the src={...} expression text from a call site, or null for a
+ *  literal src="...". */
+export function dynamicSrcExpr(attrs: string): string | null {
+  if (getStringAttr(attrs, 'src') !== undefined) return null;
+  const m = attrs.match(/\bsrc\s*=\s*\{([\s\S]*?)\}/);
+  return m ? m[1].trim() : null;
+}
+
+describe('every dynamic-src SmartImg call site is covered by a data-driven check', () => {
+  // Each entry here MUST correspond to a data-driven describe block above that
+  // validates the actual array/prop feeding the call site. Adding an entry
+  // without adding the matching check defeats the guard — don't.
+  const COVERED_DYNAMIC_CALL_SITES = new Set([
+    'components/HeroSlider.tsx :: slide.src', // HERO_SLIDES check
+    'components/PageHero.tsx :: image', // PageHero usages check
+    'pages/PhotoGallery.tsx :: image.src', // galleryImages grid check
+    'pages/PhotoGallery.tsx :: lightboxImages[selectedImage].src', // lightbox check
+  ]);
+
+  it('no dynamic-src call site exists without a data-driven largest-rung check', () => {
+    const dynamicSites = walkTsxFiles(SRC_ROOT)
+      .flatMap((f) => findSmartImgCallSites(readFileSync(f, 'utf8'), relative(SRC_ROOT, f)))
+      .map((s) => ({ ...s, expr: dynamicSrcExpr(s.attrs) }))
+      .filter((s): s is CallSite & { expr: string } => s.expr !== null);
+
+    // The known call sites must all still exist (a rename/removal must force a
+    // conscious update of the covered list and its data-driven check).
+    const found = new Set(dynamicSites.map((s) => `${s.file} :: ${s.expr}`));
+    expect([...found].sort()).toEqual([...COVERED_DYNAMIC_CALL_SITES].sort());
+
+    const uncovered = dynamicSites.filter(
+      (s) => !COVERED_DYNAMIC_CALL_SITES.has(`${s.file} :: ${s.expr}`),
+    );
+    expect(
+      uncovered.map((s) => `${s.file}:${s.line} <SmartImg src={${s.expr}}>`),
+      `\nThese dynamic-src SmartImg call sites have no data-driven largest-rung ` +
+        `check, so the arrays feeding them can ship blurry photos with no test ` +
+        `failure. Add a check in this file (see the HERO_SLIDES / PageHero / ` +
+        `galleryImages blocks) and register the call site in ` +
+        `COVERED_DYNAMIC_CALL_SITES.\n`,
+    ).toEqual([]);
+  });
+
+  it('self-test: the expression extractor sees dynamic src and skips literals', () => {
+    const [dyn] = findSmartImgCallSites(
+      `<SmartImg src={items[i].photo} alt="x" sizes="100vw" />`,
+      'synthetic.tsx',
+    );
+    expect(dynamicSrcExpr(dyn.attrs)).toBe('items[i].photo');
+    const [lit] = findSmartImgCallSites(
+      `<SmartImg src="/images/x.jpg" alt="x" sizes="100vw" />`,
+      'synthetic.tsx',
+    );
+    expect(dynamicSrcExpr(lit.attrs)).toBeNull();
   });
 });
 
