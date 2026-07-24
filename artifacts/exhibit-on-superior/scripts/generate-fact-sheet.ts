@@ -11,13 +11,16 @@
  *   - facts.json / fact-sheet.txt / fact-sheet.html are always rewritten from the
  *     live schema model, so they can never go stale. The `generated` date is only
  *     bumped when the facts actually change, keeping rebuilds diff-free.
- *   - The PDF cannot be reprinted headlessly in this environment, so its
- *     freshness is enforced by hash: fact-sheet.pdf.hash records the facts hash
- *     the PDF was printed from. If the facts change, the build FAILS with clear
- *     instructions until the PDF is reprinted (print fact-sheet.html to PDF)
- *     and the run is repeated with --accept-pdf.
+ *   - The PDF's freshness is enforced by hash: fact-sheet.pdf.hash records the
+ *     facts hash the PDF was printed from. When the facts change, the script
+ *     first tries to reprint the PDF itself with a headless Chromium
+ *     (CHROME_BIN / PATH / Playwright browser caches / nix store) and updates
+ *     the hash automatically. Only if no browser is available does the build
+ *     FAIL with instructions to print fact-sheet.html manually and re-run
+ *     with --accept-pdf.
  */
-import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -296,6 +299,80 @@ const pdfHashPath = join(outDir, 'fact-sheet.pdf.hash');
 const pdfPath = join(outDir, 'Exhibit-On-Superior-Fact-Sheet.pdf');
 const acceptPdf = process.argv.includes('--accept-pdf');
 
+/** Locate a headless-capable Chromium/Chrome binary, or null if none exists. */
+function findChromium(): string | null {
+  const candidates: string[] = [];
+  // 1. Explicit override.
+  if (process.env.CHROME_BIN) candidates.push(process.env.CHROME_BIN);
+  // 2. Common names on PATH.
+  for (const name of ['chromium', 'chromium-browser', 'google-chrome', 'google-chrome-stable', 'chrome']) {
+    const which = spawnSync('which', [name], { encoding: 'utf8' });
+    if (which.status === 0 && which.stdout.trim()) candidates.push(which.stdout.trim());
+  }
+  // 3. Playwright browser caches (~/.cache/ms-playwright/chromium-*/chrome-linux/chrome).
+  const home = process.env.HOME ?? '';
+  for (const cacheDir of [join(home, '.cache', 'ms-playwright')]) {
+    try {
+      for (const entry of readdirSync(cacheDir)) {
+        if (entry.startsWith('chromium-')) candidates.push(join(cacheDir, entry, 'chrome-linux', 'chrome'));
+      }
+    } catch {
+      /* cache dir absent */
+    }
+  }
+  // 4. Nix store playwright-browsers-chromium derivations (present on Replit).
+  try {
+    for (const entry of readdirSync('/nix/store')) {
+      if (!entry.endsWith('-playwright-browsers-chromium')) continue;
+      const base = join('/nix/store', entry);
+      try {
+        for (const sub of readdirSync(base)) {
+          if (sub.startsWith('chromium-')) candidates.push(join(base, sub, 'chrome-linux', 'chrome'));
+        }
+      } catch {
+        /* unreadable derivation */
+      }
+    }
+  } catch {
+    /* no nix store */
+  }
+  for (const c of candidates) {
+    if (!existsSync(c)) continue;
+    const v = spawnSync(c, ['--version'], { encoding: 'utf8', timeout: 15_000 });
+    if (v.status === 0) return c;
+  }
+  return null;
+}
+
+/** Print fact-sheet.html to the canonical PDF path. Returns true on success. */
+function printPdf(chrome: string): boolean {
+  const htmlPath = join(outDir, 'fact-sheet.html');
+  const res = spawnSync(
+    chrome,
+    [
+      '--headless=new',
+      '--no-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      '--no-pdf-header-footer',
+      `--print-to-pdf=${pdfPath}`,
+      htmlPath,
+    ],
+    { encoding: 'utf8', timeout: 120_000 },
+  );
+  if (res.status !== 0 || !existsSync(pdfPath)) {
+    console.error(`Headless Chromium print failed (exit ${res.status}):\n${res.stderr ?? ''}`);
+    return false;
+  }
+  // Sanity check: output must be a non-trivial PDF.
+  const buf = readFileSync(pdfPath);
+  if (buf.length < 1000 || buf.subarray(0, 5).toString() !== '%PDF-') {
+    console.error('Headless Chromium produced an invalid PDF; leaving hash unrecorded.');
+    return false;
+  }
+  return true;
+}
+
 if (acceptPdf) {
   if (!existsSync(pdfPath)) {
     console.error(`--accept-pdf given but ${pdfPath} does not exist.`);
@@ -306,11 +383,20 @@ if (acceptPdf) {
 } else {
   const recorded = existsSync(pdfHashPath) ? readFileSync(pdfHashPath, 'utf8').trim() : null;
   if (recorded !== factsHash || !existsSync(pdfPath)) {
+    // Try to reprint the PDF ourselves with a headless Chromium before
+    // bothering a human.
+    const chrome = findChromium();
+    if (chrome && printPdf(chrome)) {
+      writeFileSync(pdfHashPath, `${factsHash}\n`);
+      console.log(`Reprinted ${pdfPath} with headless Chromium (${chrome}) and updated fact-sheet.pdf.hash.`);
+      process.exit(0);
+    }
     console.error(
       [
         '',
         'FACT SHEET PDF IS STALE: the site facts (src/data/seo.ts / floorPlans.ts) have',
-        'changed since Exhibit-On-Superior-Fact-Sheet.pdf was printed.',
+        'changed since Exhibit-On-Superior-Fact-Sheet.pdf was printed, and no headless',
+        'Chromium was found to reprint it automatically (set CHROME_BIN to override).',
         '',
         'fact-sheet.txt / fact-sheet.html / facts.json were just regenerated and are',
         'up to date. To fix the PDF:',

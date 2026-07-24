@@ -12,4 +12,5 @@
 - [Image sources live in images-src/](image-source-relocation.md) — originals aren't in public/images; manifest keys are lookup keys, not shipped files; new photos go in images-src/.
 - [AppFolio guest-card lead push](appfolio-guest-cards.md) — tour leads become AppFolio prospects via the public listings guest_cards endpoint; resolve unit→listableUid server-side only.
 - [AppFolio availability integration](appfolio-availability.md) — unit_vacancy Reports API feeds /availability; AppFolio blocks ALL workspace egress, verify only from production.
+- [Headless Chromium PDF printing](fact-sheet-pdf-headless.md) — nix store ships playwright-browsers chromium; CLI `--print-to-pdf` works with no library; fact-sheet PDF reprints itself.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.
