@@ -110,6 +110,67 @@ export function checkCallSite(site: CallSite): string | null {
   return null;
 }
 
+// --- Inverse guard: renders big but only ships a small (blurry) file. -----
+// An image whose sizes claims a large width (e.g. 50vw on desktop) but whose
+// manifest only has a small largest rung (e.g. 400w) renders soft/blurry on
+// large screens: the browser wants a big file but the biggest one available
+// is far smaller than the rendered element.
+const DESKTOP_DPR = 2;
+// The largest rung may be somewhat smaller than the ideal device-px width
+// before blur is noticeable; only flag "meaningful" shortfalls.
+const BLUR_SHORTFALL = 1.5;
+// Legacy photos whose ORIGINAL file (in images-src/) is itself small, so no
+// larger rung can be regenerated — only replacing the source photo helps.
+// Each entry is verified below to still be genuinely source-limited: if a
+// bigger original lands and the manifest is regenerated, the entry must be
+// removed so the guard re-arms for that image.
+// An "original" wider than this is big enough to regenerate useful rungs
+// from, so it never belongs on the allowlist.
+const SMALL_ORIGINAL_MAX_PX = 400;
+export const KNOWN_SMALL_ORIGINALS = new Set([
+  '/images/image-009-34-southeast-levwhc.jpg',
+  '/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg',
+  '/images/image-011-20170808-0713-n8k48b.jpg',
+  '/images/image-012-012417-6415-hgfghu.jpg',
+  '/images/image-023-gettyimages-639122762-qpfmh0.jpg',
+  '/images/image-024-gettyimages-1464613356-q7z583.jpg',
+  '/images/image-025-gettyimages-1694195877-kb4dln.jpg',
+  '/images/image-026-gettyimages-2169911981-his7ly.jpg',
+]);
+
+/** Returns a violation when the call site renders wider than its manifest's
+ *  largest rung can sharply cover at a desktop viewport, or null if fine. */
+export function checkLargestRung(site: CallSite): string | null {
+  const src = getStringAttr(site.attrs, 'src');
+  if (!src) return null; // dynamic src — cannot resolve a manifest entry statically
+  const meta = IMAGE_MANIFEST[src];
+  if (!meta) return null; // unmanifested src is caught elsewhere (SmartImg renders plain img)
+  const sizes = getStringAttr(site.attrs, 'sizes');
+  if (sizes === undefined) return null; // missing/dynamic sizes handled by checkCallSite
+
+  const renderedCssPx = Math.min(
+    resolveSizes(sizes, DESKTOP_VIEWPORT_CSS_PX),
+    inferFixedSmallWidth(site.attrs) ?? Infinity,
+  );
+  const neededDevicePx = renderedCssPx * DESKTOP_DPR;
+  const largestRung = Math.max(...meta.variants.map((v) => v.w));
+  if (largestRung * BLUR_SHORTFALL >= neededDevicePx) return null;
+  // Source-limited legacy photo: manifest already ships the full original and
+  // the allowlist below verifies that claim. Only a better photo can fix it.
+  if (KNOWN_SMALL_ORIGINALS.has(src) && largestRung >= meta.width) return null;
+
+  const where = `${site.file}:${site.line} <SmartImg src=${src}>`;
+  return (
+    `${where} claims sizes="${sizes}" (~${Math.round(renderedCssPx)}px CSS at a ` +
+    `${DESKTOP_VIEWPORT_CSS_PX}px viewport, ~${Math.round(neededDevicePx)} device px at ` +
+    `${DESKTOP_DPR}x DPR) but the manifest's largest rung for this image is only ` +
+    `${largestRung}w, so it renders soft/blurry on large screens. ` +
+    `Fix: regenerate a larger rung via scripts/optimize-images.mjs (source a bigger ` +
+    `original in images-src/ if the current one is only ${meta.width}px wide), or ` +
+    `shrink sizes to match what the image can sharply cover.`
+  );
+}
+
 describe('every SmartImg call site declares an honest sizes attribute', () => {
   const files = walkTsxFiles(SRC_ROOT);
   const sites = files.flatMap((f) =>
@@ -123,6 +184,96 @@ describe('every SmartImg call site declares an honest sizes attribute', () => {
   it('no call site omits sizes or over-claims width for a small render', () => {
     const violations = sites.map(checkCallSite).filter((v): v is string => v !== null);
     expect(violations, `\n${violations.join('\n\n')}\n`).toEqual([]);
+  });
+
+  it('no call site renders wider than its manifest largest rung can sharply cover', () => {
+    const violations = sites.map(checkLargestRung).filter((v): v is string => v !== null);
+    expect(violations, `\n${violations.join('\n\n')}\n`).toEqual([]);
+  });
+});
+
+describe('the largest-rung guard catches big renders shipping small files', () => {
+  // /images/image-009-34-southeast-levwhc.jpg has a single 400w rung.
+  const smallSrc = '/images/image-009-34-southeast-levwhc.jpg';
+
+  it('flags a full-width desktop render backed only by a 1000w rung', () => {
+    // image-004 has a 1000px original / 1000w largest rung and is NOT on the
+    // small-originals allowlist, so a 100vw claim (2880 device px) must flag.
+    const [site] = findSmartImgCallSites(
+      `<SmartImg src="/images/image-004-012417-5732-pu4fo5.jpg" alt="x" sizes="100vw" className="w-full" />`,
+      'synthetic.tsx',
+    );
+    const violation = checkLargestRung(site);
+    expect(violation).toMatch(/largest rung for this image is only 1000w/);
+    expect(violation).toMatch(/synthetic\.tsx:1/);
+    expect(violation).toMatch(/optimize-images\.mjs/);
+  });
+
+  it('suppresses a source-limited image only via the audited allowlist', () => {
+    // image-009 over-renders too, but its original is itself 400px; the
+    // allowlist (verified below) is the only reason it passes.
+    const [site] = findSmartImgCallSites(
+      `<SmartImg src="${smallSrc}" alt="x" sizes="(min-width: 1024px) 50vw, 100vw" className="w-full" />`,
+      'synthetic.tsx',
+    );
+    expect(KNOWN_SMALL_ORIGINALS.has(smallSrc)).toBe(true);
+    expect(checkLargestRung(site)).toBeNull();
+  });
+
+  it('accepts the same image rendered in an honest small box', () => {
+    const [site] = findSmartImgCallSites(
+      `<SmartImg src="${smallSrc}" alt="x" sizes="200px" className="w-[200px]" />`,
+      'synthetic.tsx',
+    );
+    expect(checkLargestRung(site)).toBeNull();
+  });
+
+  it('accepts a full-width hero backed by a 2000w rung (within tolerance)', () => {
+    const [site] = findSmartImgCallSites(
+      `<SmartImg src="/images/image-002-gettyimages-1286580777-nvdupq.jpg" alt="x" sizes="100vw" className="w-full" />`,
+      'synthetic.tsx',
+    );
+    expect(checkLargestRung(site)).toBeNull();
+  });
+
+  it('uses the fixed box width, not an over-claimed sizes, as the render width', () => {
+    // Small fixed box: even with a silly sizes, the element cannot render big,
+    // and the over-claim itself is checkCallSite's job.
+    const [site] = findSmartImgCallSites(
+      `<SmartImg src="${smallSrc}" alt="x" sizes="100vw" className="w-[200px]" />`,
+      'synthetic.tsx',
+    );
+    expect(checkLargestRung(site)).toBeNull();
+  });
+
+  it('allowlist entries are all still genuinely source-limited (self-expiring)', () => {
+    // If a bigger original is added and the manifest regenerated, the guard
+    // must re-arm: the entry has to be removed from KNOWN_SMALL_ORIGINALS.
+    const stale = [...KNOWN_SMALL_ORIGINALS].filter((src) => {
+      const meta = IMAGE_MANIFEST[src];
+      if (!meta) return true; // image gone — remove the dead entry
+      const largestRung = Math.max(...meta.variants.map((v) => v.w));
+      return largestRung < meta.width || meta.width > SMALL_ORIGINAL_MAX_PX;
+    });
+    expect(
+      stale,
+      `\nThese KNOWN_SMALL_ORIGINALS entries are no longer source-limited ` +
+        `(a bigger original or rung now exists, or the image was removed) — ` +
+        `delete them so the largest-rung guard re-arms:\n${stale.join('\n')}\n`,
+    ).toEqual([]);
+  });
+
+  it('skips dynamic src and unmanifested images', () => {
+    const [dyn] = findSmartImgCallSites(
+      `<SmartImg src={photo.src} alt="x" sizes="100vw" className="w-full" />`,
+      'synthetic.tsx',
+    );
+    expect(checkLargestRung(dyn)).toBeNull();
+    const [unknown] = findSmartImgCallSites(
+      `<SmartImg src="/images/not-in-manifest.jpg" alt="x" sizes="100vw" className="w-full" />`,
+      'synthetic.tsx',
+    );
+    expect(checkLargestRung(unknown)).toBeNull();
   });
 });
 
