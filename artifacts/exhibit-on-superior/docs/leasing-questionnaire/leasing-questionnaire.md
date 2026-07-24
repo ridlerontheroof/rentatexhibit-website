@@ -18,13 +18,13 @@ engines that reward specific facts).
 
 **1. Administrative fee amount (if any)**
    - Visitors currently see: “What fees are required in addition to rent?” _(Fees & Leasing Costs page — FAQ)_
-   - Answer:
+   - Answer: The non-refundable administration fee is $500 per apartment. The fee is fully refundable if your application is denied, however the fee is retained if applicant chooses to cancel.
 
    `________________________________________________________________`
 
 **2. Security deposit and/or move-in fee amount**
    - Visitors currently see: “What fees are required in addition to rent?” _(Fees & Leasing Costs page — "Everything Else" section)_
-   - Answer: 
+   - Answer: Exhibit does not currently collect a Security Deposit. 
 
    `________________________________________________________________`
 
@@ -36,13 +36,13 @@ engines that reward specific facts).
 
 **4. Internet options: available providers, any building package or required provider, typical cost**
    - Visitors currently see: “Are utilities included?” _(Fees & Leasing Costs page — FAQ)_
-   - Answer: Building is in the process of implementing bulk internet through partnership with Zentro. Internet speed: Symmetrical download and upload speeds up to 2 Gig.
+   - Answer: Exhibit is in the process of implementing a bulk internet through partnership with Zentro. Internet speed: Symmetrical download and upload speeds up to 2 Gig.
 
    `________________________________________________________________`
 
 **5. On-site storage: available? monthly cost? waitlist?**
    - Visitors currently see: “Is storage or accessibility information available?” _(Apartment Guide + Fees pages)_
-   - Answer: On-site storage available for $25/month
+   - Answer: On-site storage available for $25 per month.
 
    `________________________________________________________________`
 
@@ -74,31 +74,31 @@ engines that reward specific facts).
 
 **1. Garage on site? Attached or nearby? Number of spaces / waitlist status**
    - Visitors currently see: “Does Exhibit On Superior have on-site parking?” _(Parking & Transportation page — FAQ)_
-   - Answer: Indoor, attached multi-level garage parking available. See leasing team for current availability.
+   - Answer: Indoor, attached multi-level garage parking is available. See leasing team for current availability.
 
    `________________________________________________________________`
 
 **2. Monthly parking rate (and reserved vs unreserved pricing if applicable)**
    - Visitors currently see: “How much is parking?” _(Fees page FAQ + Parking & Transportation page)_
-   - Answer: $335/month per space (unreserved)
+   - Answer: Garage parking is $335/month per space (unreserved), subject to availability.
 
    `________________________________________________________________`
 
 **3. EV charging: available? how many chargers? cost?**
    - Visitors currently see: “(site copy defers all parking details)” _(Parking & Transportation page)_
-   - Answer: EV charging parking is available
+   - Answer: The garage has 3 EV charging stations serving 6 designated alternative-fuel/EV parking spaces.
 
    `________________________________________________________________`
 
 **4. Guest parking options**
    - Visitors currently see: “(site copy defers all parking details)” _(Parking & Transportation page)_
-   - Answer:
+   - Answer: Exhibit does not offer guest parking, we recommend using Spot Hero or street parking.
 
    `________________________________________________________________`
 
 **5. Bike storage: bike room? cost? capacity?**
    - Visitors currently see: “(site copy defers all parking details)” _(Parking & Transportation page)_
-   - Answer:
+   - Answer: Exhibit has complimentary bike storage on the ground floor.
 
    `________________________________________________________________`
 
@@ -123,7 +123,7 @@ engines that reward specific facts).
 
 **3. Monthly pet rent per pet**
    - Visitors currently see: “What are the pet fees?” _(Pet Friendly page — FAQ)_
-   - Answer: 
+   - Answer: Exhibit does not currently charge a monthly pet rent.
 
    `________________________________________________________________`
 
@@ -173,7 +173,7 @@ engines that reward specific facts).
 
 **6. Offered lease terms (e.g. 6–18 months) and any short-term premium**
    - Visitors currently see: “What lease terms are available?” _(Application Guide — FAQ)_
-   - Answer: 12+ month terms available. See leasing consultant for details.
+   - Answer: 12+ month terms available. Short Terms based on availability. See leasing consultant for details.
 
    `________________________________________________________________`
 
@@ -185,7 +185,7 @@ engines that reward specific facts).
 
 **8. Occupancy limits per apartment size**
    - Visitors currently see: “(not yet answered on site)” _(Application Guide)_
-   - DELETE THIS ITEM
+   - Answer: Exhibit complies with Chicago Building Code requirements.
 
    `________________________________________________________________`
 
@@ -205,13 +205,13 @@ engines that reward specific facts).
 
 **2. Which floor plans / stacks include private balconies**
    - Visitors currently see: “Which units have balconies?” _(Apartment Guide — FAQ + features list)_
-   - Answer:
+   - Answer: The only homes that do not have balconies are the 02 Convertible and the 03 Convertible (units ending in 02 or 03 on floors 6-29). 
 
    `________________________________________________________________`
 
 **3. Accessible/ADA unit details: which plans, roll-in showers, etc.**
    - Visitors currently see: “Is storage or accessibility information available?” _(Apartment Guide — FAQ)_
-   - Answer:
+   - Answer: On-site storage is available for $25 per month. +20% of the homes at Exhibit are ADA accessible.
 
    `________________________________________________________________`
 
@@ -225,19 +225,20 @@ engines that reward specific facts).
 
 **2. Amenity floor hours (fitness center, pool, lounges)**
    - Visitors currently see: “(site copy defers hours)” _(Amenities page — Access & Hours)_
-   - Answer: 
+   - Answer: Indoor amenities are 24/7, the outdoor amenities close during the quiet hours of 10pm-6am.
 
    `________________________________________________________________`
 
 **3. Reservation rules for private dining room, party suite, training rooms — and guest rules**
    - Visitors currently see: “(site copy defers reservations)” _(Amenities page — Access & Hours)_
-   - Answer:
+   - Answer: Residents may have 2 guests at the pool. The Party Room is reservable through the Leasing/Management office at a rate of $50/hour. Rules available upon request.
 
    `________________________________________________________________`
 
 **4. Seasonal restrictions (outdoor pool deck, hot tub, grilling stations season/hours)**
    - Visitors currently see: “(not yet answered on site)” _(Amenities page)_
-   - Answer:
+   - Answer: Exhibit offers grills and firepits available year round. The pool and hot tub are weather dependent with the pool closing in late September and the hot tub closing as soon as the first snowfall.
+
 
    `________________________________________________________________`
 
