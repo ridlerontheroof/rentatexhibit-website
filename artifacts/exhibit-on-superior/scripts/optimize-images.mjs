@@ -26,7 +26,6 @@ const QUALITY = '78';
 // variants blow past the ~300KB peer norm at the default quality. Slightly
 // lower quality is visually indistinguishable but cuts page weight sharply.
 const QUALITY_OVERRIDES = {
-  'image-077-20170808-0721-c60hfw': '68',
   'image-059-20170808-0852-sw1ncm': '70',
   'image-055-dji-20230620092832-0149-d-yrh5eg': '70',
   'image-058-20170808-0843-ymrdpp': '70',

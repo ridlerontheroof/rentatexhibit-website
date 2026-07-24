@@ -130,70 +130,6 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
       }
     ]
   },
-  "/images/image-005-20170808-0721-c60hfw.jpg": {
-    "width": 1000,
-    "height": 1000,
-    "variants": [
-      {
-        "src": "/images/image-005-20170808-0721-c60hfw-800w.webp",
-        "avif": "/images/image-005-20170808-0721-c60hfw-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-005-20170808-0721-c60hfw-1000w.webp",
-        "avif": "/images/image-005-20170808-0721-c60hfw-1000w.avif",
-        "w": 1000
-      }
-    ]
-  },
-  "/images/image-006-lounge-with-fireplace-and-big-screen-tv-wwpwuk.jpg": {
-    "width": 1000,
-    "height": 1000,
-    "variants": [
-      {
-        "src": "/images/image-006-lounge-with-fireplace-and-big-screen-tv-wwpwuk-800w.webp",
-        "avif": "/images/image-006-lounge-with-fireplace-and-big-screen-tv-wwpwuk-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-006-lounge-with-fireplace-and-big-screen-tv-wwpwuk-1000w.webp",
-        "avif": "/images/image-006-lounge-with-fireplace-and-big-screen-tv-wwpwuk-1000w.avif",
-        "w": 1000
-      }
-    ]
-  },
-  "/images/image-007-012417-5990-n11px5.jpg": {
-    "width": 1000,
-    "height": 1000,
-    "variants": [
-      {
-        "src": "/images/image-007-012417-5990-n11px5-800w.webp",
-        "avif": "/images/image-007-012417-5990-n11px5-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-007-012417-5990-n11px5-1000w.webp",
-        "avif": "/images/image-007-012417-5990-n11px5-1000w.avif",
-        "w": 1000
-      }
-    ]
-  },
-  "/images/image-008-20170808-0677-aibka3.jpg": {
-    "width": 1000,
-    "height": 1000,
-    "variants": [
-      {
-        "src": "/images/image-008-20170808-0677-aibka3-800w.webp",
-        "avif": "/images/image-008-20170808-0677-aibka3-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-008-20170808-0677-aibka3-1000w.webp",
-        "avif": "/images/image-008-20170808-0677-aibka3-1000w.avif",
-        "w": 1000
-      }
-    ]
-  },
   "/images/image-009-34-southeast-levwhc.jpg": {
     "width": 1200,
     "height": 1200,
@@ -447,22 +383,6 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
       }
     ]
   },
-  "/images/image-022-012417-5663-pylqe0.jpg": {
-    "width": 1200,
-    "height": 800,
-    "variants": [
-      {
-        "src": "/images/image-022-012417-5663-pylqe0-800w.webp",
-        "avif": "/images/image-022-012417-5663-pylqe0-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-022-012417-5663-pylqe0-1200w.webp",
-        "avif": "/images/image-022-012417-5663-pylqe0-1200w.avif",
-        "w": 1200
-      }
-    ]
-  },
   "/images/image-023-gettyimages-639122762-qpfmh0.jpg": {
     "width": 1200,
     "height": 1200,
@@ -527,44 +447,6 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
       }
     ]
   },
-  "/images/image-027-gettyimages-1757511133-imydkt.jpg": {
-    "width": 400,
-    "height": 400,
-    "variants": [
-      {
-        "src": "/images/image-027-gettyimages-1757511133-imydkt-400w.webp",
-        "avif": "/images/image-027-gettyimages-1757511133-imydkt-400w.avif",
-        "w": 400
-      }
-    ]
-  },
-  "/images/image-028-gettyimages-2188334247-b4hzuu.jpg": {
-    "width": 400,
-    "height": 400,
-    "variants": [
-      {
-        "src": "/images/image-028-gettyimages-2188334247-b4hzuu-400w.webp",
-        "avif": "/images/image-028-gettyimages-2188334247-b4hzuu-400w.avif",
-        "w": 400
-      }
-    ]
-  },
-  "/images/image-029-gettyimages-1319479588-xeykea.jpg": {
-    "width": 1200,
-    "height": 800,
-    "variants": [
-      {
-        "src": "/images/image-029-gettyimages-1319479588-xeykea-800w.webp",
-        "avif": "/images/image-029-gettyimages-1319479588-xeykea-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-029-gettyimages-1319479588-xeykea-1200w.webp",
-        "avif": "/images/image-029-gettyimages-1319479588-xeykea-1200w.avif",
-        "w": 1200
-      }
-    ]
-  },
   "/images/image-030-012417-5663-hxwee6.jpg": {
     "width": 2000,
     "height": 500,
@@ -598,22 +480,6 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
       {
         "src": "/images/image-031-012417-5607-piqxtr-1200w.webp",
         "avif": "/images/image-031-012417-5607-piqxtr-1200w.avif",
-        "w": 1200
-      }
-    ]
-  },
-  "/images/image-032-20170601-0544-qsvo3j.jpg": {
-    "width": 1200,
-    "height": 800,
-    "variants": [
-      {
-        "src": "/images/image-032-20170601-0544-qsvo3j-800w.webp",
-        "avif": "/images/image-032-20170601-0544-qsvo3j-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-032-20170601-0544-qsvo3j-1200w.webp",
-        "avif": "/images/image-032-20170601-0544-qsvo3j-1200w.avif",
         "w": 1200
       }
     ]
@@ -1521,59 +1387,6 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
       }
     ]
   },
-  "/images/image-076-012417-5680-yegi2f.jpg": {
-    "width": 1200,
-    "height": 800,
-    "variants": [
-      {
-        "src": "/images/image-076-012417-5680-yegi2f-800w.webp",
-        "avif": "/images/image-076-012417-5680-yegi2f-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-076-012417-5680-yegi2f-1200w.webp",
-        "avif": "/images/image-076-012417-5680-yegi2f-1200w.avif",
-        "w": 1200
-      }
-    ]
-  },
-  "/images/image-077-20170808-0721-c60hfw.jpg": {
-    "width": 2000,
-    "height": 1333,
-    "variants": [
-      {
-        "src": "/images/image-077-20170808-0721-c60hfw-800w.webp",
-        "avif": "/images/image-077-20170808-0721-c60hfw-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-077-20170808-0721-c60hfw-1280w.webp",
-        "avif": "/images/image-077-20170808-0721-c60hfw-1280w.avif",
-        "w": 1280
-      },
-      {
-        "src": "/images/image-077-20170808-0721-c60hfw-2000w.webp",
-        "avif": "/images/image-077-20170808-0721-c60hfw-2000w.avif",
-        "w": 2000
-      }
-    ]
-  },
-  "/images/image-078-30-east-uv4eol.jpg": {
-    "width": 1200,
-    "height": 700,
-    "variants": [
-      {
-        "src": "/images/image-078-30-east-uv4eol-800w.webp",
-        "avif": "/images/image-078-30-east-uv4eol-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-078-30-east-uv4eol-1200w.webp",
-        "avif": "/images/image-078-30-east-uv4eol-1200w.avif",
-        "w": 1200
-      }
-    ]
-  },
   "/images/image-079-gettyimages-1440280890-ox4ske.jpg": {
     "width": 2000,
     "height": 500,
@@ -1645,27 +1458,6 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "src": "/images/image-082-bt7b3562-adimkf-1200w.webp",
         "avif": "/images/image-082-bt7b3562-adimkf-1200w.avif",
         "w": 1200
-      }
-    ]
-  },
-  "/images/image-083-dsc00806-yr6rhk.jpg": {
-    "width": 2000,
-    "height": 500,
-    "variants": [
-      {
-        "src": "/images/image-083-dsc00806-yr6rhk-800w.webp",
-        "avif": "/images/image-083-dsc00806-yr6rhk-800w.avif",
-        "w": 800
-      },
-      {
-        "src": "/images/image-083-dsc00806-yr6rhk-1280w.webp",
-        "avif": "/images/image-083-dsc00806-yr6rhk-1280w.avif",
-        "w": 1280
-      },
-      {
-        "src": "/images/image-083-dsc00806-yr6rhk-2000w.webp",
-        "avif": "/images/image-083-dsc00806-yr6rhk-2000w.avif",
-        "w": 2000
       }
     ]
   },
