@@ -143,7 +143,7 @@ engines that reward specific facts).
 
 **1. Income requirement (e.g. monthly income ≥ 3× rent) and acceptable proof**
    - Visitors currently see: “What income is required to qualify?” _(Application Guide — FAQ)_
-   - Answer: 3:1 income to rent ratio without co-signer.
+   - DELETE THIS ITEM.
 
    `________________________________________________________________`
 
@@ -161,13 +161,13 @@ engines that reward specific facts).
 
 **4. International applicants: process without US credit history / SSN**
    - Visitors currently see: “(not yet answered on site)” _(Application Guide)_
-   - Answer:
+   - DELETE THIS ITEM.
 
    `________________________________________________________________`
 
 **5. Typical approval timeline (e.g. 2–3 business days)**
    - Visitors currently see: “How long does approval take?” _(Application Guide — FAQ)_
-   - Answer: 1-2 business days
+   - Answer: 1-3 business days
 
    `________________________________________________________________`
 
@@ -185,7 +185,7 @@ engines that reward specific facts).
 
 **8. Occupancy limits per apartment size**
    - Visitors currently see: “(not yet answered on site)” _(Application Guide)_
-   - Answer:
+   - DELETE THIS ITEM
 
    `________________________________________________________________`
 
