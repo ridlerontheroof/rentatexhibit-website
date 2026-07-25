@@ -213,6 +213,25 @@ describe('floor-plan image files', () => {
     expect(missing).toEqual([]);
   });
 
+  it('every file in floor-plans/ is referenced by a plan (no retired sheets keep shipping)', () => {
+    // Inverse of the existence check above: if a plan is renamed or retired,
+    // its old thumb/detail/zoom sheets would otherwise sit in public/images/
+    // and ship with every deploy. siteImages.test.ts explicitly delegates
+    // /images/floor-plans/ coverage to this file, so this guard closes that
+    // gap. Fix by deleting the orphaned files (or restoring the plan).
+    const expected = new Set<string>();
+    for (const p of plans) {
+      for (const key of ['thumb', 'detail', 'zoom'] as const) {
+        expected.add(basename(p.images[key]));
+      }
+    }
+    const orphans = readdirSync(IMG_DIR).filter((f) => !expected.has(f));
+    expect(
+      orphans,
+      `files in public/images/floor-plans/ no plan references — delete them: ${orphans.join(', ')}`,
+    ).toEqual([]);
+  });
+
   it('every image file is non-empty and starts with a valid WebP header (RIFF....WEBP)', () => {
     const bad: string[] = [];
     for (const p of plans) {
