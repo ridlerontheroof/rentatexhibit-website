@@ -164,7 +164,7 @@ export async function sendProspectConfirmation(lead: LeadNotification): Promise<
   // Distributed abuse defense: the per-IP limit on the route can be bypassed by
   // rotating IPs, so cap confirmations per recipient and globally before we send
   // anything to the attacker-supplied address. See emailThrottle for details.
-  if (!allowProspectConfirmation(lead.email)) {
+  if (!(await allowProspectConfirmation(lead.email))) {
     return;
   }
 

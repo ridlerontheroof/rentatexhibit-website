@@ -1,3 +1,5 @@
+import { sql } from "drizzle-orm";
+import { db } from "@workspace/db";
 import { logger } from "./logger";
 
 /**
@@ -14,12 +16,20 @@ import { logger } from "./logger";
  *   - the *total* number of confirmations sent (blocks using us as a spam
  *     cannon and protects the sending account from Gmail throttling/suspension).
  *
- * The counters are in-process and reset on restart. That is acceptable for a
- * spam-abuse guard: it caps sustained volume without any external dependency,
- * and legitimate leasing traffic stays well under these limits.
+ * The counters live in PostgreSQL (`email_throttle_counters`) so the caps are
+ * enforced *cluster-wide*: on an autoscale deployment every replica shares the
+ * same daily buckets, and an attacker spreading requests across replicas can
+ * no longer multiply the effective limit by the replica count. Each bucket
+ * covers one UTC day and is incremented atomically with
+ * `INSERT … ON CONFLICT DO UPDATE … WHERE count < max`.
+ *
+ * If the database is unreachable, the guard fails over to per-process
+ * in-memory counters — the same behaviour as before the shared counters
+ * existed — so a database outage degrades the guard to per-replica caps
+ * instead of either disabling it or blocking legitimate confirmations.
  */
 
-/** Rolling window over which the caps are measured. */
+/** Rolling window used by the in-memory fallback counters. */
 const WINDOW_MS = 24 * 60 * 60 * 1000;
 
 function positiveIntFromEnv(name: string, fallback: number): number {
@@ -42,15 +52,118 @@ const GLOBAL_MAX = positiveIntFromEnv(
   300,
 );
 
-/** Timestamps (ms) of recent global sends, oldest first. */
-let globalSends: number[] = [];
-/** Per-recipient timestamps (ms) of recent sends, oldest first. */
-const recipientSends = new Map<string, number[]>();
-
 /** Normalize an email so simple casing/whitespace tricks can't split the count. */
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
+
+/** UTC day stamp (YYYY-MM-DD) used to bucket the shared counters. */
+function utcDay(now: number): string {
+  return new Date(now).toISOString().slice(0, 10);
+}
+
+/**
+ * Atomically increment the shared counter for `key` unless it has already
+ * reached `max`. Returns `true` when the increment happened (send allowed).
+ *
+ * Uses a single upsert so concurrent replicas can never both pass a cap:
+ * the conditional UPDATE only fires while `count < max`, and when it doesn't
+ * fire no row comes back.
+ */
+async function incrementSharedCounter(
+  key: string,
+  max: number,
+  now: number,
+): Promise<boolean> {
+  // Rows become irrelevant once their UTC day has passed; keep them for two
+  // days so debugging a cap event is still possible, then sweep them.
+  const expiresAt = new Date(now + 2 * WINDOW_MS);
+  const result = await db.execute(sql`
+    INSERT INTO email_throttle_counters (key, count, expires_at)
+    VALUES (${key}, 1, ${expiresAt})
+    ON CONFLICT (key) DO UPDATE
+      SET count = email_throttle_counters.count + 1
+      WHERE email_throttle_counters.count < ${max}
+    RETURNING count
+  `);
+  return result.rows.length > 0;
+}
+
+/** Opportunistically sweep expired buckets so the table can't grow unbounded. */
+async function sweepExpiredCounters(now: number): Promise<void> {
+  try {
+    await db.execute(
+      sql`DELETE FROM email_throttle_counters WHERE expires_at < ${new Date(now)}`,
+    );
+  } catch (err) {
+    logger.warn({ err }, "Failed to sweep expired email throttle counters");
+  }
+}
+
+/**
+ * Record that a confirmation email is about to be sent to `email` and report
+ * whether doing so is allowed. When it returns `false` the caller must NOT send
+ * — a cap has been reached and the send is suppressed.
+ */
+export async function allowProspectConfirmation(
+  email: string,
+  now: number = Date.now(),
+): Promise<boolean> {
+  const recipient = normalizeEmail(email);
+  const day = utcDay(now);
+
+  try {
+    // Check the per-recipient cap first so a blocked victim address does not
+    // consume global budget.
+    const recipientAllowed = await incrementSharedCounter(
+      `rcpt:${recipient}:${day}`,
+      PER_RECIPIENT_MAX,
+      now,
+    );
+    if (!recipientAllowed) {
+      logger.warn(
+        { perRecipientMax: PER_RECIPIENT_MAX },
+        "Suppressed prospect confirmation email: per-recipient daily cap reached",
+      );
+      return false;
+    }
+
+    const globalAllowed = await incrementSharedCounter(
+      `global:${day}`,
+      GLOBAL_MAX,
+      now,
+    );
+    if (!globalAllowed) {
+      logger.warn(
+        { globalMax: GLOBAL_MAX },
+        "Suppressed prospect confirmation email: global daily cap reached",
+      );
+      return false;
+    }
+
+    // ~1% of allowed sends also sweep expired rows; cheap and unbounded-safe.
+    if (Math.random() < 0.01) void sweepExpiredCounters(now);
+
+    return true;
+  } catch (err) {
+    logger.error(
+      { err },
+      "Email throttle database check failed; falling back to in-memory counters",
+    );
+    return allowProspectConfirmationInMemory(recipient, now);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// In-memory fallback (per-process). Only used when the database is
+// unreachable; provides the pre-shared-counter level of protection so a DB
+// outage never disables the guard entirely.
+// ---------------------------------------------------------------------------
+
+/** Timestamps (ms) of recent global sends, oldest first. */
+let globalSends: number[] = [];
+/** Per-recipient timestamps (ms) of recent sends, oldest first. */
+const recipientSends = new Map<string, number[]>();
 
 function pruneOlderThan(timestamps: number[], cutoff: number): number[] {
   // Timestamps are appended in order, so drop from the front until fresh.
@@ -59,17 +172,11 @@ function pruneOlderThan(timestamps: number[], cutoff: number): number[] {
   return i === 0 ? timestamps : timestamps.slice(i);
 }
 
-/**
- * Record that a confirmation email is about to be sent to `email` and report
- * whether doing so is allowed. When it returns `false` the caller must NOT send
- * — a cap has been reached and the send is suppressed.
- */
-export function allowProspectConfirmation(
-  email: string,
-  now: number = Date.now(),
+function allowProspectConfirmationInMemory(
+  recipient: string,
+  now: number,
 ): boolean {
   const cutoff = now - WINDOW_MS;
-  const recipient = normalizeEmail(email);
 
   globalSends = pruneOlderThan(globalSends, cutoff);
   const recent = pruneOlderThan(recipientSends.get(recipient) ?? [], cutoff);
@@ -78,7 +185,7 @@ export function allowProspectConfirmation(
     recipientSends.set(recipient, recent);
     logger.warn(
       { perRecipientMax: PER_RECIPIENT_MAX },
-      "Suppressed prospect confirmation email: per-recipient daily cap reached",
+      "Suppressed prospect confirmation email: per-recipient daily cap reached (in-memory fallback)",
     );
     return false;
   }
@@ -87,7 +194,7 @@ export function allowProspectConfirmation(
     recipientSends.set(recipient, recent);
     logger.warn(
       { globalMax: GLOBAL_MAX },
-      "Suppressed prospect confirmation email: global daily cap reached",
+      "Suppressed prospect confirmation email: global daily cap reached (in-memory fallback)",
     );
     return false;
   }
@@ -109,7 +216,7 @@ export function allowProspectConfirmation(
   return true;
 }
 
-/** Test-only helper to reset the in-memory counters between cases. */
+/** Test-only helper to reset the in-memory fallback counters between cases. */
 export function __resetEmailThrottleForTests(): void {
   globalSends = [];
   recipientSends.clear();
