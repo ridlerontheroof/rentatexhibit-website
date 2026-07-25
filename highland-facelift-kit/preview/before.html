@@ -1,0 +1,109 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>:root{--primary-color:rgba(3,49,72,1);--light1:#ddd;--light3:#f2f2f2;--dark1:#222;--dark2:#444;--dark3:#333;--grey1:#767676;--grey2:#5f5f5f;--grey3:#999;--white3:#fff;--red:#c00}
+body{margin:0;font-family:Arial,Helvetica,sans-serif}
+.dropdown{background:#fff}
+.header{background:var(--dark1)}
+.info{padding:15px 15px 60px;display:flex;flex-direction:column;gap:12px}
+.photo .slider-link{display:block;position:relative;height:220px;overflow:hidden}
+.slider-images{height:220px;display:flex}
+.slider-image{flex:0 0 100%;background-size:cover;background-position:center}
+.slider-total{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;padding:3px 8px;border-radius:4px;font-size:12px}
+</style>
+<link rel="stylesheet" href="widget-default.css">
+
+</head><body>
+<div class="listings-widget-container"><div class="listings-widget">
+
+<header class="header"><div class="header-container"><div class="filter-container">
+<form class="filter-search" onsubmit="return false"><input type="search" class="search-input header-input" placeholder="Search..." size="30"/>
+<div class="search-icon" role="button" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34z"/></svg></div></form>
+<div class="filter-type drop-toggle" role="button" tabindex="0">Type <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"/></svg></div>
+<div class="filter-city drop-toggle" role="button" tabindex="0">City <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"/></svg></div>
+<div class="filter-beds drop-toggle" role="button" tabindex="0">Beds <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"/></svg></div>
+<div class="filter-price drop-toggle" role="button" tabindex="0">Price <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"/></svg></div>
+</div></div></header>
+<div class="main-container"><div class="listings-container">
+<div class="listings-header"><div class="header-left"><div class="listings-count">3 listings</div></div><div class="header-right">Sort: Most Recent</div></div>
+<div class="all-listings"><section class="listing-section">
+
+<div class="listing-item">
+<div class="photo">
+<a class="slider-link" href="#" aria-label="365 W Superior St, Unit 1204, Chicago, IL 60654">
+<div class="slider-images" data-slide-index="1">
+<div class="slider-image" style="background-image: linear-gradient(135deg,#5a7d95,#2c4a60)" data-slide-index="1"></div>
+</div>
+<div class="slider-total slider-overlay"><span>1</span> / 8</div>
+<h2 class="address">365 W Superior St, Unit 1204, Chicago, IL 60654</h2>
+</a>
+</div>
+<div class="info">
+<h3 class="rent">
+$3,250
+<div class="smaller rent-title">/ MONTH</div>
+</h3>
+<div class="amenities">
+<div class="feature beds"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M176 256c44.11 0 80-35.89 80-80s-35.89-80-80-80-80 35.89-80 80 35.89 80 80 80zm352-128H304c-8.84 0-16 7.16-16 16v144H64V80c0-8.84-7.16-16-16-16H16C7.16 64 0 71.16 0 80v352c0 8.84 7.16 16 16 16h32c8.84 0 16-7.16 16-16v-48h512v48c0 8.84 7.16 16 16 16h32c8.84 0 16-7.16 16-16V240c0-61.86-50.14-112-112-112z"/></svg>1 bed</div>
+<div class="feature baths"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32,384a95.4,95.4,0,0,0,32,71.09V496a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V480H384v16a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V455.09A95.4,95.4,0,0,0,480,384V336H32Z"/></svg>1 bath</div>
+<div class="feature sqft"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M160 288h-56c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h56v-64h-56c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h56V96h-56c-4.42 0-8-3.58-8-8V72c0-4.42 3.58-8 8-8h56V32c0-17.67-14.33-32-32-32H32C14.33 0 0 14.33 0 32v448c0 2.77.91 5.24 1.57 7.8L160 329.38V288zm320 64h-32v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-64v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-64v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-41.37L24.2 510.43c2.56.66 5.04 1.57 7.8 1.57h448c17.67 0 32-14.33 32-32v-96c0-17.67-14.33-32-32-32z"/></svg>811 sqft.</div>
+</div>
+<div class="tagline">Corner residence with skyline views at Exhibit on Superior</div>
+<div class="available">Available <strong>NOW</strong></div>
+<div class="lower-buttons"><a href="#" class="apm-view-details btn secondary-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8z"/></svg> View Details</a><a href="#" class="apm-apply-now btn primary-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248z"/></svg> Apply Now</a></div>
+</div>
+</div>
+
+<div class="listing-item">
+<div class="photo">
+<a class="slider-link" href="#" aria-label="365 W Superior St, Unit 0715, Chicago, IL 60654">
+<div class="slider-images" data-slide-index="1">
+<div class="slider-image" style="background-image: linear-gradient(135deg,#8a9aa4,#4d5f6b)" data-slide-index="1"></div>
+</div>
+<div class="slider-total slider-overlay"><span>1</span> / 8</div>
+<h2 class="address">365 W Superior St, Unit 0715, Chicago, IL 60654</h2>
+</a>
+</div>
+<div class="info">
+<h3 class="rent">
+$4,890
+<div class="smaller rent-title">/ MONTH</div>
+</h3>
+<div class="amenities">
+<div class="feature beds"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M176 256c44.11 0 80-35.89 80-80s-35.89-80-80-80-80 35.89-80 80 35.89 80 80 80zm352-128H304c-8.84 0-16 7.16-16 16v144H64V80c0-8.84-7.16-16-16-16H16C7.16 64 0 71.16 0 80v352c0 8.84 7.16 16 16 16h32c8.84 0 16-7.16 16-16v-48h512v48c0 8.84 7.16 16 16 16h32c8.84 0 16-7.16 16-16V240c0-61.86-50.14-112-112-112z"/></svg>2 beds</div>
+<div class="feature baths"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32,384a95.4,95.4,0,0,0,32,71.09V496a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V480H384v16a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V455.09A95.4,95.4,0,0,0,480,384V336H32Z"/></svg>2 bath</div>
+<div class="feature sqft"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M160 288h-56c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h56v-64h-56c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h56V96h-56c-4.42 0-8-3.58-8-8V72c0-4.42 3.58-8 8-8h56V32c0-17.67-14.33-32-32-32H32C14.33 0 0 14.33 0 32v448c0 2.77.91 5.24 1.57 7.8L160 329.38V288zm320 64h-32v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-64v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-64v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-41.37L24.2 510.43c2.56.66 5.04 1.57 7.8 1.57h448c17.67 0 32-14.33 32-32v-96c0-17.67-14.33-32-32-32z"/></svg>1,168 sqft.</div>
+</div>
+<div class="tagline">Split two-bed with gallery-finish kitchen and balcony</div>
+<div class="available">Available <strong>09/01/2026</strong></div>
+<div class="lower-buttons"><a href="#" class="apm-view-details btn secondary-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8z"/></svg> View Details</a><a href="#" class="apm-apply-now btn primary-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248z"/></svg> Apply Now</a></div>
+</div>
+</div>
+
+<div class="listing-item">
+<div class="photo">
+<a class="slider-link" href="#" aria-label="365 W Superior St, Unit 0406, Chicago, IL 60654">
+<div class="slider-images" data-slide-index="1">
+<div class="slider-image" style="background-image: linear-gradient(135deg,#6f8fa2,#33505f)" data-slide-index="1"></div>
+</div>
+<div class="slider-total slider-overlay"><span>1</span> / 8</div>
+<h2 class="address">365 W Superior St, Unit 0406, Chicago, IL 60654</h2>
+</a>
+</div>
+<div class="info">
+<h3 class="rent">
+$2,760
+<div class="smaller rent-title">/ MONTH</div>
+</h3>
+<div class="amenities">
+<div class="feature beds"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M176 256c44.11 0 80-35.89 80-80s-35.89-80-80-80-80 35.89-80 80 35.89 80 80 80zm352-128H304c-8.84 0-16 7.16-16 16v144H64V80c0-8.84-7.16-16-16-16H16C7.16 64 0 71.16 0 80v352c0 8.84 7.16 16 16 16h32c8.84 0 16-7.16 16-16v-48h512v48c0 8.84 7.16 16 16 16h32c8.84 0 16-7.16 16-16V240c0-61.86-50.14-112-112-112z"/></svg>Studio</div>
+<div class="feature baths"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32,384a95.4,95.4,0,0,0,32,71.09V496a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V480H384v16a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V455.09A95.4,95.4,0,0,0,480,384V336H32Z"/></svg>1 bath</div>
+<div class="feature sqft"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M160 288h-56c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h56v-64h-56c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h56V96h-56c-4.42 0-8-3.58-8-8V72c0-4.42 3.58-8 8-8h56V32c0-17.67-14.33-32-32-32H32C14.33 0 0 14.33 0 32v448c0 2.77.91 5.24 1.57 7.8L160 329.38V288zm320 64h-32v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-64v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-64v56c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-56h-41.37L24.2 510.43c2.56.66 5.04 1.57 7.8 1.57h448c17.67 0 32-14.33 32-32v-96c0-17.67-14.33-32-32-32z"/></svg>580 sqft.</div>
+</div>
+<div class="tagline">Efficient studio with floor-to-ceiling glass</div>
+<div class="available">Available <strong>08/15/2026</strong></div>
+<div class="lower-buttons"><a href="#" class="apm-view-details btn secondary-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8z"/></svg> View Details</a><a href="#" class="apm-apply-now btn primary-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248z"/></svg> Apply Now</a></div>
+</div>
+</div>
+</section></div>
+</div></div>
+</div></div>
+</body></html>

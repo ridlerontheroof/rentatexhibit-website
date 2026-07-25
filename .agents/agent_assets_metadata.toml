@@ -108,3 +108,9 @@ id = "VGLHO_xvHx1OI6s_DVuJ5"
 uri = "file://artifacts/api-server/email-previews/shots/confirmation-tour-unit.png"
 type = "image"
 title = "Tour email — 'Request a Showing' variant (unit named)"
+
+[[outputs]]
+id = "cUsYNqaI0bRy0BFnx7302"
+uri = "file://highland-facelift-kit/preview/side-by-side.png"
+type = "image"
+title = "Highland listings — before vs. after facelift CSS"

@@ -1,0 +1,263 @@
+/* ============================================================
+   HIGHLAND PARTNERS — AppFolio Listings Widget Facelift  (v1.0)
+   ------------------------------------------------------------
+   Paste this whole block into the Duda editor's custom-CSS
+   panel (see INSTALL.md). It restyles the AppFolio "Vacancies
+   v2" listings widget toward the Exhibit design language:
+   tracked uppercase headings, square refined buttons, calmer
+   cards — adapted to Highland navy with a light mist accent.
+
+   All rules are scoped to .listings-widget, so nothing else on
+   the site is affected. To roll back, delete this block.
+   ============================================================ */
+
+/* Barlow Semi Condensed — the Exhibit typeface. If you prefer not
+   to load an external font, delete this @import line; everything
+   falls back to the site's default fonts gracefully. */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap');
+
+.listings-widget {
+  /* ---- Highland facelift design tokens ---- */
+  --hl-navy: #033148;            /* Highland brand navy: rgba(3,49,72) */
+  --hl-navy-deep: #022435;       /* hover state */
+  --hl-mist: #8fb0c1;            /* light accent (replaces Exhibit gold) */
+  --hl-wash: #eef3f6;            /* pale navy wash for hovers/surfaces */
+  --hl-ink: #444444;             /* body text */
+  --hl-line: #e4e4e4;            /* hairline borders */
+  --hl-font: 'Barlow Semi Condensed', proxima-nova, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ------------------------------------------------------------
+   1. Base: typeface + calm white canvas
+   ------------------------------------------------------------ */
+.listings-widget,
+.listings-widget input,
+.listings-widget button {
+  font-family: var(--hl-font) !important;
+}
+
+.listings-widget {
+  background: #ffffff !important;
+  color: var(--hl-ink) !important;
+}
+
+/* ------------------------------------------------------------
+   2. Filter bar (top header): navy band, square controls
+   ------------------------------------------------------------ */
+.listings-widget .header {
+  background: var(--hl-navy) !important;
+  padding: 18px 15px !important;
+}
+
+/* Pill controls -> square, quiet outline buttons */
+.listings-widget .drop-toggle {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-radius: 0 !important;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 11px !important;
+  transition: background 0.3s, border-color 0.3s;
+}
+.listings-widget .drop-toggle:hover,
+.listings-widget .drop-toggle:focus {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  box-shadow: none !important;
+}
+
+/* Inputs: square, hairline */
+.listings-widget input[type='text'],
+.listings-widget input[type='number'],
+.listings-widget input[type='search'],
+.listings-widget input[type='date'] {
+  border-radius: 0 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.5px;
+}
+.listings-widget input[type='text']:hover,
+.listings-widget input[type='text']:focus,
+.listings-widget input[type='number']:hover,
+.listings-widget input[type='number']:focus,
+.listings-widget input[type='search']:hover,
+.listings-widget input[type='search']:focus,
+.listings-widget input[type='date']:hover,
+.listings-widget input[type='date']:focus {
+  box-shadow: inset 0 -2px 0 0 var(--hl-mist) !important;
+}
+.listings-widget .search-icon:hover,
+.listings-widget .search-icon:focus {
+  color: var(--hl-navy) !important;
+}
+
+/* Dropdown panels: square, hairline border, navy hover */
+.listings-widget .dropdown {
+  border-radius: 0 !important;
+  border-top: 2px solid var(--hl-navy) !important;
+  box-shadow: 0 6px 16px rgba(3, 49, 72, 0.15) !important;
+}
+
+/* ------------------------------------------------------------
+   3. Sort/count bar
+   ------------------------------------------------------------ */
+.listings-widget .main-container .listings-container .listings-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--hl-line);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------
+   4. Listing cards: calmer, square, hairline-bordered
+   ------------------------------------------------------------ */
+.listings-widget .main-container .listings-container .all-listings .listing-section {
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.listings-widget .main-container .listings-container .all-listings .listing-section .listing-item {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: 1px solid var(--hl-line);
+  color: var(--hl-ink) !important;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+.listings-widget .main-container .listings-container .all-listings .listing-section .listing-item:hover {
+  border-color: #d0d0d0;
+  box-shadow: 0 10px 24px rgba(3, 49, 72, 0.1) !important;
+}
+
+/* Address overlay on the photo: tracked uppercase, lighter weight */
+.listings-widget .photo a.slider-link h2.address {
+  font-family: var(--hl-font) !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  background: linear-gradient(rgba(3, 49, 72, 0), rgba(2, 30, 44, 0.85)) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Photo slider chrome: square counters */
+.listings-widget .slider-total {
+  border-radius: 0 !important;
+  letter-spacing: 1px;
+  font-size: 11px !important;
+}
+
+/* ------------------------------------------------------------
+   5. Price line: light-weight navy figure, tracked caption
+   ------------------------------------------------------------ */
+.listings-widget .info h3.rent {
+  font-family: var(--hl-font) !important;
+  color: var(--hl-navy) !important;
+  font-weight: 300 !important;
+  font-size: 28px !important;
+  letter-spacing: 1px;
+}
+.listings-widget .info h3.rent .smaller {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #9a9a9a !important;
+  font-size: 0.65rem !important;
+  font-weight: 500 !important;
+}
+
+/* ------------------------------------------------------------
+   6. Spec icons row (beds / baths / sqft / pets)
+   ------------------------------------------------------------ */
+.listings-widget .info .amenities .feature {
+  font-weight: 400 !important;
+  font-size: 13px !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #666666;
+}
+.listings-widget .info .amenities .feature svg {
+  color: var(--hl-mist) !important;
+  width: 22px !important;
+  height: 22px !important;
+}
+
+/* Tagline + availability line */
+.listings-widget .info .tagline {
+  color: #808080 !important;
+  font-size: 13.5px !important;
+  letter-spacing: 0.25px;
+}
+.listings-widget .info .available {
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 12px;
+  color: #666666;
+}
+.listings-widget .info .available strong {
+  color: var(--hl-navy);
+}
+
+/* ------------------------------------------------------------
+   7. Action buttons: Exhibit-style tracked uppercase, square
+   ------------------------------------------------------------ */
+/* Buttons are absolutely positioned at the card's bottom edge; the
+   default card body reserves room for 40px buttons. Ours are 46px,
+   so reserve a little more so nothing is covered. */
+.listings-widget .listing-item .info {
+  padding-bottom: 64px !important;
+}
+
+.listings-widget .info .lower-buttons a.btn {
+  height: 46px !important;
+  line-height: 46px !important;
+  border-radius: 0 !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  transition: background 0.3s, color 0.3s;
+}
+/* The little icons fight the tracked-caps look — hide them */
+.listings-widget .info .lower-buttons a.btn svg {
+  display: none;
+}
+
+/* Apply Now: solid navy (widget config color also feeds this) */
+.listings-widget .primary-btn {
+  background: var(--hl-navy) !important;
+}
+.listings-widget .primary-btn:hover,
+.listings-widget .primary-btn:focus {
+  background: var(--hl-navy-deep) !important;
+  box-shadow: none !important;
+}
+
+/* View Details: quiet "outline" — white with navy text */
+.listings-widget .info .lower-buttons a.secondary-btn {
+  background: #ffffff !important;
+  color: var(--hl-navy) !important;
+  border-top: 1px solid var(--hl-line) !important;
+}
+.listings-widget .info .lower-buttons a.secondary-btn:hover,
+.listings-widget .info .lower-buttons a.secondary-btn:focus {
+  background: var(--hl-wash) !important;
+  box-shadow: none !important;
+}
+
+/* Dropdown option hover inherits the widget's primary color;
+   keep it navy even if the widget config color drifts */
+.listings-widget .dropdown .option:hover,
+.listings-widget .dropdown .option:focus,
+.listings-widget .dropdown .check:hover,
+.listings-widget .dropdown .check label:focus {
+  background: var(--hl-navy) !important;
+}
+
+/* Terms-of-service footnote */
+.listings-widget .main-container .listings-container .all-listings .listing-terms {
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   End Highland facelift. Rollback = delete everything above.
+   ============================================================ */
