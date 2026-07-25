@@ -1,18 +1,49 @@
 # Exhibit On Superior
 
-> Luxury River North Chicago apartment community at 165 W Superior St, Chicago IL 60654. Studio, 1BR, 2BR, and 3BR homes.
+> Luxury River North Chicago apartment community at 165 W Superior St, Chicago, IL 60654. Studio, 1-bedroom, 2-bedroom, and 3-bedroom homes with a full-floor amenity deck, pool, fitness center, and dog spa. Managed by Highland Partners. Phone 312-450-0635, email exhibit@highlandptrs.com.
 
-## Key Pages
+## Key facts
+
+- Address: 165 W Superior St, Chicago, IL 60654 (River North, steps from the Brown Line Chicago stop)
+- Home types: Studio, 1BR, 2BR, and 3BR apartments
+- Pets: Dog- and cat-friendly, with on-site dog spa and pet amenities
+- Tours: In-person and virtual tours available by appointment
+- Leasing contact: 312-450-0635 / exhibit@highlandptrs.com
+- Management: Highland Partners
+
+## Availability & pricing
+
+- [Available Units & Floor Plans](https://www.rentatexhibit.com/available-units): Live availability and current pricing for every home, updated automatically from the leasing system
+- [Floor Plans](https://www.rentatexhibit.com/floor-plans): Interactive floor-plan layouts for all home types
+- [Fees](https://www.rentatexhibit.com/fees): Application fees, admin fees, pet fees, parking, and other costs, itemized
+- [Apply](https://www.rentatexhibit.com/apply): Online rental application
+
+## Community & lifestyle
 
 - [Home](https://www.rentatexhibit.com/): Community overview and lifestyle highlights
-- [Available Units & Floor Plans](https://www.rentatexhibit.com/available-units): Studio, 1, 2, and 3-bedroom layouts and current availability
-- [Amenities](https://www.rentatexhibit.com/amenities): Full-floor amenity deck, pool, fitness, dog spa
-- [Pet Friendly](https://www.rentatexhibit.com/pet-friendly): Dog- and cat-friendly community with on-site pet amenities
-- [Neighborhood](https://www.rentatexhibit.com/neighborhood): River North location near dining, parks, West Loop
+- [Amenities](https://www.rentatexhibit.com/amenities): Full-floor amenity deck, pool, fitness center, coworking, dog spa
+- [Pet Friendly](https://www.rentatexhibit.com/pet-friendly): Pet policy, pet amenities, nearby parks
+- [Photo Gallery](https://www.rentatexhibit.com/photo-gallery): Interior, amenity, and view photography
+- [Virtual Tour](https://www.rentatexhibit.com/virtual-tour): 3D walkthrough tours
+- [Reviews](https://www.rentatexhibit.com/reviews): Resident reviews and ratings
+- [Artist in Residence](https://www.rentatexhibit.com/artist-in-residence): The building's art program
+
+## Location
+
+- [Neighborhood](https://www.rentatexhibit.com/neighborhood): River North dining, nightlife, parks, and proximity to West Loop and the Loop
+- [Map & Directions](https://www.rentatexhibit.com/map-directions): Getting to the building by car and transit
+- [Parking & Transportation](https://www.rentatexhibit.com/parking-transportation): On-site parking, CTA access, commute options
+
+## Renter guides & help
+
+- [FAQ](https://www.rentatexhibit.com/faq): Frequently asked questions about leasing, amenities, pets, and moving in
+- [Apartment Guide](https://www.rentatexhibit.com/apartment-guide): What to look for when choosing an apartment in River North
+- [Application Guide](https://www.rentatexhibit.com/application-guide): Step-by-step guide to applying, requirements, and timelines
 - [Schedule a Tour](https://www.rentatexhibit.com/schedule-a-tour): Book an in-person or virtual tour
-- [Contact Us](https://www.rentatexhibit.com/contact-us): Phone 312-450-0635, email exhibit@highlandptrs.com
+- [Contact Us](https://www.rentatexhibit.com/contact-us): Leasing office contact details and hours
 
 ## Optional
 
-- [Photo Gallery](https://www.rentatexhibit.com/photo-gallery)
-- [Virtual Tour](https://www.rentatexhibit.com/virtual-tour)
+- [Residents](https://www.rentatexhibit.com/residents): Current-resident portal and services
+- [Accessibility Statement](https://www.rentatexhibit.com/accessibility-statement)
+- [Privacy Policy](https://www.rentatexhibit.com/privacy-policy)
