@@ -1,0 +1,185 @@
+1. Explicitly allow AI search crawlers
+Training crawlers and search crawlers are different.
+Purpose	OpenAI	Anthropic	Perplexity
+Live search and citations	OAI-SearchBot	Claude-SearchBot	PerplexityBot
+User-requested visits	ChatGPT-User	Claude-User	Perplexity-User
+Potential model training	GPTBot	ClaudeBot	Separate from Perplexity search crawler
+OpenAI specifically states that blocking OAI-SearchBot prevents pages from being shown in ChatGPT search answers, except potentially as basic navigational links. Anthropic similarly separates training, search, and user-directed crawlers.
+A permissive robots.txt could include:
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: https://rentatexhibit.com/sitemap.xml
+Allowing GPTBot and ClaudeBot is optional. Those relate primarily to potential future model training. Allowing the search bots is more relevant to citations today.
+Also inspect your Cloudflare, firewall, CDN, and bot-protection settings. A perfect robots.txt does nothing if the crawler receives a 403, CAPTCHA, JavaScript challenge, or aggressive rate limit. OpenAI and Perplexity publish IP ranges specifically for crawler verification and allowlisting.
+2. Put live availability on the Exhibit domain
+This is probably your largest AI visibility opportunity.
+The current homepage sends users to Highland’s separate domain for available units.
+AI systems should be able to find a first-party Exhibit URL such as:
+rentatexhibit.com/available-apartments
+rentatexhibit.com/apartments/0610
+rentatexhibit.com/floor-plans/two-bedroom-two-bath
+Those pages should contain server-rendered HTML showing:
+Floor plan
+Bedrooms and bathrooms
+Square footage
+Current rent
+Availability date
+Balcony or patio
+View direction
+Unit features
+Application and tour links
+Last-updated date
+Pull the information from AppFolio automatically. Do not manually maintain duplicate inventory.
+The key is that the information should appear in the initial HTML or a reliably rendered page, not exclusively inside an iframe, embedded widget, or client-side application. Google can process JavaScript, but even Google acknowledges that JavaScript sites are more complex to crawl. Other retrieval systems may have weaker rendering capabilities.
+3. Build a factual “source of truth”
+AI engines quote pages that provide direct, verifiable answers.
+For Exhibit, create dedicated pages for questions renters actually ask:
+Current apartment availability
+Studio, convertible, one-, two-, and three-bedroom options
+Balcony availability by floor plan
+Pet policy and fees
+Parking and EV charging
+Utility and amenity fees
+Amenity hours
+Pool, sauna, fitness center, lounges, dog spa, and dog run
+ADA-accessible apartments and common areas
+Application qualifications
+Transit and neighborhood access
+Move-in process
+Tour scheduling
+Building management and contact information
+Each page should begin with a two- or three-sentence answer, followed by a clear factual table or short sections.
+Your homepage already uses a “Quick Answer” and an FAQ section, which is directionally right.
+Do not create dozens of thin pages that repeat the same keywords. Google’s current guidance says unique, first-hand, non-commodity content matters more than AI-specific formatting tricks.
+4. Expand the structured data
+Use JSON-LD to define Exhibit as an entity.
+At a minimum:
+ApartmentComplex
+Organization or the applicable LocalBusiness entity
+PostalAddress
+GeoCoordinates
+FloorPlan
+Apartment
+OfferForLease or Offer with leasing terms clearly defined
+ImageObject
+VideoObject
+FAQPage, where appropriate
+BreadcrumbList
+Schema.org specifically supports ApartmentComplex, FloorPlan, individual Apartment entities, available accommodation counts, and tour-booking URLs.
+A simplified property entity could look like:
+{
+  "@context": "https://schema.org",
+  "@type": "ApartmentComplex",
+  "@id": "https://rentatexhibit.com/#property",
+  "name": "Exhibit On Superior",
+  "url": "https://rentatexhibit.com/",
+  "telephone": "+1-312-450-0635",
+  "email": "exhibit@highlandptrs.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "165 W Superior St",
+    "addressLocality": "Chicago",
+    "addressRegion": "IL",
+    "postalCode": "60654",
+    "addressCountry": "US"
+  },
+  "numberOfAccommodationUnits": 298,
+  "tourBookingPage": "https://rentatexhibit.com/schedule-a-tour"
+}
+Structured data does not guarantee AI citations, but it reduces ambiguity and gives machines a consistent entity definition. Google recommends structured data as part of normal search strategy, even though no special AI schema is required.
+5. Strengthen external corroboration
+AI systems do not rely only on what a business says about itself. Keep Exhibit’s key facts consistent across:
+Google Business Profile
+Bing Places
+Zillow
+Apartments.com
+Apartment List
+Yelp
+Apple Maps
+Facebook and Instagram
+Highland’s corporate site
+Relevant neighborhood and local directories
+The following must match exactly:
+Property name
+Address
+Phone
+Website
+Management company
+Bedroom types
+Pet policy
+Amenities
+Tour URL
+Do not manufacture backlinks or low-quality directory mentions. Bing specifically warns that artificial promotion and engineered mentions can reduce search and grounding visibility.
+6. Push updates instead of waiting for crawlers
+Set up:
+Google Search Console
+Bing Webmaster Tools
+XML sitemap submission
+IndexNow for new, modified, rented, or removed unit URLs
+Accurate <lastmod> values
+ETag or Last-Modified HTTP headers
+Automatic sitemap regeneration when AppFolio inventory changes
+Bing recommends IndexNow, XML sitemaps, crawlable internal links, and accurate freshness signals for both traditional indexing and Copilot grounding.
+7. Measure AI visibility
+Track three layers:
+Platform reports
+Google Search Console’s generative AI reporting, where available
+Bing Webmaster Tools’ AI Performance report
+Cited pages
+Grounding queries
+Citation share
+AI-driven impressions
+Bing’s current report shows which URLs are cited in Copilot and related AI experiences, along with the grounding topics associated with those citations.
+Server logs
+Track visits from:
+OAI-SearchBot
+GPTBot
+ChatGPT-User
+Claude-SearchBot
+ClaudeBot
+Claude-User
+PerplexityBot
+Bingbot
+Googlebot
+Record:
+Pages crawled
+Response code
+Crawl frequency
+Blocked requests
+Average response time
+Whether important unit pages are being reached
+Prompt testing
+Maintain a fixed set of 20 to 30 queries, such as:
+“What luxury apartments are available in River North?”
+“Does Exhibit On Superior have two-bedroom apartments?”
+“Which Exhibit floor plans have balconies?”
+“Is Exhibit On Superior pet friendly?”
+“Does Exhibit On Superior have a sauna?”
+“Who manages Exhibit On Superior?”
+“What apartments are currently available at Exhibit On Superior?”
+Test them monthly across ChatGPT Search, Claude, Perplexity, Google AI Mode, and Copilot. Record accuracy, cited sources, position, and incorrect facts.
