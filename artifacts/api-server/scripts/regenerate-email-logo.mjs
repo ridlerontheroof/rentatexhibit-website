@@ -20,6 +20,7 @@ import { existsSync, globSync, mkdtempSync, readFileSync, rmSync, writeFileSync 
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { inflateSync } from "node:zlib";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const API_SERVER_ROOT = resolve(HERE, "..");
@@ -33,6 +34,119 @@ const EMAIL_LOGO_JSON = join(API_SERVER_ROOT, "src", "lib", "emailLogo.json");
 // template layout (logo displayed at half size for retina sharpness).
 const WIDTH = 440;
 const HEIGHT = 111;
+
+// Guard tolerances: refuse to render if the source SVG's viewBox aspect
+// ratio drifts from the fixed output canvas (would letterbox/squash the
+// wordmark), and refuse to publish a render that is effectively blank.
+const ASPECT_TOLERANCE = 0.02; // 2% relative difference
+const MIN_OPAQUE_PIXEL_FRACTION = 0.01; // at least 1% of pixels must be visible
+
+/**
+ * Reads the SVG viewBox and fails loudly if its aspect ratio no longer
+ * matches the fixed WIDTH x HEIGHT output canvas.
+ */
+function assertAspectRatioMatches(svgText) {
+  const m = svgText.match(/viewBox\s*=\s*["']\s*([\d.eE+-]+)[\s,]+([\d.eE+-]+)[\s,]+([\d.eE+-]+)[\s,]+([\d.eE+-]+)\s*["']/);
+  if (!m) {
+    console.error(
+      `Could not find a viewBox in ${SOURCE_SVG}; refusing to render. ` +
+        "Add a viewBox to the source SVG (or update this guard) before regenerating.",
+    );
+    process.exit(1);
+  }
+  const vbWidth = Number(m[3]);
+  const vbHeight = Number(m[4]);
+  if (!(vbWidth > 0) || !(vbHeight > 0)) {
+    console.error(`Invalid viewBox dimensions (${m[3]} x ${m[4]}) in ${SOURCE_SVG}; refusing to render.`);
+    process.exit(1);
+  }
+  const svgRatio = vbWidth / vbHeight;
+  const outRatio = WIDTH / HEIGHT;
+  const relDiff = Math.abs(svgRatio - outRatio) / outRatio;
+  if (relDiff > ASPECT_TOLERANCE) {
+    console.error(
+      `Source SVG aspect ratio ${svgRatio.toFixed(4)} (viewBox ${vbWidth}x${vbHeight}) no longer matches ` +
+        `the ${WIDTH}x${HEIGHT} output canvas (ratio ${outRatio.toFixed(4)}, ${(relDiff * 100).toFixed(1)}% off, ` +
+        `tolerance ${(ASPECT_TOLERANCE * 100).toFixed(0)}%).\n` +
+        "Rendering would letterbox or distort the wordmark. Update WIDTH/HEIGHT in " +
+        "scripts/regenerate-email-logo.mjs (and the email template layout that displays the logo " +
+        "at half size) to match the new artwork, then rerun.",
+    );
+    process.exit(1);
+  }
+  console.log(
+    `viewBox ${vbWidth}x${vbHeight} (ratio ${svgRatio.toFixed(4)}) matches ${WIDTH}x${HEIGHT} within tolerance.`,
+  );
+}
+
+/**
+ * Decodes an 8-bit RGBA non-interlaced PNG just enough to count pixels with
+ * alpha > 0. Returns the count, or null if the PNG is not in the expected
+ * format (in which case the caller should fail rather than guess).
+ */
+function countOpaquePixels(png) {
+  const width = png.readUInt32BE(16);
+  const height = png.readUInt32BE(20);
+  const bitDepth = png[24];
+  const colorType = png[25];
+  const interlace = png[28];
+  if (bitDepth !== 8 || colorType !== 6 || interlace !== 0) return null;
+
+  // Concatenate IDAT chunks and inflate.
+  const idats = [];
+  let off = 8;
+  while (off + 8 <= png.length) {
+    const len = png.readUInt32BE(off);
+    const type = png.toString("ascii", off + 4, off + 8);
+    if (type === "IDAT") idats.push(png.subarray(off + 8, off + 8 + len));
+    if (type === "IEND") break;
+    off += 12 + len;
+  }
+  if (idats.length === 0) return null;
+  const raw = inflateSync(Buffer.concat(idats));
+
+  const bpp = 4; // RGBA, 8-bit
+  const stride = width * bpp;
+  if (raw.length !== height * (stride + 1)) return null;
+
+  // Un-filter scanlines (PNG filter types 0-4) and count alpha > 0.
+  const prev = Buffer.alloc(stride);
+  const cur = Buffer.alloc(stride);
+  let opaque = 0;
+  for (let y = 0; y < height; y++) {
+    const rowStart = y * (stride + 1);
+    const filter = raw[rowStart];
+    raw.copy(cur, 0, rowStart + 1, rowStart + 1 + stride);
+    for (let x = 0; x < stride; x++) {
+      const a = x >= bpp ? cur[x - bpp] : 0;
+      const b = prev[x];
+      const c = x >= bpp ? prev[x - bpp] : 0;
+      let add = 0;
+      switch (filter) {
+        case 0: add = 0; break;
+        case 1: add = a; break;
+        case 2: add = b; break;
+        case 3: add = (a + b) >> 1; break;
+        case 4: {
+          const p = a + b - c;
+          const pa = Math.abs(p - a);
+          const pb = Math.abs(p - b);
+          const pc = Math.abs(p - c);
+          add = pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+          break;
+        }
+        default:
+          return null;
+      }
+      cur[x] = (cur[x] + add) & 0xff;
+    }
+    for (let x = bpp - 1; x < stride; x += bpp) {
+      if (cur[x] > 0) opaque++;
+    }
+    cur.copy(prev);
+  }
+  return opaque;
+}
 
 /** Same Chromium lookup chain as the fact-sheet printer / fold check. */
 function findChromium() {
@@ -76,7 +190,9 @@ function main() {
   try {
     // Inline the SVG markup at an exact pixel size so the screenshot is a
     // tight, transparent-background render of the wordmark.
-    const svgMarkup = readFileSync(SOURCE_SVG, "utf8").replace(
+    const svgSource = readFileSync(SOURCE_SVG, "utf8");
+    assertAspectRatioMatches(svgSource);
+    const svgMarkup = svgSource.replace(
       /<svg /,
       `<svg width="${WIDTH}" height="${HEIGHT}" preserveAspectRatio="xMidYMid meet" `,
     );
@@ -120,6 +236,29 @@ function main() {
       console.error(`Rendered PNG is ${w}x${h}, expected ${WIDTH}x${HEIGHT}`);
       process.exit(1);
     }
+
+    // Blank-render guard: fail instead of shipping an empty/transparent logo.
+    const opaque = countOpaquePixels(png);
+    if (opaque === null) {
+      console.error(
+        "Could not decode the rendered PNG pixels (expected 8-bit non-interlaced RGBA); " +
+          "refusing to publish an unverified render.",
+      );
+      process.exit(1);
+    }
+    const opaqueFraction = opaque / (WIDTH * HEIGHT);
+    if (opaqueFraction < MIN_OPAQUE_PIXEL_FRACTION) {
+      console.error(
+        `Rendered PNG is effectively blank: only ${opaque} of ${WIDTH * HEIGHT} pixels ` +
+          `(${(opaqueFraction * 100).toFixed(2)}%) are non-transparent (need >= ` +
+          `${(MIN_OPAQUE_PIXEL_FRACTION * 100).toFixed(0)}%). Chromium likely failed to paint ` +
+          "(see the --headless=old note above). Refusing to write an empty logo.",
+      );
+      process.exit(1);
+    }
+    console.log(
+      `Render sanity check: ${opaque} non-transparent pixels (${(opaqueFraction * 100).toFixed(1)}%).`,
+    );
 
     // Write both destinations from the same buffer so they cannot drift.
     writeFileSync(CANONICAL_PNG, png);
