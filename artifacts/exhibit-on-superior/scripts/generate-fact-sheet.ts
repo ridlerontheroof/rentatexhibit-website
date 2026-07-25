@@ -351,10 +351,19 @@ function findChromium(): string | null {
   } catch {
     /* no nix store */
   }
+  // Probe candidates with a short timeout and a hard overall budget: a broken
+  // chrome binary in a deploy image must never hang the publish build (a
+  // deployment build was observed dying silently inside this probe).
+  const probeDeadline = Date.now() + 20_000;
   for (const c of candidates) {
-    if (!existsSync(c)) continue;
-    const v = spawnSync(c, ['--version'], { encoding: 'utf8', timeout: 15_000 });
-    if (v.status === 0) return c;
+    if (Date.now() > probeDeadline) break;
+    try {
+      if (!existsSync(c)) continue;
+      const v = spawnSync(c, ['--version'], { encoding: 'utf8', timeout: 5_000, killSignal: 'SIGKILL' });
+      if (v.status === 0) return c;
+    } catch {
+      /* unprobeable candidate */
+    }
   }
   return null;
 }

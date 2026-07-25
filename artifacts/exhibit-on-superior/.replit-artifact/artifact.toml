@@ -14,9 +14,17 @@ localPort = 25383
 run = "pnpm --filter @workspace/exhibit-on-superior run dev"
 
 [services.production]
-build = [ "pnpm", "--filter", "@workspace/exhibit-on-superior", "run", "build" ]
 serve = "static"
 publicDir = "artifacts/exhibit-on-superior/dist/public"
+
+# CI=true marks this as a deployment build so the fact-sheet PDF guard in
+# scripts/generate-fact-sheet.ts warns instead of failing when the deploy
+# image cannot reprint the docs PDF (a docs artifact must never block publish).
+[services.production.build]
+args = [ "pnpm", "--filter", "@workspace/exhibit-on-superior", "run", "build" ]
+
+[services.production.build.env]
+CI = "true"
 
 # Per-page prerendered HTML. Each indexable route (and its trailing-slash form)
 # is served from its own static index.html so crawlers and link-preview bots
