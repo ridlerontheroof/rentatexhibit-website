@@ -1,18 +1,29 @@
-import { Route, Switch, useLocation } from 'wouter';
+import { Route, Switch, useLocation, type RouteComponentProps } from 'wouter';
 import { lazy, Suspense, useEffect, type ComponentType } from 'react';
 import { Layout } from './components/Layout';
 import { initAnalytics, trackPageView, trackOutboundClick } from './lib/analytics';
 import { APPLY_URL, AVAILABILITY_URL } from './data/seo';
-import { routes } from './routes';
+import { routes, getPreloadedComponent } from './routes';
 import { LEGACY_REDIRECTS as SHARED_LEGACY_REDIRECTS } from './data/legacyRedirects';
 
 // Route-based code splitting: each page ships in its own chunk. The page list is
 // shared with the build-time prerenderer via `routes.tsx`; here each loader is
 // wrapped in `React.lazy` (created once at module scope, stable across renders).
-const lazyRoutes = routes.map((r) => ({
-  path: r.path,
-  Component: lazy(() => r.load().then((C: ComponentType) => ({ default: C }))),
-}));
+const lazyRoutes = routes.map((r) => {
+  const Lazy = lazy(() => r.load().then((C: ComponentType) => ({ default: C })));
+  // Prefer the component preloaded by main.tsx (initial route only): it renders
+  // synchronously in the first commit, so the prerendered HTML is never
+  // replaced by the Suspense fallback (which would collapse the page and shift
+  // the footer — a large CLS on every load). SPA navigations to other routes
+  // still go through React.lazy as before.
+  function RouteComponent(_props: RouteComponentProps) {
+    const Preloaded = getPreloadedComponent(r.path);
+    // Page components take no props (route params are unused on these
+    // static content routes), so none are forwarded.
+    return Preloaded ? <Preloaded /> : <Lazy />;
+  }
+  return { path: r.path, Component: RouteComponent };
+});
 
 const NotFound = lazy(() => import('./pages/not-found').then((m) => ({ default: m.NotFound })));
 const UnitDetail = lazy(() => import('./pages/UnitDetail').then((m) => ({ default: m.UnitDetail })));

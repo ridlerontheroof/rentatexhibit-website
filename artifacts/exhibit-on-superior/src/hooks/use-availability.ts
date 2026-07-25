@@ -81,11 +81,18 @@ const fetchAvailability = async (): Promise<AvailabilityData> => {
  * without it. `isPlaceholderData` distinguishes the baked snapshot from a
  * confirmed live payload.
  */
-export const useAvailability = () =>
-  useQuery({
+export const useAvailability = () => {
+  const query = useQuery({
     queryKey: ['availability'],
     queryFn: fetchAvailability,
     staleTime: 5 * 60 * 1000,
     retry: 1,
     placeholderData: () => getBakedAvailability() ?? undefined,
   });
+  // When the live fetch errors, TanStack Query drops placeholderData — which
+  // would collapse the prerendered units section (a ~1,100px layout shift).
+  // Fall back to the baked snapshot while it's still fresh (48h gate inside
+  // getBakedAvailability); with no fresh snapshot the section hides as before.
+  const data = query.data ?? (query.isError ? getBakedAvailability() ?? undefined : undefined);
+  return { ...query, data };
+};

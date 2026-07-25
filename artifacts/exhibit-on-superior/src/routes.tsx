@@ -18,6 +18,45 @@ export interface RouteDef {
   load: () => Promise<ComponentType>;
 }
 
+/**
+ * Components preloaded before the first client render (see `preloadRoute`).
+ * `App.tsx` prefers these over the `React.lazy` wrapper so the initial route
+ * renders synchronously in the first commit — the prerendered HTML is replaced
+ * by identical-height content with no Suspense fallback in between. Without
+ * this, the page briefly collapses to header+footer while the route chunk
+ * downloads, producing a large Cumulative Layout Shift on every page load.
+ */
+const preloadedComponents = new Map<string, ComponentType>();
+
+export function getPreloadedComponent(path: string): ComponentType | undefined {
+  return preloadedComponents.get(path);
+}
+
+/**
+ * Preload the page component for `pathname` (the browser location, possibly
+ * including the Vite base prefix and/or a trailing slash). Resolves once the
+ * chunk is cached — errors are swallowed so boot always proceeds; the lazy
+ * wrapper remains as the fallback loader.
+ */
+export async function preloadRoute(pathname: string): Promise<void> {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  // Segment-aware base strip: only remove the base when it's followed by a
+  // path boundary, so a base of "/app" never mangles "/apple".
+  let path =
+    base && (pathname === base || pathname.startsWith(`${base}/`))
+      ? pathname.slice(base.length)
+      : pathname;
+  if (!path.startsWith('/')) path = `/${path}`;
+  if (path !== '/' && path.endsWith('/')) path = path.slice(0, -1);
+  const match = routes.find((r) => r.path === path);
+  if (!match) return;
+  try {
+    preloadedComponents.set(match.path, await match.load());
+  } catch {
+    // Chunk fetch failed (offline, deploy skew): fall back to React.lazy.
+  }
+}
+
 export const routes: RouteDef[] = [
   { path: '/', load: () => import('./pages/Home').then((m) => m.Home) },
   { path: '/available-units', load: () => import('./pages/FloorPlans').then((m) => m.FloorPlans) },
