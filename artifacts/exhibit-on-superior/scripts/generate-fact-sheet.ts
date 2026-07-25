@@ -314,8 +314,16 @@ const acceptPdf = process.argv.includes('--accept-pdf');
 const isDeployBuild = process.env.REPLIT_DEPLOYMENT === '1' || process.env.CI === 'true';
 const forceNoBrowser = process.env.FACT_SHEET_FORCE_NO_BROWSER === '1';
 
-/** Locate a headless-capable Chromium/Chrome binary, or null if none exists. */
-function findChromium(): string | null {
+/**
+ * Locate a headless-capable Chromium/Chrome binary, or null if none exists.
+ *
+ * `execute=false` only checks for the binary's existence and never runs it.
+ * Deployment builders have been observed killing the entire publish build
+ * when Chromium is executed (two builds died silently at exactly this point,
+ * while one identical build passed) — so deploy builds must NEVER spawn a
+ * browser, neither to probe `--version` nor to reprint the PDF.
+ */
+function findChromium(execute = true): string | null {
   const candidates: string[] = [];
   // 1. Explicit override.
   if (process.env.CHROME_BIN) candidates.push(process.env.CHROME_BIN);
@@ -359,6 +367,7 @@ function findChromium(): string | null {
     if (Date.now() > probeDeadline) break;
     try {
       if (!existsSync(c)) continue;
+      if (!execute) return c; // existence-only check: never run the binary
       const v = spawnSync(c, ['--version'], { encoding: 'utf8', timeout: 5_000, killSignal: 'SIGKILL' });
       if (v.status === 0) return c;
     } catch {
@@ -408,16 +417,20 @@ if (acceptPdf) {
   const recorded = existsSync(pdfHashPath) ? readFileSync(pdfHashPath, 'utf8').trim() : null;
   // Always report browser availability so a deployment build log answers
   // "does the deploy image ship a Chromium?" even when the PDF is up to date.
-  const chrome = forceNoBrowser ? null : findChromium();
+  // In deployment builds, never execute Chromium (existence check only):
+  // running a browser inside the publish builder has killed entire builds.
+  const chrome = forceNoBrowser ? null : findChromium(!isDeployBuild);
   console.log(
     chrome
-      ? `Headless Chromium available for PDF printing: ${chrome}`
+      ? isDeployBuild
+        ? `Headless Chromium binary present (not executed in deployment builds): ${chrome}`
+        : `Headless Chromium available for PDF printing: ${chrome}`
       : 'No headless Chromium found in this environment (PDF reprint unavailable here).',
   );
   if (recorded !== factsHash || !existsSync(pdfPath)) {
     // Try to reprint the PDF ourselves with a headless Chromium before
-    // bothering a human.
-    if (chrome && printPdf(chrome)) {
+    // bothering a human — but never spawn a browser in a deployment build.
+    if (chrome && !isDeployBuild && printPdf(chrome)) {
       writeFileSync(pdfHashPath, `${factsHash}\n`);
       console.log(`Reprinted ${pdfPath} with headless Chromium (${chrome}) and updated fact-sheet.pdf.hash.`);
       process.exit(0);
