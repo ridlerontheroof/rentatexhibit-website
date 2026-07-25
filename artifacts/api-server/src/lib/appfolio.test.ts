@@ -202,6 +202,21 @@ describe("parseDetailSections", () => {
   it("returns empty for pages without sections", () => {
     expect(parseDetailSections("<html><body><h3>Title</h3><p>text</p></body></html>")).toEqual([]);
   });
+
+  it("collects sanitizer-removed copy into the removed collector", () => {
+    const html =
+      `<h3>Pet Policy</h3><ul><li>$300 pet deposit per pet</li><li>Cats allowed</li></ul>` +
+      `<p class="listing-detail__description">Great views. Pet rent is $30 monthly per pet. Come see it!</p>`;
+    const removed: string[] = [];
+    const sections = parseDetailSections(html, removed);
+    const description = parseDetailDescription(html, removed);
+    expect(sections).toEqual([{ title: "Pet Policy", items: ["Cats allowed"] }]);
+    expect(description).toBe("Great views. Come see it!");
+    expect(removed).toEqual([
+      "$300 pet deposit per pet",
+      "Pet rent is $30 monthly per pet.",
+    ]);
+  });
 });
 
 describe("isSafeNextPageUrl", () => {

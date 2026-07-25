@@ -333,6 +333,55 @@ function formatSubmitted(date: Date): string {
  * running instance is older than its max age, so cold starts no longer answer
  * instantly. Sent to the leasing inbox so someone triggers a redeploy.
  */
+/**
+ * Alert the leasing team that AppFolio listing copy contradicting the
+ * published fee policy was detected (and hidden from the website). Quotes
+ * the removed text so they can find and fix it in AppFolio.
+ */
+export function renderFeeCopyAlert(opts: {
+  unit: string;
+  removed: string[];
+}): RenderedEmail {
+  const { unit, removed } = opts;
+  const subject = `Website alert: Apt. ${unit} listing copy contradicts published fees`;
+
+  const intro = `The AppFolio listing for Apt. ${unit} contains fee wording that contradicts the fee policy published on the website (no pet deposit, no monthly pet rent, $500 admin fee per apartment). The website automatically hid the text below, but it is still live in AppFolio — on the hosted listing page and everywhere the listing syndicates.`;
+
+  const quotesHtml = removed
+    .map(
+      (text) =>
+        `<blockquote style="margin:0 0 12px;padding:10px 14px;border-left:3px solid ${BRAND.gold};background:${BRAND.paper};font-family:${BRAND.font};font-size:15px;line-height:1.5;color:${BRAND.ink};">${escapeHtml(text)}</blockquote>`,
+    )
+    .join("");
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>Removed from the website:</strong></p>` +
+    quotesHtml +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> edit the unit's marketing description / rental terms in AppFolio so the fee wording matches the confirmed policy. Once the source text is fixed, these alerts stop on their own. This alert is sent at most once per day for the same text.</p>`;
+
+  const text = [
+    intro,
+    "",
+    "Removed from the website:",
+    ...removed.map((t) => `  > ${t}`),
+    "",
+    "What to do: edit the unit's marketing description / rental terms in AppFolio so the fee wording matches the confirmed policy. Once the source text is fixed, these alerts stop on their own.",
+    "This alert is sent at most once per day for the same text.",
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: `Apt. ${unit}: AppFolio listing copy contradicts the published fees.`,
+    kicker: "Website Alert",
+    heading: "Listing Copy Contradicts Published Fees",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
 export function renderSeedStaleAlert(opts: {
   seedUpdatedAt: string | null;
   seedAgeHours: number | null;

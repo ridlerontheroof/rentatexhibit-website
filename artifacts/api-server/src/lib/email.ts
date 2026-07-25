@@ -2,6 +2,7 @@ import { logger } from "./logger";
 import { allowProspectConfirmation } from "./emailThrottle";
 import { sendRawEmail, SENDER_EMAIL, warnIfUnconfigured } from "./mailer";
 import {
+  renderFeeCopyAlert,
   renderLeadNotification,
   renderProspectConfirmation,
   renderSeedStaleAlert,
@@ -224,6 +225,33 @@ export async function sendSeedStaleAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL },
     "Sent stale availability-seed alert email",
+  );
+}
+
+/**
+ * Alert the leasing inbox that the website's fee-policy sanitizer removed
+ * copy from an AppFolio listing — the source text in AppFolio contradicts
+ * the published fees and should be corrected there. Throws on failure so
+ * the caller (feeCopyAlert) can log it; deduping lives in the caller.
+ */
+export async function sendFeeCopyAlert(opts: {
+  unit: string;
+  removed: string[];
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderFeeCopyAlert(opts);
+  const { contentType, body } = buildMimeBody("feecopy", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${LEASING_INBOX_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, LEASING_INBOX_EMAIL);
+  logger.info(
+    { recipient: LEASING_INBOX_EMAIL, unit: opts.unit },
+    "Sent fee-copy contradiction alert email",
   );
 }
 

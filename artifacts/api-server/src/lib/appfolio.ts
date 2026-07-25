@@ -14,6 +14,8 @@
 // The AppFolio database name comes from the management company's Duda CMS
 // sync ("AppFolio Database: highlandrealestatepartners"), overridable via env
 // if the database is ever renamed.
+import { reportStrippedFeeCopy } from "./feeCopyAlert";
+
 const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners";
 const APPFOLIO_BASE = `https://${APPFOLIO_DB}.appfolio.com/api/v2/reports`;
 const PROPERTY_MATCH = "exhibit";
@@ -276,7 +278,7 @@ function decodeEntities(text: string): string {
  * Utilities Included, Appliances) from a detail page. Each section is an
  * `<h3>` heading followed by a `<ul>` of `list__item` entries.
  */
-export function parseDetailSections(html: string): DetailSection[] {
+export function parseDetailSections(html: string, removed?: string[]): DetailSection[] {
   const sections: DetailSection[] = [];
   const sectionRe = /<h3[^>]*>([^<]+)<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/g;
   let m: RegExpExecArray | null;
@@ -288,11 +290,13 @@ export function parseDetailSections(html: string): DetailSection[] {
       // Same fee-policy guard as descriptions: drop line items asserting a pet
       // deposit / pet rent / per-person admin fee, which contradict the
       // leasing-confirmed policy published on the site.
-      .filter(
-        (item) =>
+      .filter((item) => {
+        const keep =
           !CONTRADICTORY_FEE_SENTENCE_RE.test(item) ||
-          /\bno\b[^.!?\n]*(pet\s+deposit|pet\s+rent)/i.test(item),
-      );
+          /\bno\b[^.!?\n]*(pet\s+deposit|pet\s+rent)/i.test(item);
+        if (!keep) removed?.push(item);
+        return keep;
+      });
     if (title && items.length > 0) sections.push({ title, items });
   }
   return sections;
@@ -365,18 +369,20 @@ const CONTRADICTORY_FEE_SENTENCE_RE =
  * admin fee. Sentence-level (not paragraph-level) so surrounding accurate copy
  * survives. Negations like "no pet deposit" are kept — they agree with policy.
  */
-export function stripContradictoryFeeSentences(text: string): string {
+export function stripContradictoryFeeSentences(text: string, removed?: string[]): string {
   const cleaned = text
     .split(/(\n+)/)
     .map((part) => {
       if (/^\n+$/.test(part)) return part;
       const sentences = part.match(/[^.!?]*[.!?]+[)"']?\s*|[^.!?]+$/g) ?? [part];
       return sentences
-        .filter(
-          (s) =>
+        .filter((s) => {
+          const keep =
             !CONTRADICTORY_FEE_SENTENCE_RE.test(s) ||
-            /\bno\b[^.!?\n]*(pet\s+deposit|pet\s+rent)/i.test(s),
-        )
+            /\bno\b[^.!?\n]*(pet\s+deposit|pet\s+rent)/i.test(s);
+          if (!keep) removed?.push(s.trim());
+          return keep;
+        })
         .join("");
     })
     .join("")
@@ -387,7 +393,7 @@ export function stripContradictoryFeeSentences(text: string): string {
 }
 
 /** Extract the listing description (`listing-detail__description`) from a detail page. */
-export function parseDetailDescription(html: string): string | null {
+export function parseDetailDescription(html: string, removed?: string[]): string | null {
   const m = html.match(/<p[^>]*class="[^"]*listing-detail__description[^"]*"[^>]*>([\s\S]*?)<\/p>/);
   if (!m) return null;
   const text = stripContradictoryFeeSentences(
@@ -395,6 +401,7 @@ export function parseDetailDescription(html: string): string | null {
       // Same phone-first CTA rewrite as sanitizeMarketingTitle — the site
       // funnels prospects to the on-page Schedule a Tour button.
       .replace(/call\s+today\s+and\s+schedule\s+your\s+tour/gi, "Schedule Your Tour Today"),
+    removed,
   );
   return text || null;
 }
@@ -405,6 +412,8 @@ interface DetailInfo {
   marketingTitle: string | null;
   description: string | null;
   videoUrl: string | null;
+  /** Sentences/line items removed by the fee-policy sanitizer, for alerting. */
+  strippedFeeCopy: string[];
 }
 
 /** Fetch a listing detail page's photos + info sections. Public page, no credentials. */
@@ -412,12 +421,14 @@ async function fetchDetailInfo(listingUrl: string): Promise<DetailInfo> {
   const res = await fetch(listingUrl, { headers: { Accept: "text/html" } });
   if (!res.ok) throw new Error(`AppFolio listing detail page failed: status ${res.status}`);
   const html = await res.text();
+  const strippedFeeCopy: string[] = [];
   return {
     photos: parseDetailPhotos(html),
-    details: parseDetailSections(html),
+    details: parseDetailSections(html, strippedFeeCopy),
     marketingTitle: sanitizeMarketingTitle(parseDetailTitle(html)),
-    description: parseDetailDescription(html),
+    description: parseDetailDescription(html, strippedFeeCopy),
     videoUrl: parseDetailVideo(html),
+    strippedFeeCopy,
   };
 }
 
@@ -628,6 +639,13 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
       // The public page is the most reliable video source; the Unit
       // Directory report is only a fallback when the page has no embed.
       unit.videoUrl = info.videoUrl ?? unit.videoUrl;
+      // The sanitizer removed copy that contradicts the published fee
+      // policy — the wrong text still lives in AppFolio (hosted pages,
+      // ILS syndication), so tell the leasing team. Best-effort, deduped
+      // to one email per offending text per day; never fails the refresh.
+      if (info.strippedFeeCopy.length > 0) {
+        void reportStrippedFeeCopy(unit.unit, info.strippedFeeCopy);
+      }
     } catch {
       unit.photos = [];
       unit.details = [];
