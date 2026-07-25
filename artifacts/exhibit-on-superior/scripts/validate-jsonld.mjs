@@ -14,7 +14,7 @@
 /** Extract raw JSON-LD payload strings from an HTML string. */
 export function extractJsonLdPayloads(html) {
   return [
-    ...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g),
+    ...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g),
   ].map((m) => m[1]);
 }
 
@@ -134,6 +134,11 @@ export const RECOMMENDED_PROPERTIES = {
     'sameAs',
     'amenityFeature',
   ],
+  // Reviews enrichment node on /reviews: LocalBusiness (same @id as the
+  // ApartmentComplex) because Google review snippets reject Residence/Place
+  // subtypes as the reviewed parent. Address etc. live on the merged
+  // ApartmentComplex node, so only the review payload is checked here.
+  LocalBusiness: ['name', 'url', 'aggregateRating', 'review'],
   WebPage: ['name', 'description', 'url', 'isPartOf', 'breadcrumb'],
   BreadcrumbList: ['itemListElement'],
   // A ListItem either names its target inline (breadcrumbs: name + item URL)

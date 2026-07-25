@@ -1006,8 +1006,11 @@ export function renderHeadTags(model: SeoModel): string {
   }
   for (const obj of model.jsonLd) {
     // Escape "<" so the JSON can never break out of the <script> element.
+    // data-ssr-jsonld marks prerendered scripts so the client can remove them
+    // before Helmet re-emits live copies — otherwise Googlebot's rendered DOM
+    // contains both sets and GSC flags "Review has multiple aggregate ratings".
     const json = JSON.stringify(obj).replace(/</g, '\\u003c');
-    parts.push(`<script type="application/ld+json">${json}</script>`);
+    parts.push(`<script type="application/ld+json" data-ssr-jsonld>${json}</script>`);
   }
   return parts.join('\n    ');
 }

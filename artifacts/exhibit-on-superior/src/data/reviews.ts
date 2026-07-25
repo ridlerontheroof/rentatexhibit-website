@@ -73,14 +73,18 @@ export function buildReviewsPageModel(live?: GoogleReviewsData): ReviewsPageMode
  * displayed on the page and come from genuine reviews — so this must only ever
  * be called with the model actually rendered, and never padded or fabricated.
  *
- * Emitted as an ApartmentComplex node with the same @id as the site-wide
+ * Emitted as a LocalBusiness node with the same @id as the site-wide
  * ApartmentComplex node in the base @graph, so validators merge the reviews
- * and aggregate rating into that entity.
+ * and aggregate rating into that entity. LocalBusiness (not ApartmentComplex,
+ * a Residence/Place subtype) is used because Google's review-snippet feature
+ * only accepts LocalBusiness/Product/etc. as the reviewed parent type —
+ * ApartmentComplex triggers GSC's 'Invalid object type for field
+ * "<parent_node>"' error.
  */
 export function reviewsJsonLd(model: ReviewsPageModel): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
-    '@type': 'ApartmentComplex',
+    '@type': 'LocalBusiness',
     '@id': `${SITE_URL}#apartmentcomplex`,
     name: 'Exhibit On Superior',
     url: SITE_URL,

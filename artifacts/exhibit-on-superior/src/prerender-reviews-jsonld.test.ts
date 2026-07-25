@@ -20,7 +20,7 @@ import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
 /** Pull every <script type="application/ld+json"> payload out of a head string. */
 function extractJsonLd(head: string): Record<string, unknown>[] {
   const scripts = [
-    ...head.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g),
+    ...head.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g),
   ].map((m) => m[1]);
   // renderHeadTags escapes "<" as \u003c inside the JSON; JSON.parse restores it.
   return scripts.map((s) => JSON.parse(s) as Record<string, unknown>);
@@ -34,11 +34,11 @@ describe('prerendered /reviews JSON-LD matches the shared reviews module', () =>
     // Base @graph plus the reviews extra block — at minimum two scripts.
     expect(jsonLdBlocks.length).toBeGreaterThanOrEqual(2);
 
-    // The ApartmentComplex node carrying aggregateRating/review is the extra
+    // The LocalBusiness node carrying aggregateRating/review is the extra
     // block appended after the base @graph. Find it structurally rather than
     // by position so reordering alone doesn't mask a real divergence.
     const reviewBlocks = jsonLdBlocks.filter(
-      (b) => b['@type'] === 'ApartmentComplex' && 'aggregateRating' in b,
+      (b) => b['@type'] === 'LocalBusiness' && 'aggregateRating' in b,
     );
     expect(reviewBlocks).toHaveLength(1);
 

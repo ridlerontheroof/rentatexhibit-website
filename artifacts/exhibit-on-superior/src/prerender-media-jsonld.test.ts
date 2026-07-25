@@ -23,7 +23,7 @@ import { SITE_URL } from './data/seo';
 /** Pull every <script type="application/ld+json"> payload out of a head string. */
 function extractJsonLd(head: string): Record<string, unknown>[] {
   const scripts = [
-    ...head.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g),
+    ...head.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g),
   ].map((m) => m[1]);
   return scripts.map((s) => JSON.parse(s) as Record<string, unknown>);
 }
