@@ -1,0 +1,63 @@
+<!-- ============================================================
+  HIGHLAND PARTNERS — Site-wide typography (v1.1)
+  Paste this ENTIRE block into: Settings -> Head HTML
+  ------------------------------------------------------------
+  Works together with the Site Theme panel:
+    * In Theme -> Text, set every style to "Barlow Semi Condensed"
+      with these sizes: DFLT 14, PAR 15, H1 34, H2 28, H3 22,
+      H4 18, H5 16, H6 14.
+    * This block then adds what the Theme panel can't:
+      uppercase, letter-spacing, and the light heading weights.
+  Rollback: delete this block from Head HTML.
+============================================================ -->
+
+<!-- Load the typeface (same one the listings widget uses) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ---- Headings: tracked uppercase, light weights ---- */
+  h1, h2 {
+    font-family: 'Barlow Semi Condensed', 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 300 !important;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  h3 {
+    font-family: 'Barlow Semi Condensed', 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 400 !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  h4, h6 {
+    font-family: 'Barlow Semi Condensed', 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 500 !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  h5 {
+    font-family: 'Barlow Semi Condensed', 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 500 !important;
+    letter-spacing: 1px;
+  }
+
+  /* ---- Body copy ---- */
+  body, p, li {
+    font-family: 'Barlow Semi Condensed', 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.25px;
+  }
+
+  /* ---- Site buttons (Primary / Secondary theme buttons) ----
+     Duda renders theme buttons as .dmButtonLink / a.dmButton;
+     cover both plus generic button elements. Square corners +
+     tracked caps are the signature of the look. */
+  a.dmButtonLink, .dmButtonLink, a.dmDefaultButton, button:not([class*="unstyled"]) {
+    font-family: 'Barlow Semi Condensed', 'Helvetica Neue', Arial, sans-serif !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    border-radius: 0 !important;
+  }
+</style>

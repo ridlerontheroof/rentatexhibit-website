@@ -8,31 +8,36 @@ language, adapted to Highland navy. No other page or widget is affected.
 
 | File | Purpose |
 |---|---|
-| `highland-listings.css` | The stylesheet — paste this into the site editor |
+| `highland-listings.css` | Widget stylesheet — paste into the listings widget's **CSS tab** |
+| `head-html.html` | Site-wide fonts & typography — paste into **Settings → Head HTML** |
 | `preview/side-by-side.png` | Before/after mock for review |
 | `preview/before.html` / `after.html` | The local mock pages behind the screenshots |
 
-## 1. Where to paste it
+## 1. Where to paste it (verified against the live editor)
 
-The Highland site runs on AppFolio's website builder (built on Duda).
+The AppFolio websites editor exposes two injection points:
 
-1. Log in to the AppFolio websites editor for highlandptrs.com.
-2. Open the developer / custom-code panel:
-   - In the left sidebar choose **Settings → Developer Mode** (on some
-     plans it appears as **Edit HTML/CSS** under the site settings or
-     the paintbrush/Design menu). It opens a code editor with a
-     `global.css` tab.
-3. In **global.css**, scroll to the bottom and paste the **entire
-   contents** of `highland-listings.css` (including the comment
-   banners — they mark the block for future rollback).
-4. Save / publish. Duda applies custom CSS site-wide, but every rule in
-   this file is scoped to `.listings-widget`, so only the availability
-   listings are restyled.
+**A. The listings widget's CSS tab** — on the availability page, open
+the listings widget's HTML/CSS editor (the popup with **HTML** and
+**CSS** tabs at the top).
 
-**If Developer Mode isn't available on the plan:** open the
-availability page, add an **HTML embed** element to the page header
-area, and paste the CSS wrapped in `<style> … </style>` tags instead.
-Same effect, page-scoped.
+1. Click the **CSS** tab (do NOT edit the HTML tab).
+2. Paste the **entire contents** of `highland-listings.css` (including
+   the comment banners — they mark the block for future rollback).
+3. Click **Update**, then Preview / Republish.
+
+**B. Settings → Head HTML** — site-wide typography.
+
+1. In the left sidebar open **Settings → Head HTML**.
+2. Paste the **entire contents** of `head-html.html` (it loads the
+   Barlow Semi Condensed font and applies the uppercase/tracking/
+   light-weight treatment the Theme panel can't).
+3. Save and Republish.
+
+**C. Theme panel fonts** — in **Theme → Text**, set every style to
+**Barlow Semi Condensed** with sizes: DFLT 14, PAR 15, H1 34, H2 28,
+H3 22, H4 18, H5 16, H6 14. (Weights, uppercase, and letter-spacing
+come from the Head HTML block above.)
 
 ## 2. Widget configuration
 
@@ -71,8 +76,11 @@ applies.
 
 ## 5. Rollback
 
-Delete the pasted block (everything between the
-`HIGHLAND PARTNERS — AppFolio Listings Widget Facelift` banner and the
-`End Highland facelift` banner) from global.css and republish. The
-widget instantly returns to its stock AppFolio appearance. Nothing
-else on the site is touched.
+- **Widget:** open the listings widget's HTML/CSS editor, go to the
+  **CSS** tab, delete the pasted block (everything between the
+  `HIGHLAND PARTNERS — AppFolio Listings Widget Facelift` banner and
+  the `End Highland facelift` banner), click Update, republish. The
+  widget instantly returns to its stock AppFolio appearance.
+- **Typography:** delete the pasted block from **Settings → Head
+  HTML** and republish; site fonts return to the Theme panel settings.
+Nothing else on the site is touched.
