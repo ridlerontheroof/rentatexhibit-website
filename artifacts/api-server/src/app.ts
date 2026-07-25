@@ -63,10 +63,28 @@ const allowedOrigin = resolveAllowedOrigin();
 
 const app: Express = express();
 
-// The API runs behind Replit's proxy, so the client IP arrives in the
-// X-Forwarded-For header. Trust a single proxy hop so rate limiting can key
-// off the real visitor IP rather than the proxy's address.
-app.set("trust proxy", 1);
+// The API runs behind Replit's proxy chain, so the client IP arrives in the
+// X-Forwarded-For header. Trust only loopback and private-network addresses
+// (the platform's internal proxy hops) rather than a fixed hop count:
+//
+// - A numeric hop count is fragile: the observed chain here has *multiple*
+//   internal hops (e.g. "…, 10.x.x.x, 127.0.0.1"), so `trust proxy: 1`
+//   resolved every visitor to 127.0.0.1 and collapsed the per-IP rate limit
+//   on POST /api/leads into a single shared bucket.
+// - It is also spoof-resistant: Express walks the X-Forwarded-For chain from
+//   the right and stops at the first address that is NOT in a trusted range.
+//   The platform proxies append the genuine (public) client IP, so the walk
+//   always stops there. Any attacker-supplied X-Forwarded-For values sit
+//   further left and can never be selected as req.ip, even if an upstream
+//   proxy were to pass them through instead of stripping them.
+app.set("trust proxy", [
+  "loopback", // 127.0.0.0/8, ::1
+  "linklocal", // 169.254.0.0/16, fe80::/10
+  "uniquelocal", // fc00::/7 (IPv6 private)
+  "10.0.0.0/8",
+  "172.16.0.0/12",
+  "192.168.0.0/16",
+]);
 
 app.use(
   pinoHttp({

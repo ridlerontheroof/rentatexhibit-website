@@ -21,4 +21,5 @@
 - [Above-the-fold guard via raw CDP](fold-check-cdp.md) — real-layout viewport checks drive nix chromium over CDP with Node's built-in WebSocket; no Playwright dep; vite.config needs PORT env even with --port.
 - [Availability seed drift](availability-seed-drift.md) — api-server rewrites its committed availability seed at runtime; revert unintended drift before completing a task or review rejects.
 - [Review-snippet JSON-LD for GSC](reviews-jsonld-gsc.md) — reviews node must be LocalBusiness (not ApartmentComplex), and prerendered JSON-LD is stripped pre-hydration to avoid duplicate aggregate ratings.
+- [Trust proxy on Replit](trust-proxy-replit.md) — edge strips client XFF but there are multiple internal hops; trust private/loopback CIDRs, never a numeric hop count (hop 1 keyed everyone to 127.0.0.1).
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.
