@@ -39,6 +39,23 @@ export function AccessibilityStatement() {
           </section>
 
           <section className="space-y-3">
+            <h2 className="text-xl uppercase tracking-wider">Physical Accessibility</h2>
+            <p>
+              More than 20% of the homes at Exhibit On Superior are ADA accessible. For details
+              on specific accessible floor plans and features, or to arrange a reasonable
+              accommodation, please contact the leasing team at{' '}
+              <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+                exhibit@highlandptrs.com
+              </a>{' '}
+              or{' '}
+              <a href="tel:312-450-0635" className="text-primary hover:underline">
+                312-450-0635
+              </a>
+              .
+            </p>
+          </section>
+
+          <section className="space-y-3">
             <h2 className="text-xl uppercase tracking-wider">Fair Housing</h2>
             <p>
               Exhibit On Superior is an equal housing opportunity community. We welcome all

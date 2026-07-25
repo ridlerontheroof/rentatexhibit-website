@@ -183,6 +183,18 @@ export function Amenities() {
                 </p>
               </div>
               <div className="bg-white border border-border p-6">
+                <h3 className="text-lg uppercase tracking-wider mb-2">Accessibility</h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  More than 20% of the homes at Exhibit are ADA accessible. For details on
+                  specific accessible floor plans and features, or to arrange a reasonable
+                  accommodation, contact the leasing team at{' '}
+                  <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline">exhibit@highlandptrs.com</a>{' '}
+                  or <a href="tel:312-450-0635" className="text-primary underline">312-450-0635</a>.
+                  See also our{' '}
+                  <Link href="/accessibility-statement" className="text-primary underline">Accessibility Statement</Link>.
+                </p>
+              </div>
+              <div className="bg-white border border-border p-6">
                 <h3 className="text-lg uppercase tracking-wider mb-2">Access & Hours</h3>
                 <p className="leading-relaxed text-muted-foreground">
                   The front desk is staffed 24 hours a day. Indoor amenities are open 24/7, and

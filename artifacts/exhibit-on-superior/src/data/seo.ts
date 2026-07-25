@@ -166,6 +166,10 @@ export const PAGE_SEO: Record<string, PageSeo> = {
         a: 'Indoor amenities are open 24/7. Outdoor amenities close during quiet hours, 10pm\u20136am. The pool and hot tub are seasonal \u2014 the pool closes in late September and the hot tub closes at the first snowfall \u2014 while the grills and fire pits are available year-round.',
       },
       {
+        q: 'Are there ADA-accessible apartments at Exhibit On Superior?',
+        a: 'Yes. More than 20% of the homes at Exhibit are ADA accessible. For details on specific accessible floor plans and features, or to arrange a reasonable accommodation, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+      },
+      {
         q: 'Can amenity spaces be reserved?',
         a: 'Yes. The Party Room is reservable through the leasing/management office at $50 per hour, and residents may bring up to 2 guests to the pool. Full rules are available on request.',
       },

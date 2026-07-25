@@ -45,6 +45,7 @@ The **one issue that undercuts all of that**: the site is a client-rendered SPA.
 - **Issue:** Canonicals and schema use `https://www.rentatexhibit.com`. Ensure the live host 301-redirects non-www→www (and http→https) so signals consolidate on the canonical host.
 - **Impact:** Medium if misconfigured (duplicate host indexing), otherwise none.
 - **Fix:** Confirm DNS/redirect config at the domain/host level once deployed to the production domain. No code change if already correct.
+- **Status (July 2026):** Replit hosting serves both hosts and cannot issue a host-level 301 for a static deployment (both `rentatexhibit.com` and `www.rentatexhibit.com` are attached to the same deployment; Replit does not auto-redirect apex→www). Implemented the best supported equivalent: an early inline script in `index.html` (inherited by every prerendered page) that `location.replace()`s apex requests to the matching `www` URL, preserving path, query string, and hash. Canonical tags, OG URLs, and `sitemap.xml` remain www-only, so crawlers that don't run JS still consolidate on www via canonicals. A true 301 can additionally be configured at the DNS provider (e.g. Cloudflare redirect rule) by pointing the apex at a redirect service — optional business action.
 - **Priority:** 4.
 
 ---
