@@ -1,5 +1,5 @@
 /* ============================================================
-   HIGHLAND PARTNERS — AppFolio Listings Widget Facelift  (v1.0)
+   HIGHLAND PARTNERS — AppFolio Listings Widget Facelift  (v1.1)
    ------------------------------------------------------------
    Paste this whole block into the Duda editor's custom-CSS
    panel (see INSTALL.md). It restyles the AppFolio "Vacancies
@@ -138,6 +138,8 @@
   line-height: 1.35 !important;
   background: linear-gradient(rgba(3, 49, 72, 0), rgba(2, 30, 44, 0.85)) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45) !important;
+  /* Breathing room inside the photo so the address never hugs the edges */
+  padding: 24px 18px 16px !important;
 }
 
 /* Photo slider chrome: square counters */
@@ -202,9 +204,10 @@
    ------------------------------------------------------------ */
 /* Buttons are absolutely positioned at the card's bottom edge; the
    default card body reserves room for 40px buttons. Ours are 46px,
-   so reserve a little more so nothing is covered. */
+   plus extra clearance so the card text gets breathing room above
+   the buttons. */
 .listings-widget .listing-item .info {
-  padding-bottom: 64px !important;
+  padding-bottom: 82px !important;
 }
 
 .listings-widget .info .lower-buttons a.btn {
