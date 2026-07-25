@@ -22,4 +22,5 @@
 - [Availability seed drift](availability-seed-drift.md) — api-server rewrites its committed availability seed at runtime; revert unintended drift before completing a task or review rejects.
 - [Review-snippet JSON-LD for GSC](reviews-jsonld-gsc.md) — reviews node must be LocalBusiness (not ApartmentComplex), and prerendered JSON-LD is stripped pre-hydration to avoid duplicate aggregate ratings.
 - [Trust proxy on Replit](trust-proxy-replit.md) — edge strips client XFF but there are multiple internal hops; trust private/loopback CIDRs, never a numeric hop count (hop 1 keyed everyone to 127.0.0.1).
+- [Prerender + lazy routes CLS trap](prerender-lazy-cls.md) — boot must preload the current route chunk before first render or the prerendered page collapses to the Suspense fallback (0.31 CLS site-wide).
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.
