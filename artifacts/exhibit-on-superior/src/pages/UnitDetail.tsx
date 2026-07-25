@@ -205,8 +205,13 @@ export function UnitDetail() {
             Apartment {unit.unit}
           </h1>
           <p className="mt-2 text-muted-foreground">{ADDRESS}</p>
+          {/* tracking-wider (not the 10px site display tracking): this is a
+              sentence-length marketing line, and display-level letter-spacing
+              makes it unreadable at this size. */}
           {unit.marketingTitle && (
-            <h2 className="mt-8 text-xl font-medium text-foreground">{unit.marketingTitle}</h2>
+            <h2 className="mt-8 text-xl font-medium tracking-wider text-foreground">
+              {unit.marketingTitle}
+            </h2>
           )}
           {unit.description && (
             <div className="mt-6 space-y-4 text-base leading-relaxed text-muted-foreground">
