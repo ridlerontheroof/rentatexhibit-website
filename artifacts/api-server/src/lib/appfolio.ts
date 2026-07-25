@@ -284,7 +284,15 @@ export function parseDetailSections(html: string): DetailSection[] {
     const title = decodeEntities(m[1].trim());
     const items = [...m[2].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)]
       .map((li) => decodeEntities(li[1].replace(/<[^>]*>/g, "").trim()))
-      .filter((item) => item.length > 0);
+      .filter((item) => item.length > 0)
+      // Same fee-policy guard as descriptions: drop line items asserting a pet
+      // deposit / pet rent / per-person admin fee, which contradict the
+      // leasing-confirmed policy published on the site.
+      .filter(
+        (item) =>
+          !CONTRADICTORY_FEE_SENTENCE_RE.test(item) ||
+          /\bno\b[^.!?\n]*(pet\s+deposit|pet\s+rent)/i.test(item),
+      );
     if (title && items.length > 0) sections.push({ title, items });
   }
   return sections;
@@ -339,14 +347,55 @@ export function sanitizeMarketingTitle(title: string | null): string | null {
   return `${head} with ${list}${tail}`.replace(/\s{2,}/g, " ").trim();
 }
 
+/**
+ * Sentences in AppFolio marketing descriptions that contradict the
+ * leasing-confirmed fee policy published on the site (one-time non-refundable
+ * pet fee $650/$750 dogs / $325 cats, NO pet deposit, NO monthly pet rent;
+ * $500 administrative fee is per apartment, not per person). Older listing
+ * copy said "a $300 deposit and $30 monthly pet rent per pet" and "$500 admin
+ * fee per person" — the leasing team owns that text and can reintroduce it on
+ * any re-sync, so strip any sentence asserting those charges before it reaches
+ * the site.
+ */
+const CONTRADICTORY_FEE_SENTENCE_RE =
+  /(pet\s+deposit|pet\s+rent|deposit[^.!?\n]*per\s+pet|per\s+pet[^.!?\n]*deposit|admin\w*\s+fee[^.!?\n]*per\s+person)/i;
+
+/**
+ * Drop whole sentences that state a pet deposit / monthly pet rent / per-person
+ * admin fee. Sentence-level (not paragraph-level) so surrounding accurate copy
+ * survives. Negations like "no pet deposit" are kept — they agree with policy.
+ */
+export function stripContradictoryFeeSentences(text: string): string {
+  const cleaned = text
+    .split(/(\n+)/)
+    .map((part) => {
+      if (/^\n+$/.test(part)) return part;
+      const sentences = part.match(/[^.!?]*[.!?]+[)"']?\s*|[^.!?]+$/g) ?? [part];
+      return sentences
+        .filter(
+          (s) =>
+            !CONTRADICTORY_FEE_SENTENCE_RE.test(s) ||
+            /\bno\b[^.!?\n]*(pet\s+deposit|pet\s+rent)/i.test(s),
+        )
+        .join("");
+    })
+    .join("")
+    // Collapse paragraphs emptied entirely by the filter.
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return cleaned;
+}
+
 /** Extract the listing description (`listing-detail__description`) from a detail page. */
 export function parseDetailDescription(html: string): string | null {
   const m = html.match(/<p[^>]*class="[^"]*listing-detail__description[^"]*"[^>]*>([\s\S]*?)<\/p>/);
   if (!m) return null;
-  const text = decodeEntities(m[1].replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").trim())
-    // Same phone-first CTA rewrite as sanitizeMarketingTitle — the site
-    // funnels prospects to the on-page Schedule a Tour button.
-    .replace(/call\s+today\s+and\s+schedule\s+your\s+tour/gi, "Schedule Your Tour Today");
+  const text = stripContradictoryFeeSentences(
+    decodeEntities(m[1].replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").trim())
+      // Same phone-first CTA rewrite as sanitizeMarketingTitle — the site
+      // funnels prospects to the on-page Schedule a Tour button.
+      .replace(/call\s+today\s+and\s+schedule\s+your\s+tour/gi, "Schedule Your Tour Today"),
+  );
   return text || null;
 }
 

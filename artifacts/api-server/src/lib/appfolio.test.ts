@@ -169,6 +169,36 @@ describe("parseDetailSections", () => {
     // so decoded markup is displayed literally, never executed.
   });
 
+  it("strips sentences contradicting the confirmed pet-fee policy from descriptions", () => {
+    const html = `
+      <p class="listing-detail__description">Great views over River North. Pets are welcome with a $300 deposit and $30 monthly pet rent per pet. One-time fees: $500 admin fee per person and $60 application per applicant. Schedule your tour today.</p>`;
+    expect(parseDetailDescription(html)).toBe(
+      "Great views over River North. Schedule your tour today.",
+    );
+  });
+
+  it("keeps sentences that agree with the policy (no pet deposit / no pet rent)", () => {
+    const html = `
+      <p class="listing-detail__description">There is no pet deposit and no monthly pet rent. One-time fees: $500 administrative per apartment and $60 application per applicant.</p>`;
+    expect(parseDetailDescription(html)).toBe(
+      "There is no pet deposit and no monthly pet rent. One-time fees: $500 administrative per apartment and $60 application per applicant.",
+    );
+  });
+
+  it("drops contradictory fee line items from detail sections", () => {
+    const html = `
+      <h3 class="fw-normal">Pet Policy</h3>
+      <ul class="list">
+        <li>Cats allowed</li>
+        <li>Pet deposit: $300</li>
+        <li>Pet rent: $30/month</li>
+        <li>No pet deposit required</li>
+      </ul>`;
+    expect(parseDetailSections(html)).toEqual([
+      { title: "Pet Policy", items: ["Cats allowed", "No pet deposit required"] },
+    ]);
+  });
+
   it("returns empty for pages without sections", () => {
     expect(parseDetailSections("<html><body><h3>Title</h3><p>text</p></body></html>")).toEqual([]);
   });
