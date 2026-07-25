@@ -12,15 +12,16 @@ import { describe, expect, it } from 'vitest';
 //   2. stray files dropped into public/images/email/ would ship in every
 //      deploy with nothing to flag them.
 //
-// The logo is currently embedded in the api-server as EMAIL_LOGO_BASE64
-// (attached inline via CID), with the canonical PNG kept on the web side.
+// The logo bytes are currently embedded in the api-server via
+// src/lib/emailLogo.json (attached inline via CID), with the canonical
+// PNG kept on the web side.
 // We verify the two never drift apart, and still scan for any plain
 // /images/email/ URL references in case templates go back to hosted URLs.
 
 const WEB_ROOT = join(__dirname, '..', '..');
 const EMAIL_IMAGES_DIR = join(WEB_ROOT, 'public', 'images', 'email');
 const API_SERVER_SRC = join(WEB_ROOT, '..', 'api-server', 'src');
-const EMAIL_LOGO_MODULE = join(API_SERVER_SRC, 'lib', 'emailLogo.ts');
+const EMAIL_LOGO_JSON = join(API_SERVER_SRC, 'lib', 'emailLogo.json');
 
 const SOURCE_EXTS = new Set(['.ts', '.tsx']);
 const EMAIL_IMAGE_PATH_RE = /\/images\/email\/[A-Za-z0-9_@%./-]+\.(?:png|jpe?g|webp|gif|svg|avif)/g;
@@ -62,26 +63,49 @@ function collectEmailImageRefs(): Map<string, Set<string>> {
 }
 
 /**
- * Extract the embedded logo bytes from the api-server's emailLogo.ts by
- * joining the concatenated string literals assigned to EMAIL_LOGO_BASE64.
- * Parsing the source (rather than importing across packages) keeps this
- * test independent of the api-server's build setup.
+ * Read the embedded logo bytes from the api-server's emailLogo.json — a
+ * plain JSON asset the api-server imports at build time. Reading data
+ * directly (rather than regex-parsing TypeScript source or importing
+ * across packages) keeps this test independent of the api-server's build
+ * setup and immune to renames of the exporting constant.
  */
 function readEmbeddedLogoBytes(): Buffer {
-  const source = readFileSync(EMAIL_LOGO_MODULE, 'utf8');
-  const assignment = source.match(/EMAIL_LOGO_BASE64\s*=\s*([\s\S]*?);/);
-  expect(assignment, 'EMAIL_LOGO_BASE64 assignment not found in emailLogo.ts').toBeTruthy();
-  const literals = assignment![1].match(/"([^"]*)"/g) ?? [];
-  expect(literals.length, 'EMAIL_LOGO_BASE64 has no string literals').toBeGreaterThan(0);
-  const base64 = literals.map((l) => l.slice(1, -1)).join('');
+  const raw = readFileSync(EMAIL_LOGO_JSON, 'utf8');
+  const parsed = JSON.parse(raw) as { base64?: unknown };
+  expect(typeof parsed.base64, 'emailLogo.json must contain a "base64" string field').toBe(
+    'string',
+  );
+  const base64 = parsed.base64 as string;
+  expect(base64.length, 'emailLogo.json "base64" field is empty').toBeGreaterThan(0);
+  // Reject anything that isn't strictly valid base64 — a truncated or
+  // corrupted field must fail loudly, not decode to garbage bytes.
+  expect(
+    /^[A-Za-z0-9+/]+={0,2}$/.test(base64),
+    'emailLogo.json "base64" field is not valid base64',
+  ).toBe(true);
   return Buffer.from(base64, 'base64');
 }
 
 describe('branded lead email images', () => {
-  it('the api-server email logo module exists (path drift guard)', () => {
-    // If the api-server moves/renames emailLogo.ts, this test must be
+  it('the api-server email logo asset exists (path drift guard)', () => {
+    // If the api-server moves/renames emailLogo.json, this test must be
     // updated rather than silently guarding nothing.
-    expect(existsSync(EMAIL_LOGO_MODULE), `missing ${EMAIL_LOGO_MODULE}`).toBe(true);
+    expect(existsSync(EMAIL_LOGO_JSON), `missing ${EMAIL_LOGO_JSON}`).toBe(true);
+  });
+
+  it('api-server source actually imports emailLogo.json (vacuous-guard drift check)', () => {
+    // If the api-server restructures its email code to stop reading
+    // emailLogo.json, the byte-comparison below would keep passing while
+    // guarding an asset nothing ships. Require at least one non-test
+    // api-server source file to import it.
+    const importers = listFiles(API_SERVER_SRC).filter((f) => {
+      if (!SOURCE_EXTS.has(f.slice(f.lastIndexOf('.'))) || f.endsWith('.test.ts')) return false;
+      return /from\s+["'][^"']*emailLogo\.json["']/.test(stripComments(readFileSync(f, 'utf8')));
+    });
+    expect(
+      importers.length,
+      'no api-server source imports emailLogo.json — the logo sync guard is checking dead data; update this test to follow where the embedded logo moved',
+    ).toBeGreaterThan(0);
   });
 
   it('every /images/email/ URL referenced by api-server source exists on disk', () => {
