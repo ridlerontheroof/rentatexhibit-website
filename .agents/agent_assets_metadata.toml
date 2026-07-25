@@ -114,3 +114,15 @@ id = "cUsYNqaI0bRy0BFnx7302"
 uri = "file://highland-facelift-kit/preview/side-by-side.png"
 type = "image"
 title = "Highland listings — before vs. after facelift CSS"
+
+[[outputs]]
+id = "GWaUfUelZ32c4UA33LiDM"
+uri = "file://attached_assets/apple-business/apple-cover-pool-3200x2180.jpg"
+type = "image"
+title = "Apple Business cover — rooftop pool (3200×2180)"
+
+[[outputs]]
+id = "dVCgX7EyaFz4Z4g20etOB"
+uri = "file://attached_assets/apple-business/apple-cover-livingroom-3200x2180.jpg"
+type = "image"
+title = "Apple Business cover — living room skyline (3200×2180)"
