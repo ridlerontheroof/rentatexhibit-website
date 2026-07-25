@@ -6,7 +6,9 @@ import { Layout } from './components/Layout';
 import { routes } from './routes';
 import { NotFound } from './pages/not-found';
 import { buildSeoModel, renderHeadTags } from './data/seo';
-import { floorPlansItemListJsonLd } from './data/floorPlans';
+import { floorPlansItemListJsonLd, planGroups } from './data/floorPlans';
+import { unitAvailabilityJsonLd } from './data/unitJsonLd';
+import { getBakedAvailability } from './data/availabilitySnapshot';
 import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
 import { photoGalleryJsonLd } from './data/gallery';
 import { virtualToursJsonLd, virtualTourVideoJsonLd } from './data/virtualTours';
@@ -17,13 +19,18 @@ export { PAGE_SEO, SITE_URL, canonicalFor } from './data/seo';
 export { extractLcpPreload } from './lib/lcpPreload';
 export { LEGACY_REDIRECTS } from './data/legacyRedirects';
 
+// Counts the prerenderer uses to REQUIRE the FloorPlan/Apartment/Offer
+// structured data on /available-units (see scripts/prerender.mjs).
+export const FLOOR_PLAN_COUNT = planGroups.length;
+export const BAKED_UNIT_COUNT = getBakedAvailability()?.units.length ?? 0;
+
 /** Content-page paths, exported for the prerenderer's route<->PAGE_SEO parity check. */
 export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
 
 // Page-specific JSON-LD that isn't derivable from PAGE_SEO. Mirrors what the
 // page component passes to <Seo extraJsonLd>; keep in sync with that page.
 const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
-  '/available-units': () => [floorPlansItemListJsonLd()],
+  '/available-units': () => [floorPlansItemListJsonLd(), unitAvailabilityJsonLd()],
   // At prerender time there is no live Google feed, so the model resolves to
   // the curated fallback — exactly what the SSR'd page body displays. The
   // client re-emits the schema from the live-merged model after hydration.

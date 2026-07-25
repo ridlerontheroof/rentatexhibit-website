@@ -164,6 +164,12 @@ export const RECOMMENDED_PROPERTIES = {
   MediaObject: ['name', 'description', ['contentUrl', 'embedUrl']],
   // Floor-plan groups on /floor-plans.
   Apartment: ['name', 'image', 'floorSize'],
+  // Residence lines on /available-units, linked from the property entity via
+  // accommodationFloorPlan.
+  FloorPlan: ['name', 'numberOfBedrooms', 'numberOfBathroomsTotal', 'floorSize', 'image'],
+  // Lease offers on available units: rent, currency, and availability are the
+  // facts Bing/Copilot and AI answer engines extract.
+  Offer: ['price', 'priceCurrency', 'availability'],
   // Review snippets on /reviews. No datePublished checklist entry: quotes are
   // curated + live-merged without reliable per-review dates.
   Review: ['author', 'reviewRating', 'reviewBody'],

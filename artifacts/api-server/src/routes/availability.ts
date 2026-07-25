@@ -2,6 +2,8 @@ import { Router, type IRouter } from "express";
 import { fetchAvailability, type AvailabilityPayload } from "../lib/appfolio";
 import { sendSeedStaleAlert } from "../lib/email";
 import bakedSeed from "../data/availabilitySeed.json";
+import { inventoryChanged, notifyAvailabilityChanged } from "../lib/indexnow";
+import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
@@ -156,7 +158,13 @@ async function refreshAvailability(
     inflight = null;
   });
   const payload = await inflight;
+  const previous = cached?.payload ?? null;
   cached = { payload, fetchedAt: Date.now() };
+  // Inventory changed (unit added/rented/re-priced/re-dated): tell Bing &
+  // Copilot via IndexNow right away. Best-effort — never blocks or throws.
+  if (inventoryChanged(previous, payload)) {
+    notifyAvailabilityChanged(logger);
+  }
   return payload;
 }
 

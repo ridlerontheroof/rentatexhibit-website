@@ -19,8 +19,17 @@ const root = path.resolve(scriptDir, '..');
 const publicDir = path.join(root, 'dist', 'public');
 const serverEntry = path.join(root, 'dist', 'server', 'entry-server.js');
 
-const { render, PAGE_SEO, SITE_URL, canonicalFor, ROUTE_PATHS, extractLcpPreload, LEGACY_REDIRECTS } =
-  await import(pathToFileURL(serverEntry).href);
+const {
+  render,
+  PAGE_SEO,
+  SITE_URL,
+  canonicalFor,
+  ROUTE_PATHS,
+  extractLcpPreload,
+  LEGACY_REDIRECTS,
+  FLOOR_PLAN_COUNT,
+  BAKED_UNIT_COUNT,
+} = await import(pathToFileURL(serverEntry).href);
 
 // Parity guard: every indexable page must have a route to render it, and every
 // content route must have SEO metadata. Fail the build on any mismatch so a new
@@ -243,6 +252,54 @@ for (const routePath of seoPaths) {
     );
   }
   console.log(`JSON-LD validated on ${seoPaths.length} pages.`);
+}
+
+// Post-build guard: /available-units must publish machine-readable inventory —
+// one FloorPlan node per residence line, and (whenever the build carried a
+// fresh availability snapshot) one Apartment node with a lease Offer per
+// available unit. A refactor that drops these silently would erase the site's
+// unit-level structured data for AI/Bing crawlers.
+{
+  const page = await fs.readFile(path.join(publicDir, 'available-units', 'index.html'), 'utf8');
+  const nodes = [];
+  for (const raw of extractJsonLdPayloads(page)) {
+    const parsed = JSON.parse(raw);
+    const collect = (v) => {
+      if (Array.isArray(v)) return v.forEach(collect);
+      if (v && typeof v === 'object') {
+        if (typeof v['@type'] === 'string') nodes.push(v);
+        for (const k of Object.keys(v)) if (!k.startsWith('@')) collect(v[k]);
+        if (Array.isArray(v['@graph'])) collect(v['@graph']);
+      }
+    };
+    collect(parsed);
+  }
+  const count = (type) => nodes.filter((n) => n['@type'] === type).length;
+  const problems = [];
+  if (count('FloorPlan') !== FLOOR_PLAN_COUNT) {
+    problems.push(`expected ${FLOOR_PLAN_COUNT} FloorPlan nodes, found ${count('FloorPlan')}`);
+  }
+  const apartmentsWithOffers = nodes.filter(
+    (n) => n['@type'] === 'Apartment' && n.offers,
+  ).length;
+  if (apartmentsWithOffers < BAKED_UNIT_COUNT || count('Offer') < BAKED_UNIT_COUNT) {
+    problems.push(
+      `expected >= ${BAKED_UNIT_COUNT} Apartment nodes with Offers (snapshot units), ` +
+        `found ${apartmentsWithOffers} apartments / ${count('Offer')} offers`,
+    );
+  }
+  if (!nodes.some((n) => n['@type'] === 'ApartmentComplex' && n.numberOfAccommodationUnits === 298)) {
+    problems.push('ApartmentComplex is missing numberOfAccommodationUnits: 298');
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: /available-units unit-level structured data check failed:\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(
+    `Unit-level structured data verified: ${FLOOR_PLAN_COUNT} FloorPlans, ${BAKED_UNIT_COUNT} available units with Offers.`,
+  );
 }
 
 // Soft check: recommended schema.org properties (WARNINGS ONLY — never fails

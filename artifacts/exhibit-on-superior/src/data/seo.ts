@@ -784,6 +784,8 @@ const APARTMENT_COMPLEX_NODE = {
       },
     },
   },
+  // Total residences in the tower — a hard fact AI answer engines look for.
+  numberOfAccommodationUnits: 298,
   // Touring/visiting the leasing office is free; this disambiguates the
   // entity from paid-admission venues for AI answer engines.
   isAccessibleForFree: true,

@@ -27,6 +27,9 @@ import {
   nextPosition,
   resolveDeepLink,
   floorPlansItemListJsonLd,
+} from '../data/floorPlans';
+import { unitAvailabilityJsonLd } from '../data/unitJsonLd';
+import {
   SQFT_MIN,
   SQFT_MAX,
   type Category,
@@ -61,6 +64,7 @@ function writePlanToUrl(id: string | null) {
 // Shared with the build-time prerenderer (see entry-server.tsx) so the static
 // HTML and the client emit identical floor-plan structured data.
 const structuredData = floorPlansItemListJsonLd();
+const unitStructuredData = unitAvailabilityJsonLd();
 
 export function FloorPlans() {
   const [search, setSearch] = useState('');
@@ -152,7 +156,7 @@ export function FloorPlans() {
 
   return (
     <>
-      <Seo path="/available-units" extraJsonLd={[structuredData]} />
+      <Seo path="/available-units" extraJsonLd={[structuredData, unitStructuredData]} />
 
       <div>
         <PageHero
