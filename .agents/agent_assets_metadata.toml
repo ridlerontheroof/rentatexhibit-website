@@ -126,3 +126,9 @@ id = "dVCgX7EyaFz4Z4g20etOB"
 uri = "file://attached_assets/apple-business/apple-cover-livingroom-3200x2180.jpg"
 type = "image"
 title = "Apple Business cover — living room skyline (3200×2180)"
+
+[[outputs]]
+id = "P1Gn7kMMC7QUMYzmvjeGl"
+uri = "file://attached_assets/apple-business/apple-business-photos.zip"
+type = "unspecified"
+title = "Apple Business Connect photo set — 28 curated photos"
