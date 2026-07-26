@@ -79,6 +79,13 @@ export function ScheduleShowing() {
   const [unitGone, setUnitGone] = useState(false);
   const leadSubmittedRef = useRef(false);
 
+  // Screen-reader focus management: when a failure banner appears mid-flow
+  // (slot taken, fallback, unit gone) move focus onto it so the change of
+  // state is announced and the keyboard user is standing on the next action.
+  const slotTakenRef = useRef<HTMLDivElement>(null);
+  const fallbackRef = useRef<HTMLDivElement>(null);
+  const unitGoneRef = useRef<HTMLDivElement>(null);
+
   const slots = useShowingSlots(unit || null, !!credentials && !fallback && !booked && !unitGone);
 
   const {
@@ -88,6 +95,16 @@ export function ScheduleShowing() {
   } = useForm<ContactFormData>({ resolver: zodResolver(contactSchema) });
 
   useUnsavedChangesWarning(isDirty && !booked && !fallback && !credentials && !unitGone);
+
+  useEffect(() => {
+    if (slotTakenNotice) slotTakenRef.current?.focus();
+  }, [slotTakenNotice]);
+  useEffect(() => {
+    if (fallback) fallbackRef.current?.focus();
+  }, [fallback]);
+  useEffect(() => {
+    if (unitGone) unitGoneRef.current?.focus();
+  }, [unitGone]);
 
   const isUnitNotListed = (err: unknown): boolean =>
     err instanceof ShowingApiError && err.code === 'unit_not_listed';
@@ -209,7 +226,9 @@ export function ScheduleShowing() {
                 say so plainly instead of showing an empty calendar. */}
             {unitGone && (
               <div
-                className="border border-border bg-muted p-12 text-center"
+                ref={unitGoneRef}
+                tabIndex={-1}
+                className="border border-border bg-muted p-12 text-center focus:outline-none"
                 role="status"
                 aria-live="polite"
               >
@@ -407,7 +426,9 @@ export function ScheduleShowing() {
 
                 {slotTakenNotice && (
                   <div
-                    className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive"
+                    ref={slotTakenRef}
+                    tabIndex={-1}
+                    className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive focus:outline-none"
                     role="alert"
                   >
                     That time was just booked by someone else. Please pick another time below.
@@ -527,7 +548,9 @@ export function ScheduleShowing() {
             {/* Designed fallback — no dead ends */}
             {fallback && (
               <div
-                className="border border-border bg-muted p-12 text-center"
+                ref={fallbackRef}
+                tabIndex={-1}
+                className="border border-border bg-muted p-12 text-center focus:outline-none"
                 role="status"
                 aria-live="polite"
               >

@@ -231,4 +231,79 @@ describe('ScheduleShowing', () => {
     // No lead fallback — the visitor stays in the flow.
     expect(fetchMock.mock.calls.some((c) => String(c[0]).includes('api/leads'))).toBe(false);
   });
+
+  // Screen-reader announcements for booking-step failures: each user-visible
+  // failure banner must live in an alert/live region so it is announced
+  // without a refresh, and focus must land on the banner so a keyboard or
+  // screen-reader user isn't stranded on the control that just failed.
+  describe('booking-step failure announcements', () => {
+    it('announces and focuses the "slot taken" banner', async () => {
+      routeFetch({
+        'api/showings/book': () => jsonResponse({ error: 'slot_taken', hostedUrl: HOSTED }, 409),
+      });
+      const user = userEvent.setup();
+      renderPage();
+      await fillContactForm(user);
+      await user.click(await screen.findByRole('button', { name: '1:15 PM' }));
+      await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+      const banner = await screen.findByRole('alert');
+      expect(banner.textContent).toMatch(/just booked by someone else/i);
+      await waitFor(() => expect(document.activeElement).toBe(banner));
+    });
+
+    it('announces and focuses the fallback banner when the slots fetch fails', async () => {
+      routeFetch({
+        'api/showings/slots': () => jsonResponse({ error: 'slots_failed', hostedUrl: HOSTED }, 502),
+      });
+      const user = userEvent.setup();
+      renderPage();
+      await fillContactForm(user);
+
+      // (the transient "Loading available times…" status appears first)
+      const text = await screen.findByText(/we've got your request/i, undefined, {
+        timeout: 4000,
+      });
+      const banner = text.closest('[role="status"]') as HTMLElement;
+      expect(banner).toBeTruthy();
+      expect(banner.getAttribute('aria-live')).toBe('polite');
+      await waitFor(() => expect(document.activeElement).toBe(banner));
+      // The retry action (hosted scheduling link) lives inside the focused banner.
+      expect(
+        screen.getByRole('link', { name: /open the scheduling page/i }).closest('[role="status"]'),
+      ).toBe(banner);
+    });
+
+    it('announces and focuses the fallback banner when booking fails outright', async () => {
+      routeFetch({
+        'api/showings/book': () => jsonResponse({ error: 'booking_failed', hostedUrl: HOSTED }, 502),
+      });
+      const user = userEvent.setup();
+      renderPage();
+      await fillContactForm(user);
+      await user.click(await screen.findByRole('button', { name: '1:15 PM' }));
+      await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+      const banner = await screen.findByRole('status');
+      expect(banner.textContent).toMatch(/we've got your request/i);
+      expect(banner.getAttribute('aria-live')).toBe('polite');
+      await waitFor(() => expect(document.activeElement).toBe(banner));
+    });
+
+    it('announces and focuses the "no longer available" banner when booking hits unit_not_listed', async () => {
+      routeFetch({
+        'api/showings/book': () => jsonResponse({ error: 'unit_not_listed' }, 404),
+      });
+      const user = userEvent.setup();
+      renderPage();
+      await fillContactForm(user);
+      await user.click(await screen.findByRole('button', { name: '1:15 PM' }));
+      await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+      const banner = await screen.findByRole('status');
+      expect(banner.textContent).toMatch(/no longer available to tour/i);
+      expect(banner.getAttribute('aria-live')).toBe('polite');
+      await waitFor(() => expect(document.activeElement).toBe(banner));
+    });
+  });
 });
