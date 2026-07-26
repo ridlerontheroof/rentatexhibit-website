@@ -54,6 +54,24 @@ function readPlanFromUrl(): string | null {
   return new URLSearchParams(window.location.search).get('plan');
 }
 
+// Deep-link: `?ada=1` lands visitors with the ADA-accessible filter already on
+// (used by the accessibility statement, the ADA Knowledge article, and ads).
+function readAdaFromUrl(): boolean {
+  if (typeof window === 'undefined') return false;
+  const value = new URLSearchParams(window.location.search).get('ada');
+  return value === '1' || value === 'true';
+}
+
+function writeAdaToUrl(on: boolean) {
+  if (typeof window === 'undefined') return;
+  const params = new URLSearchParams(window.location.search);
+  if (on) params.set('ada', '1');
+  else params.delete('ada');
+  const query = params.toString();
+  const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
+  window.history.replaceState(null, '', newUrl);
+}
+
 function writePlanToUrl(id: string | null) {
   if (typeof window === 'undefined') return;
   const params = new URLSearchParams(window.location.search);
@@ -78,7 +96,7 @@ export function FloorPlans() {
     categories: new Set<Category>(),
     bands: new Set<string>(),
     sqft: [SQFT_MIN, SQFT_MAX],
-    ada: false,
+    ada: readAdaFromUrl(),
   });
   const [sort, setSort] = useState<SortKey>('featured');
   // Live-feed structured data: once the availability query resolves (it starts
@@ -152,7 +170,12 @@ export function FloorPlans() {
 
   const setSqft = (range: [number, number]) => setFilters((f) => ({ ...f, sqft: range }));
 
-  const toggleAda = () => setFilters((f) => ({ ...f, ada: !f.ada }));
+  const toggleAda = () =>
+    setFilters((f) => {
+      const ada = !f.ada;
+      writeAdaToUrl(ada);
+      return { ...f, ada };
+    });
 
   const hasActiveFilters =
     search.trim() !== '' ||
@@ -165,6 +188,7 @@ export function FloorPlans() {
   const resetAll = () => {
     setSearch('');
     setFilters({ categories: new Set(), bands: new Set(), sqft: [SQFT_MIN, SQFT_MAX], ada: false });
+    writeAdaToUrl(false);
   };
 
   const filterProps = {

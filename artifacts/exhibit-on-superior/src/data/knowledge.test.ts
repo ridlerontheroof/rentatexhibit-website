@@ -53,7 +53,10 @@ describe('knowledge center content rules', () => {
     for (const a of KNOWLEDGE_ARTICLES) {
       expect(a.links.length, `${a.slug} needs site links`).toBeGreaterThanOrEqual(2);
       for (const l of a.links) {
-        expect(SITE_ROUTES.has(l.href), `${a.slug} -> unknown route ${l.href}`).toBe(true);
+        // Deep links may carry a query string (e.g. /available-units?ada=1);
+        // the path portion must still be a real route.
+        const path = l.href.split('?')[0];
+        expect(SITE_ROUTES.has(path), `${a.slug} -> unknown route ${l.href}`).toBe(true);
       }
     }
   });

@@ -47,7 +47,7 @@ export function AccessibilityStatement() {
               {ADA_COUNTS.a} Type A accessible/adaptable residences (A) and {ADA_COUNTS.ac} Type A
               units with conduit line (AC). You can browse them with the ADA-accessible filter on
               the{' '}
-              <a href="/available-units" className="text-primary hover:underline">
+              <a href="/available-units?ada=1" className="text-primary hover:underline">
                 Available Units &amp; Floor Plans
               </a>{' '}
               page.

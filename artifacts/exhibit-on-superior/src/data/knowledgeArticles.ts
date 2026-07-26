@@ -393,7 +393,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     ],
     related: ['accessibility-contact', 'what-apartment-sizes', 'front-desk-hours'],
     links: [
-      { label: 'Available Units', href: '/available-units' },
+      { label: 'ADA-Accessible Available Units', href: '/available-units?ada=1' },
       { label: 'Apartment Guide', href: '/apartment-guide' },
       { label: 'Contact Us', href: '/contact-us' },
     ],
