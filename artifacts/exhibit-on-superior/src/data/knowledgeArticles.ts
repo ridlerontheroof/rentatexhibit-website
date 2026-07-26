@@ -1074,7 +1074,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         paragraphs: [
           'Booking from a specific available residence lets you tour the exact home you are considering.',
-          'The leasing office is open Monday through Friday 9am–6pm, Saturday 10am–5pm, and Sunday 12pm–5pm for showings and questions.',
+          'The leasing office is open Monday through Friday 9am–6pm and Saturday 10am–5pm for showings and questions; it is closed on Sunday.',
         ],
       },
     ],
@@ -1408,11 +1408,11 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'What are the leasing office hours at Exhibit On Superior?',
     category: 'Building & Services',
     answer:
-      'The leasing office at Exhibit On Superior is open Monday through Friday 9am–6pm, Saturday 10am–5pm, and Sunday 12pm–5pm. You can tour, apply, or ask questions during these hours, or reach the team any time at exhibit@highlandptrs.com or 312-450-0635. The building front desk is staffed 24 hours a day.',
+      'The leasing office at Exhibit On Superior is open Monday through Friday 9am–6pm and Saturday 10am–5pm; it is closed on Sunday. You can tour, apply, or ask questions during these hours, or reach the team any time at exhibit@highlandptrs.com or 312-450-0635. The building front desk is staffed 24 hours a day.',
     sections: [
       {
         paragraphs: [
-          'Weekend hours make it easy to tour outside of a standard workweek.',
+          'Saturday hours make it easy to tour outside of a standard workweek.',
           'To reserve a specific time, use the Schedule a Tour page or contact the leasing team directly.',
         ],
       },

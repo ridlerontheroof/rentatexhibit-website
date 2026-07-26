@@ -1,5 +1,5 @@
 EXHIBIT ON SUPERIOR — CANONICAL PROPERTY FACT SHEET
-Generated 2026-07-24 from the website's structured-data source of truth.
+Generated 2026-07-26 from the website's structured-data source of truth.
 Use these EXACT values on every directory listing. If a platform shows anything
 different, correct it to match this sheet.
 
@@ -18,7 +18,6 @@ exhibit@highlandptrs.com
 OFFICE HOURS
 Mon–Fri: 9 AM – 6 PM
 Sat: 10 AM – 5 PM
-Sun: 12 PM – 5 PM
 
 BEDROOM RANGE  (** most common listing error — must say through THREE bedrooms **)
 Studio, Convertible, 1, 2 & 3 Bedroom Apartments

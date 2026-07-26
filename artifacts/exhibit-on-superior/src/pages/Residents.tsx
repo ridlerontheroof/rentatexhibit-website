@@ -96,7 +96,7 @@ export function Residents() {
             <ul className="space-y-2 text-lg">
               <li>Monday – Friday: 9:00 AM – 6:00 PM</li>
               <li>Saturday: 10:00 AM – 5:00 PM</li>
-              <li>Sunday: 12:00 PM – 5:00 PM</li>
+              <li>Sunday: Closed</li>
             </ul>
           </div>
         </section>

@@ -202,7 +202,7 @@ export function About() {
                 <ul className="space-y-2 text-sm">
                   <li>Monday &ndash; Friday: 9:00 AM &ndash; 6:00 PM</li>
                   <li>Saturday: 10:00 AM &ndash; 5:00 PM</li>
-                  <li>Sunday: 12:00 PM &ndash; 5:00 PM</li>
+                  <li>Sunday: Closed</li>
                   <li className="pt-2 text-muted-foreground">
                     Front desk staffed 24 hours a day, every day.
                   </li>

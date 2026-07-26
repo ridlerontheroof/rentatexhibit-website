@@ -471,14 +471,14 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       "Contact Exhibit On Superior in Chicago's River North neighborhood — email exhibit@highlandptrs.com, call 312-450-0635, or send a message with the online form.",
     quickAnswer:
-      'To contact Exhibit On Superior, email exhibit@highlandptrs.com, call 312-450-0635, or visit the leasing office at 165 W Superior St, Chicago, IL 60654 \u2014 open Monday\u2013Friday 9 AM\u20136 PM, Saturday 10 AM\u20135 PM, and Sunday 12\u20135 PM, with the front desk staffed 24 hours a day.',
+      'To contact Exhibit On Superior, email exhibit@highlandptrs.com, call 312-450-0635, or visit the leasing office at 165 W Superior St, Chicago, IL 60654 \u2014 open Monday\u2013Friday 9 AM\u20136 PM and Saturday 10 AM\u20135 PM (closed Sunday), with the front desk staffed 24 hours a day.',
     faqs: [
       { q: 'What is the email for Exhibit On Superior?', a: 'The contact email is exhibit@highlandptrs.com.' },
       { q: 'What is the phone number for Exhibit On Superior?', a: 'The phone number is 312-450-0635.' },
       { q: 'What is the address?', a: 'The address is 165 W Superior St, Chicago, IL 60654.' },
       {
         q: 'What are the leasing office hours?',
-        a: 'Monday\u2013Friday 9:00 AM\u20136:00 PM, Saturday 10:00 AM\u20135:00 PM, and Sunday 12:00 PM\u20135:00 PM. The front desk is staffed 24 hours a day.',
+        a: 'Monday\u2013Friday 9:00 AM\u20136:00 PM and Saturday 10:00 AM\u20135:00 PM; closed Sunday. The front desk is staffed 24 hours a day.',
       },
       {
         q: 'How do I reach maintenance for an urgent issue?',
@@ -514,7 +514,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Resident resource page for Exhibit On Superior in River North Chicago with online portal access, rent payments, maintenance requests, and contact information.',
     quickAnswer:
-      'Current Exhibit On Superior residents pay rent, submit maintenance requests, and follow building announcements through the online resident portal. For urgent maintenance call (312) 883-5503; for everything else reach the office at exhibit@highlandptrs.com or 312-450-0635 during office hours, seven days a week.',
+      'Current Exhibit On Superior residents pay rent, submit maintenance requests, and follow building announcements through the online resident portal. For urgent maintenance call (312) 883-5503; for everything else reach the office at exhibit@highlandptrs.com or 312-450-0635 during office hours, Monday through Saturday.',
     faqs: [
       {
         q: 'Who should residents contact?',
@@ -570,7 +570,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What are the leasing office hours?',
-        a: 'The leasing office is open Monday\u2013Friday 9:00 AM\u20136:00 PM, Saturday 10:00 AM\u20135:00 PM, and Sunday 12:00 PM\u20135:00 PM. The front desk is staffed 24 hours a day.',
+        a: 'The leasing office is open Monday\u2013Friday 9:00 AM\u20136:00 PM and Saturday 10:00 AM\u20135:00 PM; it is closed on Sunday. The front desk is staffed 24 hours a day.',
       },
     ],
   },
@@ -977,7 +977,6 @@ export const APARTMENT_COMPLEX_NODE = {
       closes: '18:00',
     },
     { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday'], opens: '10:00', closes: '17:00' },
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Sunday'], opens: '12:00', closes: '17:00' },
   ],
   hasMap: 'https://www.google.com/maps?cid=15240815771270963454',
   tourBookingPage: TOUR_URL,

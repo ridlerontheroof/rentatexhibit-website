@@ -5,8 +5,7 @@
   "email": "exhibit@highlandptrs.com",
   "officeHours": [
     "Mon–Fri: 9 AM – 6 PM",
-    "Sat: 10 AM – 5 PM",
-    "Sun: 12 PM – 5 PM"
+    "Sat: 10 AM – 5 PM"
   ],
   "bedroomRange": "Studio, Convertible / Jr. Convertible, 1 Bed, 2 Bed, 3 Bed",
   "bedroomSummary": "Studio, Convertible, 1, 2 & 3 Bedroom Apartments",
@@ -49,6 +48,6 @@
     "Stainless-steel appliances",
     "Wired for 1GB internet"
   ],
-  "factsHash": "ec3103ce816de39750ccdd59e9a9151fa1ccacb2c578e65c1de263bb8a95bafa",
-  "generated": "2026-07-24"
+  "factsHash": "84c6dbd5d408bfce5d8e6b39453fde6bd99c5d8cf95a218c77eebbc6fa886b3e",
+  "generated": "2026-07-26"
 }
