@@ -360,6 +360,26 @@ describe('double-tap zoom', () => {
     expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
   });
 
+  it('swiping works again immediately after double-tapping back out to fit', () => {
+    // Double-tap in to 2x...
+    tap({ x: 100, y: 50 });
+    tap({ x: 100, y: 50 });
+    expect(readTransform().scale).toBe(DOUBLE_TAP_SCALE);
+
+    // ...then a second double-tap resets to fit.
+    tap({ x: 100, y: 50 });
+    tap({ x: 100, y: 50 });
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+
+    // A >50px horizontal swipe navigates to the next plan again.
+    // (Advance past the double-tap window so the swipe isn't a "tap".)
+    vi.setSystemTime(Date.now() + 400);
+    fireTouch('touchstart', [{ x: 200, y: 0 }]);
+    fireTouch('touchend', [], [{ x: 100, y: 0 }]);
+    expect(onNavigate).toHaveBeenCalledTimes(1);
+    expect(onNavigate).toHaveBeenLastCalledWith(1);
+  });
+
   it('two taps slower than 300ms apart do not zoom', () => {
     tap({ x: 100, y: 50 });
     // Move Date.now past the double-tap window without firing the pending
