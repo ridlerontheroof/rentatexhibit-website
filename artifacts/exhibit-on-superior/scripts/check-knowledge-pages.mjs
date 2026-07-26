@@ -12,9 +12,7 @@
 //   default: a deterministic ~10-slug sample (first, last, every Nth);
 //   --all checks every article slug.
 
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { loadKnowledgeArticles } from './lib/knowledge-slugs.mjs';
 
 const args = process.argv.slice(2);
 const checkAll = args.includes('--all');
@@ -25,26 +23,13 @@ const BASE = (args.find((a) => !a.startsWith('--')) || 'https://www.rentatexhibi
 const TITLE_SUFFIX = ' | Exhibit On Superior Chicago'; // knowledgeTitle() in src/data/knowledge.ts
 
 // --- Load slugs + questions from the source of truth (pure-data TS file). ---
-// This script runs plain Node (no TS loader), so parse the two fields we need
-// with a regex. knowledgeArticles.ts is enforced pure data, and every article
-// literal starts with `slug:` immediately followed by `question:`.
-const srcPath = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '..',
-  'src',
-  'data',
-  'knowledgeArticles.ts',
-);
-const src = await readFile(srcPath, 'utf8');
-const articles = [];
-const re = /slug:\s*'([^']+)',\s*\n\s*question:\s*'((?:[^'\\]|\\.)*)',/g;
-for (let m; (m = re.exec(src)); ) {
-  articles.push({ slug: m[1], question: m[2].replace(/\\'/g, "'") });
-}
-if (articles.length < 10) {
-  console.error(
-    `Parsed only ${articles.length} articles from knowledgeArticles.ts — parser out of sync with the data file.`,
-  );
+// Shared parser (scripts/lib/knowledge-slugs.mjs) validates the parsed count
+// exactly against the number of article literals in the data file.
+let articles;
+try {
+  articles = await loadKnowledgeArticles();
+} catch (err) {
+  console.error(String(err.message || err));
   process.exit(1);
 }
 

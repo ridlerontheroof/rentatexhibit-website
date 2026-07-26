@@ -32,24 +32,14 @@ if (UNITS.length === 0) {
 const [SAMPLE_UNIT, ...OTHER_UNITS] = UNITS;
 
 // Knowledge Center article slugs from the source of truth (pure-data TS
-// file). This script runs plain Node (no TS loader), so parse the slugs with
-// the same regex check-knowledge-pages.mjs uses; every article literal starts
-// with `slug:` immediately followed by `question:`.
-const knowledgeSrcPath = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '..',
-  'src',
-  'data',
-  'knowledgeArticles.ts',
-);
-const knowledgeSrc = await readFile(knowledgeSrcPath, 'utf8');
-const KNOWLEDGE_SLUGS = [
-  ...knowledgeSrc.matchAll(/slug:\s*'([^']+)',\s*\n\s*question:/g),
-].map((m) => m[1]);
-if (KNOWLEDGE_SLUGS.length < 10) {
-  console.error(
-    `Parsed only ${KNOWLEDGE_SLUGS.length} knowledge article slugs from knowledgeArticles.ts — parser out of sync with the data file.`,
-  );
+// file), via the shared parser (scripts/lib/knowledge-slugs.mjs) which
+// validates the parsed count exactly against the number of article literals.
+import { loadKnowledgeSlugs } from './lib/knowledge-slugs.mjs';
+let KNOWLEDGE_SLUGS;
+try {
+  KNOWLEDGE_SLUGS = await loadKnowledgeSlugs();
+} catch (err) {
+  console.error(String(err.message || err));
   process.exit(1);
 }
 
