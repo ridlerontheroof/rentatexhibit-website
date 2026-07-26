@@ -33,7 +33,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['what-fees-in-addition-to-rent', 'total-move-in-cost', 'do-studios-exist'],
+    related: ['what-fees-in-addition-to-rent', 'total-move-in-cost', 'move-in-specials'],
     links: [
       { label: 'Available Units', href: '/available-units' },
       { label: 'Fees & Leasing Costs', href: '/fees' },
@@ -180,7 +180,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['what-fees-in-addition-to-rent', 'is-there-a-security-deposit', 'what-are-pet-fees'],
+    related: ['what-fees-in-addition-to-rent', 'is-there-a-security-deposit', 'move-in-specials'],
     links: [
       { label: 'Fees & Leasing Costs', href: '/fees' },
       { label: 'Application Guide', href: '/application-guide' },
@@ -206,7 +206,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['largest-apartment', 'what-is-a-convertible', 'do-studios-exist'],
+    related: ['largest-apartment', 'how-many-apartments', 'do-studios-exist'],
     links: [
       { label: 'Apartment Guide', href: '/apartment-guide' },
       { label: 'Available Units', href: '/available-units' },
@@ -424,7 +424,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['is-there-a-pool', 'fitness-center', 'work-from-home-spaces'],
+    related: ['is-there-a-pool', 'fitness-center', 'work-from-home-spaces', 'smoking-policy'],
     links: [
       { label: 'Amenities', href: '/amenities' },
       { label: 'Photo Gallery', href: '/photo-gallery' },
@@ -1078,7 +1078,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['virtual-tours', 'how-do-i-apply', 'leasing-office-hours'],
+    related: ['virtual-tours', 'reviews-sources', 'leasing-office-hours'],
     links: [
       { label: 'Schedule a Tour', href: '/schedule-a-tour' },
       { label: 'Available Units', href: '/available-units' },
@@ -1099,7 +1099,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['schedule-a-tour', 'how-do-i-apply', 'views-and-windows'],
+    related: ['schedule-a-tour', 'reviews-sources', 'views-and-windows'],
     links: [
       { label: 'Virtual Tour', href: '/virtual-tour' },
       { label: 'Photo Gallery', href: '/photo-gallery' },
@@ -1376,7 +1376,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['leasing-office-hours', 'amenity-hours', 'who-manages-exhibit'],
+    related: ['leasing-office-hours', 'smoking-policy', 'who-manages-exhibit'],
     links: [
       { label: 'Amenities', href: '/amenities' },
       { label: 'Contact Us', href: '/contact-us' },
@@ -1437,7 +1437,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['what-neighborhood', 'cta-proximity', 'who-manages-exhibit'],
+    related: ['what-neighborhood', 'cta-proximity', 'how-many-apartments'],
     links: [
       { label: 'Map + Directions', href: '/map-directions' },
       { label: 'Contact Us', href: '/contact-us' },
