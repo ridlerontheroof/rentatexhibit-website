@@ -48,6 +48,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   cleanup();
   vi.unstubAllGlobals();
   fetchMock.mockReset();
@@ -112,8 +113,9 @@ describe('ContactUs — thank-you and error screens are announced and focused', 
     renderWithClient(<ContactUs />);
     await fillContactForm(user);
 
-    const banner = await screen.findByText(/we've received your message/i);
-    expect(banner.getAttribute('role')).toBe('status');
+    const text = await screen.findByText(/we've received your message/i);
+    const banner = text.closest('[role="status"]') as HTMLElement;
+    expect(banner).toBeTruthy();
     expect(banner.getAttribute('aria-live')).toBe('polite');
     await waitFor(() => expect(document.activeElement).toBe(banner));
   });
@@ -127,5 +129,48 @@ describe('ContactUs — thank-you and error screens are announced and focused', 
     const banner = await screen.findByText(/couldn't be sent/i);
     expect(banner.getAttribute('role')).toBe('alert');
     await waitFor(() => expect(document.activeElement).toBe(banner));
+  });
+
+  // WCAG 2.2.1 (Timing Adjustable): the banner must not vanish on a timer.
+  it('keeps the thank-you banner up past the old 5s auto-dismiss window', async () => {
+    // shouldAdvanceTime keeps real time ticking so testing-library's waitFor
+    // (used by findByText) doesn't deadlock on the faked clock.
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      routeLeads(201);
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      renderWithClient(<ContactUs />);
+      await fillContactForm(user);
+
+      await screen.findByText(/we've received your message/i);
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(screen.getByText(/we've received your message/i)).toBeTruthy();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('dismisses the thank-you banner via its Dismiss button', async () => {
+    routeLeads(201);
+    const user = userEvent.setup();
+    renderWithClient(<ContactUs />);
+    await fillContactForm(user);
+
+    await screen.findByText(/we've received your message/i);
+    await user.click(screen.getByRole('button', { name: /dismiss message/i }));
+    expect(screen.queryByText(/we've received your message/i)).toBeNull();
+  });
+
+  it('clears the thank-you banner when the visitor starts a new message', async () => {
+    routeLeads(201);
+    const user = userEvent.setup();
+    renderWithClient(<ContactUs />);
+    await fillContactForm(user);
+
+    await screen.findByText(/we've received your message/i);
+    await user.type(screen.getByLabelText(/first name/i), 'J');
+    await waitFor(() =>
+      expect(screen.queryByText(/we've received your message/i)).toBeNull(),
+    );
   });
 });

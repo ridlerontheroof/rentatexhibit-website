@@ -75,7 +75,6 @@ export function ContactUs() {
           trackLead('contact');
           setSubmitted(true);
           reset();
-          setTimeout(() => setSubmitted(false), 5000);
         },
       }
     );
@@ -178,11 +177,19 @@ export function ContactUs() {
                   <div
                     ref={thankYouRef}
                     tabIndex={-1}
-                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary focus:outline-none"
+                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary focus:outline-none flex items-start justify-between gap-4"
                     role="status"
                     aria-live="polite"
                   >
-                    Thank you! We've received your message and will respond shortly.
+                    <span>Thank you! We've received your message and will respond shortly.</span>
+                    <button
+                      type="button"
+                      onClick={() => setSubmitted(false)}
+                      aria-label="Dismiss message"
+                      className="text-primary hover:underline text-sm uppercase tracking-wider flex-shrink-0"
+                    >
+                      Dismiss
+                    </button>
                   </div>
                 )}
 
@@ -217,7 +224,17 @@ export function ContactUs() {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  // The thank-you banner stays until the visitor dismisses it or
+                  // starts a new message (WCAG 2.2.1 Timing Adjustable — no
+                  // disappearing-on-a-timer).
+                  onChange={() => {
+                    if (submitted) setSubmitted(false);
+                  }}
+                  className="space-y-6"
+                  noValidate
+                >
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">
