@@ -23,6 +23,12 @@
 //   readers. Exceptions: links with aria-hidden="true" (removed from the
 //   accessibility tree entirely — must be a decorative duplicate of an
 //   adjacent named link) are skipped. No other exceptions exist today.
+// - <button> elements get the same empty-name audit: icon-only buttons
+//   (carousel arrows, close X, menu toggle) with no text, aria-label, or img
+//   alt announce as just "button". Exceptions: aria-hidden="true" buttons
+//   (removed from the a11y tree), and buttons carrying aria-labelledby
+//   (named by another element — we can't resolve the reference with this
+//   regex scan, so they're trusted). No other exceptions exist today.
 //
 // Run after a build: node scripts/check-link-names.mjs   (wired into
 // check:prepublish so a publish can't ship newly ambiguous links).
@@ -64,6 +70,7 @@ function decode(s) {
 
 const failures = [];
 const unnamed = [];
+const unnamedButtons = [];
 const pages = walk(dist);
 
 for (const file of pages) {
@@ -95,6 +102,24 @@ for (const file of pages) {
     }
     if (!names.has(name)) names.set(name, new Set());
     names.get(name).add(decode(href));
+  }
+  for (const m of html.matchAll(/<button\b([^>]*)>(.*?)<\/button>/gs)) {
+    const attrs = m[1];
+    const inner = m[2];
+    const label = attrs.match(/aria-label="([^"]*)"/);
+    let name = decode(label ? label[1] : inner).toLowerCase();
+    if (!name) {
+      // accname fallback: alt text of nested images.
+      name = [...inner.matchAll(/<img\b[^>]*\balt="([^"]*)"/g)]
+        .map((a) => decode(a[1]))
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+    }
+    if (!name && !/aria-hidden="true"/.test(attrs) && !/aria-labelledby="/.test(attrs)) {
+      // Icon-only button with no spoken name — announces as just "button".
+      unnamedButtons.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
+    }
   }
   for (const [name, hrefs] of names) {
     if (hrefs.size > 1) {
@@ -128,8 +153,17 @@ if (unnamed.length > 0) {
   for (const u of unnamed) console.error(`  ${u.page}  <a href="${u.href}"> (unnamed)`);
 }
 
-if (failures.length > 0 || unnamed.length > 0) process.exit(1);
+if (unnamedButtons.length > 0) {
+  console.error(
+    `check-link-names: ${unnamedButtons.length} button(s) with NO accessible name — ` +
+      `icon-only buttons with no text, aria-label, or img alt announce as just "button".\n` +
+      `Fix: add a descriptive aria-label (or aria-hidden="true" if decorative).\n`,
+  );
+  for (const u of unnamedButtons) console.error(`  ${u.page}  ${u.snippet}`);
+}
+
+if (failures.length > 0 || unnamed.length > 0 || unnamedButtons.length > 0) process.exit(1);
 
 console.log(
-  `check-link-names: OK — ${pages.length} prerendered pages, no ambiguous or unnamed links.`,
+  `check-link-names: OK — ${pages.length} prerendered pages, no ambiguous or unnamed links or buttons.`,
 );
