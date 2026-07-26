@@ -157,6 +157,44 @@ describe("checkApexRedirectOnce", () => {
     expect(logger.error).toHaveBeenCalled();
   });
 
+  it("emits an info heartbeat on the first check, then at most once per UTC day", async () => {
+    const ok = fetchReturning(301, "http://www.rentatexhibit.com/fees");
+    const heartbeats = () =>
+      vi
+        .mocked(logger.info)
+        .mock.calls.filter(([, msg]) => typeof msg === "string" && msg.includes("heartbeat"));
+
+    await checkApexRedirectOnce(logger, DAY1, ok);
+    expect(heartbeats()).toHaveLength(1);
+    // Later checks the same UTC day stay silent.
+    await checkApexRedirectOnce(logger, DAY1_LATER, ok);
+    expect(heartbeats()).toHaveLength(1);
+    // The first check of the next UTC day emits the summary of the day's checks.
+    await checkApexRedirectOnce(logger, DAY2, ok);
+    const beats = heartbeats();
+    expect(beats).toHaveLength(2);
+    expect(beats[1]?.[0]).toMatchObject({ checks: 2, healthy: 2 });
+  });
+
+  it("counts unreachable and unhealthy checks in the heartbeat", async () => {
+    const failing = vi.fn(async () => {
+      throw new Error("network down");
+    }) as unknown as typeof fetch;
+    await checkApexRedirectOnce(logger, DAY1, failing); // first check -> heartbeat
+    await checkApexRedirectOnce(logger, DAY1_LATER, fetchReturning(200, null));
+    await checkApexRedirectOnce(logger, DAY2, fetchReturning(301, "https://www.rentatexhibit.com/fees"));
+    const beats = vi
+      .mocked(logger.info)
+      .mock.calls.filter(([, msg]) => typeof msg === "string" && msg.includes("heartbeat"));
+    expect(beats).toHaveLength(2);
+    expect(beats[1]?.[0]).toMatchObject({
+      checks: 2,
+      healthy: 1,
+      unreachable: 0,
+      unhealthy: 1,
+    });
+  });
+
   it("never throws when the alert send fails", async () => {
     sendAlert.mockRejectedValueOnce(new Error("smtp down"));
     await expect(

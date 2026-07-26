@@ -35,6 +35,54 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /** UTC day ("YYYY-MM-DD") the alert was last sent — in-memory fallback only. */
 let alertedOnDay: string | null = null;
 
+/**
+ * Daily liveness heartbeat. Healthy checks log at debug level, which
+ * production (info-level) suppresses — so without this, a silently-dead
+ * interval is indistinguishable from a healthy one. Once per UTC day (after
+ * the first check of a new day) we emit a single info-level line summarizing
+ * the checks run since the previous heartbeat, proving the watchdog is alive.
+ */
+let heartbeatDay: string | null = null;
+let checksSinceHeartbeat = 0;
+let healthySinceHeartbeat = 0;
+let unreachableSinceHeartbeat = 0;
+let unhealthySinceHeartbeat = 0;
+
+function recordAndMaybeHeartbeat(
+  log: Logger,
+  now: number,
+  outcome: "healthy" | "unreachable" | "unhealthy",
+): void {
+  checksSinceHeartbeat += 1;
+  if (outcome === "healthy") healthySinceHeartbeat += 1;
+  else if (outcome === "unreachable") unreachableSinceHeartbeat += 1;
+  else unhealthySinceHeartbeat += 1;
+
+  const day = utcDay(now);
+  if (heartbeatDay === null) {
+    // First check of this process: emit immediately so a fresh deploy's logs
+    // show liveness right away, then settle into once per UTC day.
+    heartbeatDay = day;
+  } else if (heartbeatDay === day) {
+    return;
+  }
+  heartbeatDay = day;
+  log.info(
+    {
+      checks: checksSinceHeartbeat,
+      healthy: healthySinceHeartbeat,
+      unreachable: unreachableSinceHeartbeat,
+      unhealthy: unhealthySinceHeartbeat,
+      intervalHours: CHECK_INTERVAL_MS / 3_600_000,
+    },
+    "Apex redirect watchdog heartbeat — still running its checks",
+  );
+  checksSinceHeartbeat = 0;
+  healthySinceHeartbeat = 0;
+  unreachableSinceHeartbeat = 0;
+  unhealthySinceHeartbeat = 0;
+}
+
 function utcDay(now: number): string {
   return new Date(now).toISOString().slice(0, 10);
 }
@@ -140,6 +188,7 @@ export async function checkApexRedirectOnce(
     // log it but do not alert — a mis-provisioned apex *serves* the site,
     // it doesn't go dark, so alert-worthy states always produce a response.
     log.warn({ err }, "Apex redirect check could not reach the apex domain");
+    recordAndMaybeHeartbeat(log, now, "unreachable");
     return;
   }
 
@@ -148,8 +197,10 @@ export async function checkApexRedirectOnce(
       { status: result.status, location: result.location },
       "Apex redirect check passed",
     );
+    recordAndMaybeHeartbeat(log, now, "healthy");
     return;
   }
+  recordAndMaybeHeartbeat(log, now, "unhealthy");
 
   log.error(
     { status: result.status, location: result.location, problem: result.problem },
@@ -202,4 +253,9 @@ export function startApexRedirectCheck(log: Logger = defaultLogger): void {
 /** Test-only: clear the per-process fallback dedupe state. */
 export function __resetApexRedirectCheckForTests(): void {
   alertedOnDay = null;
+  heartbeatDay = null;
+  checksSinceHeartbeat = 0;
+  healthySinceHeartbeat = 0;
+  unreachableSinceHeartbeat = 0;
+  unhealthySinceHeartbeat = 0;
 }
