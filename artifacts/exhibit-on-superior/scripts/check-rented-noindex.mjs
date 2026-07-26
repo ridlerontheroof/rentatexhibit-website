@@ -25,10 +25,22 @@
 //          feed's unit set — no rented stragglers, no missing units
 //        - exactly one robots meta, and it does NOT say noindex
 //
+// Unit selection (step 2): the riskiest real-world page is a unit that WAS
+// available at the last publish — it has its own prerendered HTML (stale
+// title, index-follow robots, Offer JSON-LD) and an explicit rewrite pair —
+// and has since been rented. The script cross-references the per-unit URLs
+// actually published (from the live sitemap.xml, which prerender.mjs
+// regenerates from UNIT_PATHS every build, confirmed by probing the raw
+// prerendered HTML for a unit-specific <title>) against the live feed, and
+// prefers such a published-but-now-rented unit when one exists. Only when
+// every published unit page is still available does it fall back to a
+// synthetic absent unit number (which exercises the SPA fallback instead).
+//
 // Usage: node scripts/check-rented-noindex.mjs [baseUrl] [--unit NNNN]
 //   default baseUrl: https://www.rentatexhibit.com
-//   --unit: force a specific absent unit number (default: derived from the
-//           live feed — a well-formed unit number not currently listed).
+//   --unit: force a specific absent unit number (default: prefer a
+//           published-but-now-rented unit page; otherwise derive a synthetic
+//           absent number from the live feed).
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -207,6 +219,61 @@ const isType = (node, type) => {
   return Array.isArray(t) ? t.includes(type) : t === type;
 };
 
+/**
+ * Find a unit that HAS a published prerendered page but is no longer in the
+ * live feed — the stale-head case main.tsx must fix at hydration.
+ *
+ * Published unit pages are read from the live sitemap.xml (prerender.mjs
+ * regenerates it from UNIT_PATHS on every publish, so it exactly mirrors the
+ * per-unit pages that shipped). Each candidate is then confirmed by fetching
+ * its RAW HTML (no JS) and requiring a unit-specific prerendered <title> —
+ * proving it's a real prerendered page with a stale head, not the SPA
+ * fallback a synthetic unit number would hit.
+ *
+ * Returns { unit, staleTitle } or null (no such unit / sitemap unreachable).
+ */
+async function findPublishedRentedUnit(liveUnits) {
+  let xml;
+  try {
+    const res = await fetch(`${BASE}/sitemap.xml`, { headers: { 'user-agent': 'rented-noindex-check' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    xml = await res.text();
+  } catch (err) {
+    console.warn(`warn  could not read ${BASE}/sitemap.xml (${err.message}) — falling back to a synthetic absent unit.`);
+    return null;
+  }
+  const published = new Set();
+  for (const m of xml.matchAll(/<loc>[^<]*\/available-units\/(\d{4})\s*<\/loc>/g)) {
+    published.add(m[1]);
+  }
+  if (published.size === 0) {
+    console.warn('warn  sitemap.xml lists no per-unit pages — falling back to a synthetic absent unit.');
+    return null;
+  }
+  const rented = [...published].filter((u) => !liveUnits.has(u)).sort();
+  console.log(
+    `Sitemap: ${published.size} published unit page(s), ${rented.length} no longer in the live feed.`,
+  );
+  for (const unit of rented) {
+    // Confirm the RAW prerendered HTML is unit-specific (stale head present).
+    try {
+      const res = await fetch(`${BASE}/available-units/${unit}`, {
+        headers: { 'user-agent': 'rented-noindex-check' },
+      });
+      if (!res.ok) continue;
+      const html = await res.text();
+      const title = /<title>([^<]*)<\/title>/.exec(html)?.[1] ?? '';
+      if (title.includes(unit)) return { unit, staleTitle: title };
+      console.warn(
+        `warn  /available-units/${unit} is in the sitemap but its raw <title> ("${title}") is not unit-specific — skipping as a published-page candidate.`,
+      );
+    } catch {
+      /* transient fetch failure — try the next candidate */
+    }
+  }
+  return null;
+}
+
 async function main() {
   // --- 1. Live availability feed (source of truth). -------------------------
   const feedUrl = `${BASE}/api/availability`;
@@ -219,15 +286,31 @@ async function main() {
   }
   console.log(`Live feed: ${liveUnits.size} available units (updated ${feed.updatedAt ?? 'unknown'}).`);
 
-  // --- 2. Pick a known-absent unit URL. --------------------------------------
-  // Any well-formed unit number not in the feed exercises the sold-out branch.
-  // Derive one from a live unit's line on a different floor (realistic URL a
-  // stale bookmark/search result would carry), falling back to a fixed number.
+  // --- 2. Pick the rented-unit URL under test. --------------------------------
+  // Preference order:
+  //   a. --unit NNNN (forced, must not be currently available)
+  //   b. a PUBLISHED-but-now-rented unit page (real prerendered stale head —
+  //      the exact case main.tsx's pre-hydration stripping exists for)
+  //   c. a synthetic absent unit number (SPA fallback), derived from a live
+  //      unit's line on a different floor, falling back to a fixed number.
   let absentUnit = FORCED_UNIT;
+  let unitKind = 'forced (--unit)';
   if (absentUnit && liveUnits.has(absentUnit)) {
     throw new Error(`--unit ${absentUnit} is currently AVAILABLE per the live feed — pick a rented/absent unit.`);
   }
   if (!absentUnit) {
+    const publishedRented = await findPublishedRentedUnit(liveUnits);
+    if (publishedRented) {
+      absentUnit = publishedRented.unit;
+      unitKind = 'published prerendered page, now rented';
+      console.log(
+        `Published-but-rented unit found: ${absentUnit} — its raw prerendered head is stale ` +
+          `(title "${publishedRented.staleTitle}"), so hydration MUST override it.`,
+      );
+    }
+  }
+  if (!absentUnit) {
+    unitKind = 'synthetic absent unit (SPA fallback; every published unit page is still available)';
     outer: for (const unit of liveUnits) {
       const line = unit.slice(2);
       for (let floor = 2; floor <= 25; floor++) {
@@ -240,7 +323,7 @@ async function main() {
     }
     absentUnit ??= '9901';
   }
-  console.log(`Absent-unit page under test: /available-units/${absentUnit}`);
+  console.log(`Rented/absent-unit page under test: /available-units/${absentUnit} [${unitKind}]`);
 
   // --- 3. Headless Chromium. -------------------------------------------------
   const chrome = findChromium();
