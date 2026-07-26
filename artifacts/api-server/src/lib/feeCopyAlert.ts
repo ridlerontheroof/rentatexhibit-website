@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import { logger } from "./logger";
+import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendFeeCopyAlert } from "./email";
 
@@ -32,19 +33,20 @@ import { sendFeeCopyAlert } from "./email";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
- * Daily liveness heartbeat, mirroring the apex-redirect watchdog's
- * recordAndMaybeHeartbeat. Clean fee-copy checks are completely silent, so in
- * production (info-level) logs a silently-dead availability refresh — the
- * loop that actually runs the sanitizer — looks identical to weeks of healthy
- * checks. Once per UTC day (after the first check of a new day) we emit a
- * single info-level line summarizing the checks run since the previous
- * heartbeat, proving the fee-copy watchdog is still checking listings.
+ * Daily liveness heartbeat (shared implementation — see dailyHeartbeat.ts),
+ * mirroring the apex-redirect watchdog's. Clean fee-copy checks are
+ * completely silent, so in production (info-level) logs a silently-dead
+ * availability refresh — the loop that actually runs the sanitizer — looks
+ * identical to weeks of healthy checks. Once per UTC day (after the first
+ * check of a new day) we emit a single info-level line summarizing the
+ * checks run since the previous heartbeat, proving the fee-copy watchdog is
+ * still checking listings.
  */
-let heartbeatDay: string | null = null;
-let checksSinceHeartbeat = 0;
-let cleanSinceHeartbeat = 0;
-let strippedSinceHeartbeat = 0;
-let failedSinceHeartbeat = 0;
+const heartbeat = createDailyHeartbeat({
+  outcomes: ["clean", "stripped", "failed"] as const,
+  message:
+    "Fee-copy watchdog heartbeat — still checking listing copy against the fee policy",
+});
 
 /**
  * Record one fee-copy check of a unit's listing copy and, at most once per
@@ -58,33 +60,7 @@ export function recordFeeCopyCheck(
   outcome: "clean" | "stripped" | "failed",
   now: number = Date.now(),
 ): void {
-  checksSinceHeartbeat += 1;
-  if (outcome === "clean") cleanSinceHeartbeat += 1;
-  else if (outcome === "stripped") strippedSinceHeartbeat += 1;
-  else failedSinceHeartbeat += 1;
-
-  const day = utcDay(now);
-  if (heartbeatDay === null) {
-    // First check of this process: emit immediately so a fresh deploy's logs
-    // show liveness right away, then settle into once per UTC day.
-    heartbeatDay = day;
-  } else if (heartbeatDay === day) {
-    return;
-  }
-  heartbeatDay = day;
-  logger.info(
-    {
-      checks: checksSinceHeartbeat,
-      clean: cleanSinceHeartbeat,
-      stripped: strippedSinceHeartbeat,
-      failed: failedSinceHeartbeat,
-    },
-    "Fee-copy watchdog heartbeat — still checking listing copy against the fee policy",
-  );
-  checksSinceHeartbeat = 0;
-  cleanSinceHeartbeat = 0;
-  strippedSinceHeartbeat = 0;
-  failedSinceHeartbeat = 0;
+  heartbeat.record(logger, now, outcome);
 }
 
 /** hash(unit + removed text) → UTC day ("YYYY-MM-DD") it was last notified.
@@ -200,9 +176,5 @@ export async function reportStrippedFeeCopy(
 /** Test-only: clear the per-process fallback dedupe state. */
 export function __resetFeeCopyAlertForTests(): void {
   notifiedOn.clear();
-  heartbeatDay = null;
-  checksSinceHeartbeat = 0;
-  cleanSinceHeartbeat = 0;
-  strippedSinceHeartbeat = 0;
-  failedSinceHeartbeat = 0;
+  heartbeat.reset();
 }

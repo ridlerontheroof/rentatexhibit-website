@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendApexRedirectAlert } from "./email";
 
@@ -36,51 +37,25 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 let alertedOnDay: string | null = null;
 
 /**
- * Daily liveness heartbeat. Healthy checks log at debug level, which
- * production (info-level) suppresses — so without this, a silently-dead
- * interval is indistinguishable from a healthy one. Once per UTC day (after
- * the first check of a new day) we emit a single info-level line summarizing
- * the checks run since the previous heartbeat, proving the watchdog is alive.
+ * Daily liveness heartbeat (shared implementation — see dailyHeartbeat.ts).
+ * Healthy checks log at debug level, which production (info-level)
+ * suppresses — so without this, a silently-dead interval is
+ * indistinguishable from a healthy one. Once per UTC day (after the first
+ * check of a new day) we emit a single info-level line summarizing the
+ * checks run since the previous heartbeat, proving the watchdog is alive.
  */
-let heartbeatDay: string | null = null;
-let checksSinceHeartbeat = 0;
-let healthySinceHeartbeat = 0;
-let unreachableSinceHeartbeat = 0;
-let unhealthySinceHeartbeat = 0;
+const heartbeat = createDailyHeartbeat({
+  outcomes: ["healthy", "unreachable", "unhealthy"] as const,
+  message: "Apex redirect watchdog heartbeat — still running its checks",
+  extraFields: { intervalHours: CHECK_INTERVAL_MS / 3_600_000 },
+});
 
 function recordAndMaybeHeartbeat(
   log: Logger,
   now: number,
   outcome: "healthy" | "unreachable" | "unhealthy",
 ): void {
-  checksSinceHeartbeat += 1;
-  if (outcome === "healthy") healthySinceHeartbeat += 1;
-  else if (outcome === "unreachable") unreachableSinceHeartbeat += 1;
-  else unhealthySinceHeartbeat += 1;
-
-  const day = utcDay(now);
-  if (heartbeatDay === null) {
-    // First check of this process: emit immediately so a fresh deploy's logs
-    // show liveness right away, then settle into once per UTC day.
-    heartbeatDay = day;
-  } else if (heartbeatDay === day) {
-    return;
-  }
-  heartbeatDay = day;
-  log.info(
-    {
-      checks: checksSinceHeartbeat,
-      healthy: healthySinceHeartbeat,
-      unreachable: unreachableSinceHeartbeat,
-      unhealthy: unhealthySinceHeartbeat,
-      intervalHours: CHECK_INTERVAL_MS / 3_600_000,
-    },
-    "Apex redirect watchdog heartbeat — still running its checks",
-  );
-  checksSinceHeartbeat = 0;
-  healthySinceHeartbeat = 0;
-  unreachableSinceHeartbeat = 0;
-  unhealthySinceHeartbeat = 0;
+  heartbeat.record(log, now, outcome);
 }
 
 function utcDay(now: number): string {
@@ -253,9 +228,5 @@ export function startApexRedirectCheck(log: Logger = defaultLogger): void {
 /** Test-only: clear the per-process fallback dedupe state. */
 export function __resetApexRedirectCheckForTests(): void {
   alertedOnDay = null;
-  heartbeatDay = null;
-  checksSinceHeartbeat = 0;
-  healthySinceHeartbeat = 0;
-  unreachableSinceHeartbeat = 0;
-  unhealthySinceHeartbeat = 0;
+  heartbeat.reset();
 }

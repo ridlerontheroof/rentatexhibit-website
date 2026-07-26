@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendKnowledgeCheckAlert } from "./email";
 
@@ -49,52 +50,26 @@ const UNREACHABLE_ESCALATION_RUNS = 4;
 let alertedOnDay: string | null = null;
 
 /**
- * Daily liveness heartbeat, mirroring the apex-redirect watchdog's
- * recordAndMaybeHeartbeat. Healthy runs log at debug level, which production
- * (info-level) suppresses — so without this, a silently-dead interval is
- * indistinguishable from weeks of healthy checks. Once per UTC day (after the
- * first run of a new day) we emit a single info-level line summarizing the
- * runs since the previous heartbeat, proving the watchdog is still checking.
+ * Daily liveness heartbeat (shared implementation — see dailyHeartbeat.ts),
+ * mirroring the apex-redirect watchdog's. Healthy runs log at debug level,
+ * which production (info-level) suppresses — so without this, a
+ * silently-dead interval is indistinguishable from weeks of healthy checks.
+ * Once per UTC day (after the first run of a new day) we emit a single
+ * info-level line summarizing the runs since the previous heartbeat,
+ * proving the watchdog is still checking.
  */
-let heartbeatDay: string | null = null;
-let runsSinceHeartbeat = 0;
-let healthySinceHeartbeat = 0;
-let unreachableSinceHeartbeat = 0;
-let unhealthySinceHeartbeat = 0;
+const heartbeat = createDailyHeartbeat({
+  outcomes: ["healthy", "unreachable", "unhealthy"] as const,
+  message: "Knowledge-page watchdog heartbeat — still checking prerendered pages",
+  extraFields: { intervalHours: CHECK_INTERVAL_MS / 3_600_000 },
+});
 
 function recordAndMaybeHeartbeat(
   log: Logger,
   now: number,
   outcome: "healthy" | "unreachable" | "unhealthy",
 ): void {
-  runsSinceHeartbeat += 1;
-  if (outcome === "healthy") healthySinceHeartbeat += 1;
-  else if (outcome === "unreachable") unreachableSinceHeartbeat += 1;
-  else unhealthySinceHeartbeat += 1;
-
-  const day = utcDay(now);
-  if (heartbeatDay === null) {
-    // First run of this process: emit immediately so a fresh deploy's logs
-    // show liveness right away, then settle into once per UTC day.
-    heartbeatDay = day;
-  } else if (heartbeatDay === day) {
-    return;
-  }
-  heartbeatDay = day;
-  log.info(
-    {
-      checks: runsSinceHeartbeat,
-      healthy: healthySinceHeartbeat,
-      unreachable: unreachableSinceHeartbeat,
-      unhealthy: unhealthySinceHeartbeat,
-      intervalHours: CHECK_INTERVAL_MS / 3_600_000,
-    },
-    "Knowledge-page watchdog heartbeat — still checking prerendered pages",
-  );
-  runsSinceHeartbeat = 0;
-  healthySinceHeartbeat = 0;
-  unreachableSinceHeartbeat = 0;
-  unhealthySinceHeartbeat = 0;
+  heartbeat.record(log, now, outcome);
 }
 
 /**
@@ -457,9 +432,5 @@ export function startKnowledgePageCheck(log: Logger = defaultLogger): void {
 export function __resetKnowledgeCheckForTests(): void {
   alertedOnDay = null;
   consecutiveUnreachableRuns = 0;
-  heartbeatDay = null;
-  runsSinceHeartbeat = 0;
-  healthySinceHeartbeat = 0;
-  unreachableSinceHeartbeat = 0;
-  unhealthySinceHeartbeat = 0;
+  heartbeat.reset();
 }
