@@ -224,6 +224,7 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     ['/apartments/il/chicago/reviews', '/reviews'],
     ['/apartments/il/chicago/magellan-rewards', '/'],
     ['/floor-plans', '/available-units'],
+    ['/availableunits', '/available-units'],
     ['/floorplans.aspx', '/available-units'],
     ['/availableunits.aspx', '/available-units'],
     ['/amenities.aspx', '/amenities'],
