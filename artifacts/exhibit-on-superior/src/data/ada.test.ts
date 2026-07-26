@@ -136,6 +136,25 @@ describe('ADA counts in published copy', () => {
   });
 });
 
+// --- the "more than 20% of the homes" claim stays true --------------------------
+
+describe('ADA "more than 20% of the homes" claim', () => {
+  it('designated units exceed 20% of the total homes in the building', () => {
+    // Total homes: every distinct apartment number (FFUU) across all plans.
+    // Distinct because near-duplicate plan sheets can cover overlapping floors
+    // for the same unit line.
+    const allHomes = new Set(planGroups.flatMap((g) => unitNumbersForGroup(g)));
+    const totalHomes = allHomes.size;
+    expect(totalHomes).toBeGreaterThan(0);
+    // Sanity: registry units are a subset of homes, so the ratio is meaningful.
+    for (const n of Object.keys(ADA_UNITS)) expect(allHomes.has(n)).toBe(true);
+    // The published prose says "more than 20% of the homes" — if the registry
+    // shrinks or the building's unit count grows, this must fail CI so the
+    // static copy gets corrected.
+    expect(ADA_COUNTS.total / totalHomes).toBeGreaterThan(0.2);
+  });
+});
+
 // --- filter + search wiring --------------------------------------------------
 
 describe('ADA plan filtering', () => {
