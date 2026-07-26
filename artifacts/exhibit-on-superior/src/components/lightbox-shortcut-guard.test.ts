@@ -111,6 +111,89 @@ describe('lightbox keyboard-shortcut ownership guard', () => {
     });
   }
 
+  // -------------------------------------------------------------------------
+  // Visible side of the same contract: the zoom / "?" button cluster and the
+  // shortcut legend must come from the shared LightboxShortcutControls
+  // component (src/components/LightboxShortcutControls.tsx). A viewer that
+  // re-implements its own legend markup would keep passing every behavioral
+  // test while its on-screen legend silently drifts from what the keys do.
+  // -------------------------------------------------------------------------
+
+  const CONTROLS_HINT =
+    'The zoom / "?" buttons and the shortcut legend must be rendered via the ' +
+    'shared LightboxShortcutControls component ' +
+    '(src/components/LightboxShortcutControls.tsx) — pass viewer-specific ' +
+    'wording through its navDescription / escDescription props instead of ' +
+    'duplicating the markup.';
+
+  // Markup that only the shared component should contain: its accessible
+  // names and legend row labels. Any of these appearing in a viewer source
+  // means the viewer hand-rolled (part of) the legend / button cluster.
+  const LEGEND_MARKUP_PATTERNS: Array<[string, RegExp]> = [
+    ['the "?" toggle\'s accessible name', /['"`](?:Show|Hide) keyboard shortcuts['"`]/],
+    ['the legend dismiss button\'s accessible name', /['"`]Dismiss keyboard shortcuts['"`]/],
+    ['the zoom button\'s accessible name', /['"`]Zoom (?:in|out)['"`]/],
+    ['the legend region\'s accessible name', /aria-label\s*=\s*['"`]Keyboard shortcuts['"`]/],
+    ['a legend row label', /['"`](?:Toggle this panel|Reset zoom|Pan while zoomed|Zoom in \/ out)['"`]/],
+  ];
+
+  for (const viewer of VIEWERS) {
+    describe(`${viewer.name} — shared legend markup`, () => {
+      const raw = readViewerSource(viewer.file);
+      const code = stripComments(raw);
+
+      it('imports LightboxShortcutControls from the shared component', () => {
+        const importsControls =
+          /import\s*\{[^}]*\bLightboxShortcutControls\b[^}]*\}\s*from\s*['"][^'"]*LightboxShortcutControls['"]/.test(
+            code,
+          );
+        expect(
+          importsControls,
+          `${viewer.name} no longer imports LightboxShortcutControls. ${CONTROLS_HINT}`,
+        ).toBe(true);
+      });
+
+      it('renders <LightboxShortcutControls> in its JSX', () => {
+        const rendersControls = /<LightboxShortcutControls\b/.test(code);
+        expect(
+          rendersControls,
+          `${viewer.name} imports LightboxShortcutControls but never renders ` +
+            `it, so the viewer has no zoom / "?" cluster or shortcut legend. ` +
+            CONTROLS_HINT,
+        ).toBe(true);
+      });
+
+      it('does not hand-roll its own legend / zoom-button markup', () => {
+        for (const [what, pattern] of LEGEND_MARKUP_PATTERNS) {
+          const match = code.match(pattern);
+          expect(
+            match,
+            `${viewer.name} contains ${what} (${match ? `matched ${JSON.stringify(match[0])}` : ''}) ` +
+              `in its own markup instead of leaving it to the shared ` +
+              `component — the legend can now drift from what the keys do. ` +
+              CONTROLS_HINT,
+          ).toBeNull();
+        }
+      });
+    });
+  }
+
+  it('the shared component itself still renders the legend and zoom button', () => {
+    // Sanity check on the guard: if LightboxShortcutControls is gutted, the
+    // viewer checks above would be guarding an empty contract.
+    const controls = stripComments(
+      readViewerSource('../components/LightboxShortcutControls.tsx'),
+    );
+    for (const [what, pattern] of LEGEND_MARKUP_PATTERNS) {
+      expect(
+        pattern.test(controls),
+        `LightboxShortcutControls.tsx no longer contains ${what} — the shared ` +
+          'legend contract this guard protects has changed; update the guard ' +
+          'patterns alongside the component.',
+      ).toBe(true);
+    }
+  });
+
   it('the shared hook itself still owns the window keydown listener', () => {
     // Sanity check on the guard: if the hook is ever rewritten to stop
     // attaching a window keydown listener, the viewer checks above would be
