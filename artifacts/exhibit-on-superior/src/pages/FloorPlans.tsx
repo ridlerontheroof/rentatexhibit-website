@@ -202,8 +202,15 @@ export function FloorPlans() {
   // page, so re-read the shareable state whenever the browser fires popstate.
   // (Normal filter changes go through updateFilters → writeFiltersToUrl and
   // never fire popstate, so this only runs on real history navigation.)
+  // The `?plan=` deep-link is part of that state too: navigating history to a
+  // URL with `plan` reopens that plan's lightbox, navigating away closes it.
   useEffect(() => {
-    const onPopState = () => setFilters(readFiltersFromUrl());
+    const onPopState = () => {
+      setFilters(readFiltersFromUrl());
+      const id = resolveDeepLink(planGroups, readPlanFromUrl());
+      setOpenId(id);
+      if (id) setVariantIndex(0);
+    };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
