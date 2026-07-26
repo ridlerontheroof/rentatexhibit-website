@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  fixAmenitySpelling,
   isExhibitRow,
   isSafeNextPageUrl,
   normalizeRow,
@@ -196,6 +197,21 @@ describe("parseDetailSections", () => {
       </ul>`;
     expect(parseDetailSections(html)).toEqual([
       { title: "Pet Policy", items: ["Cats allowed", "No pet deposit required"] },
+    ]);
+  });
+
+  it("corrects known amenity misspellings from the feed (Diswasher → Dishwasher)", () => {
+    expect(fixAmenitySpelling("Diswasher")).toBe("Dishwasher");
+    expect(fixAmenitySpelling("diswasher included")).toBe("Dishwasher included");
+    expect(fixAmenitySpelling("Dishwasher")).toBe("Dishwasher");
+    const html = `
+      <h3 class="fw-normal">Appliances</h3>
+      <ul class="list">
+        <li>Diswasher</li>
+        <li>Refrigerator</li>
+      </ul>`;
+    expect(parseDetailSections(html)).toEqual([
+      { title: "Appliances", items: ["Dishwasher", "Refrigerator"] },
     ]);
   });
 

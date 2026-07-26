@@ -16,6 +16,7 @@ import {
 } from '../components/floor-plans/UnitGalleryLightbox';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { variantIndexForUnit } from '../data/floorPlans';
+import { resolveUnitSqft } from '../data/unitSqft';
 import { trackOutboundClick } from '../lib/analytics';
 import { youTubeEmbedUrl } from '../lib/youtube';
 import { APPLY_URL } from '../data/seo';
@@ -103,7 +104,8 @@ export function UnitDetail() {
 
   const group = groupForUnit(unit.unit);
   const rent = formatRent(unit.rent);
-  const sqft = unit.sqft ?? group?.sqftMin ?? null;
+  // Floor-plan database is authoritative over the AppFolio feed — see data/unitSqft.ts.
+  const sqft = resolveUnitSqft(unit);
   const baths = unit.bathrooms ?? group?.baths ?? null;
   const applyUrl = (unit.listingUrl && applyUrlForListing(unit.listingUrl)) || APPLY_URL;
   const tourUrl = unit.listingUrl ? tourUrlForListing(unit.listingUrl) : null;

@@ -20,6 +20,7 @@ import {
   planGroupForUnitNumber,
 } from './unitJsonLd';
 import { floorDisplayLabel, parseUnitNumber } from './floorPlans';
+import { resolveUnitSqft } from './unitSqft';
 import { youTubeEmbedUrl, youTubeVideoId } from '../lib/youtube';
 import youtubeMetadata from './youtube-metadata.json';
 import type { AvailableUnit } from '../hooks/use-availability';
@@ -104,7 +105,8 @@ function bathsFor(u: AvailableUnit): number | null {
 }
 
 function sqftFor(u: AvailableUnit): number | null {
-  return u.sqft ?? planGroupForUnitNumber(u.unit)?.sqftMin ?? null;
+  // Floor-plan database is authoritative over the AppFolio feed — see unitSqft.ts.
+  return resolveUnitSqft(u);
 }
 
 function rentText(u: AvailableUnit): string | null {

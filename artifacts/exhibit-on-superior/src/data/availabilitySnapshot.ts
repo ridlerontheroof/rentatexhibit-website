@@ -1,4 +1,4 @@
-import type { AvailabilityData } from '../hooks/use-availability';
+import { normalizeAvailability, type AvailabilityData } from '../hooks/use-availability';
 import raw from './availabilitySnapshot.json';
 
 /**
@@ -28,7 +28,9 @@ export function getBakedAvailability(now: number = Date.now()): AvailabilityData
   const snapshot = data as AvailabilityData;
   const updated = Date.parse(snapshot.updatedAt);
   if (!Number.isFinite(updated) || now - updated > SNAPSHOT_MAX_AGE_MS) return null;
-  return snapshot;
+  // Correct known feed typos even when the baked snapshot predates the
+  // api-server-side normalization.
+  return normalizeAvailability(snapshot);
 }
 
 export type BakedSnapshotStatus = 'fresh' | 'stale' | 'invalid';

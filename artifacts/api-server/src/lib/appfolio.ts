@@ -274,6 +274,23 @@ function decodeEntities(text: string): string {
 }
 
 /**
+ * Known misspellings in the AppFolio amenity/appliance feed → corrected label.
+ * The leasing team types these lists by hand in AppFolio, so typos flow
+ * straight onto every unit page; normalizing here fixes every current and
+ * future unit without a per-page edit.
+ */
+const AMENITY_SPELLING_FIXES: [RegExp, string][] = [
+  [/\bDiswasher\b/gi, "Dishwasher"],
+];
+
+/** Correct known misspellings in one amenity/appliance line item. */
+export function fixAmenitySpelling(item: string): string {
+  let out = item;
+  for (const [re, fix] of AMENITY_SPELLING_FIXES) out = out.replace(re, fix);
+  return out;
+}
+
+/**
  * Extract the listing's info sections (Rental Terms, Pet Policy, Amenities,
  * Utilities Included, Appliances) from a detail page. Each section is an
  * `<h3>` heading followed by a `<ul>` of `list__item` entries.
@@ -285,7 +302,7 @@ export function parseDetailSections(html: string, removed?: string[]): DetailSec
   while ((m = sectionRe.exec(html)) !== null) {
     const title = decodeEntities(m[1].trim());
     const items = [...m[2].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)]
-      .map((li) => decodeEntities(li[1].replace(/<[^>]*>/g, "").trim()))
+      .map((li) => fixAmenitySpelling(decodeEntities(li[1].replace(/<[^>]*>/g, "").trim())))
       .filter((item) => item.length > 0)
       // Same fee-policy guard as descriptions: drop line items asserting a pet
       // deposit / pet rent / per-person admin fee, which contradict the

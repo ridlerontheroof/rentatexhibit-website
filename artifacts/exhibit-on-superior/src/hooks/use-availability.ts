@@ -47,11 +47,32 @@ declare global {
   }
 }
 
+/**
+ * Known misspellings in the AppFolio amenity feed → corrected label. The
+ * api-server normalizes these at fetch time too, but the correction is
+ * repeated here so data from an older server build (or an old baked snapshot)
+ * can never render the typo.
+ */
+export function fixAmenitySpelling(item: string): string {
+  return item.replace(/\bDiswasher\b/gi, 'Dishwasher');
+}
+
+/** Correct known feed typos across every unit's detail sections. */
+export function normalizeAvailability(data: AvailabilityData): AvailabilityData {
+  return {
+    ...data,
+    units: data.units.map((u) => ({
+      ...u,
+      details: u.details.map((s) => ({ ...s, items: s.items.map(fixAmenitySpelling) })),
+    })),
+  };
+}
+
 const parseResponse = async (response: Response): Promise<AvailabilityData> => {
   if (!response.ok) {
     throw new Error('Availability feed unavailable');
   }
-  return response.json();
+  return normalizeAvailability(await response.json());
 };
 
 const fetchAvailability = async (): Promise<AvailabilityData> => {

@@ -8,6 +8,7 @@ import {
 import { SplitHeadline } from '../SplitHeadline';
 import { useAvailability, type AvailableUnit } from '../../hooks/use-availability';
 import { planGroups, type PlanGroup } from '../../data/floorPlans';
+import { resolveUnitSqft } from '../../data/unitSqft';
 import { APPLY_URL } from '../../data/seo';
 import { trackOutboundClick } from '../../lib/analytics';
 
@@ -218,7 +219,8 @@ export function AvailableUnits() {
           <ul className="divide-y divide-border">
             {rows.map((u, rowIndex) => {
               const rent = formatRent(u.rent);
-              const sqft = u.sqft ?? u.group?.sqftMin ?? null;
+              // Floor-plan database is authoritative over the AppFolio feed — see data/unitSqft.ts.
+              const sqft = resolveUnitSqft(u);
               return (
                 <li
                   key={u.unit}

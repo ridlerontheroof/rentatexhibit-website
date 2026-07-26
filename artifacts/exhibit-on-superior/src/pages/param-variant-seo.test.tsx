@@ -32,6 +32,7 @@ vi.mock('wouter', async (importOriginal) => ({
 
 vi.mock('../hooks/use-availability', () => ({
   useAvailability: () => ({ data: { units: [] }, isPending: false }),
+  normalizeAvailability: (d: unknown) => d,
 }));
 
 function renderPage(ui: React.ReactElement) {

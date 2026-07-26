@@ -10,6 +10,7 @@ import { parseUnitNumber, planGroups, type PlanGroup } from './floorPlans';
 import { getBakedAvailability } from './availabilitySnapshot';
 import type { AvailableUnit } from '../hooks/use-availability';
 import { adaDesignation, ADA_DISCLAIMER, type AdaDesignation } from './ada';
+import { resolveUnitSqft } from './unitSqft';
 
 const COMPLEX_ID = `${SITE_URL}#apartmentcomplex`;
 const PAGE_URL = `${SITE_URL}/available-units`;
@@ -103,7 +104,8 @@ export function apartmentNode(
   opts: { id?: string; url?: string; priceValidUntil?: string | null } = {},
 ): Record<string, unknown> {
   const group = planGroupForUnitNumber(u.unit);
-  const sqft = u.sqft ?? group?.sqftMin ?? null;
+  // Floor-plan database is authoritative over the AppFolio feed — see unitSqft.ts.
+  const sqft = resolveUnitSqft(u);
   const image = u.photoUrl ?? (group ? `${SITE_URL}${group.images.detail}` : null);
   const ada = adaDesignation(u.unit);
   return {

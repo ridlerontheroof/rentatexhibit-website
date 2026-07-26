@@ -35,6 +35,7 @@ const data: AvailabilityData = { units: [unit], updatedAt: '2026-07-22T00:00:00Z
 
 vi.mock('./hooks/use-availability', () => ({
   useAvailability: () => ({ data, isLoading: false }),
+  normalizeAvailability: (d: unknown) => d,
 }));
 
 import { Header } from './components/Header';
