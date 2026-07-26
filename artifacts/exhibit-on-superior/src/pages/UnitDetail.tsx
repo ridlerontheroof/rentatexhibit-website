@@ -108,8 +108,9 @@ export function UnitDetail() {
   const applyUrl = (unit.listingUrl && applyUrlForListing(unit.listingUrl)) || APPLY_URL;
   const tourUrl = unit.listingUrl ? tourUrlForListing(unit.listingUrl) : null;
   const heroPhotos = unit.photos.slice(0, 5);
-  // Note: no VideoObject JSON-LD here — Google requires uploadDate, which
-  // AppFolio does not provide.
+  // The tour's VideoObject JSON-LD is emitted from the shared unit SEO model
+  // (unitPageSeo.ts) — uploadDate/thumbnail come from the committed YouTube
+  // metadata cache, not AppFolio.
   const videoEmbedUrl = unit.videoUrl ? youTubeEmbedUrl(unit.videoUrl) : null;
   const floor = unitFloor(unit.unit);
   const ada = adaDesignation(unit.unit);

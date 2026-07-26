@@ -28,4 +28,5 @@
 - [Apex→www 301 via Squarespace forwarding](apex-www-redirect.md) — forwarding rules won't save until the Domain Connect presets holding apex records are deleted; verify with curl, no dig in workspace.
 - [Static-serve trailing-slash 301s](static-serve-trailing-slash.md) — platform directory-index 301 beats non-slash rewrites; use trailing-slash URLs when a zero-redirect link matters (ads).
 - [Production Express serving layer](production-express-serving.md) — prod serves via server/index.mjs (autoscale), not static; toml rewrites stay (server parses them, guards check them); CSP_ENFORCE=1 to enforce.
+- [YouTube VideoObject metadata](youtube-video-jsonld.md) — oEmbed lacks uploadDate; parse the watch page's player-response JSON, cache to committed JSON like the Vimeo pattern.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.

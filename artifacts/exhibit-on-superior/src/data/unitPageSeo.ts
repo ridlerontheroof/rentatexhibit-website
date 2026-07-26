@@ -19,7 +19,58 @@ import {
   planGroupForUnitNumber,
 } from './unitJsonLd';
 import { floorDisplayLabel, parseUnitNumber } from './floorPlans';
+import { youTubeEmbedUrl, youTubeVideoId } from '../lib/youtube';
+import youtubeMetadata from './youtube-metadata.json';
 import type { AvailableUnit } from '../hooks/use-availability';
+
+interface CachedYouTubeVideo {
+  videoUrl: string;
+  title: string;
+  uploadDate: string;
+  thumbnailUrl: string;
+  durationSeconds: number;
+}
+
+const YOUTUBE_VIDEOS: Record<string, CachedYouTubeVideo> = youtubeMetadata.videos;
+
+/** ISO-8601 duration (e.g. PT2M1S) from a duration in seconds. */
+function isoDuration(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `PT${minutes > 0 ? `${minutes}M` : ''}${seconds}S`;
+}
+
+/**
+ * VideoObject for a unit's YouTube tour, or null when the unit has no video
+ * or its metadata is not in the committed cache. Google requires a truthful
+ * uploadDate and thumbnailUrl, which AppFolio does not provide — both come
+ * from YouTube itself, cached into youtube-metadata.json (refresh via
+ * scripts/fetch-youtube-metadata.mjs) so builds stay deterministic. A video
+ * missing from the cache simply ships without the node, never a build break.
+ */
+export function unitVideoJsonLd(u: AvailableUnit): Record<string, unknown> | null {
+  if (!u.videoUrl) return null;
+  const id = youTubeVideoId(u.videoUrl);
+  const meta = id ? YOUTUBE_VIDEOS[id] : undefined;
+  const embedUrl = youTubeEmbedUrl(u.videoUrl);
+  if (!id || !meta || !embedUrl) return null;
+  const canonical = unitCanonical(u.unit);
+  return {
+    '@type': 'VideoObject',
+    '@id': `${canonical}#video`,
+    name: meta.title,
+    description:
+      `Video tour of the floor plan for Apartment ${u.unit} at Exhibit On Superior, ` +
+      `165 W Superior St in Chicago's River North neighborhood.`,
+    contentUrl: meta.videoUrl,
+    // Same privacy-enhanced player URL the page's iframe embeds.
+    embedUrl,
+    uploadDate: meta.uploadDate,
+    thumbnailUrl: meta.thumbnailUrl,
+    duration: isoDuration(meta.durationSeconds),
+    about: { '@id': `${SITE_URL}#apartmentcomplex` },
+  };
+}
 
 export function unitPagePath(unitNumber: string): string {
   return `/available-units/${unitNumber}`;
@@ -171,6 +222,10 @@ export function unitPageJsonLd(u: AvailableUnit, updatedAt?: string | null): Rec
       priceValidUntil: updatedAt ? offerPriceValidUntil(updatedAt) : null,
     }),
   ];
+  // YouTube tour, when the unit has one and its metadata (uploadDate,
+  // thumbnail) is in the committed cache — see unitVideoJsonLd.
+  const video = unitVideoJsonLd(u);
+  if (video) graph.push(video);
   return { '@context': 'https://schema.org', '@graph': graph };
 }
 
