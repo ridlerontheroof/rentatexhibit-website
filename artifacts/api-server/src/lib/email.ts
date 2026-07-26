@@ -2,6 +2,7 @@ import { logger } from "./logger";
 import { allowProspectConfirmation } from "./emailThrottle";
 import { sendRawEmail, SENDER_EMAIL, warnIfUnconfigured } from "./mailer";
 import {
+  renderApexRedirectAlert,
   renderFeeCopyAlert,
   renderLeadNotification,
   renderProspectConfirmation,
@@ -225,6 +226,34 @@ export async function sendSeedStaleAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL },
     "Sent stale availability-seed alert email",
+  );
+}
+
+/**
+ * Alert that the apex domain stopped 301-redirecting to www (duplicate-host
+ * SEO risk). Goes to the operational recipient because the fix is a DNS
+ * change, not a leasing action. Throws when the mailer is unconfigured or
+ * the send fails, so the caller decides how loudly to log.
+ */
+export async function sendApexRedirectAlert(opts: {
+  status: number | null;
+  location: string | null;
+  problem: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderApexRedirectAlert(opts);
+  const { contentType, body } = buildMimeBody("apexalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent apex-redirect broken alert email",
   );
 }
 

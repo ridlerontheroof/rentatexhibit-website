@@ -3,6 +3,7 @@ import { logger } from "./lib/logger";
 import { startLeadNotificationRetry } from "./lib/leadNotificationRetry";
 import { startAvailabilityCacheWarmer } from "./routes/availability";
 import { submitCoreUrlsOnce } from "./lib/indexnow";
+import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
 
 const rawPort = process.env["PORT"];
 
@@ -38,4 +39,8 @@ app.listen(port, (err) => {
   // Bing/Copilot pick up the freshly published pages (production only,
   // best-effort, never blocks startup).
   submitCoreUrlsOnce(logger);
+
+  // Watchdog: alert (once/day) if the apex domain stops 301-redirecting to
+  // www — e.g. a Domain Connect reconnection re-provisioned the apex A record.
+  startApexRedirectCheck(logger);
 });

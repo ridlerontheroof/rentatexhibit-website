@@ -426,6 +426,54 @@ export function renderSeedStaleAlert(opts: {
   return { subject, html: htmlShell, text };
 }
 
+/**
+ * Operational alert: the apex domain (rentatexhibit.com) stopped issuing its
+ * 301 redirect to www — usually because a Domain Connect / Entri reconnection
+ * silently re-provisioned the apex A record, so the apex is serving the site
+ * again and reintroducing the duplicate-host SEO issue.
+ */
+export function renderApexRedirectAlert(opts: {
+  status: number | null;
+  location: string | null;
+  problem: string;
+}): RenderedEmail {
+  const { status, location, problem } = opts;
+  const subject = "Website alert: rentatexhibit.com apex redirect is broken";
+
+  const observed =
+    status === null
+      ? "The check could not reach https://rentatexhibit.com at all."
+      : `The apex responded with HTTP ${status}${location ? ` and Location "${location}"` : " and no Location header"}, instead of a 301/308 pointing at www.rentatexhibit.com.`;
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(`The daily check of https://rentatexhibit.com found that the apex domain is no longer redirecting to www.rentatexhibit.com. ${problem}`)}</p>` +
+    `<p style="${BODY_TEXT}">${escapeHtml(observed)}</p>` +
+    `<p style="${BODY_TEXT}">${escapeHtml("If the apex serves the site directly, Google sees the same pages on two hosts again (duplicate-content risk). The usual cause is the domain being reconnected to the hosting provider via Domain Connect/Entri, which re-adds an apex A record and overrides the Squarespace forwarding rule.")}</p>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> in Squarespace DNS, remove any apex A record (34.111.179.208) and any Domain Connect presets, then re-save the Domain Forwarding rule (301, maintain paths) from rentatexhibit.com to https://www.rentatexhibit.com. This alert is sent at most once per day.</p>`;
+
+  const text = [
+    `The daily check of https://rentatexhibit.com found that the apex domain is no longer redirecting to www.rentatexhibit.com. ${problem}`,
+    "",
+    observed,
+    "",
+    "If the apex serves the site directly, Google sees the same pages on two hosts again (duplicate-content risk). The usual cause is the domain being reconnected to the hosting provider via Domain Connect/Entri, which re-adds an apex A record and overrides the Squarespace forwarding rule.",
+    "",
+    "What to do: in Squarespace DNS, remove any apex A record (34.111.179.208) and any Domain Connect presets, then re-save the Domain Forwarding rule (301, maintain paths) from rentatexhibit.com to https://www.rentatexhibit.com.",
+    "This alert is sent at most once per day.",
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "The apex domain stopped redirecting to www — duplicate-host SEO risk.",
+    kicker: "Website Alert",
+    heading: "Apex Redirect Is Broken",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
 export function renderLeadNotification(lead: LeadNotification): RenderedEmail {
   const fullName = `${lead.firstName} ${lead.lastName}`.trim();
   const typeLabel = leadTypeLabel(lead.type);
