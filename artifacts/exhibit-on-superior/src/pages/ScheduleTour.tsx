@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearch } from 'wouter';
 import { PageHero } from '../components/PageHero';
 import { useAvailability } from '../hooks/use-availability';
@@ -71,6 +71,19 @@ export function ScheduleTour() {
   }, [defaultUnit, dirtyFields.unit, setValue]);
 
   useUnsavedChangesWarning(isDirty && !submitted && !createLead.isPending);
+
+  // Screen-reader focus management (same pattern as ScheduleShowing): when the
+  // form swaps to the thank-you screen or an error banner appears, move focus
+  // onto it so the state change is announced and the keyboard user is standing
+  // on the next action.
+  const thankYouRef = useRef<HTMLDivElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (submitted) thankYouRef.current?.focus();
+  }, [submitted]);
+  useEffect(() => {
+    if (createLead.isError) errorRef.current?.focus();
+  }, [createLead.isError]);
 
   const onSubmit = (data: TourFormData) => {
     if (createLead.isPending) return;
@@ -186,7 +199,9 @@ export function ScheduleTour() {
           <div className="container mx-auto max-w-5xl">
             {submitted ? (
               <div
-                className="max-w-2xl mx-auto text-center bg-muted p-12 border border-border"
+                ref={thankYouRef}
+                tabIndex={-1}
+                className="max-w-2xl mx-auto text-center bg-muted p-12 border border-border focus:outline-none"
                 role="status"
                 aria-live="polite"
               >
@@ -262,7 +277,12 @@ export function ScheduleTour() {
                   )}
 
                   {createLead.isError && (
-                    <div className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive" role="alert">
+                    <div
+                      ref={errorRef}
+                      tabIndex={-1}
+                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none"
+                      role="alert"
+                    >
                       Something went wrong and your tour request couldn't be sent. Please check your connection and try again.
                     </div>
                   )}

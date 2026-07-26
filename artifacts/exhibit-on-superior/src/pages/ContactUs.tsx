@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { PageHero } from '../components/PageHero';
 import { useCreateLead } from '../hooks/use-create-lead';
@@ -46,6 +46,18 @@ export function ContactUs() {
   });
 
   useUnsavedChangesWarning(isDirty && !submitted && !createLead.isPending);
+
+  // Screen-reader focus management (same pattern as ScheduleShowing): when the
+  // thank-you or error banner appears, move focus onto it so the state change
+  // is announced and the keyboard user isn't left on the submit button.
+  const thankYouRef = useRef<HTMLDivElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (submitted) thankYouRef.current?.focus();
+  }, [submitted]);
+  useEffect(() => {
+    if (createLead.isError) errorRef.current?.focus();
+  }, [createLead.isError]);
 
   const onSubmit = (data: ContactFormData) => {
     if (createLead.isPending) return;
@@ -164,7 +176,9 @@ export function ContactUs() {
 
                 {submitted && (
                   <div
-                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary"
+                    ref={thankYouRef}
+                    tabIndex={-1}
+                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary focus:outline-none"
                     role="status"
                     aria-live="polite"
                   >
@@ -193,7 +207,12 @@ export function ContactUs() {
                 )}
 
                 {createLead.isError && (
-                  <div className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive" role="alert">
+                  <div
+                    ref={errorRef}
+                    tabIndex={-1}
+                    className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none"
+                    role="alert"
+                  >
                     Something went wrong and your message couldn't be sent. Please check your connection and try again.
                   </div>
                 )}
