@@ -299,6 +299,46 @@ from = "/apartments/il/chicago/apply/"
 to = "/apartments/il/chicago/apply/index.html"
 
 [[services.production.rewrites]]
+from = "/apartments/il/chicago"
+to = "/apartments/il/chicago/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments/il/chicago/"
+to = "/apartments/il/chicago/index.html"
+
+[[services.production.rewrites]]
+from = "/floorplans.aspx"
+to = "/floorplans.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/floorplans.aspx/"
+to = "/floorplans.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/availableunits.aspx"
+to = "/availableunits.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/availableunits.aspx/"
+to = "/availableunits.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/amenities.aspx"
+to = "/amenities.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/amenities.aspx/"
+to = "/amenities.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/contactus.aspx"
+to = "/contactus.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/contactus.aspx/"
+to = "/contactus.aspx/index.html"
+
+[[services.production.rewrites]]
 from = "/apartment-guide"
 to = "/apartment-guide/index.html"
 

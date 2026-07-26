@@ -25,5 +25,12 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/apartments/il/chicago/reviews': '/reviews',
   '/apartments/il/chicago/apply': APPLY_URL,
   '/apartments/il/chicago/magellan-rewards': '/',
+  '/apartments/il/chicago': '/available-units',
   '/floor-plans': '/available-units',
+  // RentCafe-era .aspx URLs (2026-07 SEO audit): 404 live today, but 301s
+  // preserve any legacy link equity.
+  '/floorplans.aspx': '/available-units',
+  '/availableunits.aspx': '/available-units',
+  '/amenities.aspx': '/amenities',
+  '/contactus.aspx': '/contact-us',
 };

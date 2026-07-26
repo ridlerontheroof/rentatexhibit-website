@@ -52,6 +52,38 @@ const rewriteMap = new Map();
   console.log(`Loaded ${rewriteMap.size} exact rewrites from artifact.toml`);
 }
 
+// ---------------------------------------------------------------------------
+// Legacy 301 redirects (SEO: RentCafe .aspx + G5 /apartments/il/chicago/*).
+// The prerenderer writes a no-JS meta-refresh stub for every entry in
+// src/data/legacyRedirects.ts (plus the hand-written /artist-in-residence
+// stub). Those stubs remain the source of truth: scan the build output for
+// them and turn each into a real single-hop 301, so legacy URLs never answer
+// 200 with stub/shell content (a soft-404 signal) in production.
+// ---------------------------------------------------------------------------
+function collectLegacyRedirects(rootDir) {
+  const map = new Map();
+  const refreshRe = /<meta\s+http-equiv="refresh"\s+content="0;\s*url=([^"]+)"/i;
+  const stack = [rootDir];
+  while (stack.length) {
+    const dir = stack.pop();
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(p);
+      } else if (entry.isFile() && entry.name === 'index.html') {
+        const m = refreshRe.exec(fs.readFileSync(p, 'utf8'));
+        if (m && dir !== rootDir) {
+          const from = '/' + path.relative(rootDir, dir).split(path.sep).join('/');
+          map.set(from, m[1]);
+        }
+      }
+    }
+  }
+  return map;
+}
+const legacyRedirects = collectLegacyRedirects(publicDir);
+console.log(`Loaded ${legacyRedirects.size} legacy 301 redirects from redirect stubs`);
+
 const knowledgeStub = path.join(publicDir, 'knowledge', 'not-found', 'index.html');
 const notFoundPage = fs.existsSync(path.join(publicDir, '404.html'))
   ? path.join(publicDir, '404.html')
@@ -264,6 +296,20 @@ app.use((req, res) => {
   const direct = path.join(publicDir, urlPath);
   if (direct.startsWith(publicDir) && fs.existsSync(direct) && fs.statSync(direct).isFile()) {
     return serveFile(req, res, direct, 200, urlPath);
+  }
+
+  // 2.5 Legacy URL → single-hop 301 to the canonical destination. Checked
+  //     before the trailing-slash redirect so /apartments/il/chicago/amenities/
+  //     goes straight to /amenities in ONE hop. Query strings are preserved on
+  //     internal targets (e.g. /floor-plans?plan=… deep links).
+  {
+    const bare = urlPath !== '/' && urlPath.endsWith('/') ? urlPath.replace(/\/+$/, '') : urlPath;
+    const target = legacyRedirects.get(bare);
+    if (target) {
+      const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+      res.set('Cache-Control', 'public, max-age=3600');
+      return res.redirect(301, /^https?:\/\//i.test(target) ? target : target + qs);
+    }
   }
 
   // 3. Trailing slash → 301 to the non-slash canonical form (query preserved).

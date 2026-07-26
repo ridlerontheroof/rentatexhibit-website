@@ -38,4 +38,5 @@
 - [Post-publish live-site checks](postpublish-watcher.md) — no deploy hook exists; a build-id stamp + workspace watcher workflow detects a new publish going live and runs check:postpublish, exiting non-zero on failure.
 - [Adding a static content page](new-static-page.md) — PAGE_SEO+route+toml rewrite pair in lockstep; nested Organization JSON-LD nodes must be @id refs or the recommended-props test fails.
 - [Markdown page twins (AEO)](markdown-twins.md) — .md variants generated from rendered <main> in prerender; Accept negotiation quirks; converter join rule; snapshot must stay in one chunk.
+- [Legacy URL 301s](legacy-redirect-301s.md) — prod server turns prerendered meta-refresh stubs into single-hop 301s; add entries via legacyRedirects.ts + toml rewrite pair only.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.

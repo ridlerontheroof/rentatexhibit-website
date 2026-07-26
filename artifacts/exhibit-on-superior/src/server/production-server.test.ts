@@ -204,6 +204,76 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
   });
 
   // -------------------------------------------------------------------------
+  // Legacy URL 301s (RentCafe .aspx + G5 /apartments/il/chicago/*)
+  //
+  // These must be REAL single-hop 301s to the canonical non-slash URL — never
+  // a 200 with stub/shell content (soft-404) and never a redirect chain.
+  // -------------------------------------------------------------------------
+  const LEGACY_301S: Array<[string, string]> = [
+    ['/apartments/il/chicago', '/available-units'],
+    ['/apartments/il/chicago/floor-plans', '/available-units'],
+    ['/apartments/il/chicago/photo-gallery', '/photo-gallery'],
+    ['/apartments/il/chicago/virtual-tour', '/virtual-tour'],
+    ['/apartments/il/chicago/amenities', '/amenities'],
+    ['/apartments/il/chicago/pet-friendly', '/pet-friendly'],
+    ['/apartments/il/chicago/neighborhood', '/neighborhood'],
+    ['/apartments/il/chicago/contact-us', '/contact-us'],
+    ['/apartments/il/chicago/map-directions', '/map-directions'],
+    ['/apartments/il/chicago/residents', '/residents'],
+    ['/apartments/il/chicago/schedule-a-tour', '/schedule-a-tour'],
+    ['/apartments/il/chicago/reviews', '/reviews'],
+    ['/apartments/il/chicago/magellan-rewards', '/'],
+    ['/floor-plans', '/available-units'],
+    ['/floorplans.aspx', '/available-units'],
+    ['/availableunits.aspx', '/available-units'],
+    ['/amenities.aspx', '/amenities'],
+    ['/contactus.aspx', '/contact-us'],
+    ['/artist-in-residence', '/'],
+  ];
+
+  it('301s every legacy URL to its canonical equivalent in a single hop', async () => {
+    for (const [from, to] of LEGACY_301S) {
+      const res = await get(from);
+      expect(res.status, from).toBe(301);
+      expect(res.headers.get('location'), from).toBe(to);
+      // Single hop: the target must answer 200 directly (no chain).
+      const dest = await get(to);
+      expect(dest.status, `${from} → ${to}`).toBe(200);
+    }
+  });
+
+  it('301s trailing-slash legacy URLs straight to the target (one hop, not two)', async () => {
+    const res = await get('/apartments/il/chicago/amenities/');
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe('/amenities');
+  });
+
+  it('301s the external apply legacy URL to the application site', async () => {
+    const res = await get('/apartments/il/chicago/apply');
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toMatch(/^https:\/\//);
+  });
+
+  it('preserves query strings on legacy 301s (e.g. /floor-plans?plan=…)', async () => {
+    const res = await get('/floor-plans?plan=a1');
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe('/available-units?plan=a1');
+  });
+
+  it('404s unknown /apartments/il/chicago/* suffixes instead of serving the shell (soft-404 guard)', async () => {
+    for (const p of ['/apartments/il/chicago/not-a-real-page', '/apartments/il/chicago/foo/bar']) {
+      const res = await get(p);
+      expect(res.status, p).toBe(404);
+      expect(await res.text(), p).toContain('noindex');
+    }
+  });
+
+  it('404s unknown .aspx paths instead of serving the shell', async () => {
+    const res = await get('/somethingelse.aspx');
+    expect(res.status).toBe(404);
+  });
+
+  // -------------------------------------------------------------------------
   // 404s
   // -------------------------------------------------------------------------
   it('returns a real 404 with a noindex page for unknown paths', async () => {
