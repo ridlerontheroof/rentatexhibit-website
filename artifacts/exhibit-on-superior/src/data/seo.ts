@@ -2,6 +2,20 @@
 // Source of truth: migration bundle seo-aeo-metadata + faq-answer-bank + schema manifest.
 
 import { ADA_COUNTS } from './ada';
+import { startingRentSentence } from './startingRent';
+
+/**
+ * Homepage pricing FAQ answer. The dollar figure comes from the baked
+ * availability snapshot (same pipeline as the Available Units page), so it can
+ * never go stale relative to listings. When no usable snapshot price exists we
+ * fall back to wording without a number — never a wrong number.
+ */
+const PRICING_FAQ_ANSWER = (() => {
+  const start = startingRentSentence();
+  const tail =
+    'Pricing updates automatically from the leasing system and varies by residence, lease term, and move-in date — see the Available Units page for live rent on every available apartment.';
+  return start ? `${start} ${tail}` : tail;
+})();
 
 export const SITE_URL = 'https://www.rentatexhibit.com';
 
@@ -77,6 +91,16 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       {
         q: 'How do I check current availability?',
         a: 'Use the Available Units link to view current Exhibit On Superior availability with live pricing and move-in dates.',
+      },
+      {
+        q: 'How much does it cost to live at Exhibit On Superior?',
+        a: PRICING_FAQ_ANSWER,
+        knowledgeSlug: 'how-much-is-rent',
+      },
+      {
+        q: 'Is Exhibit On Superior pet-friendly?',
+        a: 'Yes — cats and dogs are welcome, with a maximum of 2 pets per apartment. There is a one-time non-refundable pet fee of $650 for one dog or $750 for two dogs, and $325 for cats, with no monthly pet rent and no weight limits. Breed restrictions apply for dogs.',
+        knowledgeSlug: 'does-exhibit-allow-dogs',
       },
     ],
   },

@@ -18,6 +18,7 @@
 - [OG share-card generation](og-card-recipe.md) — share cards are script-generated from a page→photo/tagline map; edit the map + rerun, never hand-run ImageMagick.
 - [Matterport signed asset URLs expire in CDN cache](matterport-signed-urls.md) — player-models `image` URLs can be stale-signed (410 content.gone); cache-bust the API call for fresh URLs.
 - [Gmail SMTP sending](gmail-smtp-sending.md) — api-server mails via app-password SMTP (connector is one-account, owned by DealVault); nodemailer raw needs explicit envelope recipients; DKIM/DMARC live in AppFolio DNS.
+- [Pure availability data module](availability-pure-module.md) — availability types/normalization live in a pure lib module, not the hook file; data modules (seo, snapshot) must import from there or hook-mocking tests break.
 - [Baked availability snapshot](availability-snapshot.md) — build fetches prod /api/availability into a committed JSON (non-fatal on failure); placeholderData + head-inline prefetch; renderToString splits text with `<!-- -->`, grep accordingly.
 - [Above-the-fold guard via raw CDP](fold-check-cdp.md) — real-layout viewport checks drive nix chromium over CDP with Node's built-in WebSocket; no Playwright dep; vite.config needs PORT env even with --port.
 - [Validation races the prepublish rebuild](validation-dist-race.md) — dist-dependent tests must wait for the build's last output (index.html.br) or they fail spuriously mid-rebuild.

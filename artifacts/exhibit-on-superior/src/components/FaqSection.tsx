@@ -1,4 +1,6 @@
+import { Link } from 'wouter';
 import { PAGE_SEO } from '../data/seo';
+import { knowledgePath } from '../data/knowledge';
 import { Plus } from 'lucide-react';
 import { SplitHeadline } from './SplitHeadline';
 
@@ -23,7 +25,20 @@ export function FaqSection({ path }: FaqSectionProps) {
                 <span>{faq.q}</span>
                 <Plus className="h-5 w-5 shrink-0 text-primary transition-transform duration-200 group-open:rotate-45" />
               </summary>
-              <p className="mt-3 leading-relaxed text-muted-foreground">{faq.a}</p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                {faq.a}
+                {faq.knowledgeSlug ? (
+                  <>
+                    {' '}
+                    <Link
+                      href={knowledgePath(faq.knowledgeSlug)}
+                      className="whitespace-nowrap text-primary underline underline-offset-4 hover:text-primary/80"
+                    >
+                      Full answer &rarr;<span className="sr-only">{` (${faq.q})`}</span>
+                    </Link>
+                  </>
+                ) : null}
+              </p>
             </details>
           ))}
         </div>

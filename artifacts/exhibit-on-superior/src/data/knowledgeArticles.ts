@@ -13,6 +13,7 @@
 //     tub, sauna" — never "resort-style amenities").
 import type { KnowledgeArticle } from './knowledge';
 import { ADA_COUNTS } from './ada';
+import { startingRentSentence } from './startingRent';
 
 export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   // -------------------------------------------------------------------------
@@ -28,6 +29,11 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'Where to see live pricing',
         paragraphs: [
+          // Dynamic starting price from the baked availability snapshot — the
+          // same sentence the homepage pricing FAQ states, so the fact-drift
+          // guard sees the identical dollar token on both surfaces. Omitted
+          // entirely when no usable snapshot price exists.
+          ...(startingRentSentence() ? [startingRentSentence() as string] : []),
           'The Available Units page lists every residence currently available with live rent, photos, and move-in dates. Because pricing updates automatically from the leasing system, it is always the most accurate source rather than a static rent range.',
           'You can apply directly from any listing, or schedule a tour of a specific apartment before you decide.',
         ],

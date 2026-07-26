@@ -73,7 +73,7 @@ export function Home() {
                 View our amenities
               </Link>
               <Link href="/available-units" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90">
-                View available units
+                Explore Our River North Apartments
               </Link>
             </div>
           </div>

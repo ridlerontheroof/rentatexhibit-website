@@ -1,4 +1,4 @@
-import { normalizeAvailability, type AvailabilityData } from '../hooks/use-availability';
+import { normalizeAvailability, type AvailabilityData } from '../lib/availabilityData';
 import raw from './availabilitySnapshot.json';
 
 /**
