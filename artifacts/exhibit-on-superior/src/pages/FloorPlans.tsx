@@ -198,6 +198,16 @@ export function FloorPlans() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // History navigation: Back/Forward changes the URL without remounting the
+  // page, so re-read the shareable state whenever the browser fires popstate.
+  // (Normal filter changes go through updateFilters → writeFiltersToUrl and
+  // never fire popstate, so this only runs on real history navigation.)
+  useEffect(() => {
+    const onPopState = () => setFilters(readFiltersFromUrl());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
   const openGroup = openId ? planGroups.find((g) => g.id === openId) ?? null : null;
   const openPosition = openGroup ? filtered.findIndex((g) => g.id === openGroup.id) : -1;
 
