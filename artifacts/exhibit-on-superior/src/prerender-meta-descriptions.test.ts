@@ -1,0 +1,126 @@
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { beforeAll, describe, expect, it } from 'vitest';
+
+// Task: keep every page's search snippet from getting cut off mid-sentence.
+//
+// An audit found meta descriptions over 160 characters (unit pages, the
+// /knowledge hub) that Google truncated mid-sentence; they were fixed by hand.
+// This guard walks EVERY prerendered page in dist/public and fails the suite
+// if a future page or data change reintroduces an over-long, empty, or
+// duplicated description — regardless of which data module produced it.
+//
+// Contract per prerendered index.html:
+//   - indexable pages (no `noindex` robots meta) must carry a non-empty
+//     <meta name="description"> of at most 160 characters, unique across all
+//     indexable pages;
+//   - noindex pages may omit the description, but if they ship one it must
+//     still fit in 160 characters (they can become indexable later).
+
+const MAX_DESCRIPTION_LENGTH = 160;
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.resolve(here, '..', 'dist', 'public');
+
+interface PageHead {
+  /** Path of the page relative to dist/public, e.g. "knowledge/index.html". */
+  page: string;
+  /** Decoded description content, or null when the meta tag is absent. */
+  description: string | null;
+  indexable: boolean;
+}
+
+async function collectIndexHtml(dir: string): Promise<string[]> {
+  const out: string[] = [];
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...(await collectIndexHtml(full)));
+    else if (entry.isFile() && entry.name === 'index.html') out.push(full);
+  }
+  return out;
+}
+
+/** Minimal decode for the entities the prerenderer escapes into attributes. */
+function decodeEntities(value: string): string {
+  return value
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&#x27;', "'")
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&amp;', '&');
+}
+
+function metaContent(head: string, name: string): string | null {
+  // Attribute order is stable in the prerendered output (name before
+  // content), but accept either order to survive renderer changes.
+  const re = new RegExp(
+    `<meta\\s+(?:name="${name}"\\s+content="([^"]*)"|content="([^"]*)"\\s+name="${name}")`,
+    'i',
+  );
+  const m = head.match(re);
+  if (!m) return null;
+  return decodeEntities(m[1] ?? m[2] ?? '');
+}
+
+let pages: PageHead[] = [];
+
+beforeAll(async () => {
+  const files = await collectIndexHtml(publicDir);
+  pages = await Promise.all(
+    files.map(async (file) => {
+      const html = await fs.readFile(file, 'utf8');
+      const headEnd = html.indexOf('</head>');
+      const head = headEnd === -1 ? html : html.slice(0, headEnd);
+      const robots = metaContent(head, 'robots');
+      return {
+        page: path.relative(publicDir, file),
+        description: metaContent(head, 'description'),
+        indexable: !(robots ?? '').toLowerCase().includes('noindex'),
+      };
+    }),
+  );
+});
+
+describe('prerendered meta descriptions (dist/public)', () => {
+  it('the prerendered output exists and covers the whole site', () => {
+    // A handful of static pages plus per-unit and knowledge pages — if this
+    // collapses, the walk below would silently pass on nothing.
+    expect(pages.length).toBeGreaterThan(20);
+    expect(pages.some((p) => p.page === 'index.html')).toBe(true);
+    expect(pages.some((p) => p.page.startsWith('available-units/'))).toBe(true);
+    expect(pages.some((p) => p.page.startsWith('knowledge/'))).toBe(true);
+  });
+
+  it('every indexable page has a non-empty meta description', () => {
+    const missing = pages
+      .filter((p) => p.indexable && !(p.description ?? '').trim())
+      .map((p) => p.page);
+    expect(missing, `indexable pages missing a description:\n${missing.join('\n')}`).toEqual([]);
+  });
+
+  it(`no page ships a description over ${MAX_DESCRIPTION_LENGTH} characters`, () => {
+    const overlong = pages
+      .filter((p) => (p.description ?? '').length > MAX_DESCRIPTION_LENGTH)
+      .map((p) => `${p.page} (${(p.description as string).length} chars): ${p.description}`);
+    expect(
+      overlong,
+      `descriptions Google would truncate mid-sentence:\n${overlong.join('\n')}`,
+    ).toEqual([]);
+  });
+
+  it('no two indexable pages share the same description', () => {
+    const byDescription = new Map<string, string[]>();
+    for (const p of pages) {
+      const d = (p.description ?? '').trim();
+      if (!p.indexable || !d) continue;
+      byDescription.set(d, [...(byDescription.get(d) ?? []), p.page]);
+    }
+    const duplicated = [...byDescription.entries()]
+      .filter(([, pgs]) => pgs.length > 1)
+      .map(([d, pgs]) => `${pgs.join(', ')} → "${d}"`);
+    expect(duplicated, `duplicated descriptions:\n${duplicated.join('\n')}`).toEqual([]);
+  });
+});
