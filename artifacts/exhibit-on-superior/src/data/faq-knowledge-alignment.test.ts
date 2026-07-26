@@ -10,7 +10,7 @@
 //   - a hub question that duplicates a knowledge article's question ships
 //     without the cross-link (a new overlap must be declared, not hand-copied).
 import { describe, expect, it } from 'vitest';
-import { FAQ_HUB_TOPICS } from './seo';
+import { FAQ_HUB_TOPICS, PAGE_SEO } from './seo';
 import { knowledgeArticle, KNOWLEDGE_ARTICLES, type KnowledgeArticle } from './knowledge';
 
 const HUB_FAQS = FAQ_HUB_TOPICS.flatMap((t) => t.faqs.map((f) => ({ topic: t.title, ...f })));
@@ -73,6 +73,50 @@ describe('FAQ ↔ Knowledge Center alignment', () => {
         ).toBe(true);
       }
     }
+  });
+
+  it('every concrete fact on any page (quickAnswer + per-page FAQs) is backed by a knowledge article', () => {
+    // Site-wide fact-drift guard. The pairwise test above only covers /faq
+    // answers that declare a knowledgeSlug; per-page FAQs and quickAnswers in
+    // PAGE_SEO (e.g. /fees, /pet-friendly) can drift on the same facts without
+    // it. The Knowledge Center is the site's verified-facts corpus (every
+    // article fact is leasing-approved — see knowledgeArticles.ts authoring
+    // rules), so any dollar amount / distance / score / large number a page
+    // states must also appear somewhere in that corpus. When a fact changes
+    // (say $335 parking is re-priced), updating only the article makes every
+    // page still stating the old number fail here — and vice versa updating a
+    // page without its article fails the pairwise guard. Small integers stay
+    // excluded via the shared factTokens() regex.
+    const corpus = KNOWLEDGE_ARTICLES.map(articleText).join(' ');
+    for (const page of Object.values(PAGE_SEO)) {
+      // noindex utility pages (privacy policy, accessibility statement) state
+      // legal/spec versions (e.g. WCAG 2.1), not leasing facts — out of scope.
+      if (page.noindex) continue;
+      const surfaces: Array<[string, string]> = [
+        ['quickAnswer', page.quickAnswer],
+        ...page.faqs.map((f): [string, string] => [`FAQ "${f.q}"`, f.a]),
+      ];
+      for (const [where, text] of surfaces) {
+        for (const token of factTokens(text)) {
+          expect(
+            corpus.includes(token),
+            `${page.path} ${where} states "${token}" but no knowledge article mentions it — ` +
+              'the page has drifted from the verified-facts corpus; fix whichever is stale ' +
+              '(or add/update the knowledge article that verifies this fact).',
+          ).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('the site-wide fact guard actually sees fact tokens (self-check)', () => {
+    // If the factTokens regex or PAGE_SEO shape changes so nothing matches,
+    // the guard above would pass vacuously. Anchor on a floor: today the
+    // pages state well over 50 concrete fact tokens.
+    const total = Object.values(PAGE_SEO)
+      .flatMap((p) => [p.quickAnswer, ...p.faqs.map((f) => f.a)])
+      .flatMap(factTokens).length;
+    expect(total, 'fact-token extraction went vacuous').toBeGreaterThanOrEqual(50);
   });
 
   it('a hub question duplicating an article question must declare the overlap', () => {
