@@ -13,10 +13,16 @@
 // one accessible name across links with more than one distinct destination.
 //
 // Rules:
-// - The accessible name is the aria-label when present, else the link text.
+// - The accessible name is the aria-label when present, else the link text
+//   (falling back to nested <img alt="…"> text, per the accname algorithm).
 // - Same name + same href is fine (e.g. header and footer nav to /amenities).
 // - In-page hash links (href="#…") are skipped: a "#residents" jump link and
 //   a "/residents" page link legitimately share a name.
+// - A link with an EMPTY accessible name (no text, no aria-label, no img alt)
+//   is a failure too: icon-only links announce as just "link" to screen
+//   readers. Exceptions: links with aria-hidden="true" (removed from the
+//   accessibility tree entirely — must be a decorative duplicate of an
+//   adjacent named link) are skipped. No other exceptions exist today.
 //
 // Run after a build: node scripts/check-link-names.mjs   (wired into
 // check:prepublish so a publish can't ship newly ambiguous links).
@@ -57,18 +63,36 @@ function decode(s) {
 }
 
 const failures = [];
+const unnamed = [];
 const pages = walk(dist);
 
 for (const file of pages) {
   const html = fs.readFileSync(file, 'utf8');
+  const page = file.slice(dist.length).replace(/\/index\.html$/, '') || '/';
   /** accessible name (lowercased) -> Set of hrefs */
   const names = new Map();
-  for (const m of html.matchAll(/<a\b[^>]*>(.*?)<\/a>/gs)) {
-    const href = (m[0].match(/href="([^"]*)"/) || [])[1];
+  for (const m of html.matchAll(/<a\b([^>]*)>(.*?)<\/a>/gs)) {
+    const attrs = m[1];
+    const inner = m[2];
+    const href = (attrs.match(/href="([^"]*)"/) || [])[1];
     if (!href || href.startsWith('#')) continue;
-    const label = m[0].match(/aria-label="([^"]*)"/);
-    const name = decode(label ? label[1] : m[1]).toLowerCase();
-    if (!name) continue;
+    const label = attrs.match(/aria-label="([^"]*)"/);
+    let name = decode(label ? label[1] : inner).toLowerCase();
+    if (!name) {
+      // accname fallback: alt text of nested images.
+      name = [...inner.matchAll(/<img\b[^>]*\balt="([^"]*)"/g)]
+        .map((a) => decode(a[1]))
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+    }
+    if (!name) {
+      // Icon-only link with no spoken name at all — announces as just "link".
+      if (!/aria-hidden="true"/.test(attrs)) {
+        unnamed.push({ page, href: decode(href) });
+      }
+      continue;
+    }
     if (!names.has(name)) names.set(name, new Set());
     names.get(name).add(decode(href));
   }
@@ -93,7 +117,19 @@ if (failures.length > 0) {
     console.error(`  ${f.page}  "${f.name}" ->`);
     for (const h of f.hrefs) console.error(`      ${h}`);
   }
-  process.exit(1);
 }
 
-console.log(`check-link-names: OK — ${pages.length} prerendered pages, no ambiguous link names.`);
+if (unnamed.length > 0) {
+  console.error(
+    `check-link-names: ${unnamed.length} link(s) with NO accessible name — ` +
+      `icon-only links with no text, aria-label, or img alt announce as just "link".\n` +
+      `Fix: add a descriptive aria-label (or aria-hidden="true" if it duplicates an adjacent named link).\n`,
+  );
+  for (const u of unnamed) console.error(`  ${u.page}  <a href="${u.href}"> (unnamed)`);
+}
+
+if (failures.length > 0 || unnamed.length > 0) process.exit(1);
+
+console.log(
+  `check-link-names: OK — ${pages.length} prerendered pages, no ambiguous or unnamed links.`,
+);
