@@ -146,7 +146,9 @@
   --secondary-foreground: 0 0% 100%;
 
   --muted: 0 0% 96%;
-  --muted-foreground: 0 0% 40%;
+  /* 35% = #595959 → 7.0:1 on white, 6.4:1 on the 96% muted panels — WCAG AA
+     with headroom (the audit flagged the previous 40% as borderline). */
+  --muted-foreground: 0 0% 35%;
 
   --accent: 0 0% 96%;
   --accent-foreground: 0 0% 20%;
