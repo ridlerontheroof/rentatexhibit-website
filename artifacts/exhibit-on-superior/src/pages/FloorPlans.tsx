@@ -64,14 +64,18 @@ function readAdaFromUrl(): boolean {
   return value === '1' || value === 'true';
 }
 
-function writePlanToUrl(id: string | null) {
+// Opening a plan pushes a history entry so the phone's Back button closes the
+// pop-up instead of leaving the page; plan-to-plan arrow navigation and close
+// replace the current entry so history doesn't pile up.
+function writePlanToUrl(id: string | null, mode: 'push' | 'replace' = 'replace') {
   if (typeof window === 'undefined') return;
   const params = new URLSearchParams(window.location.search);
   if (id) params.set('plan', id);
   else params.delete('plan');
   const query = params.toString();
   const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
-  window.history.replaceState(null, '', newUrl);
+  if (mode === 'push') window.history.pushState(null, '', newUrl);
+  else window.history.replaceState(null, '', newUrl);
 }
 
 // Shareable filters: bedroom categories (`beds`), floor bands (`floors`), and
@@ -221,7 +225,7 @@ export function FloorPlans() {
   const handleOpen = (group: PlanGroup) => {
     setOpenId(group.id);
     setVariantIndex(0);
-    writePlanToUrl(group.id);
+    writePlanToUrl(group.id, 'push');
   };
 
   const handleClose = () => {
