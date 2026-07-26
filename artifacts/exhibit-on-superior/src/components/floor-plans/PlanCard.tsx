@@ -6,9 +6,17 @@ interface PlanCardProps {
   onOpen: (group: PlanGroup) => void;
   /** When true (ADA filter active), list the designated (A)/(AC) apartments. */
   showAda?: boolean;
+  /**
+   * Above-the-fold cards (first grid row) load their thumb eagerly so the
+   * fold-visible content never waits on lazy-load. Browser-only: React 19 SSR
+   * auto-emits a fixed-href image preload for eager plain <img>, which the
+   * prerender guard rejects.
+   */
+  eager?: boolean;
 }
 
-export function PlanCard({ group, onOpen, showAda = false }: PlanCardProps) {
+export function PlanCard({ group, onOpen, showAda = false, eager = false }: PlanCardProps) {
+  const eagerNow = eager && !import.meta.env.SSR;
   const adaUnits = showAda ? adaUnitsForGroup(group) : [];
   const sqftLabel =
     group.sqftMin === group.sqftMax
@@ -28,7 +36,7 @@ export function PlanCard({ group, onOpen, showAda = false }: PlanCardProps) {
         <img
           src={group.images.thumb}
           alt=""
-          loading="lazy"
+          loading={eagerNow ? 'eager' : 'lazy'}
           width={600}
           height={450}
           className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"

@@ -251,6 +251,11 @@ export function PhotoGallery() {
                     src={image.src}
                     alt={image.alt}
                     sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    // First grid row can peek above the fold below the hero on
+                    // tall screens — never lazy-load above-the-fold images.
+                    // (SmartImg renders a <picture>, so eager here is safe
+                    // from React 19's fixed-href auto-preload.)
+                    loading={index < 4 ? 'eager' : 'lazy'}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />

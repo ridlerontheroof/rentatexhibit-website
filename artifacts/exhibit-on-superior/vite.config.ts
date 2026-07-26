@@ -60,7 +60,7 @@ function removeMaximumScale(): Plugin {
   };
 }
 
-export default defineConfig(async ({ command }) => {
+export default defineConfig(async ({ command, isSsrBuild }) => {
   // PORT is required only when serving (dev/preview); builds don't bind a port.
   // BASE_PATH defaults to '/' for production builds — the deploy pipeline can
   // override it if the site ever moves off the root URL.
@@ -126,6 +126,33 @@ export default defineConfig(async ({ command }) => {
   build: {
     outDir: path.resolve(import.meta.dirname, 'dist/public'),
     emptyOutDir: true,
+    rollupOptions: isSsrBuild
+      ? undefined
+      : {
+          output: {
+            /**
+             * Split heavyweight vendor code out of the main entry so no
+             * emitted JS file exceeds ~250 KB (SEO perf budget). Only stable,
+             * eagerly-needed vendors are split — per-route page chunks stay
+             * lazy exactly as before, and the boot route-preload guard in
+             * main.tsx still preloads the current route chunk before first
+             * render (no Suspense-fallback CLS). SSR build is excluded: it
+             * emits a single server bundle.
+             */
+            manualChunks(id: string) {
+              if (!id.includes('node_modules')) return undefined;
+              if (
+                /node_modules\/(react|react-dom|scheduler)\//.test(id)
+              ) {
+                return 'vendor-react';
+              }
+              if (id.includes('node_modules/@radix-ui/')) {
+                return 'vendor-radix';
+              }
+              return undefined;
+            },
+          },
+        },
   },
   server: {
     port,

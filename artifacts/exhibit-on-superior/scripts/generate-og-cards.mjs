@@ -158,6 +158,9 @@ async function generateCard(page, spec, outDir) {
     '-fill', 'white',
     '-annotate', `+${MARGIN_X}+${TAGLINE_Y}`, spec.tagline,
     '-quality', '90',
+    // Hard size ceiling: ImageMagick binary-searches quality down until the
+    // JPEG fits. Keeps every og/*.jpg under the site-wide ~200 KB image budget.
+    '-define', 'jpeg:extent=190kb',
     '-strip',
     outPath,
   ]);

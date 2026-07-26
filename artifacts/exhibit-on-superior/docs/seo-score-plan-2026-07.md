@@ -76,6 +76,17 @@ Performance 40→~75, Security 46→~90, Crawlability 48→~90, Links 80→~95.
 
 ## Phase 2 — Performance polish (after Phase 1)
 
+> **Status (2026-07-26): implemented, awaiting publish.** Main bundle split via
+> manual vendor chunks (`vendor-react` 184 KB, `vendor-radix`, entry 144 KB —
+> largest emitted JS is now well under the 250 KB budget; route lazy-chunks and
+> the boot preload guard untouched). `scripts/optimize-images.mjs` now enforces
+> a hard ~195 KB per-file ceiling (quality step-down, then `webp:target-size`
+> so full-width rungs still fit; AVIF twins re-checked every run) — no shipped
+> image over 200 KB. OG cards get `jpeg:extent=190kb`. Above-the-fold lazy
+> fixes: first 3 floor-plan cards and first 4 gallery grid images now eager
+> (client-only where React 19 would emit fixed-href preloads). Per-page LCP
+> preloads already covered all 99 prerendered pages. Re-audit after publish.
+
 1. **Code-split the 322 KB main bundle**: manual chunks for `react-dom`,
    Radix, and the floor-plan viewer; keep per-route lazy chunks (the boot
    preload guard already handles CLS). Target <250 KB per file.

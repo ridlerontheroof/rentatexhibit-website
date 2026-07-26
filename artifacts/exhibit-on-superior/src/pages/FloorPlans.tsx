@@ -471,8 +471,14 @@ export function FloorPlans() {
                 {/* Grid or empty state */}
                 {filtered.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                    {filtered.map((group) => (
-                      <PlanCard key={group.id} group={group} onOpen={handleOpen} showAda={filters.ada} />
+                    {filtered.map((group, index) => (
+                      <PlanCard
+                        key={group.id}
+                        group={group}
+                        onOpen={handleOpen}
+                        showAda={filters.ada}
+                        eager={index < 3}
+                      />
                     ))}
                   </div>
                 ) : (

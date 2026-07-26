@@ -42,6 +42,12 @@ const AVIF_QUALITY_OVERRIDES = Object.fromEntries(Object.keys(QUALITY_OVERRIDES)
 // drop the AVIF rung entirely so browsers never fetch the larger file.
 const AVIF_RETRY_STEP = 10;
 const AVIF_QUALITY_FLOOR = 30;
+// Hard per-file size ceiling (SEO image budget: nothing shipped over ~200 KB).
+// WebP rungs over the cap are re-encoded at progressively lower quality; the
+// AVIF-must-beat-WebP rule below then keeps the AVIF twin under the cap too.
+const MAX_BYTES = 195 * 1024;
+const WEBP_RETRY_STEP = 6;
+const WEBP_QUALITY_FLOOR = 40;
 // Responsive rungs. The largest rung also caps the "full" WebP — nothing on
 // the site renders wider than ~2000 CSS px.
 const WIDTHS = [800, 1280, 2000];
@@ -103,17 +109,52 @@ for (const file of files) {
       entry[ext === 'webp' ? 'src' : 'avif'] = `/images/${outName}`;
     }
 
-    // AVIF must beat WebP or it doesn't ship: re-encode at lower quality
-    // until it wins; drop the rung if it never does.
     const webpPath = path.join(imagesDir, `${stem}-${target}w.webp`);
     const avifPath = path.join(imagesDir, `${stem}-${target}w.avif`);
+
+    // Enforce the size ceiling on the WebP rung (checked every run, not just
+    // on regeneration, so an existing oversize output gets fixed too).
+    let effTarget = target; // actual encoded width if the rung had to shrink
+    {
+      let size = (await fs.stat(webpPath)).size;
+      let q = Number(QUALITY_OVERRIDES[stem] ?? QUALITY);
+      while (size > MAX_BYTES && q - WEBP_RETRY_STEP >= WEBP_QUALITY_FLOOR) {
+        q -= WEBP_RETRY_STEP;
+        await run('magick', [abs, '-auto-orient', '-resize', `${target}x>`, '-quality', String(q), webpPath]);
+        size = (await fs.stat(webpPath)).size;
+      }
+      if (size > MAX_BYTES) {
+        // Quality floor wasn't enough: keep the full rung width (the
+        // sharpness guard in smartimg-sizes.test.ts needs the large rung) and
+        // let libwebp binary-search the quality to hit the size budget.
+        await run('magick', [
+          abs, '-auto-orient', '-resize', `${target}x>`,
+          '-define', `webp:target-size=${MAX_BYTES - 5 * 1024}`,
+          webpPath,
+        ]);
+        size = (await fs.stat(webpPath)).size;
+        if (size > MAX_BYTES) {
+          console.warn(
+            `WARNING: ${stem} @${target}w WebP still ${size} bytes even with webp:target-size (cap ${MAX_BYTES}).`,
+          );
+        } else {
+          console.warn(`Re-encoded ${stem} @${target}w WebP via webp:target-size to fit the ${MAX_BYTES}-byte cap (${size} bytes).`);
+        }
+      } else if (q !== Number(QUALITY_OVERRIDES[stem] ?? QUALITY)) {
+        console.warn(`Re-encoded ${stem} @${target}w WebP at q${q} to fit the ${MAX_BYTES}-byte cap (${size} bytes).`);
+      }
+    }
+
+    // AVIF must beat WebP or it doesn't ship: re-encode at lower quality
+    // until it wins; drop the rung if it never does. (Also re-checked every
+    // run so an AVIF left larger than a freshly-shrunk WebP gets re-encoded.)
     let webpSize = (await fs.stat(webpPath)).size;
     let avifSize = (await fs.stat(avifPath)).size;
     if (avifSize >= webpSize) {
       let q = Number(AVIF_QUALITY_OVERRIDES[stem] ?? AVIF_QUALITY);
       while (avifSize >= webpSize && q - AVIF_RETRY_STEP >= AVIF_QUALITY_FLOOR) {
         q -= AVIF_RETRY_STEP;
-        await run('magick', [abs, '-auto-orient', '-resize', `${target}x>`, '-quality', String(q), avifPath]);
+        await run('magick', [abs, '-auto-orient', '-resize', `${effTarget}x>`, '-quality', String(q), avifPath]);
         avifSize = (await fs.stat(avifPath)).size;
       }
       if (avifSize >= webpSize) {
