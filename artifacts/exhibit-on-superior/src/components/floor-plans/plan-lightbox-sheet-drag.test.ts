@@ -274,6 +274,76 @@ describe('grabber button tap toggle', () => {
   });
 });
 
+describe('drag release does not re-toggle via the synthetic click', () => {
+  // On real touch devices, lifting the finger after a drag fires a synthetic
+  // click on the grabber button under the finger. That click must not flip
+  // the snap point the drag just chose.
+  it('a fast upward flick followed by a click stays expanded', () => {
+    firePointer('pointerdown', 800, 0);
+    firePointer('pointermove', 760, 20);
+    firePointer('pointerup', 760, 30);
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+
+    clickGrabber(); // synthetic click from the same touch lift
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+  });
+
+  it('a slow drag that snaps back, followed by a click, stays collapsed', () => {
+    firePointer('pointerdown', 800, 0);
+    firePointer('pointermove', 790, 100);
+    firePointer('pointerup', 790, 150);
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+
+    clickGrabber();
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+  });
+
+  it('only the one synthetic click is swallowed — the next tap toggles again', () => {
+    firePointer('pointerdown', 800, 0);
+    firePointer('pointermove', 760, 20);
+    firePointer('pointerup', 760, 30);
+    clickGrabber(); // swallowed synthetic click
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+
+    clickGrabber(); // deliberate later tap
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+  });
+
+  it('a plain tap (pointer down/up without movement) still toggles via click', () => {
+    firePointer('pointerdown', 800, 0);
+    firePointer('pointerup', 800, 50);
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+
+    clickGrabber(); // the tap's click must NOT be suppressed
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+  });
+
+  it('a drag with no follow-up click does not swallow the next tap-toggle', () => {
+    // Real drag ends (flag set) but no synthetic click follows (e.g. the
+    // finger lifted off the grabber). A later deliberate tap (pointer
+    // down/up + click) must still toggle.
+    firePointer('pointerdown', 800, 0);
+    firePointer('pointermove', 760, 20);
+    firePointer('pointerup', 760, 30);
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+
+    firePointer('pointerdown', 200, 1000);
+    firePointer('pointerup', 200, 1050);
+    clickGrabber();
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+  });
+
+  it('movement within the 5px tap slop does not suppress the click', () => {
+    firePointer('pointerdown', 800, 0);
+    firePointer('pointermove', 797, 30); // 3px — jitter, not a drag
+    firePointer('pointerup', 797, 60);
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+
+    clickGrabber();
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+  });
+});
+
 describe('sheet reset on plan-group change', () => {
   it('collapses an expanded sheet when a different group id is shown', () => {
     clickGrabber();

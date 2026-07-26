@@ -80,7 +80,15 @@ export function PlanLightbox({
     lastY: number;
     lastTime: number;
     velocity: number; // px/ms; positive = moving up (sheet growing)
+    moved: boolean; // finger travelled past the tap slop → treat as a drag
   } | null>(null);
+  /**
+   * On touch devices, lifting the finger after a sheet drag fires a synthetic
+   * click on the grabber button underneath, which would immediately re-toggle
+   * the snap point the drag just chose. Mirrors the desktop-pan suppressClick.
+   */
+  const suppressSheetClick = useRef(false);
+  const SHEET_TAP_SLOP_PX = 5;
 
   // Flick threshold & snap decision live in lib/sheetSnap.ts (pure, unit-tested).
 
@@ -234,6 +242,10 @@ export function PlanLightbox({
     typeof window !== 'undefined' ? window.innerHeight : 800;
 
   const onSheetDragStart = (e: React.PointerEvent) => {
+    // Any synthetic click from a previous drag fires before the next
+    // pointerdown; a still-set flag means no click followed, so clear it here
+    // rather than letting it swallow this interaction's deliberate tap.
+    suppressSheetClick.current = false;
     const startHeightPx =
       dragHeightPx ?? (sheetSnap / 100) * viewportH();
     dragRef.current = {
@@ -242,6 +254,7 @@ export function PlanLightbox({
       lastY: e.clientY,
       lastTime: e.timeStamp,
       velocity: 0,
+      moved: false,
     };
     // Keep receiving move/up events even when the pointer leaves the handle.
     e.currentTarget.setPointerCapture?.(e.pointerId);
@@ -256,6 +269,7 @@ export function PlanLightbox({
     d.lastTime = sampled.lastTime;
     d.velocity = sampled.velocity;
     const dy = d.startY - e.clientY;
+    if (!d.moved && Math.abs(dy) > SHEET_TAP_SLOP_PX) d.moved = true;
     const vh = viewportH();
     setDragHeightPx(
       clampSheetDragHeight(
@@ -278,6 +292,10 @@ export function PlanLightbox({
     });
     setSheetSnap(snapPx === (SHEET_EXPANDED / 100) * vh ? SHEET_EXPANDED : SHEET_COLLAPSED);
     setDragHeightPx(null);
+    // A real drag (moved past the tap slop) may be followed by a synthetic
+    // click on the grabber; swallow that click so it can't re-toggle the snap
+    // the drag just chose. Plain taps (no movement) keep toggling via onClick.
+    if (dragRef.current.moved) suppressSheetClick.current = true;
     dragRef.current = null;
   };
 
@@ -849,9 +867,13 @@ export function PlanLightbox({
               <button
                 type="button"
                 aria-label={sheetSnap === SHEET_EXPANDED ? 'Collapse details' : 'Expand details'}
-                onClick={() =>
-                  setSheetSnap((s) => (s === SHEET_EXPANDED ? SHEET_COLLAPSED : SHEET_EXPANDED))
-                }
+                onClick={() => {
+                  if (suppressSheetClick.current) {
+                    suppressSheetClick.current = false;
+                    return;
+                  }
+                  setSheetSnap((s) => (s === SHEET_EXPANDED ? SHEET_COLLAPSED : SHEET_EXPANDED));
+                }}
                 className="mx-auto -mt-1 mb-1 flex h-6 w-full items-center justify-center"
               >
                 <span aria-hidden className="h-1 w-10 rounded-full bg-border" />
