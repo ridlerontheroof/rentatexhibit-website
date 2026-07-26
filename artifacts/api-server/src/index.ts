@@ -6,6 +6,7 @@ import { submitCoreUrlsOnce } from "./lib/indexnow";
 import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
 import { startKnowledgePageCheck } from "./lib/knowledgeCheck";
 import { startShowingSchedulerCheck } from "./lib/showingSchedulerCheck";
+import { startRentedNoindexCheck } from "./lib/rentedCheck";
 
 const rawPort = process.env["PORT"];
 
@@ -55,4 +56,10 @@ app.listen(port, (err) => {
   // endpoints (slot fetch + IDV status) against a posted unit; alerts
   // (once/day) on sustained failure or an enabled IDV gate.
   startShowingSchedulerCheck(logger);
+
+  // Watchdog: run the web artifact's rented-unit indexability check (the
+  // other half of check:postpublish) on startup (= post-publish) and every
+  // 6 hours, alerting (once/day) on definitive failures. Gracefully logs
+  // and skips when the runtime has no headless Chromium.
+  startRentedNoindexCheck(logger);
 });

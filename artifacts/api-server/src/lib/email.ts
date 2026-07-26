@@ -6,6 +6,7 @@ import {
   renderFeeCopyAlert,
   renderKnowledgeCheckAlert,
   renderLeadNotification,
+  renderRentedCheckAlert,
   renderProspectConfirmation,
   renderSeedStaleAlert,
   renderShowingSchedulerAlert,
@@ -256,6 +257,34 @@ export async function sendKnowledgeCheckAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL },
     "Sent knowledge-page check failure alert email",
+  );
+}
+
+/**
+ * Alert that the always-on rented-unit indexability check (the other half
+ * of check:postpublish, run from this server) found a definitive failure.
+ * Goes to the operational recipient because the fix is code + re-publish,
+ * not a leasing action. Throws when the mailer is unconfigured or the send
+ * fails; deduping lives in the caller (rentedCheck).
+ */
+export async function sendRentedCheckAlert(opts: {
+  summary: string;
+  outputTail: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderRentedCheckAlert(opts);
+  const { contentType, body } = buildMimeBody("rentedalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent rented-unit check failure alert email",
   );
 }
 

@@ -521,6 +521,54 @@ export function renderKnowledgeCheckAlert(opts: {
 }
 
 /**
+ * Operational alert: the always-on rented-unit indexability check (the
+ * other half of check:postpublish, run from the api-server) found a
+ * definitive failure — a rented apartment page may be indexable with a
+ * stale price, or the watchdog has been unable to complete for ~a day.
+ */
+export function renderRentedCheckAlert(opts: {
+  summary: string;
+  outputTail: string;
+}): RenderedEmail {
+  const { summary, outputTail } = opts;
+  const subject =
+    "Website alert: rented-unit indexability check failed on the live site";
+
+  const intro = `The automatic rented-unit indexability check of www.rentatexhibit.com reported a problem: ${summary}`;
+  const remedy =
+    "What to do: run `pnpm --filter @workspace/exhibit-on-superior run check:rented` from the workspace for full detail, inspect main.tsx's pre-hydration stripping, the Seo component, and UnitDetail's sold-out branch, then re-publish. This alert is sent at most once per day.";
+
+  const tail = outputTail.trim();
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    (tail
+      ? `<p style="${BODY_TEXT}"><strong>Check output (tail):</strong></p>` +
+        `<pre style="margin:0 0 16px;font-size:12px;line-height:1.5;white-space:pre-wrap;">${escapeHtml(tail)}</pre>`
+      : "") +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+      "run the check:rented script from the workspace for full detail, inspect the sold-out rendering path, then re-publish. This alert is sent at most once per day.",
+    )}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...(tail ? ["Check output (tail):", tail, ""] : []),
+    remedy,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "A rented apartment page may be indexable with stale pricing.",
+    kicker: "Website Alert",
+    heading: "Rented-Unit Check Failed",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
  * Operational alert: the automatic probe of AppFolio's unofficial showing
  * scheduler endpoints found a sustained failure (endpoints changed, CSRF or
  * captcha added) or identity verification switched on. Visitors still land

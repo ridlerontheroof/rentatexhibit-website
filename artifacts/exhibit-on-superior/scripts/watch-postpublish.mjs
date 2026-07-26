@@ -22,6 +22,13 @@
 // baseline and runs the checks as soon as the stamp first appears — that IS
 // the first publish it can observe.
 //
+// Coverage note: this watcher only runs while the workspace is open. The
+// production api-server carries always-on twins for both halves of
+// check:postpublish — knowledgeCheck.ts (knowledge pages) and rentedCheck.ts
+// (rented-unit noindex, spawning this repo's check-rented-noindex.mjs) run on
+// startup after every publish and every 6h, emailing the ops inbox (once/day)
+// on failure. This watcher remains the richer in-workspace signal.
+//
 // Usage: node scripts/watch-postpublish.mjs [baseUrl] [--now] [--once] [--interval SECONDS]
 //   default baseUrl : https://www.rentatexhibit.com
 //   --now           : also run the checks immediately on startup
