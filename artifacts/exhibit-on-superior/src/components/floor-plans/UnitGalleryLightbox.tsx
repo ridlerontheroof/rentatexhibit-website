@@ -5,6 +5,7 @@ import type { AvailableUnit } from '../../hooks/use-availability';
 import { trackOutboundClick } from '../../lib/analytics';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../../hooks/use-pinch-zoom';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
+import { useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
 
 interface UnitGalleryLightboxProps {
   unit: AvailableUnit;
@@ -130,63 +131,23 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
     resetTap();
   }, [index, resetPinch, resetTap]);
 
-  /** Arrow-key pan step while pinch-zoomed (px), matching PlanLightbox. */
-  const KEY_PAN_STEP = 60;
-
-  useEffect(() => {
-    // Focus management: move focus into the dialog on open, trap Tab within
-    // it, and restore focus to the opener on close.
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    closeButtonRef.current?.focus();
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        // First Escape dismisses the shortcut legend if it is open,
-        // matching PlanLightbox.
-        if (showShortcuts) {
-          e.preventDefault();
-          setShowShortcuts(false);
-          return;
-        }
-        onClose();
-        return;
-      }
-      if (e.key === '?') {
-        e.preventDefault();
-        setShowShortcuts((s) => !s);
-        return;
-      }
-      if (e.key === '+' || e.key === '=') {
-        e.preventDefault();
-        keyboardZoom(1);
-        return;
-      }
-      if (e.key === '-' || e.key === '_') {
-        e.preventDefault();
-        keyboardZoom(-1);
-        return;
-      }
-      if (e.key === '0') {
-        e.preventDefault();
-        resetPinch();
-        return;
-      }
-      if (e.key.startsWith('Arrow')) {
-        // While pinch-zoomed in, arrows pan the photo instead of navigating
-        // (matches PlanLightbox), so keyboard users can inspect finishes
-        // without losing their zoom.
-        if (pinchZoomed) {
-          e.preventDefault();
-          const dx =
-            e.key === 'ArrowLeft' ? KEY_PAN_STEP : e.key === 'ArrowRight' ? -KEY_PAN_STEP : 0;
-          const dy =
-            e.key === 'ArrowUp' ? KEY_PAN_STEP : e.key === 'ArrowDown' ? -KEY_PAN_STEP : 0;
-          panBy(dx, dy);
-          return;
-        }
-        if (e.key === 'ArrowLeft') prev();
-        if (e.key === 'ArrowRight') next();
-      }
+  // Shared keyboard shortcuts (?, +/−, 0, arrow pan/navigate, Escape
+  // dismisses the legend first) — identical to PlanLightbox and the Photo
+  // Gallery page by construction. The Tab focus trap is viewer-specific and
+  // rides along via onOtherKey.
+  useLightboxShortcutKeys({
+    active: true,
+    showShortcuts,
+    setShowShortcuts,
+    keyboardZoom,
+    panBy,
+    onResetZoom: resetPinch,
+    // While pinch-zoomed in, arrows pan the photo instead of navigating, so
+    // keyboard users can inspect finishes without losing their zoom.
+    isArrowPanning: () => pinchZoomed,
+    onNavigate: (dir) => (dir === 1 ? next() : prev()),
+    onEscape: onClose,
+    onOtherKey: (e) => {
       if (e.key === 'Tab' && dialogRef.current) {
         const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
           'a[href], button:not([disabled])',
@@ -203,15 +164,21 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
           first.focus();
         }
       }
-    };
-    window.addEventListener('keydown', onKey);
+    },
+  });
+
+  useEffect(() => {
+    // Focus management: move focus into the dialog on open and restore focus
+    // to the opener on close. (Keyboard shortcuts + Tab trap live in
+    // useLightboxShortcutKeys above.)
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
     document.body.style.overflow = 'hidden';
     return () => {
-      window.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
       previouslyFocused?.focus();
     };
-  }, [onClose, prev, next, keyboardZoom, resetPinch, pinchZoomed, panBy, showShortcuts]);
+  }, []);
 
   /**
    * Clicking anywhere outside the open legend dismisses it, matching

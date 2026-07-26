@@ -12,6 +12,7 @@ import { galleryImages, galleryCategories as categories, photoGalleryJsonLd } fr
 import { useModalHistory } from '../hooks/use-modal-history';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../hooks/use-pinch-zoom';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
+import { useLightboxShortcutKeys } from '../hooks/use-lightbox-shortcut-keys';
 
 
 // Lightbox order: every photo on the page, album by album (in tab order), so
@@ -88,73 +89,22 @@ export function PhotoGallery() {
     resetTap();
   }, [selectedImage, resetPinch, resetTap]);
 
-  /** Arrow-key pan step while pinch-zoomed (px), matching UnitGalleryLightbox. */
-  const KEY_PAN_STEP = 60;
-
-  useEffect(() => {
-    if (selectedImage === null) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        // First Escape dismisses the shortcut legend if it is open,
-        // matching UnitGalleryLightbox.
-        if (showShortcuts) {
-          e.preventDefault();
-          setShowShortcuts(false);
-          return;
-        }
-        closeLightbox();
-        return;
-      }
-      if (e.key === '?') {
-        e.preventDefault();
-        setShowShortcuts((s) => !s);
-        return;
-      }
-      if (e.key === '+' || e.key === '=') {
-        e.preventDefault();
-        keyboardZoom(1);
-        return;
-      }
-      if (e.key === '-' || e.key === '_') {
-        e.preventDefault();
-        keyboardZoom(-1);
-        return;
-      }
-      if (e.key === '0') {
-        e.preventDefault();
-        resetPinch();
-        return;
-      }
-      if (e.key.startsWith('Arrow')) {
-        // While pinch-zoomed in, arrows pan the photo instead of navigating
-        // (matches UnitGalleryLightbox), so keyboard users can inspect
-        // details without losing their zoom.
-        if (pinchZoomed) {
-          e.preventDefault();
-          const dx =
-            e.key === 'ArrowLeft' ? KEY_PAN_STEP : e.key === 'ArrowRight' ? -KEY_PAN_STEP : 0;
-          const dy =
-            e.key === 'ArrowUp' ? KEY_PAN_STEP : e.key === 'ArrowDown' ? -KEY_PAN_STEP : 0;
-          panBy(dx, dy);
-          return;
-        }
-        if (e.key === 'ArrowLeft') showPrev();
-        if (e.key === 'ArrowRight') showNext();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [
-    selectedImage !== null,
-    showPrev,
-    showNext,
-    closeLightbox,
-    keyboardZoom,
-    resetPinch,
-    pinchZoomed,
-    panBy,
+  // Shared keyboard shortcuts (?, +/−, 0, arrow pan/navigate, Escape
+  // dismisses the legend first) — identical to PlanLightbox and
+  // UnitGalleryLightbox by construction.
+  useLightboxShortcutKeys({
+    active: selectedImage !== null,
     showShortcuts,
-  ]);
+    setShowShortcuts,
+    keyboardZoom,
+    panBy,
+    onResetZoom: resetPinch,
+    // While pinch-zoomed in, arrows pan the photo instead of navigating, so
+    // keyboard users can inspect details without losing their zoom.
+    isArrowPanning: () => pinchZoomed,
+    onNavigate: (dir) => (dir === 1 ? showNext() : showPrev()),
+    onEscape: closeLightbox,
+  });
 
   /**
    * Clicking anywhere outside the open legend dismisses it, matching

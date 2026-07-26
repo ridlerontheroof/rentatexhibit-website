@@ -5,6 +5,7 @@ import { LightboxShortcutControls } from '../LightboxShortcutControls';
 import { Link, useLocation } from 'wouter';
 import { unitNumbersForPlan, planSqftLabel, type PlanGroup } from '../../data/floorPlans';
 import { usePinchZoom } from '../../hooks/use-pinch-zoom';
+import { useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
 import {
   clampSheetDragHeight,
@@ -302,60 +303,28 @@ export function PlanLightbox({
 
   // Wheel zoom, drag-to-pan, and keyboard zoom live in usePinchZoom; the
   // beforeZoomChange option leaves scroll-zoom mode before any of them run.
-  const KEY_PAN_STEP = 60;
-
-  const handleKey = useCallback(
-    (e: KeyboardEvent) => {
-      if (!group) return;
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
-        return;
-      }
-      if (e.key === '?') {
-        e.preventDefault();
-        setShowShortcuts((s) => !s);
-        return;
-      }
-      if (e.key === '+' || e.key === '=') {
-        e.preventDefault();
-        keyboardZoom(1);
-        return;
-      }
-      if (e.key === '-' || e.key === '_') {
-        e.preventDefault();
-        keyboardZoom(-1);
-        return;
-      }
-      if (e.key === '0') {
-        e.preventDefault();
-        clearZoomExitTimer();
-        setZoomed(false);
-        setZoomPhase('idle');
-        resetPinch();
-        return;
-      }
-      if (e.key.startsWith('Arrow')) {
-        // While pinch-zoomed in, arrows pan the plan instead of navigating.
-        if (pinch.scale > 1.01) {
-          e.preventDefault();
-          const dx = e.key === 'ArrowLeft' ? KEY_PAN_STEP : e.key === 'ArrowRight' ? -KEY_PAN_STEP : 0;
-          const dy = e.key === 'ArrowUp' ? KEY_PAN_STEP : e.key === 'ArrowDown' ? -KEY_PAN_STEP : 0;
-          panBy(dx, dy);
-          return;
-        }
-        if (zoomed) return; // scroll-zoom mode: let the browser scroll the viewer
-        if (e.key === 'ArrowLeft') onNavigate(-1);
-        else if (e.key === 'ArrowRight') onNavigate(1);
-      }
+  // The keyboard shortcuts themselves (?, +/−, 0, arrow pan/navigate) are the
+  // shared useLightboxShortcutKeys hook — Escape (fit-then-close) stays with
+  // Radix's onEscapeKeyDown below.
+  useLightboxShortcutKeys({
+    active: !!group,
+    showShortcuts,
+    setShowShortcuts,
+    keyboardZoom,
+    panBy,
+    onResetZoom: () => {
+      clearZoomExitTimer();
+      setZoomed(false);
+      setZoomPhase('idle');
+      resetPinch();
     },
-    [group, onNavigate, keyboardZoom, panBy, resetPinch, clearZoomExitTimer, pinch.scale, zoomed],
-  );
-
-  useEffect(() => {
-    if (!group) return;
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [group, handleKey]);
+    // While pinch-zoomed in, arrows pan the plan instead of navigating.
+    isArrowPanning: () => pinch.scale > 1.01,
+    // Scroll-zoom mode: let the browser scroll the viewer instead.
+    canArrowNavigate: () => !zoomed,
+    onNavigate,
+    guardInputFields: true,
+  });
 
   if (!group) return null;
 
