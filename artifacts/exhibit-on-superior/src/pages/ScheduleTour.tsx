@@ -40,7 +40,7 @@ export function ScheduleTour() {
   const [submitted, setSubmitted] = useState(false);
   const createLead = useCreateLead();
   const isOnline = useOnlineStatus();
-  const showBackOnline = useBackOnlineNotice();
+  const [showBackOnline, dismissBackOnline] = useBackOnlineNotice();
   const { data: availability } = useAvailability();
   const search = useSearch();
   const requestedUnit = new URLSearchParams(search).get('unit') ?? '';
@@ -283,11 +283,19 @@ export function ScheduleTour() {
 
                   {showBackOnline && (
                     <div
-                      className="bg-primary/10 text-primary p-4 mb-6 border border-primary"
+                      className="bg-primary/10 text-primary p-4 mb-6 border border-primary flex items-start justify-between gap-4"
                       role="status"
                       aria-live="polite"
                     >
-                      You're back online. You can now request your tour.
+                      <span>You're back online. You can now request your tour.</span>
+                      <button
+                        type="button"
+                        onClick={dismissBackOnline}
+                        aria-label="Dismiss notice"
+                        className="text-primary hover:underline text-sm uppercase tracking-wider flex-shrink-0"
+                      >
+                        Dismiss
+                      </button>
                     </div>
                   )}
 
@@ -302,7 +310,15 @@ export function ScheduleTour() {
                     </div>
                   )}
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    // The back-online notice stays until the visitor dismisses it
+                    // or starts interacting with the form (WCAG 2.2.1 Timing
+                    // Adjustable — no disappearing-on-a-timer).
+                    onChange={dismissBackOnline}
+                    className="space-y-6"
+                    noValidate
+                  >
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">

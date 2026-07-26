@@ -34,7 +34,7 @@ export function ContactUs() {
   const [submitted, setSubmitted] = useState(false);
   const createLead = useCreateLead();
   const isOnline = useOnlineStatus();
-  const showBackOnline = useBackOnlineNotice();
+  const [showBackOnline, dismissBackOnline] = useBackOnlineNotice();
 
   const {
     register,
@@ -205,11 +205,19 @@ export function ContactUs() {
 
                 {showBackOnline && (
                   <div
-                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary"
+                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary flex items-start justify-between gap-4"
                     role="status"
                     aria-live="polite"
                   >
-                    You're back online. You can now send your message.
+                    <span>You're back online. You can now send your message.</span>
+                    <button
+                      type="button"
+                      onClick={dismissBackOnline}
+                      aria-label="Dismiss notice"
+                      className="text-primary hover:underline text-sm uppercase tracking-wider flex-shrink-0"
+                    >
+                      Dismiss
+                    </button>
                   </div>
                 )}
 
@@ -226,11 +234,12 @@ export function ContactUs() {
 
                 <form
                   onSubmit={handleSubmit(onSubmit)}
-                  // The thank-you banner stays until the visitor dismisses it or
-                  // starts a new message (WCAG 2.2.1 Timing Adjustable — no
-                  // disappearing-on-a-timer).
+                  // The thank-you and back-online banners stay until the visitor
+                  // dismisses them or starts interacting with the form (WCAG
+                  // 2.2.1 Timing Adjustable — no disappearing-on-a-timer).
                   onChange={() => {
                     if (submitted) setSubmitted(false);
+                    dismissBackOnline();
                   }}
                   className="space-y-6"
                   noValidate
