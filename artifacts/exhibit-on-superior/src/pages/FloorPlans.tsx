@@ -1,5 +1,5 @@
 import { KnowledgeLinks } from '../components/KnowledgeLinks';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { Link } from 'wouter';
 import { Seo } from '../components/Seo';
@@ -186,6 +186,10 @@ export function FloorPlans() {
 
   const [openId, setOpenId] = useState<string | null>(null);
   const [variantIndex, setVariantIndex] = useState(0);
+  // True while the current history entry is the one handleOpen pushed. Lets a
+  // manual close (the X) consume that entry with history.back() so the phone's
+  // Back button afterwards leaves the page in one press instead of two.
+  const pushedEntryRef = useRef(false);
 
   const filtered = useMemo(
     () => sortGroups(filterGroups(planGroups, search, filters), sort),
@@ -210,6 +214,9 @@ export function FloorPlans() {
   // URL with `plan` reopens that plan's lightbox, navigating away closes it.
   useEffect(() => {
     const onPopState = () => {
+      // Whatever entry handleOpen pushed has been navigated away from, so a
+      // later manual close must not call history.back() again.
+      pushedEntryRef.current = false;
       setFilters(readFiltersFromUrl());
       const id = resolveDeepLink(planGroups, readPlanFromUrl());
       setOpenId(id);
@@ -226,11 +233,20 @@ export function FloorPlans() {
     setOpenId(group.id);
     setVariantIndex(0);
     writePlanToUrl(group.id, 'push');
+    pushedEntryRef.current = true;
   };
 
   const handleClose = () => {
     setOpenId(null);
-    writePlanToUrl(null);
+    if (pushedEntryRef.current) {
+      // Consume the entry handleOpen pushed so one Back press leaves the page.
+      // The resulting popstate re-runs the close (idempotent) and clears the flag.
+      pushedEntryRef.current = false;
+      window.history.back();
+    } else {
+      // Deep-link opens (no pushed entry) just clean the URL in place.
+      writePlanToUrl(null);
+    }
   };
 
   const handleNavigate = (dir: -1 | 1) => {
