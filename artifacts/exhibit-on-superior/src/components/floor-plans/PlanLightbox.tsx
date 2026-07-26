@@ -242,6 +242,11 @@ export function PlanLightbox({
     typeof window !== 'undefined' ? window.innerHeight : 800;
 
   const onSheetDragStart = (e: React.PointerEvent) => {
+    // Pointer drags on the handle bypass the click-capture dismiss logic
+    // (dismissLegendOnOutsideClick), so clear the shortcut legend here too —
+    // otherwise a drag would expand/collapse the sheet with the legend left
+    // stranded on top. Taps also pass through here, matching the click path.
+    setShowShortcuts(false);
     // Any synthetic click from a previous drag fires before the next
     // pointerdown; a still-set flag means no click followed, so clear it here
     // rather than letting it swallow this interaction's deliberate tap.

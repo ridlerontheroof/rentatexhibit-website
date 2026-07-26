@@ -442,6 +442,31 @@ describe('click outside the shortcut legend', () => {
     expect(document.querySelector('button[aria-label="Expand details"]')).toBeNull();
   });
 
+  it('a pointer-drag on the sheet handle dismisses the legend AND still snaps the sheet', () => {
+    openLegend();
+    const handleArea = document.querySelector<HTMLButtonElement>(
+      'button[aria-label="Expand details"]',
+    )!.parentElement!;
+    // Drag the handle upward (pointer events bypass the click-capture
+    // dismiss logic entirely, so this exercises the drag-start dismissal).
+    const pointer = (type: string, clientY: number) =>
+      act(() => {
+        handleArea.dispatchEvent(
+          new MouseEvent(type, { bubbles: true, cancelable: true, clientY }),
+        );
+      });
+    pointer('pointerdown', 600);
+    // Legend clears as soon as the drag starts.
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    pointer('pointermove', 400);
+    pointer('pointermove', 200);
+    pointer('pointerup', 200);
+    // The upward drag still snapped the sheet to expanded.
+    expect(
+      document.querySelector('button[aria-label="Collapse details"]'),
+    ).not.toBeNull();
+  });
+
   it('the ? toggle button still toggles rather than close-then-reopen', () => {
     openLegend();
     const toggle = document.querySelector<HTMLButtonElement>(
