@@ -50,6 +50,40 @@ function pressKey(key: string) {
 beforeEach(() => onClose.mockClear());
 afterEach(() => cleanup());
 
+/** Which photo is showing, from the "1 / 2" counter. */
+function shownCounter(): string {
+  const m = /(\d+ \/ \d+)/.exec(document.body.textContent ?? '');
+  if (!m) throw new Error('photo counter not rendered');
+  return m[1];
+}
+
+type Pt = { x: number; y: number };
+
+function touchList(points: Pt[]) {
+  return points.map((p, i) => ({ identifier: i, clientX: p.x, clientY: p.y }));
+}
+
+/** jsdom has no TouchEvent constructor; a plain Event with touches attached
+ *  works because React's synthetic event reads them off the native event.
+ *  Touch handlers live on the image's viewer container. */
+function fireTouch(
+  type: 'touchstart' | 'touchmove' | 'touchend',
+  touches: Pt[],
+  changedTouches: Pt[] = touches,
+) {
+  const img = document.querySelector('[role="dialog"] img');
+  const viewer = img?.parentElement;
+  if (!viewer) throw new Error('viewer container not rendered');
+  act(() => {
+    const e = new Event(type, { bubbles: true, cancelable: true });
+    Object.assign(e, {
+      touches: touchList(touches),
+      changedTouches: touchList(changedTouches),
+    });
+    viewer.dispatchEvent(e);
+  });
+}
+
 describe('gallery shortcut legend contents', () => {
   it('opens via the "?" key and lists exactly the handled shortcuts', () => {
     renderGallery();
@@ -105,6 +139,39 @@ describe('legend dismiss behavior mirrors the floor-plan lightbox', () => {
     const img = document.querySelector('[role="dialog"] img')!;
     fireEvent.click(img);
     expect(document.getElementById('gallery-shortcuts-legend')).toBeNull();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('a touch swipe changes the photo AND dismisses the legend (tablet flow)', () => {
+    renderGallery();
+    pressKey('?');
+    expect(document.getElementById('gallery-shortcuts-legend')).toBeTruthy();
+    expect(shownCounter()).toBe('1 / 2');
+
+    // >50px horizontal swipe at scale 1: navigates to the next photo.
+    // Touch gestures never end in a click, so the click-capture dismiss
+    // can't run — the swipe handler itself must clear the legend.
+    fireTouch('touchstart', [{ x: 200, y: 100 }]);
+    fireTouch('touchmove', [{ x: 100, y: 100 }]);
+    fireTouch('touchend', [], [{ x: 100, y: 100 }]);
+
+    expect(shownCounter()).toBe('2 / 2');
+    expect(document.getElementById('gallery-shortcuts-legend')).toBeNull();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('arrow-key navigation keeps the legend open', () => {
+    renderGallery();
+    pressKey('?');
+    expect(shownCounter()).toBe('1 / 2');
+
+    pressKey('ArrowRight');
+    expect(shownCounter()).toBe('2 / 2');
+    expect(document.getElementById('gallery-shortcuts-legend')).toBeTruthy();
+
+    pressKey('ArrowLeft');
+    expect(shownCounter()).toBe('1 / 2');
+    expect(document.getElementById('gallery-shortcuts-legend')).toBeTruthy();
     expect(onClose).not.toHaveBeenCalled();
   });
 
