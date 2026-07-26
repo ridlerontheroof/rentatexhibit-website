@@ -118,8 +118,20 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
     panStartY: 0,
   });
 
+  // Mouse drag-to-pan state (desktop). Mirrors the touch "pan" gesture.
+  const mouseDrag = useRef<{
+    startX: number;
+    startY: number;
+    startTx: number;
+    startTy: number;
+    moved: boolean;
+  } | null>(null);
+  const [mouseDragging, setMouseDragging] = useState(false);
+
   const resetPinch = useCallback(() => {
     gesture.current.mode = null;
+    mouseDrag.current = null;
+    setMouseDragging(false);
     setPinch({ scale: 1, tx: 0, ty: 0 });
   }, []);
 
@@ -152,6 +164,101 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
   }, []);
 
   const pinchZoomed = pinch.scale > 1.01;
+
+  // ---------------------------------------------------------------------
+  // Desktop zoom — same behavior as the floor-plan lightbox (PlanLightbox):
+  //   - wheel / ctrl+wheel (trackpad pinch) zooms toward the cursor,
+  //   - click-and-drag pans while zoomed (rubber-band, hard-clamp on release),
+  //   - +/−/0 keyboard zoom steps around the viewer centre.
+  // ---------------------------------------------------------------------
+
+  // Wheel zoom is attached natively with { passive: false } so preventDefault
+  // stops page scroll behind the lightbox.
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      // ctrl+wheel (trackpad pinch) reports larger deltas; scale sensitivity down.
+      const intensity = e.ctrlKey ? 0.01 : 0.002;
+      setPinch((p) => {
+        const scale = Math.min(4, Math.max(1, p.scale * Math.exp(-e.deltaY * intensity)));
+        if (scale <= 1) return { scale: 1, tx: 0, ty: 0 };
+        const rect = viewer.getBoundingClientRect();
+        // Keep the image point under the cursor stationary while scaling.
+        const px = e.clientX - (rect.left + rect.width / 2);
+        const py = e.clientY - (rect.top + rect.height / 2);
+        const ratio = scale / p.scale;
+        return {
+          scale,
+          ...clampPan(px - ratio * (px - p.tx), py - ratio * (py - p.ty), scale, 0),
+        };
+      });
+    };
+    viewer.addEventListener('wheel', onWheel, { passive: false });
+    return () => viewer.removeEventListener('wheel', onWheel);
+  }, [clampPan]);
+
+  // Desktop: click-and-drag pans while zoomed in.
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0 || pinch.scale <= 1) return;
+    e.preventDefault();
+    mouseDrag.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startTx: pinch.tx,
+      startTy: pinch.ty,
+      moved: false,
+    };
+    setMouseDragging(true);
+  };
+
+  useEffect(() => {
+    if (!mouseDragging) return;
+    const onMove = (e: MouseEvent) => {
+      const d = mouseDrag.current;
+      if (!d) return;
+      const dx = e.clientX - d.startX;
+      const dy = e.clientY - d.startY;
+      if (!d.moved && Math.hypot(dx, dy) > 3) d.moved = true;
+      setPinch((p) => ({
+        ...p,
+        ...clampPan(d.startTx + dx, d.startTy + dy, p.scale, PAN_RUBBER_PX),
+      }));
+    };
+    const onUp = () => {
+      mouseDrag.current = null;
+      setMouseDragging(false);
+      // Settle any rubber-band overshoot back inside the hard pan bounds.
+      setPinch((p) => ({ ...p, ...clampPan(p.tx, p.ty, p.scale, 0) }));
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, [mouseDragging, clampPan]);
+
+  // Keyboard zoom: step scale around the viewer centre, reusing the shared
+  // pinch state and clampPanTranslation bounds (matches the wheel-zoom math
+  // with the cursor at the centre, where tx' = ratio * tx).
+  const KEY_ZOOM_STEP = 1.25;
+
+  const keyboardZoom = useCallback(
+    (dir: 1 | -1) => {
+      setPinch((p) => {
+        const scale = Math.min(
+          4,
+          Math.max(1, dir === 1 ? p.scale * KEY_ZOOM_STEP : p.scale / KEY_ZOOM_STEP),
+        );
+        if (scale <= 1) return { scale: 1, tx: 0, ty: 0 };
+        const ratio = scale / p.scale;
+        return { scale, ...clampPan(p.tx * ratio, p.ty * ratio, scale, 0) };
+      });
+    },
+    [clampPan],
+  );
 
   const touchDist = (e: React.TouchEvent) => {
     const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -324,6 +431,21 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        keyboardZoom(1);
+        return;
+      }
+      if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        keyboardZoom(-1);
+        return;
+      }
+      if (e.key === '0') {
+        e.preventDefault();
+        resetPinch();
+        return;
+      }
       if (e.key === 'ArrowLeft') prev();
       if (e.key === 'ArrowRight') next();
       if (e.key === 'Tab' && dialogRef.current) {
@@ -350,7 +472,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
       document.body.style.overflow = '';
       previouslyFocused?.focus();
     };
-  }, [onClose, prev, next]);
+  }, [onClose, prev, next, keyboardZoom, resetPinch]);
 
   if (count === 0) return null;
 
@@ -417,6 +539,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
+          onMouseDown={onMouseDown}
         >
           <img
             ref={imgRef}
@@ -428,7 +551,10 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
               transform: `translate(${pinch.tx}px, ${pinch.ty}px) scale(${pinch.scale})`,
               transformOrigin: 'center center',
               transition:
-                reducedMotion || gesture.current.mode ? 'none' : 'transform 200ms ease',
+                reducedMotion || gesture.current.mode || mouseDragging
+                  ? 'none'
+                  : 'transform 200ms ease',
+              cursor: pinchZoomed ? (mouseDragging ? 'grabbing' : 'grab') : undefined,
             }}
             onClick={(e) => e.stopPropagation()}
           />
