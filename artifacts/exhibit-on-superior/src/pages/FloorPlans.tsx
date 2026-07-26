@@ -79,13 +79,20 @@ function writePlanToUrl(id: string | null) {
 // `ada` does, so copying the address bar reproduces the filtered view.
 const VALID_CATEGORIES = new Set<Category>(['studio', 'convertible', '1br', '2br', '3br']);
 const VALID_BANDS = new Set(FLOOR_BANDS.map((b) => b.id));
+const VALID_SORTS = new Set<SortKey>(SORT_OPTIONS.map((o) => o.value));
 
-export function readFiltersFromUrl(): FilterState {
-  const base: FilterState = {
+// The full shareable view state: sidebar filters plus the free-text search
+// (`q`) and sort order (`sort`), so a copied link reproduces the whole view.
+export type ShareableState = FilterState & { q: string; sort: SortKey };
+
+export function readFiltersFromUrl(): ShareableState {
+  const base: ShareableState = {
     categories: new Set<Category>(),
     bands: new Set<string>(),
     sqft: [SQFT_MIN, SQFT_MAX],
     ada: readAdaFromUrl(),
+    q: '',
+    sort: 'featured',
   };
   if (typeof window === 'undefined') return base;
   const params = new URLSearchParams(window.location.search);
@@ -107,10 +114,13 @@ export function readFiltersFromUrl(): FilterState {
       if (lo <= hi) base.sqft = [lo, hi];
     }
   }
+  base.q = (params.get('q') ?? '').trim();
+  const sort = (params.get('sort') ?? '').trim() as SortKey;
+  if (VALID_SORTS.has(sort)) base.sort = sort;
   return base;
 }
 
-export function writeFiltersToUrl(filters: FilterState) {
+export function writeFiltersToUrl(filters: ShareableState) {
   if (typeof window === 'undefined') return;
   const params = new URLSearchParams(window.location.search);
 
@@ -132,6 +142,13 @@ export function writeFiltersToUrl(filters: FilterState) {
   if (filters.ada) params.set('ada', '1');
   else params.delete('ada');
 
+  // Defaults (empty search, "featured" sort) keep the URL clean.
+  if (filters.q.trim() !== '') params.set('q', filters.q.trim());
+  else params.delete('q');
+
+  if (filters.sort !== 'featured') params.set('sort', filters.sort);
+  else params.delete('sort');
+
   const query = params.toString();
   const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
   window.history.replaceState(null, '', newUrl);
@@ -146,9 +163,9 @@ const structuredData = floorPlansItemListJsonLd();
 const bakedUnitStructuredData = unitAvailabilityJsonLd();
 
 export function FloorPlans() {
-  const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState<FilterState>(readFiltersFromUrl);
-  const [sort, setSort] = useState<SortKey>('featured');
+  const [filters, setFilters] = useState<ShareableState>(readFiltersFromUrl);
+  const search = filters.q;
+  const sort = filters.sort;
   // Live-feed structured data: once the availability query resolves (it starts
   // from the baked snapshot via placeholderData), the Apartment/Offer graph
   // reflects current inventory — a unit rented after the last publish
@@ -205,7 +222,7 @@ export function FloorPlans() {
   };
 
   // Single funnel for filter changes so the URL always mirrors the state.
-  const updateFilters = (update: (f: FilterState) => FilterState) =>
+  const updateFilters = (update: (f: ShareableState) => ShareableState) =>
     setFilters((f) => {
       const next = update(f);
       writeFiltersToUrl(next);
@@ -231,6 +248,9 @@ export function FloorPlans() {
 
   const toggleAda = () => updateFilters((f) => ({ ...f, ada: !f.ada }));
 
+  const setSearch = (q: string) => updateFilters((f) => ({ ...f, q }));
+  const setSort = (sortKey: SortKey) => updateFilters((f) => ({ ...f, sort: sortKey }));
+
   const hasActiveFilters =
     search.trim() !== '' ||
     filters.categories.size > 0 ||
@@ -239,15 +259,15 @@ export function FloorPlans() {
     filters.sqft[1] !== SQFT_MAX ||
     filters.ada;
 
-  const resetAll = () => {
-    setSearch('');
-    updateFilters(() => ({
+  const resetAll = () =>
+    updateFilters((f) => ({
       categories: new Set(),
       bands: new Set(),
       sqft: [SQFT_MIN, SQFT_MAX],
       ada: false,
+      q: '',
+      sort: f.sort,
     }));
-  };
 
   const filterProps = {
     state: filters,
