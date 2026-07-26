@@ -22,6 +22,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'how-much-is-rent',
     question: 'How much is rent at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Pricing & Fees',
     answer:
       'Rent at Exhibit On Superior depends on the floor plan, floor, and move-in date, so there is no single number. Live pricing for every currently available apartment — studio through three-bedroom — is published on the Available Units page and synced automatically from the leasing system, with photos and move-in dates. For help matching a home to your budget, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -70,6 +71,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'what-fees-in-addition-to-rent',
     question: 'What fees does Exhibit On Superior charge in addition to rent?',
+    changeableFacts: true,
     category: 'Pricing & Fees',
     answer:
       'Beyond monthly rent, Exhibit On Superior charges a $60 application fee per applicant, a $500 non-refundable administration fee per apartment, and a monthly Utility & Service Amenity fee of $95–$195 depending on floor plan. There is no security deposit. Electricity is billed directly by ComEd. Garage parking is $335 per month and on-site storage is $25 per month, both optional and subject to availability.',
@@ -113,6 +115,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'is-there-a-security-deposit',
     question: 'Is there a security deposit at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Pricing & Fees',
     answer:
       'No. Exhibit On Superior does not currently collect a security deposit. In place of a deposit there is a $500 non-refundable administration fee per apartment, which is fully refunded if your application is denied but retained if you choose to cancel. For the current policy, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -154,6 +157,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'application-fee',
     question: 'How much is the application fee at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Pricing & Fees',
     answer:
       'The application fee at Exhibit On Superior is $60 per applicant. Each available residence links to its own secure online application, and the fee is shown on the listing. To apply, open any home on the Available Units page and use its Apply Now button, or contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -196,6 +200,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'administration-fee',
     question: 'What is the administration fee at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Pricing & Fees',
     answer:
       'Exhibit On Superior charges a $500 non-refundable administration fee per apartment. The fee is fully refunded if your application is denied, but it is retained if you choose to cancel. It is separate from the $60 per-applicant application fee. For details, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -238,6 +243,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'move-in-specials',
     question: 'Does Exhibit On Superior offer move-in specials?',
+    changeableFacts: true,
     category: 'Pricing & Fees',
     answer:
       'Exhibit On Superior is not offering move-in concessions at this time. Current pricing for every available apartment appears on the Available Units page, synced live from the leasing system. To ask about future offers, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -280,6 +286,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'how-much-is-storage',
     question: 'How much does storage cost at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Pricing & Fees',
     answer:
       'On-site storage at Exhibit On Superior costs $25 per month, subject to availability. Storage is optional and billed in addition to rent, parking, and the monthly Utility & Service Amenity fee. For current storage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -321,6 +328,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'total-move-in-cost',
     question: 'What are the total move-in costs at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Pricing & Fees',
     answer:
       'To move in to Exhibit On Superior, budget for a $60 application fee per applicant, a $500 non-refundable administration fee per apartment, your first month of rent, and the monthly Utility & Service Amenity fee of $95–$195 by floor plan. There is no security deposit. Garage parking ($335/month) and storage ($25/month) are optional. For an itemized quote, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -869,6 +877,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'amenity-hours',
     question: 'What are the amenity hours at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Amenities',
     answer:
       'Indoor amenities at Exhibit On Superior are open 24/7. Outdoor amenities close during quiet hours, 10pm to 6am. The pool and hot tub are seasonal — the pool closes in late September and the hot tub closes at the first snowfall — while the grilling stations and fire pits are available year-round. The front desk is staffed 24 hours a day.',
@@ -1249,6 +1258,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'what-are-pet-fees',
     question: 'What are the pet fees at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Pets',
     answer:
       'Exhibit On Superior charges a one-time, non-refundable pet fee: $650 for one dog or $750 for two dogs (two-dog maximum), and $325 for cats (two-cat maximum). There is no refundable pet deposit and no monthly pet rent. Breed restrictions apply for dogs; see a leasing consultant for details.',
@@ -1426,6 +1436,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'how-much-does-parking-cost',
     question: 'How much does parking cost at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Parking & Transportation',
     answer:
       'Garage parking at Exhibit On Superior costs $335 per month for an unreserved space in the attached indoor multi-level garage, subject to availability. There is no guest parking; visitors can use SpotHero or street parking nearby. For current garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -1470,6 +1481,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'is-there-ev-charging',
     question: 'Does Exhibit On Superior have EV charging?',
+    changeableFacts: true,
     category: 'Parking & Transportation',
     answer:
       'Yes. The attached indoor garage at Exhibit On Superior has three level-2 EV charging stations on the second garage level, each with two reserved EV parking spaces (six spaces total). The stations are operated by EVBOX; for pricing and subscription details visit the EVBOX website. Standard unreserved garage parking is $335 per month.',
@@ -1517,6 +1529,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'is-there-guest-parking',
     question: 'Does Exhibit On Superior have guest parking?',
+    changeableFacts: true,
     category: 'Parking & Transportation',
     answer:
       'The garage does not offer dedicated guest parking. Metered street parking is available on both sides of W Superior St directly in front of the building, providing convenient accessible street-level access. SpotHero lots are also nearby. Residents can rent an unreserved space in the attached indoor garage for $335 per month, subject to availability. For garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -1784,6 +1797,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'how-do-i-apply',
     question: 'How do I apply for an apartment at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Leasing & Applications',
     answer:
       'To apply for an apartment at Exhibit On Superior, open any available residence on the Available Units page and use its Apply Now button. Each unit links to its own secure online application through the AppFolio leasing system. The application fee is $60 per applicant, and approval typically takes one to three business days.',
@@ -1827,6 +1841,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'credit-score-required',
     question: 'What credit score do you need to rent at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Leasing & Applications',
     answer:
       'Exhibit On Superior requires a minimum credit score of 700 to qualify without a co-signer, or 600+ with a qualified co-signer. Qualified co-signers are accepted. For questions about screening, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -1868,6 +1883,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'co-signers-accepted',
     question: 'Does Exhibit On Superior accept co-signers?',
+    changeableFacts: true,
     category: 'Leasing & Applications',
     answer:
       'Yes. Exhibit On Superior accepts qualified co-signers. An applicant with a credit score of 600 or above can qualify with a qualified co-signer, versus a 700 minimum without one. For co-signer requirements, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -1909,6 +1925,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'approval-time',
     question: 'How long does apartment approval take at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Leasing & Applications',
     answer:
       'Application approval at Exhibit On Superior typically takes one to three business days. Applications are submitted through each unit\u2019s secure online form in the AppFolio leasing system. To check the status of an application, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -1949,6 +1966,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'lease-terms',
     question: 'What lease terms does Exhibit On Superior offer?',
+    changeableFacts: true,
     category: 'Leasing & Applications',
     answer:
       'Exhibit On Superior offers lease terms of 12 months or longer. Short-term leases are available based on availability. Because short-term terms and any related pricing vary, see a leasing consultant for current details, or contact the team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -1990,6 +2008,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'occupancy-limits',
     question: 'What are the occupancy limits at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Leasing & Applications',
     answer:
       'Occupancy at Exhibit On Superior follows the Chicago Building Code standard: 2 persons per sleeping room plus 1 additional occupant per apartment. A studio or convertible counts as 1 sleeping room (3 occupants); a one-bedroom allows 4; a two-bedroom allows 5; a three-bedroom allows 7. Every adult on the lease submits their own application at $60 per applicant.',
@@ -2031,6 +2050,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'documents-needed',
     question: 'What documents do I need to apply at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Leasing & Applications',
     answer:
       'To apply at Exhibit On Superior, have a state or federal government-issued photo ID ready. Renters insurance with minimum liability-to-landlord (LLI) coverage of $300,000 is required. The application fee is $60 per applicant, and a minimum credit score of 700 (or 600+ with a qualified co-signer) applies.',
@@ -2072,6 +2092,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'renters-insurance-required',
     question: 'Is renters insurance required at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Leasing & Applications',
     answer:
       'Yes. Exhibit On Superior requires renters insurance with minimum liability-to-landlord (LLI) coverage of $300,000. Have proof of coverage in place per your lease. For specifics on how the property should be listed, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
@@ -2201,6 +2222,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'how-is-electricity-billed',
     question: 'How is electricity billed at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Utilities',
     answer:
       'At Exhibit On Superior, electricity is billed to the resident directly by ComEd, separate from rent. Water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer are covered by the monthly Utility & Service Amenity fee of $95–$195 by floor plan. You set up your ComEd account in your own name.',
@@ -2283,6 +2305,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'what-utility-fee-covers',
     question: 'What does the Utility & Service Amenity fee cover at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Utilities',
     answer:
       'The monthly Utility & Service Amenity fee at Exhibit On Superior covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed separately by ComEd. The fee ranges from $95 to $195 depending on floor plan, from studios up to three-bedrooms.',
@@ -2324,6 +2347,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'utility-fee-by-floor-plan',
     question: 'How much is the Utility & Service Amenity fee by floor plan at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Utilities',
     answer:
       'The monthly Utility & Service Amenity fee at Exhibit On Superior is $95 for studios and junior convertibles, $105 for convertibles, $115 for one-bedrooms, $125 for two-bedroom/one-bath, $150 for two-bedroom/two-bath, $165 for two-bedroom plus den, and $195 for three-bedroom/three-bath homes. It covers water, sewer, trash, heat, A/C, and natural gas for cooking and the dryer; electricity is billed separately by ComEd.',
@@ -2724,6 +2748,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'front-desk-hours',
     question: 'Is there a 24-hour front desk at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Building & Services',
     answer:
       'Yes. The front desk at Exhibit On Superior is staffed 24 hours a day. Indoor amenities are also open 24/7, while outdoor amenities close during quiet hours, 10pm to 6am. The separate leasing office keeps set weekday and weekend hours for tours and applications.',
@@ -2807,6 +2832,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
     slug: 'leasing-office-hours',
     question: 'What are the leasing office hours at Exhibit On Superior?',
+    changeableFacts: true,
     category: 'Building & Services',
     answer:
       'The leasing office at Exhibit On Superior is open Monday through Friday 9am–6pm and Saturday 10am–5pm; it is closed on Sunday. You can tour, apply, or ask questions during these hours, or reach the team any time at exhibit@highlandptrs.com or 312-450-0635. The building front desk is staffed 24 hours a day.',

@@ -4,6 +4,7 @@ import { SplitHeadline } from '../components/SplitHeadline';
 import { NotFound } from './not-found';
 import {
   buildKnowledgeSeoModel,
+  CHANGEABLE_FACTS_NOTE_PARTS,
   knowledgeArticle,
   knowledgePath,
   knowledgeUpdatedDisplay,
@@ -91,6 +92,26 @@ export function KnowledgeArticle() {
             ))}
           </div>
         </section>
+
+        {article.changeableFacts ? (
+          <section className="pb-12 px-4">
+            <div className="container mx-auto max-w-3xl">
+              {/* Shared qualifier for fact-heavy answers (pricing, fees,
+                  policies) — text lives in data/knowledge.ts so every
+                  article renders the identical sentence. */}
+              <p className="border-t border-border pt-4 text-sm text-muted-foreground">
+                {CHANGEABLE_FACTS_NOTE_PARTS.before}
+                <Link
+                  href={CHANGEABLE_FACTS_NOTE_PARTS.linkHref}
+                  className="text-primary underline underline-offset-4"
+                >
+                  {CHANGEABLE_FACTS_NOTE_PARTS.linkLabel}
+                </Link>
+                {CHANGEABLE_FACTS_NOTE_PARTS.after}
+              </p>
+            </div>
+          </section>
+        ) : null}
 
         <section className="pb-12 px-4">
           <div className="container mx-auto max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-8">

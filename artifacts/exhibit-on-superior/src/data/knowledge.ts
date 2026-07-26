@@ -68,6 +68,14 @@ export interface KnowledgeArticle {
   /** Meta description (defaults to the answer, trimmed). */
   description?: string;
   /**
+   * True for fact-heavy articles (pricing, fees, specials, application
+   * requirements, utility charges, office hours, lease terms) whose facts
+   * can drift over time. Renders the shared CHANGEABLE_FACTS_NOTE footer
+   * under the article body — one flag instead of hand-pasting the sentence
+   * into dozens of answers.
+   */
+  changeableFacts?: boolean;
+  /**
    * ISO date (YYYY-MM-DD) the leasing team last reviewed/updated this
    * article. Defaults to KNOWLEDGE_REVIEWED_DATE; set per-article when a
    * single answer is re-verified later. Drives the visible byline and the
@@ -82,6 +90,20 @@ export interface KnowledgeArticle {
  * re-verified in bulk; per-article `updated` overrides for later edits.
  */
 export const KNOWLEDGE_REVIEWED_DATE = '2026-07-26';
+
+/**
+ * Standard qualifier footer for articles flagged `changeableFacts`. Split so
+ * the page can render "Available Units page" as a real link while tests and
+ * any structured-data consumer can use the single joined sentence.
+ */
+export const CHANGEABLE_FACTS_NOTE_PARTS = {
+  before: 'Pricing, availability, fees, and leasing policies may change. Current unit-specific information appears on the ',
+  linkLabel: 'Available Units page',
+  linkHref: '/available-units',
+  after: '.',
+} as const;
+
+export const CHANGEABLE_FACTS_NOTE = `${CHANGEABLE_FACTS_NOTE_PARTS.before}${CHANGEABLE_FACTS_NOTE_PARTS.linkLabel}${CHANGEABLE_FACTS_NOTE_PARTS.after}`;
 
 export function knowledgeUpdated(a: KnowledgeArticle): string {
   return a.updated ?? KNOWLEDGE_REVIEWED_DATE;

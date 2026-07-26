@@ -100,7 +100,10 @@ export function htmlToMarkdown(html, { siteUrl = '' } = {}) {
         out &&
         (isElement || prevWasElement) &&
         !/\s$/.test(out) &&
-        !/^\s/.test(part)
+        !/^\s/.test(part) &&
+        // No space before closing punctuation ("…the [link](url).") — a text
+        // node that IS punctuation should hug the preceding element.
+        !/^[.,;:!?)]/.test(part)
       ) {
         out += ' ';
       }
