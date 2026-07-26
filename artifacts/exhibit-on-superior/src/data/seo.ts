@@ -1152,7 +1152,12 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
 
   const metas: SeoMeta[] = [
     { name: 'description', content: description },
-    { name: 'robots', content: isNoindex ? 'noindex, follow' : 'index, follow' },
+    // max-image-preview:large makes gallery/hero images eligible for large
+    // image previews in Google Search and Discover.
+    {
+      name: 'robots',
+      content: isNoindex ? 'noindex, follow' : 'index, follow, max-image-preview:large',
+    },
     { property: 'og:locale', content: 'en_US' },
     { property: 'og:type', content: 'website' },
     { property: 'og:site_name', content: 'Exhibit On Superior' },

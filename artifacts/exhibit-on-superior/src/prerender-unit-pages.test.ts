@@ -27,7 +27,7 @@ describe('per-unit prerendered pages', () => {
     const { head } = await render(p);
     expect(head).toContain(`Apartment ${unit}`);
     expect(head).toContain(`rel="canonical" href="${SITE_URL}${p}"`);
-    expect(head).toContain('content="index, follow"');
+    expect(head).toContain('content="index, follow, max-image-preview:large"');
   });
 
   it.each(UNIT_PATHS)('%s: body opens with the fact-first summary', async (p) => {

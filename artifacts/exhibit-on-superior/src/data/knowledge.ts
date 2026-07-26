@@ -229,7 +229,7 @@ export function buildKnowledgeSeoModel(a: KnowledgeArticle): SeoModel {
 
   const metas: SeoMeta[] = [
     { name: 'description', content: description },
-    { name: 'robots', content: 'index, follow' },
+    { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { property: 'og:locale', content: 'en_US' },
     { property: 'og:type', content: 'website' },
     { property: 'og:site_name', content: 'Exhibit On Superior' },

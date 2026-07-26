@@ -1,0 +1,398 @@
+{
+  "/": {
+    "hash": "c027dd38de3d2c72401392cdab916ea00c35dc1f3c29d7e4ba87abd9d1271b0b",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units": {
+    "hash": "5b80a41f6bfcf22cf41f792e45e33f21662b0747c35e74c9efdbfed371dd9f5c",
+    "lastmod": "2026-07-26"
+  },
+  "/photo-gallery": {
+    "hash": "0cb9dbee136ac244cfeaf23da3fe2124a3944a6899e8833d998653162944f063",
+    "lastmod": "2026-07-26"
+  },
+  "/virtual-tour": {
+    "hash": "66bb961e337ab8e2eab40e1dd109a679e9c079b8bdb96edcbb63cc22e983172e",
+    "lastmod": "2026-07-26"
+  },
+  "/amenities": {
+    "hash": "31f93e9a38a14c814b713507ef328932806a7df1396259d6115215598876cb62",
+    "lastmod": "2026-07-26"
+  },
+  "/pet-friendly": {
+    "hash": "7c8051903ded1873d97137baeb00d5af300c3480282cd14c41a31cf1836bb358",
+    "lastmod": "2026-07-26"
+  },
+  "/neighborhood": {
+    "hash": "23f025f9d430123a1292a43f724169b79a45a43da3be887c95e2e72380b6f5f8",
+    "lastmod": "2026-07-26"
+  },
+  "/apartment-guide": {
+    "hash": "e4a0d3f580d012047c205fd543f4291822795bf2fe88d9a5a78e5f784777e8fc",
+    "lastmod": "2026-07-26"
+  },
+  "/fees": {
+    "hash": "a3402e316cad225a322fbb307945c28fbce03c68c83559e31aa54189854402c7",
+    "lastmod": "2026-07-26"
+  },
+  "/parking-transportation": {
+    "hash": "71a2f5a1406094636267f77e51be0445b3186349954a0ceb20f0ed1cea407a78",
+    "lastmod": "2026-07-26"
+  },
+  "/application-guide": {
+    "hash": "cb0380254b5c5fd5bccc321d30d9936e104c268e9b749a06120ed7a2ff2f8208",
+    "lastmod": "2026-07-26"
+  },
+  "/faq": {
+    "hash": "521913767b4ee958b462a6eb7653d8491729adcc24c81f3086f5115891521bd2",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge": {
+    "hash": "751e8eb50273e799b43cddb8a05f9d5a32ac8a7d2ddd55f26dff691401ffd0d7",
+    "lastmod": "2026-07-26"
+  },
+  "/contact-us": {
+    "hash": "317ed604d2dab2fd537435094b91ba5d13ca4bb2682025b537d1fea3afe1f8a8",
+    "lastmod": "2026-07-26"
+  },
+  "/map-directions": {
+    "hash": "c4df650e679e8558082c690d870ca599713f0696180e2f87d2c7854801a8c375",
+    "lastmod": "2026-07-26"
+  },
+  "/residents": {
+    "hash": "cdfbf984fe79a9e9ee95648a95231eefb4428b5734c989f85967b78c505f0c45",
+    "lastmod": "2026-07-26"
+  },
+  "/schedule-a-tour": {
+    "hash": "0f98c2896d46d4fcfc93078f28a1966552b38b5a683d6b236c93d8b5e00656ee",
+    "lastmod": "2026-07-26"
+  },
+  "/about": {
+    "hash": "903cf3742fd9ed74c7ebddc1c20795d060c3e956790c7d9dc466ad43359948ce",
+    "lastmod": "2026-07-26"
+  },
+  "/reviews": {
+    "hash": "53d800512db82c841ccf1dc90c21aecd81ed1b294169f25317c53e020d39d09a",
+    "lastmod": "2026-07-26"
+  },
+  "/privacy-policy": {
+    "hash": "e19ce03760122f1646de7387d38fb849dd5e18f49fd5a34b97aab9bad63dd274",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units/0208": {
+    "hash": "f19fe4e91393f980373a8e564988c769094a34e2b44b30203f5e7b812a1e9c4d",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units/0610": {
+    "hash": "2f2b50efe1abe3725ac7745d8947acd1d6cb35dbbfd4540b19e72fc381fef893",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units/0807": {
+    "hash": "1427c1890e9fe41b669a33cbf84419199efa0aa3a51b9855cc685b9217cc2578",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units/1301": {
+    "hash": "da93fd6037b77ba2fff3b17534809ff9391df013d74e7abca8aad82df4581173",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units/1808": {
+    "hash": "1541b5cfb878414f8db5717aade716aff5e85c91077fd164406592d138579459",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units/2407": {
+    "hash": "f5e14ec323543ac1376fc6d961f28b4ffee1f56970d8161e6188321f71ceb6c4",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units/2705": {
+    "hash": "f508ad8e3bad1a961f438d0c566412ad16a59fa92b24fbb8de0e1a0d4bd9d4f7",
+    "lastmod": "2026-07-26"
+  },
+  "/available-units/2801": {
+    "hash": "32dff2be1beafe0321abc95346502520448012fa52457e471196744773735ee1",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/how-much-is-rent": {
+    "hash": "4136833b5d059224abc4106b985be55a655bad41208ad5dc61e0f67ad17ad556",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/what-fees-in-addition-to-rent": {
+    "hash": "2d67a0c1147ddb5ba4281efa8d3abe5324cb493d50b6c647d32ed0e8a521836f",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/is-there-a-security-deposit": {
+    "hash": "01d88362639de86043db853aeefd516faeeb4e5578b3413336e03771c93b6a38",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/application-fee": {
+    "hash": "aee05e58308eab909295d8c7ccdf5d8046bc7d09e582315cc29deafe629bad16",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/administration-fee": {
+    "hash": "c96391618822f9347610dfbc64b403b7a5a8726e0ff02503e300a729109968b9",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/move-in-specials": {
+    "hash": "1193e6127d1eee31b41a8877666c96dd90f9c67a7df6bf12749de9db1df37b64",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/how-much-is-storage": {
+    "hash": "8cfa848ced655cf046894b73c0d09852c9e47e991fa259d0ce4999fb34bc6576",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/total-move-in-cost": {
+    "hash": "4b3224fbf69d185f8e67177d37e48a1d59e94e13851b1a981f1e46793d961b54",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/what-apartment-sizes": {
+    "hash": "bf66d58b3258bd7f81ebcde725902d1271524f367c8947218ccab4bf43eeb062",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/do-studios-exist": {
+    "hash": "a067cc121ec987ad0ab460e75d51e98aac0fdf791339c42a9008e989ae7773ec",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/what-is-a-convertible": {
+    "hash": "d5419bfdd2f746e1cb9c3a0affcd2db6b47112520d6eeff65f97fca1384befd3",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/largest-apartment": {
+    "hash": "5382ec7d37b61ae9e944eb99831032cf0afbefa4e9227f0bd92ba8adea3cfffb",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/which-units-have-balconies": {
+    "hash": "f1a32c8fd15c4308359da7b3aab72e1e2f4cef239a9a004c715d88b266702b2f",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/are-apartments-furnished": {
+    "hash": "1d2ae9bb3e01c4d9c4d1c00c38e87d348ba0dc3dbffc09299e38db77f6aa7679",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/in-unit-laundry": {
+    "hash": "8f8afed49c351e50b1e4ebbc88dd6a53de6f8914da1fb826e56910796994942f",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/apartment-finishes": {
+    "hash": "56264206fdc500879c1354903b2cde8024563291d43c6db8ab62d2c5106da74e",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/views-and-windows": {
+    "hash": "70933c7c793767aca04bc93468ec3739c1bde1eecb01b83ac319afb6901b47e6",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/ada-accessible-apartments": {
+    "hash": "b98085d5519002733d4f66ebc56c3558c5e9b5cc99fbd4b88bb3b78f596f3b2a",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/full-amenity-list": {
+    "hash": "a872e8843d54a58b3bf94aa846025e427957f300bdb1d30fafdf64841a76ee68",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/is-there-a-pool": {
+    "hash": "e12745a215438db2b044c377a13f5c0d21590aca29529a0a2dcea3b64dd88480",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/amenity-hours": {
+    "hash": "11e44bf1db5cf8fdd5dd7f168c683af8f50fe74f0cde39173d395d0fc95db38c",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/fitness-center": {
+    "hash": "f3e22fa569490de3a12e2daec847e88951e882c08bf356c1271d648dfdca25d3",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/work-from-home-spaces": {
+    "hash": "941fc19d09b29cc3389e7e996572eb3f9cbb1449c835188be175e68700470678",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/party-room-reservation": {
+    "hash": "ec7fc19b062b3c952f911f0008d61663161f55d217501a7db56f555881b93223",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/grills-and-fire-pits": {
+    "hash": "a8808c0dbb68b34bea68c99c8e2db2daf92cb849f737bbaf8de1bf3ee2c98d3e",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/private-park": {
+    "hash": "503f4e22be3baeac291d9e34d4743332154329fa7345c5067838c64c76eff535",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/on-site-retail": {
+    "hash": "395d164a0f55f8bc4320d0ae06a445424aa1cfdf37875ecf3992807e5a1afb7c",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/does-exhibit-allow-dogs": {
+    "hash": "ccef1478a76aac9cc6436818b13a74e68de1e44ce5297278d8f87a71202e01b9",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/does-exhibit-allow-cats": {
+    "hash": "33903c595feabf432931ca3a78d2887aeff7034cbaf9baffe3da24d2aa5d8309",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/what-are-pet-fees": {
+    "hash": "b0f7f817b5db1084cdd597ce0f0011fce015b2bd3bad1a0317f37819f94c1cc8",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/breed-and-weight-rules": {
+    "hash": "7117488a80126982186a92bd2c188f0977ddd41faa01d0739c085d59948903cc",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/pet-amenities": {
+    "hash": "dba073f245537774c3d3447c3e86869b43bf973da0ce83c1fb3f378e1098ce06",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/how-many-pets": {
+    "hash": "61997dd1de106a9fac0dc36fdfe7de5d26472374d85eea61fd18390a5a8dec68",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/how-much-does-parking-cost": {
+    "hash": "c7adfb7f93e5fea49925691cbf218cdba84b769e062f287c77bb9db39f572034",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/is-there-ev-charging": {
+    "hash": "b2357013c570bfd419c35af709b962b7911794e6d80cce49bbcc1d1ded9aa271",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/is-there-guest-parking": {
+    "hash": "8d4461f05b9fae8497c6b1afdd85a636f345a6cb81b4f85848db808b98b0c46d",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/is-there-bike-storage": {
+    "hash": "db51d60d3f885b47d7e1e0018e47c3abad272b107ec36b37580b8d93260d4d77",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/cta-proximity": {
+    "hash": "dc50914d6b7351e5ae4ed0b66ecb688b4075e2038b5c29f0f897bde7bf8f84bb",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/car-free-living": {
+    "hash": "f76764f5489e65b021daa34521910677cf7b1b36ab97e419821b7aebb0ab221a",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/highway-access": {
+    "hash": "3bfd959a84683063e8befe9606008e39606c541328f582cd793973926fd1a7b7",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/walk-to-the-loop": {
+    "hash": "ef2aa5e26e5b1cf6d2df9c2a6e84243e17b84524b8c97cb954d3e40b8681b55d",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/how-do-i-apply": {
+    "hash": "e078cb777eb503248195c953fa26c54800908ecd465306b11752a1f621070665",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/credit-score-required": {
+    "hash": "8bfa74469c392f266c46d22e3deea16b8fc68053f13eb6fbee58b9ab8aa0acd6",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/co-signers-accepted": {
+    "hash": "8d79e78170e313b431f0d865d00bf6b1a88bb031880630bfa1a597d933a9ca34",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/approval-time": {
+    "hash": "08199d6754b5b58759645990b54ef4500e6edbfe58ef7e5f0365dc269e7eb308",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/lease-terms": {
+    "hash": "05e98d339bc9597da921b10b3ac9700bef9a687fdaab917c1dc139cf228a2eb9",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/occupancy-limits": {
+    "hash": "e08c4dbec6ef2e81b60e5d8fa6c58018d4fb4cc49b52766e67435129973af4e3",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/documents-needed": {
+    "hash": "bb7d8b9d64bf561287133af09b5948784d3a6442c835a4bf2194bd45a3f75f84",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/renters-insurance-required": {
+    "hash": "5f464ca9a339c5aac2f3ebdcddc9a89400a9c9d84c5af54f96b07e1ea9988682",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/schedule-a-tour": {
+    "hash": "0f399a728ca5a6005b57daa619567d103f2dfb9967933c0485d4f61ac41426dc",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/virtual-tours": {
+    "hash": "282b155aa17b7dd998c044c786b3a3a099c7899c32e634f85e51b81264884954",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/how-is-electricity-billed": {
+    "hash": "a705758eafdd75094317ba57e69f966a11785a4f87bb7b6a79055e19c6608cb7",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/internet-options": {
+    "hash": "390857e6ec154dd0832fcc6c9541ea3df0dbe7c23fdafeea356a7ea0430a17da",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/what-utility-fee-covers": {
+    "hash": "70ed4992fb1b11c471188c5d1c81b9c64df24b37866e587d85b61bbf08be5469",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/utility-fee-by-floor-plan": {
+    "hash": "2ff0775c4e478ffab3e312fd4f91abd9f5abc4622396d2a2bc21f3f698194d56",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/what-neighborhood": {
+    "hash": "aa8dc33fa4fda8356a8871b67a48c40fa8d80ddd4e4969ab6d655a46bc257f4d",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/neighborhood-groceries": {
+    "hash": "7d06907b32bd52bcf8a92d1ce7bad880847ad98ca9f3f7e36a62a7d50c7c15fa",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/neighborhood-dog-parks": {
+    "hash": "2017ec1823e3cfce8fbdcd07cb2e4e57de04e0630a5db0b644251449f96f35a7",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/neighborhood-gyms": {
+    "hash": "905491649b50b21356bc686469e7a572d01257a8a74d1a6c5d17c5443eb900e5",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/neighborhood-parks": {
+    "hash": "763189b469e949934e38a9d7bfd513694b4464314298c5c79d5953263a2915ae",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/whats-near-superior-and-wells": {
+    "hash": "2916cc19bb434b316e73eba8c6dfa71315f4dd2acb951de2041b84fe2353cbff",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/neighborhood-dining": {
+    "hash": "7458361fea15278eaa082d0b87d0d9331665367f2ce001d774e637865bea7fdf",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/how-many-apartments": {
+    "hash": "e0d329f31d8811603e05fecb4a67aaff0e401b44fc96ac329b908b50da88012d",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/front-desk-hours": {
+    "hash": "6b95f1c6d06e5bb938567a7253be6487b36157643fe6930cdc97b5bfb1f387e9",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/who-manages-exhibit": {
+    "hash": "10ca9683593737f97cf3168e7ce54ebb6730f8e14fd61427c828b744df7372b7",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/leasing-office-hours": {
+    "hash": "1c7bcbac373ba5cbaa6c797360eab83ee6f0aa132871eee6d1d40d6272208630",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/building-address": {
+    "hash": "941ea89d164786a570725676a78c85f1621a089274699c8e07f0531137c26a33",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/resident-portal": {
+    "hash": "7369328ea529532f6a249957187e3ba17ddb59fa94be54dff69b710fe470ad8b",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/reviews-sources": {
+    "hash": "6aebd98177e41f5bc505aafdf6e6571fb516e24fa102baef8ac8eb2b14c57f29",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/accessibility-contact": {
+    "hash": "df82c1c367452748b1a657267a4d05864341dc7b49d6039e529913ebd2a6f1fb",
+    "lastmod": "2026-07-26"
+  },
+  "/knowledge/smoking-policy": {
+    "hash": "18b993edd6e6d573a356b6094614732d98de6393e5d84629bd37b84e7651cd38",
+    "lastmod": "2026-07-26"
+  }
+}

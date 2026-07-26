@@ -5,6 +5,7 @@
 //
 // Runs after `vite build` (client) and `vite build --ssr` (server bundle).
 import { promises as fs } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
@@ -614,35 +615,12 @@ console.log(`Wrote ${Object.keys(LEGACY_REDIRECT_STUBS).length} legacy redirect 
 
 // Sitemap: indexable pages only (noindex pages excluded). Redirect routes such
 // as /available-units are absent from PAGE_SEO, so they're excluded by design.
-const today = new Date().toISOString().slice(0, 10);
+// Generation itself happens AFTER the markdown twins below: each URL's
+// <lastmod> is derived from a content hash over the page's twin, so the twin
+// bodies must exist first.
 const indexable = seoPaths.filter((p) => !PAGE_SEO[p].noindex);
-const urls = indexable
-  .map((p) => {
-    const priority = p === '/' ? '1.0' : '0.8';
-    return `  <url><loc>${canonicalFor(p)}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
-  })
-  .concat(
-    // Per-unit pages: refreshed on every publish, churn with inventory —
-    // daily changefreq, slightly lower priority than the hub pages.
-    unitPaths.map(
-      (p) =>
-        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`,
-    ),
-    // Knowledge Center articles: stable evergreen content.
-    knowledgePaths.map(
-      (p) =>
-        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
-    ),
-  )
-  .join('\n');
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
-await fs.writeFile(path.join(publicDir, 'sitemap.xml'), sitemap, 'utf8');
 
-console.log(
-  `Prerendered ${allPaths.length} routes; sitemap.xml written with ${
-    indexable.length + unitPaths.length + knowledgePaths.length
-  } indexable URLs.`,
-);
+console.log(`Prerendered ${allPaths.length} routes.`);
 
 // Post-build guard: every knowledge article must ship its answer-first
 // structure — question in <title> and H1, self-canonical, the answer text in
@@ -760,6 +738,11 @@ const mdPathFor = (routePath) =>
   routePath === '/'
     ? path.join(publicDir, 'index.md')
     : path.join(publicDir, `${routePath.replace(/^\//, '')}.md`);
+// Per-page content fingerprint for the sitemap's <lastmod>: sha256 over the
+// full markdown twin (frontmatter title/description + body text). The twin is
+// derived from the rendered <main> and never contains build-stamped chunk
+// names, so it only changes when the page's actual content changes.
+const contentHashes = new Map();
 {
   // Stale-twin cleanup: remove any .md left over from routes that no longer
   // exist (e.g. a rented unit) so old twins can't outlive their pages.
@@ -806,6 +789,7 @@ const mdPathFor = (routePath) =>
     const outPath = mdPathFor(routePath);
     await fs.mkdir(path.dirname(outPath), { recursive: true });
     await fs.writeFile(outPath, md, 'utf8');
+    contentHashes.set(routePath, createHash('sha256').update(md).digest('hex'));
   }
   if (problems.length) {
     throw new Error(
@@ -814,6 +798,59 @@ const mdPathFor = (routePath) =>
     );
   }
   console.log(`Markdown twins written for ${allPaths.length} pages.`);
+}
+
+// Sitemap with content-derived <lastmod>: each URL's date comes from the
+// committed hash→date map src/data/sitemapLastmod.json. An entry only moves
+// to today's date when the page's content hash changes — a rebuild without
+// content changes must never touch any lastmod (the handoff requires dates
+// derived from content changes, not deployment time). The map is rewritten
+// here (dropping paths that no longer exist, e.g. rented units) and must be
+// committed alongside the dist so dates persist across builds; the
+// sitemap-lastmod test suite guards map↔twin↔sitemap consistency.
+{
+  const lastmodPath = path.join(root, 'src', 'data', 'sitemapLastmod.json');
+  /** @type {Record<string, {hash: string, lastmod: string}>} */
+  let prior = {};
+  try {
+    prior = JSON.parse(await fs.readFile(lastmodPath, 'utf8'));
+  } catch {
+    // First build with the mechanism: every page starts at today's date.
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  const sitemapPaths = [...indexable, ...unitPaths, ...knowledgePaths];
+  /** @type {Record<string, {hash: string, lastmod: string}>} */
+  const lastmods = {};
+  for (const p of sitemapPaths) {
+    const hash = contentHashes.get(p);
+    if (!hash) {
+      throw new Error(`Prerender aborted: no content hash for sitemap URL ${p} (twin missing?).`);
+    }
+    const prev = prior[p];
+    lastmods[p] = prev && prev.hash === hash ? prev : { hash, lastmod: today };
+  }
+  await fs.writeFile(lastmodPath, `${JSON.stringify(lastmods, null, 2)}\n`, 'utf8');
+
+  const urls = [
+    ...indexable.map((p) => {
+      const priority = p === '/' ? '1.0' : '0.8';
+      return `  <url><loc>${canonicalFor(p)}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
+    }),
+    // Per-unit pages: churn with inventory — daily changefreq, slightly
+    // lower priority than the hub pages.
+    ...unitPaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`,
+    ),
+    // Knowledge Center articles: stable evergreen content.
+    ...knowledgePaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
+    ),
+  ].join('\n');
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  await fs.writeFile(path.join(publicDir, 'sitemap.xml'), sitemap, 'utf8');
+  console.log(`sitemap.xml written with ${sitemapPaths.length} URLs (content-derived lastmod).`);
 }
 
 // llms.txt + llms-full.txt: regenerated every build so they can never drift

@@ -53,7 +53,12 @@ export async function computeSeoSourceHash(artifactRoot) {
         // The og-cards stamp ties share-card BYTES to OG_CARD_VERSION (its own
         // guard: og-cards-freshness.test.ts). It never affects head markup, so
         // restamping cards must not mark dist/public stale and force a rebuild.
-        !f.endsWith('og-cards-stamp.json'),
+        !f.endsWith('og-cards-stamp.json') &&
+        // The sitemap lastmod map is rewritten BY the prerenderer (it records
+        // per-page content-hash → date for <lastmod>). It never affects head
+        // markup, and hashing a file the build itself rewrites would make
+        // every build self-stale.
+        !f.endsWith('sitemapLastmod.json'),
     ),
     path.join(artifactRoot, 'src', 'entry-server.tsx'),
     path.join(artifactRoot, 'scripts', 'prerender.mjs'),
