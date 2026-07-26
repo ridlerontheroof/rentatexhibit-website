@@ -2355,7 +2355,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'Fee by home type',
         paragraphs: [
-          'Studio (484 sq ft) and Jr. Convertible (450–478 sq ft): $95. Convertible (554 sq ft): $105. One-bedroom (619–768 sq ft): $115.',
+          'Studio (448–484 sq ft) and Jr. Convertible (450–478 sq ft): $95. Convertible (554 sq ft): $105. One-bedroom (619–768 sq ft): $115.',
           'Two-bedroom/one-bath (767–821 sq ft): $125. Two-bedroom/two-bath (899–1,135 sq ft): $150. Two-bedroom plus den (983 sq ft): $165. Three-bedroom/three-bath (1,455–1,528 sq ft): $195.',
         ],
       },

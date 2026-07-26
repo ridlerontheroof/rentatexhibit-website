@@ -13,7 +13,7 @@ import { SplitHeadline } from '../components/SplitHeadline';
  * unconfirmed is explicitly deferred to the leasing team — no guesses.
  */
 const UTILITY_BUNDLE = [
-  { type: 'Studio', size: '484 sq ft', fee: '$95' },
+  { type: 'Studio', size: '448\u2013484 sq ft', fee: '$95' },
   { type: 'Jr. Convertible', size: '450\u2013478 sq ft', fee: '$95' },
   { type: 'Convertible', size: '554 sq ft', fee: '$105' },
   { type: '1 Bedroom', size: '619\u2013768 sq ft', fee: '$115' },

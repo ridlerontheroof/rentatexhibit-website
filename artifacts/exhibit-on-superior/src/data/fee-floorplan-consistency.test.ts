@@ -60,6 +60,29 @@ describe('two-bedroom/one-bath fee sq-ft range', () => {
   });
 });
 
+describe('studio fee sq-ft range', () => {
+  const studios = plans.filter((p) => p.category === 'studio');
+  const label = rangeLabel(
+    Math.min(...studios.map((p) => p.sqftMin)),
+    Math.max(...studios.map((p) => p.sqft)),
+  );
+
+  it('has studio plans in the dataset', () => {
+    expect(studios.length).toBeGreaterThan(0);
+  });
+
+  it('matches the Fees page table row', () => {
+    const row = feeTableRows().find((r) => r.type === 'Studio');
+    expect(row, 'Fees.tsx must keep a "Studio" row').toBeDefined();
+    expect(row!.size).toBe(label);
+  });
+
+  it('matches the knowledge article copy', () => {
+    expect(utilityFeeArticle, 'utility-fee-by-floor-plan article must exist').toBeDefined();
+    expect(utilityFeeArticleText).toContain(`Studio (${label})`);
+  });
+});
+
 describe('floor-plan configuration count', () => {
   it('Apartment Guide copy matches the dataset group count', () => {
     const m = guideSource.match(/(\d+) floor-plan\s+configurations/);
