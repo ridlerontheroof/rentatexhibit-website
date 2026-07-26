@@ -26,7 +26,7 @@ const imagesSrcDir = path.join(artifactRoot, 'images-src');
 // Page names referenced by PAGE_SEO ogImages under /images/og/, e.g. "home".
 const referencedPages = new Map<string, string>(); // card name -> PAGE_SEO path
 for (const [pagePath, seo] of Object.entries(PAGE_SEO)) {
-  const m = seo.ogImage?.match(/\/images\/og\/([^/]+)\.jpg$/);
+  const m = seo.ogImage?.match(/\/images\/og\/([^/?]+)\.jpg(?:\?v=\d+)?$/);
   if (m) referencedPages.set(m[1], pagePath);
 }
 

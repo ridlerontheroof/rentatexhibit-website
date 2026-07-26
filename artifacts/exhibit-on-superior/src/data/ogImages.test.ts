@@ -16,7 +16,8 @@ const EXPECTED_HEIGHT = 630;
 /** Map an absolute og image URL (https://site/images/...) to a public/ file path. */
 function urlToPublicPath(url: string): string {
   expect(url.startsWith(`${SITE_URL}/`)).toBe(true);
-  return join(PUBLIC_DIR, url.slice(SITE_URL.length));
+  // Strip the cache-busting version query (?v=N) — it is not part of the file path.
+  return join(PUBLIC_DIR, url.slice(SITE_URL.length).replace(/\?.*$/, ''));
 }
 
 /** Parse JPEG dimensions from SOF0/SOF2 (baseline/progressive) markers. */

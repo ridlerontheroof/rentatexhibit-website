@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { IMAGE_MANIFEST } from './imageManifest';
+import { PAGE_SEO, SITE_URL } from './seo';
 
 // Verifies that every static image the site references actually exists under
 // public/images/, and that no orphan files linger there unreferenced.
@@ -62,6 +63,16 @@ function collectReferencedPaths(): Map<string, Set<string>> {
       if (!refs.has(match)) refs.set(match, new Set());
       refs.get(match)!.add(relative(ROOT, file));
     }
+  }
+
+  // Share cards are referenced via ogCardUrl('<name>') in seo.ts, so their
+  // /images/og/*.jpg paths never appear as literals. Add them from PAGE_SEO,
+  // stripping the site origin and cache-busting query.
+  for (const [pagePath, seo] of Object.entries(PAGE_SEO)) {
+    if (!seo.ogImage) continue;
+    const p = seo.ogImage.replace(SITE_URL, '').replace(/\?.*$/, '');
+    if (!refs.has(p)) refs.set(p, new Set());
+    refs.get(p)!.add(`src/data/seo.ts (PAGE_SEO ${pagePath})`);
   }
   return refs;
 }

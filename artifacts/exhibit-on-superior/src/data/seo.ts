@@ -6,6 +6,19 @@ import { ADA_COUNTS } from './ada';
 export const SITE_URL = 'https://www.rentatexhibit.com';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg`;
 
+/**
+ * Cache-buster for the share cards in public/images/og/. Facebook, LinkedIn,
+ * and iMessage cache og:image previews by URL for weeks; bump this whenever
+ * the cards are regenerated with new artwork so social scrapers see a new URL
+ * and fetch the fresh image. (v2: 2026-07 regeneration of nine stale cards,
+ * notably reviews.jpg.)
+ */
+export const OG_CARD_VERSION = 2;
+
+/** Absolute, cache-busted URL for a share card in public/images/og/. */
+export const ogCardUrl = (name: string): string =>
+  `${SITE_URL}/images/og/${name}.jpg?v=${OG_CARD_VERSION}`;
+
 export const AVAILABILITY_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
 export const APPLY_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
 /** External "Schedule a Tour" destination (property management page). */
@@ -42,7 +55,7 @@ export interface PageSeo {
 export const PAGE_SEO: Record<string, PageSeo> = {
   '/': {
     path: '/',
-    ogImage: `${SITE_URL}/images/og/home.jpg`,
+    ogImage: ogCardUrl('home'),
     label: 'Exhibit On Superior',
     title: 'Luxury Apartments in River North Chicago | Exhibit On Superior',
     description:
@@ -66,7 +79,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/available-units': {
     path: '/available-units',
-    ogImage: `${SITE_URL}/images/og/floor-plans.jpg`,
+    ogImage: ogCardUrl('floor-plans'),
     label: 'Available Units',
     title: 'Available Units & Floor Plans | Exhibit On Superior Chicago',
     description:
@@ -90,7 +103,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/photo-gallery': {
     path: '/photo-gallery',
-    ogImage: `${SITE_URL}/images/og/photo-gallery.jpg`,
+    ogImage: ogCardUrl('photo-gallery'),
     label: 'Photo Gallery',
     title: 'Photo Gallery | Exhibit On Superior Chicago Apartments',
     description:
@@ -114,7 +127,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/virtual-tour': {
     path: '/virtual-tour',
-    ogImage: `${SITE_URL}/images/og/virtual-tour.jpg`,
+    ogImage: ogCardUrl('virtual-tour'),
     label: 'Virtual Tour',
     title: 'Virtual Tours | Exhibit On Superior Apartments Chicago',
     description:
@@ -138,7 +151,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/amenities': {
     path: '/amenities',
-    ogImage: `${SITE_URL}/images/og/amenities.jpg`,
+    ogImage: ogCardUrl('amenities'),
     label: 'Amenities',
     title: 'Amenities | Exhibit On Superior River North Apartments',
     description:
@@ -194,7 +207,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/pet-friendly': {
     path: '/pet-friendly',
-    ogImage: `${SITE_URL}/images/og/pet-friendly.jpg`,
+    ogImage: ogCardUrl('pet-friendly'),
     label: 'Pet Friendly',
     title: 'Pet-Friendly Apartments in River North | Exhibit On Superior',
     description:
@@ -226,7 +239,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/neighborhood': {
     path: '/neighborhood',
-    ogImage: `${SITE_URL}/images/og/neighborhood.jpg`,
+    ogImage: ogCardUrl('neighborhood'),
     label: 'Neighborhood',
     title: 'River North Neighborhood | Exhibit On Superior Chicago',
     description:
@@ -258,7 +271,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/apartment-guide': {
     path: '/apartment-guide',
-    ogImage: `${SITE_URL}/images/og/apartment-guide.jpg`,
+    ogImage: ogCardUrl('apartment-guide'),
     label: 'Apartment Guide',
     title: 'Apartment Guide: Layouts, Finishes & Views | Exhibit On Superior',
     description:
@@ -298,7 +311,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/fees': {
     path: '/fees',
-    ogImage: `${SITE_URL}/images/og/fees.jpg`,
+    ogImage: ogCardUrl('fees'),
     label: 'Fees & Leasing Costs',
     title: 'Fees, Utilities & Leasing Costs | Exhibit On Superior Chicago',
     description:
@@ -342,7 +355,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/parking-transportation': {
     path: '/parking-transportation',
-    ogImage: `${SITE_URL}/images/og/parking-transportation.jpg`,
+    ogImage: ogCardUrl('parking-transportation'),
     label: 'Parking & Transportation',
     title: 'Parking & Transportation | Exhibit On Superior River North',
     description:
@@ -390,7 +403,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/application-guide': {
     path: '/application-guide',
-    ogImage: `${SITE_URL}/images/og/application-guide.jpg`,
+    ogImage: ogCardUrl('application-guide'),
     label: 'Application Guide',
     title: 'Application & Qualification Guide | Exhibit On Superior',
     description:
@@ -430,7 +443,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/faq': {
     path: '/faq',
-    ogImage: `${SITE_URL}/images/og/faq.jpg`,
+    ogImage: ogCardUrl('faq'),
     label: 'FAQ',
     title: 'Frequently Asked Questions | Exhibit On Superior Chicago',
     description:
@@ -441,7 +454,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/knowledge': {
     path: '/knowledge',
-    ogImage: `${SITE_URL}/images/og/faq.jpg`,
+    ogImage: ogCardUrl('faq'),
     label: 'Knowledge Center',
     title: 'Knowledge Center: Renter Questions Answered | Exhibit On Superior',
     description:
@@ -452,7 +465,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/contact-us': {
     path: '/contact-us',
-    ogImage: `${SITE_URL}/images/og/contact-us.jpg`,
+    ogImage: ogCardUrl('contact-us'),
     label: 'Contact Us',
     title: 'Contact Exhibit On Superior | River North Chicago Apartments',
     description:
@@ -475,7 +488,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/map-directions': {
     path: '/map-directions',
-    ogImage: `${SITE_URL}/images/og/map-directions.jpg`,
+    ogImage: ogCardUrl('map-directions'),
     label: 'Map + Directions',
     title: 'Map & Directions | Exhibit On Superior Chicago IL',
     description:
@@ -495,7 +508,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/residents': {
     path: '/residents',
-    ogImage: `${SITE_URL}/images/og/residents.jpg`,
+    ogImage: ogCardUrl('residents'),
     label: 'Residents',
     title: 'Resident Resources | Exhibit On Superior',
     description:
@@ -519,7 +532,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/schedule-a-tour': {
     path: '/schedule-a-tour',
-    ogImage: `${SITE_URL}/images/og/schedule-a-tour.jpg`,
+    ogImage: ogCardUrl('schedule-a-tour'),
     label: 'Schedule a Tour',
     title: 'Schedule a Tour | Exhibit On Superior Apartments',
     description:
@@ -563,7 +576,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/reviews': {
     path: '/reviews',
-    ogImage: `${SITE_URL}/images/og/reviews.jpg`,
+    ogImage: ogCardUrl('reviews'),
     label: 'Reviews',
     title: 'Reviews | Exhibit On Superior Chicago Apartments',
     description:

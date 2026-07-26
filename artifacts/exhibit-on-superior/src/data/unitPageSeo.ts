@@ -6,6 +6,7 @@
 // head and the hydrated head can never drift.
 import {
   SITE_URL,
+  ogCardUrl,
   WEBSITE_NODE,
   ORGANIZATION_NODE,
   APARTMENT_COMPLEX_NODE,
@@ -238,7 +239,7 @@ export function buildUnitSeoModel(u: AvailableUnit, updatedAt?: string | null): 
   const title = unitTitle(u);
   const description = unitDescription(u);
   const canonical = unitCanonical(u.unit);
-  const ogImage = u.photoUrl ?? `${SITE_URL}/images/og/floor-plans.jpg`;
+  const ogImage = u.photoUrl ?? ogCardUrl('floor-plans');
 
   const metas: SeoMeta[] = [
     { name: 'description', content: description },
