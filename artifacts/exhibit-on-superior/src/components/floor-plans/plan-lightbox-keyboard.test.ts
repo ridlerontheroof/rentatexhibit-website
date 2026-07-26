@@ -384,6 +384,64 @@ describe('click outside the shortcut legend', () => {
     expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
   });
 
+  /** Re-render with a two-variant group so the "Flr" variant-picker buttons
+   *  appear, capturing a fresh onVariantChange spy. */
+  function renderMultiVariant() {
+    view?.unmount();
+    const a = makePlan();
+    const b: Plan = {
+      ...makePlan(),
+      id: 'unit-06-30-45',
+      floorLabel: '30-45',
+      floors: [30, 31],
+      floorMin: 30,
+      floorMax: 45,
+      sqft: 780,
+      sqftMin: 780,
+    };
+    const group: PlanGroup = { ...makeGroup(), variants: [a, b] };
+    const onVariantChange = vi.fn();
+    view = render(
+      createElement(PlanLightbox, {
+        group,
+        variantIndex: 0,
+        position: { index: 0, total: 3 },
+        onClose,
+        onNavigate,
+        onVariantChange,
+      }),
+    );
+    return onVariantChange;
+  }
+
+  it('one click on a "Flr" variant button dismisses the legend AND switches the variant', () => {
+    const onVariantChange = renderMultiVariant();
+    openLegend();
+    const flrButtons = Array.from(document.querySelectorAll('button')).filter((b) =>
+      b.textContent?.startsWith('Flr'),
+    );
+    expect(flrButtons.length).toBe(2);
+    clickAt(flrButtons[1]);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    expect(onVariantChange).toHaveBeenCalledTimes(1);
+    expect(onVariantChange).toHaveBeenCalledWith(1);
+  });
+
+  it('one click on the sheet handle dismisses the legend AND expands the sheet', () => {
+    openLegend();
+    const handle = document.querySelector<HTMLButtonElement>(
+      'button[aria-label="Expand details"]',
+    )!;
+    expect(handle).not.toBeNull();
+    clickAt(handle);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    // The click acted: the handle now offers to collapse the expanded sheet.
+    expect(
+      document.querySelector('button[aria-label="Collapse details"]'),
+    ).not.toBeNull();
+    expect(document.querySelector('button[aria-label="Expand details"]')).toBeNull();
+  });
+
   it('the ? toggle button still toggles rather than close-then-reopen', () => {
     openLegend();
     const toggle = document.querySelector<HTMLButtonElement>(
