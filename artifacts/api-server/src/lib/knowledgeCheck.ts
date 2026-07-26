@@ -97,8 +97,16 @@ function recordAndMaybeHeartbeat(
   unhealthySinceHeartbeat = 0;
 }
 
-/** Consecutive runs in which every single fetch failed (per-process). */
+/**
+ * Consecutive runs in which every single fetch failed. This is only the
+ * per-process mirror; the authoritative count is persisted in the shared
+ * `email_throttle_counters` table (key below) so a server restart mid-outage
+ * (e.g. a redeploy attempt) cannot reset the ~day-long escalation clock.
+ */
 let consecutiveUnreachableRuns = 0;
+
+/** Shared-table key holding the persisted consecutive-unreachable-run count. */
+const UNREACHABLE_COUNTER_KEY = "knowledgecheck:unreachable-runs";
 
 function utcDay(now: number): string {
   return new Date(now).toISOString().slice(0, 10);
@@ -285,6 +293,33 @@ async function claimShared(day: string, now: number): Promise<boolean> {
   return result.rows.length > 0;
 }
 
+/**
+ * Persist one more consecutive-unreachable run in the shared table and
+ * return the new total. Throws when the database is unreachable — the
+ * caller falls back to the per-process mirror.
+ */
+async function bumpUnreachableShared(now: number): Promise<number> {
+  const expiresAt = new Date(now + 2 * DAY_MS);
+  const result = await db.execute(sql`
+    INSERT INTO email_throttle_counters (key, count, expires_at)
+    VALUES (${UNREACHABLE_COUNTER_KEY}, 1, ${expiresAt})
+    ON CONFLICT (key) DO UPDATE
+      SET count = email_throttle_counters.count + 1,
+          expires_at = ${expiresAt}
+    RETURNING count
+  `);
+  const count = Number(result.rows[0]?.count);
+  return Number.isFinite(count) ? count : 0;
+}
+
+/** Clear the persisted unreachable-run counter after a reachable run. */
+async function resetUnreachableShared(): Promise<void> {
+  await db.execute(sql`
+    DELETE FROM email_throttle_counters
+    WHERE key = ${UNREACHABLE_COUNTER_KEY}
+  `);
+}
+
 function claimInMemory(day: string): boolean {
   if (alertedOnDay === day) return false;
   alertedOnDay = day;
@@ -309,9 +344,34 @@ export async function checkKnowledgePagesOnce(
   const allFetchesErrored =
     result.fetchErrors.length > 0 &&
     result.fetchErrors.length === result.checkedCount;
-  consecutiveUnreachableRuns = allFetchesErrored
-    ? consecutiveUnreachableRuns + 1
-    : 0;
+  if (allFetchesErrored) {
+    consecutiveUnreachableRuns += 1;
+    try {
+      // The persisted count survives restarts; the in-memory mirror only
+      // matters when the database itself is unreachable, so take whichever
+      // clock has been running longer.
+      const shared = await bumpUnreachableShared(now);
+      consecutiveUnreachableRuns = Math.max(
+        consecutiveUnreachableRuns,
+        shared,
+      );
+    } catch (err) {
+      log.error(
+        { err },
+        "Failed to persist unreachable-run counter; using in-memory count",
+      );
+    }
+  } else {
+    consecutiveUnreachableRuns = 0;
+    try {
+      await resetUnreachableShared();
+    } catch (err) {
+      log.error(
+        { err },
+        "Failed to clear persisted unreachable-run counter after a reachable run",
+      );
+    }
+  }
 
   let failures = result.failures;
   if (
