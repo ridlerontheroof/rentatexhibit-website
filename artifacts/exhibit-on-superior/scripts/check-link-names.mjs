@@ -26,19 +26,20 @@
 // - <button> elements get the same empty-name audit: icon-only buttons
 //   (carousel arrows, close X, menu toggle) with no text, aria-label, or img
 //   alt announce as just "button". Exceptions: aria-hidden="true" buttons
-//   (removed from the a11y tree), and buttons carrying aria-labelledby
-//   (named by another element — we can't resolve the reference with this
-//   regex scan, so they're trusted). No other exceptions exist today.
+//   (removed from the a11y tree). Buttons carrying aria-labelledby have the
+//   reference RESOLVED within the same page: if every referenced id is
+//   missing, or the referenced elements have no text, the button still
+//   announces as just "button" and it is a failure.
 // - Elements with role="button" (div/span click targets) get the same
 //   empty-name audit: screen readers announce them as buttons too, so an
 //   icon-only one with no text, aria-label, or img alt announces as just
-//   "button". Exceptions: same as <button> — aria-hidden="true" and
-//   aria-labelledby carriers are skipped. No other exceptions exist today.
+//   "button". Exceptions: same as <button> — aria-hidden="true"; their
+//   aria-labelledby references are resolved the same way.
 // - <input type="button|submit|reset|image"> is audited as well: the
 //   accessible name comes from value (or alt for type="image"), falling back
 //   to aria-label; submit/reset have spec default labels ("Submit"/"Reset")
-//   so only button/image can end up nameless. Exceptions: same aria-hidden /
-//   aria-labelledby escapes. No other exceptions exist today.
+//   so only button/image can end up nameless. Exceptions: same aria-hidden
+//   escape; aria-labelledby references are resolved the same way.
 //
 // Run after a build: node scripts/check-link-names.mjs   (wired into
 // check:prepublish so a publish can't ship newly ambiguous links).
@@ -76,6 +77,38 @@ function decode(s) {
     .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+/**
+ * Resolve an aria-labelledby attribute against the page's HTML.
+ * Returns the decoded, space-joined text of the referenced elements, or ''
+ * when no referenced id exists or none of them carry any text — in either
+ * case the control has no spoken name.
+ */
+function resolveLabelledby(attrs, html) {
+  const ref = attrs.match(/aria-labelledby="([^"]*)"/);
+  if (!ref) return null; // no aria-labelledby present
+  const ids = decode(ref[1]).split(/\s+/).filter(Boolean);
+  const parts = [];
+  for (const id of ids) {
+    const esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Element with matching id and inner content …
+    const el = html.match(new RegExp(`<(\\w+)\\b[^>]*\\bid="${esc}"[^>]*>(.*?)</\\1>`, 's'));
+    if (el) {
+      const text = decode(el[2]);
+      if (text) parts.push(text);
+      continue;
+    }
+    // … or a void element (e.g. <input id value="…">).
+    const voidEl = html.match(new RegExp(`<\\w+\\b[^>]*\\bid="${esc}"[^>]*/?>`, 's'));
+    if (voidEl) {
+      const value = voidEl[0].match(/\bvalue="([^"]*)"/);
+      const text = decode(value ? value[1] : '');
+      if (text) parts.push(text);
+    }
+    // id missing entirely: contributes nothing.
+  }
+  return parts.join(' ').toLowerCase();
 }
 
 const failures = [];
@@ -126,8 +159,10 @@ for (const file of pages) {
         .join(' ')
         .toLowerCase();
     }
-    if (!name && !/aria-hidden="true"/.test(attrs) && !/aria-labelledby="/.test(attrs)) {
-      // Icon-only button with no spoken name — announces as just "button".
+    if (!name) name = resolveLabelledby(attrs, html) || '';
+    if (!name && !/aria-hidden="true"/.test(attrs)) {
+      // Icon-only button with no spoken name (including an aria-labelledby
+      // that points at a missing or empty element) — announces as just "button".
       unnamedButtons.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
     }
   }
@@ -146,7 +181,8 @@ for (const file of pages) {
         .join(' ')
         .toLowerCase();
     }
-    if (!name && !/aria-hidden="true"/.test(attrs) && !/aria-labelledby="/.test(attrs)) {
+    if (!name) name = resolveLabelledby(attrs, html) || '';
+    if (!name && !/aria-hidden="true"/.test(attrs)) {
       unnamedButtons.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
     }
   }
@@ -160,8 +196,9 @@ for (const file of pages) {
     const alt = attrs.match(/alt="([^"]*)"/);
     let name = decode(label ? label[1] : (value ? value[1] : '')).toLowerCase();
     if (!name && type === 'image') name = decode(alt ? alt[1] : '').toLowerCase();
+    if (!name) name = resolveLabelledby(attrs, html) || '';
     if (!name && (type === 'submit' || type === 'reset')) name = type; // spec default label
-    if (!name && !/aria-hidden="true"/.test(attrs) && !/aria-labelledby="/.test(attrs)) {
+    if (!name && !/aria-hidden="true"/.test(attrs)) {
       unnamedButtons.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
     }
   }
