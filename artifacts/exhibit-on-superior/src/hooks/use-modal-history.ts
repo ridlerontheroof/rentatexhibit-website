@@ -26,15 +26,32 @@ import { useCallback, useEffect, useRef } from 'react';
  */
 
 /** history.state shape for the entry this hook pushes on open. */
-const MODAL_ENTRY_STATE = { __modalHistory: true };
+type ModalEntryState = { __modalHistory: true; __modalSeq: number };
 
-function isModalEntryState(state: unknown): boolean {
+function isModalEntryState(state: unknown): state is { __modalHistory: true; __modalSeq?: number } {
   return (
     typeof state === 'object' &&
     state !== null &&
     (state as { __modalHistory?: unknown }).__modalHistory === true
   );
 }
+
+// Monotonic id per pushed entry, so the skipper can track each stranded
+// entry individually across repeated landings.
+let nextModalSeq = 1;
+
+/**
+ * Which side of each marker entry the visitor is currently on. Landing on a
+ * marker entry via popstate can only happen from an adjacent entry, so the
+ * side tells us the travel direction:
+ * - 'ahead'  → the visitor was ahead of the marker, so this landing came via
+ *   Back — skip with history.back(), visitor ends up 'behind'.
+ * - 'behind' → the visitor was behind it, so this landing came via Forward —
+ *   skip with history.forward(), visitor ends up 'ahead'.
+ * Entries start 'ahead': a strand happens by navigating forward past the
+ * marker, and a manual/Back close is recorded explicitly below.
+ */
+const markerSide = new Map<number, 'ahead' | 'behind'>();
 
 // How many pop-ups managed by this hook are currently open. While one is
 // open, its own popstate handler owns Back presses; the stranded-entry
@@ -54,7 +71,24 @@ function installStrandedEntrySkipper() {
   skipListenerInstalled = true;
   window.addEventListener('popstate', (event: PopStateEvent) => {
     if (openModalCount === 0 && isModalEntryState(event.state)) {
-      window.history.back();
+      const seq = event.state.__modalSeq;
+      if (typeof seq !== 'number') {
+        // Legacy marker without a sequence — can't infer direction; the
+        // overwhelmingly common landing is via Back.
+        window.history.back();
+        return;
+      }
+      const side = markerSide.get(seq) ?? 'ahead';
+      if (side === 'ahead') {
+        // Visitor was ahead of the marker → this landing came via Back.
+        markerSide.set(seq, 'behind');
+        window.history.back();
+      } else {
+        // Visitor was behind it → this landing came via Forward; a back()
+        // here would bounce them backwards. Keep them moving forward.
+        markerSide.set(seq, 'ahead');
+        window.history.forward();
+      }
     }
   });
 }
@@ -62,20 +96,27 @@ function installStrandedEntrySkipper() {
 export function useModalHistory(open: boolean, onClose: () => void): () => void {
   // True while the current history entry is the one this hook pushed.
   const pushedEntryRef = useRef(false);
+  // Sequence id of the entry this hook pushed (while open).
+  const seqRef = useRef<number | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open || typeof window === 'undefined') return;
     installStrandedEntrySkipper();
-    window.history.pushState(MODAL_ENTRY_STATE, '', window.location.href);
+    const seq = nextModalSeq++;
+    seqRef.current = seq;
+    const state: ModalEntryState = { __modalHistory: true, __modalSeq: seq };
+    window.history.pushState(state, '', window.location.href);
     pushedEntryRef.current = true;
     openModalCount += 1;
 
     const onPopState = () => {
       // The pushed entry has been navigated away from (Back pressed); close
-      // the pop-up without calling history.back() again.
+      // the pop-up without calling history.back() again. The visitor is now
+      // behind the marker entry.
       pushedEntryRef.current = false;
+      markerSide.set(seq, 'behind');
       onCloseRef.current();
     };
     window.addEventListener('popstate', onPopState);
@@ -86,7 +127,12 @@ export function useModalHistory(open: boolean, onClose: () => void): () => void 
       // wouter navigation happened with the pop-up open), the entry is now
       // stranded BEHIND the new page's entry — back() here would visibly
       // yank the visitor off the page they just navigated to. Leave it; the
-      // global skipper consumes it if Back ever lands there.
+      // global skipper consumes it if Back ever lands there. The wouter
+      // navigation replaced the forward stack, so the visitor is ahead of
+      // the marker — which is the default the skipper assumes.
+      if (pushedEntryRef.current) {
+        markerSide.set(seq, 'ahead');
+      }
       pushedEntryRef.current = false;
     };
   }, [open]);
@@ -95,7 +141,12 @@ export function useModalHistory(open: boolean, onClose: () => void): () => void 
     onCloseRef.current();
     if (pushedEntryRef.current) {
       // Consume the entry the open pushed so one Back press leaves the page.
+      // back() leaves the marker entry ahead of the visitor, so a Forward
+      // press could still land on it — record the side for the skipper.
       pushedEntryRef.current = false;
+      if (seqRef.current !== null) {
+        markerSide.set(seqRef.current, 'behind');
+      }
       window.history.back();
     }
   }, []);
