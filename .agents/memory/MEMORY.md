@@ -41,4 +41,5 @@
 - [Markdown page twins (AEO)](markdown-twins.md) — .md variants generated from rendered <main> in prerender; Accept negotiation quirks; converter join rule; snapshot must stay in one chunk.
 - [Legacy URL 301s](legacy-redirect-301s.md) — prod server turns prerendered meta-refresh stubs into single-hop 301s; add entries via legacyRedirects.ts + toml rewrite pair only.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.
+- [Alert-email inbox verification](alert-email-inbox-verification.md) — leasingexhibit@ is IMAP-readable with the same app password; bodies are base64 MIME; claim rows prove send timing.
 - [Lead-form bot guard](lead-form-bot-guard.md) — honeypot+fill-time checked server-side before any side effect; showing fallback must never fire on a 400 rejection.
