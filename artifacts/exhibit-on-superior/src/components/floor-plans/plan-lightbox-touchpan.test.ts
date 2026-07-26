@@ -1,384 +1,274 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, render, type RenderResult } from '@testing-library/react';
 import { createElement } from 'react';
-import { cleanup, fireEvent, render, act } from '@testing-library/react';
 import { PlanLightbox } from './PlanLightbox';
-import { planGroups } from '../../data/floorPlans';
+import type { Plan, PlanGroup } from '../../data/floorPlans';
 
-// Touch pan regression tests. A one-finger pan while pinch-zoomed (gesture
-// mode 'pan') must never register as a tap on touchend — no single-tap timer
-// may be scheduled, so the coarse scroll-zoom mode must not engage later.
-// A stationary touch while zoomed must still count as a tap.
+// ---------------------------------------------------------------------------
+// Touch pan-release regression tests for the floor-plan lightbox.
+//
+// While pinch/double-tap zoomed in, a one-finger touch starts the 'pan'
+// gesture. On touchend, a pan that moved more than TAP_MOVE_SLOP (12px) must
+// end silently — no handleTap, so no single-tap coarse-zoom toggle and no
+// double-tap reset — otherwise every pan release on a phone would flip zoom
+// modes. A "pan" that moved less than the slop is really a tap: it must reach
+// handleTap AND preventDefault the touchend so the browser's synthetic click
+// doesn't fire handleTap a second time. Harness mirrors
+// plan-lightbox-dragpan.test.ts / plan-lightbox-doubletap.test.ts.
+// ---------------------------------------------------------------------------
 
-const VIEWER_W = 1000;
-const VIEWER_H = 800;
+const DOUBLE_TAP_SCALE = 2;
 
-function stubMatchMedia() {
-  window.matchMedia = ((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    addListener: () => {},
-    removeListener: () => {},
-    dispatchEvent: () => false,
-  })) as unknown as typeof window.matchMedia;
+const VIEWER_W = 800;
+const VIEWER_H = 600;
+const CX = VIEWER_W / 2;
+const CY = VIEWER_H / 2;
+
+function makePlan(): Plan {
+  return {
+    id: 'unit-06-6-29',
+    unit: 6,
+    floorLabel: '6-29',
+    floors: [6, 7, 8],
+    floorMin: 6,
+    floorMax: 29,
+    mezzanine: false,
+    category: '1br',
+    typeLabel: '1 Bed / 1 Bath',
+    beds: 1,
+    baths: 1,
+    den: false,
+    sqft: 750,
+    sqftMin: 750,
+    images: {
+      thumb: '/images/floor-plans/thumb.webp',
+      detail: '/images/floor-plans/detail.webp',
+      zoom: '/images/floor-plans/zoom.webp',
+    },
+  };
 }
 
-function renderLightbox() {
-  const view = render(
+function makeGroup(): PlanGroup {
+  const plan = makePlan();
+  return {
+    id: '6-1br-1-std',
+    unit: plan.unit,
+    category: plan.category,
+    typeLabel: plan.typeLabel,
+    beds: plan.beds,
+    baths: plan.baths,
+    den: plan.den,
+    sqftMin: plan.sqft,
+    sqftMax: plan.sqft,
+    bands: [],
+    floors: plan.floors,
+    variants: [plan],
+    images: plan.images,
+  };
+}
+
+let view: RenderResult | null = null;
+
+const sizeDescriptors: Array<{
+  proto: object;
+  prop: string;
+  original: PropertyDescriptor | undefined;
+}> = [];
+
+function stubClientSize(proto: object, prop: string, value: number) {
+  sizeDescriptors.push({
+    proto,
+    prop,
+    original: Object.getOwnPropertyDescriptor(proto, prop),
+  });
+  Object.defineProperty(proto, prop, { configurable: true, get: () => value });
+}
+
+beforeEach(() => {
+  vi.useFakeTimers();
+
+  stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
+  stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+    x: 0,
+    y: 0,
+    left: 0,
+    top: 0,
+    right: VIEWER_W,
+    bottom: VIEWER_H,
+    width: VIEWER_W,
+    height: VIEWER_H,
+    toJSON: () => ({}),
+  } as DOMRect);
+
+  view = render(
     createElement(PlanLightbox, {
-      group: planGroups[0],
+      group: makeGroup(),
       variantIndex: 0,
-      position: { index: 0, total: 1 },
-      onClose: () => {},
-      onNavigate: () => {},
-      onVariantChange: () => {},
+      position: { index: 0, total: 3 },
+      onClose: vi.fn(),
+      onNavigate: vi.fn(),
+      onVariantChange: vi.fn(),
     }),
   );
-  const img = document.querySelector('img[alt*="floor plan"]') as HTMLImageElement;
-  expect(img).toBeTruthy();
-  const viewer = img.parentElement as HTMLElement;
+});
 
-  viewer.getBoundingClientRect = () =>
-    ({ left: 0, top: 0, right: VIEWER_W, bottom: VIEWER_H, width: VIEWER_W, height: VIEWER_H, x: 0, y: 0, toJSON: () => ({}) }) as DOMRect;
-  for (const el of [viewer, img]) {
-    Object.defineProperty(el, 'clientWidth', { value: VIEWER_W, configurable: true });
-    Object.defineProperty(el, 'clientHeight', { value: VIEWER_H, configurable: true });
+afterEach(() => {
+  view?.unmount();
+  view = null;
+  for (const { proto, prop, original } of sizeDescriptors.splice(0)) {
+    if (original) Object.defineProperty(proto, prop, original);
+    else delete (proto as Record<string, unknown>)[prop];
   }
-  return { view, img, viewer };
+  document.body.innerHTML = '';
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+});
+
+function planImage(): HTMLImageElement {
+  const img = document.querySelector('img');
+  if (!img) throw new Error('floor-plan image not rendered');
+  return img;
 }
 
-function clickAt(img: HTMLElement, x: number, y: number) {
-  fireEvent.click(img, { clientX: x, clientY: y });
-}
-
-/** Double-click at the viewer centre so the plan ends up pinch-zoomed at 2x with no translation. */
-function zoomInAtCentre(img: HTMLElement) {
-  clickAt(img, 500, 400);
+function clickAt(x: number, y: number) {
   act(() => {
-    vi.advanceTimersByTime(100);
+    planImage().dispatchEvent(
+      new MouseEvent('click', { bubbles: true, cancelable: true, clientX: x, clientY: y }),
+    );
   });
-  clickAt(img, 500, 400);
-  expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
-  // Wait out the double-tap window so the following gesture is fresh.
+}
+
+/** Two clicks at the same point, within the 300ms double-tap window. */
+function doubleClickAt(x: number, y: number, gapMs = 100) {
+  clickAt(x, y);
+  act(() => {
+    vi.advanceTimersByTime(gapMs);
+  });
+  clickAt(x, y);
+}
+
+/** Parse { scale, tx, ty } back out of the rendered transform. */
+function readTransform() {
+  const m = /translate\((-?[\d.]+)px, (-?[\d.]+)px\) scale\(([\d.]+)\)/.exec(
+    planImage().style.transform,
+  );
+  if (!m) throw new Error(`unexpected transform: ${planImage().style.transform}`);
+  return { tx: Number(m[1]), ty: Number(m[2]), scale: Number(m[3]) };
+}
+
+type FakeTouch = { clientX: number; clientY: number };
+
+/**
+ * jsdom has no Touch/TouchEvent constructors; build a plain Event and graft
+ * the touch lists on. React reads `touches` / `changedTouches` straight off
+ * the native event, so this reaches onTouchStart/Move/End unchanged.
+ */
+function touchEvent(type: string, touches: FakeTouch[], changedTouches: FakeTouch[]): Event {
+  const e = new Event(type, { bubbles: true, cancelable: true });
+  Object.assign(e, { touches, changedTouches });
+  return e;
+}
+
+function touchStartAt(points: FakeTouch[]) {
+  act(() => {
+    planImage().dispatchEvent(touchEvent('touchstart', points, points));
+  });
+}
+
+function touchMoveTo(points: FakeTouch[]) {
+  act(() => {
+    planImage().dispatchEvent(touchEvent('touchmove', points, points));
+  });
+}
+
+/** Lift all fingers; returns the dispatched event so preventDefault can be asserted. */
+function touchEndAt(changed: FakeTouch[]): Event {
+  const e = touchEvent('touchend', [], changed);
+  act(() => {
+    planImage().dispatchEvent(e);
+  });
+  return e;
+}
+
+/** Zoom to scale 2 anchored at the centre so tx = ty = 0. */
+function zoomInAtCentre() {
+  doubleClickAt(CX, CY);
+  expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: DOUBLE_TAP_SCALE });
+  // Let the consumed double-tap window fully lapse before the pan tests.
   act(() => {
     vi.advanceTimersByTime(400);
   });
 }
 
-function touch(x: number, y: number) {
-  return { clientX: x, clientY: y };
-}
-
-beforeEach(() => {
-  stubMatchMedia();
-  vi.useFakeTimers();
-});
-
-afterEach(() => {
-  cleanup();
-  act(() => {
-    vi.runOnlyPendingTimers();
-  });
-  vi.useRealTimers();
-  document.body.innerHTML = '';
-});
-
-describe('PlanLightbox one-finger touch pan tap suppression', () => {
-  it('touchend after a one-finger pan does not schedule a single-tap zoom toggle', () => {
-    const { img, viewer } = renderLightbox();
-    zoomInAtCentre(img);
-
-    // One-finger pan while pinch-zoomed: start, move well past the 12px slop, lift.
-    fireEvent.touchStart(viewer, { touches: [touch(500, 400)], changedTouches: [touch(500, 400)] });
+describe('touch pan release tap suppression', () => {
+  it('a one-finger pan (>12px) pans the plan and its release never fires a tap', () => {
+    zoomInAtCentre();
+    touchStartAt([{ clientX: CX, clientY: CY }]);
+    touchMoveTo([{ clientX: CX + 50, clientY: CY + 30 }]);
+    // The pan applied while the finger was down.
+    expect(readTransform()).toEqual({ tx: 50, ty: 30, scale: DOUBLE_TAP_SCALE });
+    touchEndAt([{ clientX: CX + 50, clientY: CY + 30 }]);
     act(() => {
-      fireEvent.touchMove(viewer, { touches: [touch(460, 370)], changedTouches: [touch(460, 370)] });
+      vi.advanceTimersByTime(400); // past the single-tap timer window
     });
-    // The pan follows the finger: dx = -40, dy = -30.
-    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
-    act(() => {
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(460, 370)] });
-    });
-
-    // Still 2x at the panned position — the pan did not count as a tap.
-    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
-
-    // No single-tap timer was scheduled, so the coarse scroll-zoom mode
-    // (width 160%) must not engage later either.
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
-    expect(img.style.width).not.toBe('160%');
-    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
+    // No coarse scroll-zoom toggle (width would become '160%')...
+    expect(planImage().style.width).toBe('');
+    // ...and no double-tap reset: pan and scale survive the release clamp.
+    expect(readTransform()).toEqual({ tx: 50, ty: 30, scale: DOUBLE_TAP_SCALE });
   });
 
-  it('a pan under the 12px tap slop still counts as a tap (double-tap resets to fit)', () => {
-    const { img, viewer } = renderLightbox();
-    zoomInAtCentre(img);
-
-    // Two stationary taps in quick succession while pinch-zoomed.
-    fireEvent.touchStart(viewer, { touches: [touch(500, 400)], changedTouches: [touch(500, 400)] });
-    act(() => {
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(500, 400)] });
-    });
+  it('a big pan release does not arm a double-tap: a quick tap right after is a single tap', () => {
+    zoomInAtCentre();
+    touchStartAt([{ clientX: CX, clientY: CY }]);
+    touchMoveTo([{ clientX: CX - 40, clientY: CY }]);
+    touchEndAt([{ clientX: CX - 40, clientY: CY }]);
+    expect(readTransform()).toEqual({ tx: -40, ty: 0, scale: DOUBLE_TAP_SCALE });
+    // A tap 100ms later at (nearly) the same point must NOT combine with the
+    // pan release into a double-tap (which would reset pinch to fit).
     act(() => {
       vi.advanceTimersByTime(100);
     });
-    fireEvent.touchStart(viewer, { touches: [touch(503, 402)], changedTouches: [touch(503, 402)] });
-    act(() => {
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(503, 402)] });
-    });
-
-    // Registered as a double-tap: pinch zoom resets to fit.
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(1)');
+    touchStartAt([{ clientX: CX - 38, clientY: CY }]);
+    touchEndAt([{ clientX: CX - 38, clientY: CY }]);
+    // Still pinch-zoomed and panned — no double-tap reset fired.
+    expect(readTransform()).toEqual({ tx: -40, ty: 0, scale: DOUBLE_TAP_SCALE });
   });
 
-  it('a lone stationary tap after a pan still schedules the single-tap zoom toggle', () => {
-    const { img, viewer } = renderLightbox();
-    zoomInAtCentre(img);
-
-    // Pan (suppressed as a tap)...
-    fireEvent.touchStart(viewer, { touches: [touch(500, 400)], changedTouches: [touch(500, 400)] });
+  it('a pan that moved <12px is still a tap: handleTap runs and touchend is preventDefaulted', () => {
+    zoomInAtCentre();
+    touchStartAt([{ clientX: CX, clientY: CY }]);
+    touchMoveTo([{ clientX: CX + 5, clientY: CY }]); // 5px < 12px slop
+    const end = touchEndAt([{ clientX: CX + 5, clientY: CY }]);
+    // preventDefault so the browser's synthetic click can't double-fire the tap.
+    expect(end.defaultPrevented).toBe(true);
     act(() => {
-      fireEvent.touchMove(viewer, { touches: [touch(440, 400)], changedTouches: [touch(440, 400)] });
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(440, 400)] });
+      vi.advanceTimersByTime(400); // single-tap timer elapses
     });
-    expect(img.style.transform).toBe('translate(-60px, 0px) scale(2)');
+    // The lone tap toggled the coarse scroll-zoom mode (which resets pinch).
+    expect(planImage().style.width).toBe('160%');
+  });
 
-    // ...then a genuine stationary tap: the single-tap timer must fire and
-    // toggle the coarse scroll-zoom mode.
-    fireEvent.touchStart(viewer, { touches: [touch(400, 300)], changedTouches: [touch(400, 300)] });
+  it('two quick sub-slop pans are a double-tap: pinch zoom resets to fit', () => {
+    zoomInAtCentre();
+    touchStartAt([{ clientX: CX, clientY: CY }]);
+    touchMoveTo([{ clientX: CX + 4, clientY: CY }]);
+    const first = touchEndAt([{ clientX: CX + 4, clientY: CY }]);
+    expect(first.defaultPrevented).toBe(true);
     act(() => {
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(400, 300)] });
+      vi.advanceTimersByTime(100); // inside the 300ms double-tap window
     });
+    touchStartAt([{ clientX: CX + 4, clientY: CY }]);
+    touchMoveTo([{ clientX: CX + 8, clientY: CY }]);
+    const second = touchEndAt([{ clientX: CX + 8, clientY: CY }]);
+    expect(second.defaultPrevented).toBe(true);
+    // Double-tap while pinch-zoomed resets to fit...
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+    // ...and consumes the taps: no coarse toggle fires afterwards.
     act(() => {
       vi.advanceTimersByTime(400);
     });
-    expect(img.style.width).toBe('160%');
-  });
-});
-
-describe('PlanLightbox double-tap zoom toward the tapped point', () => {
-  it('double-tapping off-centre zooms to 2x with the tapped point kept in view', () => {
-    const { img } = renderLightbox();
-
-    // Double-tap at (700, 300), off the viewer centre (500, 400).
-    clickAt(img, 700, 300);
-    act(() => {
-      vi.advanceTimersByTime(100);
-    });
-    clickAt(img, 700, 300);
-
-    // tx = -(x - cx) * (scale - 1) = -200, ty = -(y - cy) * (scale - 1) = 100.
-    // The tapped point p maps to cx + tx + scale * (p - cx) = 500 - 200 + 400 = 700,
-    // i.e. it stays exactly under the finger — squarely in view.
-    expect(img.style.transform).toBe('translate(-200px, 100px) scale(2)');
-
-    // Sanity: with a 1000x800 image at 2x in a 1000x800 viewer, the hard pan
-    // bounds are ±500/±400, so this translation sits inside them.
-    expect(Math.abs(-200)).toBeLessThanOrEqual(500);
-    expect(Math.abs(100)).toBeLessThanOrEqual(400);
-  });
-
-  it('double-tapping near an edge clamps the translation to the hard pan bounds', () => {
-    const { img } = renderLightbox();
-
-    // Shrink the rendered image so the pan bounds are tighter than the raw
-    // tap translation: 600x400 image at 2x in a 1000x800 viewer gives
-    // maxTx = (1200 - 1000)/2 = 100 and maxTy = max(0, (800 - 800)/2) = 0.
-    Object.defineProperty(img, 'clientWidth', { value: 600, configurable: true });
-    Object.defineProperty(img, 'clientHeight', { value: 400, configurable: true });
-
-    // Double-tap near the bottom-right corner: unclamped tx/ty would be
-    // -(900-500)*1 = -400 and -(700-400)*1 = -300, far past the bounds.
-    clickAt(img, 900, 700);
-    act(() => {
-      vi.advanceTimersByTime(100);
-    });
-    clickAt(img, 900, 700);
-
-    // Hard-clamped to (-100, 0): the plan hugs the edge, no blank gutter.
-    expect(img.style.transform).toBe('translate(-100px, 0px) scale(2)');
-  });
-
-  it('a touch double-tap off-centre uses the same centered-zoom math', () => {
-    const { img, viewer } = renderLightbox();
-
-    // Two stationary touch taps in quick succession at (700, 300).
-    fireEvent.touchStart(viewer, { touches: [touch(700, 300)], changedTouches: [touch(700, 300)] });
-    act(() => {
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(700, 300)] });
-    });
-    act(() => {
-      vi.advanceTimersByTime(100);
-    });
-    fireEvent.touchStart(viewer, { touches: [touch(700, 300)], changedTouches: [touch(700, 300)] });
-    act(() => {
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(700, 300)] });
-    });
-
-    expect(img.style.transform).toBe('translate(-200px, 100px) scale(2)');
-  });
-});
-
-describe('PlanLightbox pinch ending with both fingers lifting at once', () => {
-  it('keeps the zoom level, settles inside pan bounds, and never registers as a tap', () => {
-    const { img, viewer } = renderLightbox();
-
-    // Two-finger pinch out from fit: symmetric spread around the centre → 2x.
-    fireEvent.touchStart(viewer, {
-      touches: [touch(400, 400), touch(600, 400)],
-      changedTouches: [touch(400, 400), touch(600, 400)],
-    });
-    act(() => {
-      fireEvent.touchMove(viewer, {
-        touches: [touch(300, 400), touch(700, 400)],
-        changedTouches: [touch(300, 400), touch(700, 400)],
-      });
-    });
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
-
-    // Both fingers lift in a single touchend while gesture mode is still 'pinch'.
-    act(() => {
-      fireEvent.touchEnd(viewer, {
-        touches: [],
-        changedTouches: [touch(300, 400), touch(700, 400)],
-      });
-    });
-
-    // Zoom is kept and settled inside the hard pan bounds — no snap back to fit.
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
-
-    // The final lift must not have scheduled the single-tap timer, so the
-    // coarse scroll-zoom mode (width 160%) must not engage later.
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
-    expect(img.style.width).not.toBe('160%');
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
-  });
-
-  it('a pinch ending near fit (scale <= 1.05) snaps cleanly back to fit', () => {
-    const { img, viewer } = renderLightbox();
-
-    // Slight pinch out: distance 200 → 205 gives scale 1.025 (within the
-    // 1.05 near-fit threshold).
-    fireEvent.touchStart(viewer, {
-      touches: [touch(400, 400), touch(600, 400)],
-      changedTouches: [touch(400, 400), touch(600, 400)],
-    });
-    act(() => {
-      fireEvent.touchMove(viewer, {
-        touches: [touch(397.5, 400), touch(602.5, 400)],
-        changedTouches: [touch(397.5, 400), touch(602.5, 400)],
-      });
-    });
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(1.025)');
-
-    // Both fingers lift at once: near-fit snaps back to scale 1, no translation.
-    act(() => {
-      fireEvent.touchEnd(viewer, {
-        touches: [],
-        changedTouches: [touch(397.5, 400), touch(602.5, 400)],
-      });
-    });
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(1)');
-
-    // And no tap toggle afterwards either.
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
-    expect(img.style.width).not.toBe('160%');
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(1)');
-  });
-});
-
-describe('PlanLightbox pinch → pan handoff', () => {
-  it('lifting one finger after a pinch continues panning from the re-baselined start and the final lift is not a tap', () => {
-    const { img, viewer } = renderLightbox();
-
-    // Two-finger pinch out from fit: fingers spread symmetrically around the
-    // viewer centre so the midpoint stays put and the scale doubles.
-    fireEvent.touchStart(viewer, {
-      touches: [touch(400, 400), touch(600, 400)],
-      changedTouches: [touch(400, 400), touch(600, 400)],
-    });
-    act(() => {
-      fireEvent.touchMove(viewer, {
-        touches: [touch(300, 400), touch(700, 400)],
-        changedTouches: [touch(300, 400), touch(700, 400)],
-      });
-    });
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
-
-    // Lift the second finger: gesture hands off pinch → pan, re-baselining the
-    // pan start at the remaining finger (300, 400).
-    act(() => {
-      fireEvent.touchEnd(viewer, {
-        touches: [touch(300, 400)],
-        changedTouches: [touch(700, 400)],
-      });
-    });
-    // Handoff alone must not move the image (no jump).
-    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
-
-    // Keep moving the remaining finger: the pan tracks the delta from the
-    // re-baselined start (dx = -40, dy = -30), not the original pinch touch.
-    act(() => {
-      fireEvent.touchMove(viewer, {
-        touches: [touch(260, 370)],
-        changedTouches: [touch(260, 370)],
-      });
-    });
-    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
-
-    // Final lift after the continued pan: moved well past the tap slop, so it
-    // must not register as a tap.
-    act(() => {
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(260, 370)] });
-    });
-    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
-
-    // No single-tap timer scheduled: the coarse scroll-zoom mode (width 160%)
-    // must not engage later.
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
-    expect(img.style.width).not.toBe('160%');
-    expect(img.style.transform).toBe('translate(-40px, -30px) scale(2)');
-  });
-
-  it('a barely-moved remaining finger after handoff still counts as a tap', () => {
-    const { img, viewer } = renderLightbox();
-
-    // Pinch out to 2x, then lift one finger to hand off to pan.
-    fireEvent.touchStart(viewer, {
-      touches: [touch(400, 400), touch(600, 400)],
-      changedTouches: [touch(400, 400), touch(600, 400)],
-    });
-    act(() => {
-      fireEvent.touchMove(viewer, {
-        touches: [touch(300, 400), touch(700, 400)],
-        changedTouches: [touch(300, 400), touch(700, 400)],
-      });
-    });
-    act(() => {
-      fireEvent.touchEnd(viewer, {
-        touches: [touch(300, 400)],
-        changedTouches: [touch(700, 400)],
-      });
-    });
-
-    // Lift the remaining finger with movement under the 12px slop: this is a
-    // tap, so the single-tap timer schedules the scroll-zoom toggle.
-    act(() => {
-      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(303, 402)] });
-    });
-    act(() => {
-      vi.advanceTimersByTime(400);
-    });
-    expect(img.style.width).toBe('160%');
+    expect(planImage().style.width).toBe('');
   });
 });
