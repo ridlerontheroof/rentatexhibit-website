@@ -9,6 +9,6 @@ The apex `rentatexhibit.com` gets a real HTTP 301 to `www` via a Squarespace Dom
 
 **How to apply:**
 - Verify from shell with `curl -sI "https://rentatexhibit.com/?nc=$(date +%s)"` (add a cache-busting query string to bypass Squarespace's CDN edge cache). Expect `location: https://www.rentatexhibit.com` — a single 301 hop. Without the cache-bust the CDN serves a stale response for several hours.
-- The forwarding destination was updated to `https://www.rentatexhibit.com` on 2026-07-26; Squarespace CDN propagation took several hours to clear.
+- The forwarding destination was updated to `https://www.rentatexhibit.com` on 2026-07-26; Squarespace CDN propagation took several hours to clear. Verified same day: single 301 hop to `https://www.rentatexhibit.com` then 200.
 - Squarespace's forwarder drops query strings; the inline JS redirect in the web artifact's `index.html` stays as a browser safety net.
 - Risk: if the domain is ever reconnected to Replit via Entri/Domain Connect, the apex A record can be re-provisioned and silently replace the 301 with site-serving again. Squarespace forwarding IPs are 198.185.159.x / 198.49.23.x; the deployment IP was 34.111.179.208.
