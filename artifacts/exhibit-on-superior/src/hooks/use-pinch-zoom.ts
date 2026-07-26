@@ -377,9 +377,25 @@ export function usePinchZoom(options: UsePinchZoomOptions = {}) {
       if (pinchZoomed) {
         resetPinch();
       } else {
-        const rect = container.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
+        // Zoom origin: the image's untransformed centre — same approach as
+        // the pinch anchor fix. The transform is applied around the image's
+        // own centre (transform-origin: center center), which can sit away
+        // from the viewer container's rect centre in padded/flex layouts;
+        // using the container centre made double-tap land slightly off the
+        // tapped spot. Subtract the live translation to recover the
+        // untransformed centre; fall back to the container's rect centre
+        // when the image rect is missing or has no size (no layout info).
+        const imgRect = imgRef.current?.getBoundingClientRect();
+        let cx: number;
+        let cy: number;
+        if (imgRect && imgRect.width > 0 && imgRect.height > 0) {
+          cx = imgRect.left + imgRect.width / 2 - pinch.tx;
+          cy = imgRect.top + imgRect.height / 2 - pinch.ty;
+        } else {
+          const rect = container.getBoundingClientRect();
+          cx = rect.left + rect.width / 2;
+          cy = rect.top + rect.height / 2;
+        }
         optionsRef.current.beforeZoomChange?.();
         setPinch({
           scale: DOUBLE_TAP_SCALE,

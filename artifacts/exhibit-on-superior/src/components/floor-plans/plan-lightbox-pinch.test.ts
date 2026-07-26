@@ -379,6 +379,34 @@ describe('double-tap zoom', () => {
     expect(t.ty).toBe(-50 * (DOUBLE_TAP_SCALE - 1));
   });
 
+  it('zooms toward the tapped point relative to the image centre, not the viewer centre', () => {
+    // Regression: mirror the pinch "anchors around the image centre" test.
+    // Give the image an offset rect (centre at (400, 240)) while the viewer's
+    // rect centre stays at jsdom's all-zero (0, 0). The double-tap origin must
+    // be the image centre, so t = -(tap - imgCentre) * (scale - 1).
+    const imgRect = {
+      left: 100,
+      top: 40,
+      width: 600,
+      height: 400,
+      right: 700,
+      bottom: 440,
+      x: 100,
+      y: 40,
+      toJSON: () => ({}),
+    } as DOMRect;
+    vi.spyOn(HTMLImageElement.prototype, 'getBoundingClientRect').mockReturnValue(imgRect);
+
+    tap({ x: 500, y: 340 });
+    tap({ x: 500, y: 340 });
+    const t = readTransform();
+    expect(t.scale).toBe(DOUBLE_TAP_SCALE);
+    // Old math used the viewer centre (0,0): tx would have been -500 (clamped
+    // to -400). New origin (400, 240) => -(100, 100) * (2 - 1).
+    expect(t.tx).toBe(-100 * (DOUBLE_TAP_SCALE - 1));
+    expect(t.ty).toBe(-100 * (DOUBLE_TAP_SCALE - 1));
+  });
+
   it('clamps the double-tap translation to the pan bounds', () => {
     // At scale 2 the hard bounds are |tx| <= 400, |ty| <= 300. A tap at
     // (500, 350) would want (-500, -350) unclamped.
