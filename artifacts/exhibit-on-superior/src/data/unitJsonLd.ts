@@ -13,12 +13,12 @@ import type { AvailableUnit } from '../hooks/use-availability';
 const COMPLEX_ID = `${SITE_URL}#apartmentcomplex`;
 const PAGE_URL = `${SITE_URL}/available-units`;
 
-function floorPlanId(g: PlanGroup): string {
+export function floorPlanId(g: PlanGroup): string {
   return `${PAGE_URL}#floorplan-${g.id}`;
 }
 
 /** One schema.org FloorPlan node per residence line (plan group). */
-function floorPlanNode(g: PlanGroup): Record<string, unknown> {
+export function floorPlanNode(g: PlanGroup): Record<string, unknown> {
   return {
     '@type': 'FloorPlan',
     '@id': floorPlanId(g),
@@ -50,29 +50,41 @@ export function planGroupForUnitNumber(unitNumber: string): PlanGroup | null {
   );
 }
 
-/** One schema.org Apartment node (with a lease Offer) per available unit. */
-function apartmentNode(u: AvailableUnit): Record<string, unknown> {
+/**
+ * One schema.org Apartment node (with a lease Offer) per available unit.
+ * `opts` lets the per-unit page (data/unitPageSeo.ts) re-key the node onto its
+ * own canonical URL while keeping the identical fact payload. Facts missing
+ * from the feed (sqft, photo) fall back to the unit's residence-line plan so
+ * the Apartment node always carries the image/floorSize crawlers reward —
+ * never invented, always the plan sheet the unit is built from.
+ */
+export function apartmentNode(
+  u: AvailableUnit,
+  opts: { id?: string; url?: string } = {},
+): Record<string, unknown> {
   const group = planGroupForUnitNumber(u.unit);
+  const sqft = u.sqft ?? group?.sqftMin ?? null;
+  const image = u.photoUrl ?? (group ? `${SITE_URL}${group.images.detail}` : null);
   return {
     '@type': 'Apartment',
-    '@id': `${PAGE_URL}#unit-${u.unit}`,
+    '@id': opts.id ?? `${PAGE_URL}#unit-${u.unit}`,
     name: `Apartment ${u.unit} at Exhibit On Superior`,
-    url: PAGE_URL,
+    url: opts.url ?? PAGE_URL,
     containedInPlace: { '@id': COMPLEX_ID },
     ...(group ? { accommodationFloorPlan: { '@id': floorPlanId(group) } } : {}),
     ...(u.bedrooms !== null ? { numberOfBedrooms: u.bedrooms } : {}),
     ...(u.bathrooms !== null ? { numberOfBathroomsTotal: u.bathrooms } : {}),
-    ...(u.sqft !== null
+    ...(sqft !== null
       ? {
           floorSize: {
             '@type': 'QuantitativeValue',
-            value: u.sqft,
+            value: sqft,
             unitCode: 'FTK',
             unitText: 'sq ft',
           },
         }
       : {}),
-    ...(u.photoUrl ? { image: u.photoUrl } : {}),
+    ...(image ? { image } : {}),
     ...(u.rent !== null
       ? {
           offers: {
@@ -107,7 +119,8 @@ export function unitAvailabilityJsonLd(
       accommodationFloorPlan: planGroups.map((g) => ({ '@id': floorPlanId(g) })),
     },
     ...planGroups.map(floorPlanNode),
-    ...(units ?? []).map(apartmentNode),
+    // Explicit lambda: Array#map's index argument must not leak into `opts`.
+    ...(units ?? []).map((u) => apartmentNode(u)),
   ];
   return { '@context': 'https://schema.org', '@graph': graph };
 }

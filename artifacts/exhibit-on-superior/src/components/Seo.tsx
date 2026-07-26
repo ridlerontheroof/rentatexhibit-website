@@ -1,12 +1,18 @@
 import { Helmet } from 'react-helmet-async';
-import { buildSeoModel, type SeoOptions } from '../data/seo';
+import { buildSeoModel, type SeoModel, type SeoOptions } from '../data/seo';
 
 interface SeoProps extends SeoOptions {
   path: string;
+  /**
+   * Pre-built head model (e.g. per-unit pages via buildUnitSeoModel). When
+   * set, PAGE_SEO/`opts` are bypassed — the model is emitted as-is, matching
+   * what the prerenderer wrote for the same path.
+   */
+  model?: SeoModel;
 }
 
-export function Seo({ path, ...opts }: SeoProps) {
-  const model = buildSeoModel(path, opts);
+export function Seo({ path, model: modelProp, ...opts }: SeoProps) {
+  const model = modelProp ?? buildSeoModel(path, opts);
   if (!model) return null;
 
   // During prerender (SSR) the head is emitted deterministically from the same

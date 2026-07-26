@@ -749,7 +749,10 @@ function canonicalFor(path: string): string {
   return path === '/' ? `${SITE_URL}/` : `${SITE_URL}${path}`;
 }
 
-const WEBSITE_NODE = {
+// Exported: per-unit pages (data/unitPageSeo.ts) re-emit these base entities so
+// their @graph is self-contained (no dangling @id refs) and the merged
+// ApartmentComplex node carries every recommended property on every page.
+export const WEBSITE_NODE = {
   '@type': 'WebSite',
   '@id': `${SITE_URL}#website`,
   name: 'Exhibit On Superior',
@@ -757,7 +760,7 @@ const WEBSITE_NODE = {
   publisher: { '@id': `${SITE_URL}#organization` },
 };
 
-const ORGANIZATION_NODE = {
+export const ORGANIZATION_NODE = {
   '@type': 'Organization',
   '@id': `${SITE_URL}#organization`,
   name: 'Exhibit On Superior',
@@ -767,7 +770,7 @@ const ORGANIZATION_NODE = {
   logo: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
 };
 
-const APARTMENT_COMPLEX_NODE = {
+export const APARTMENT_COMPLEX_NODE = {
   '@type': 'ApartmentComplex',
   '@id': `${SITE_URL}#apartmentcomplex`,
   name: 'Exhibit On Superior',

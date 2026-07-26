@@ -49,13 +49,32 @@ export async function preloadRoute(pathname: string): Promise<void> {
   if (!path.startsWith('/')) path = `/${path}`;
   if (path !== '/' && path.endsWith('/')) path = path.slice(0, -1);
   const match = routes.find((r) => r.path === path);
-  if (!match) return;
+  if (!match) {
+    // Per-unit pages are prerendered too (one per baked available unit), so
+    // their chunk must also be cached before the first render — otherwise the
+    // prerendered listing collapses to the Suspense fallback (the CLS trap
+    // the route preload exists to prevent).
+    if (/^\/available-units\/[^/]+$/.test(path)) {
+      try {
+        preloadedComponents.set(
+          UNIT_DETAIL_ROUTE,
+          (await import('./pages/UnitDetail')).UnitDetail,
+        );
+      } catch {
+        // Fall back to React.lazy.
+      }
+    }
+    return;
+  }
   try {
     preloadedComponents.set(match.path, await match.load());
   } catch {
     // Chunk fetch failed (offline, deploy skew): fall back to React.lazy.
   }
 }
+
+/** Preload-map key for the dynamic per-unit route (see App.tsx). */
+export const UNIT_DETAIL_ROUTE = '/available-units/:unit';
 
 export const routes: RouteDef[] = [
   { path: '/', load: () => import('./pages/Home').then((m) => m.Home) },

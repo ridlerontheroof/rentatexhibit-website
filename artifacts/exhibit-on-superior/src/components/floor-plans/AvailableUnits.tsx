@@ -292,10 +292,12 @@ export function AvailableUnits() {
                     {u.details.length > 0 && (
                       <Link
                         href={`/available-units/${u.unit}`}
-                        aria-label={`View details for apartment ${u.unit}`}
+                        aria-label={`View details for apartment ${u.unit}${bedBathLabel(u, u.group) ? ` (${bedBathLabel(u, u.group)})` : ''}`}
                         className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
                       >
-                        View details
+                        {/* Descriptive anchor text: crawlers/AI use it to label
+                            the per-unit page this row links to. */}
+                        Apt {u.unit} details
                       </Link>
                     )}
                     {u.videoUrl && (

@@ -102,13 +102,44 @@ export function inventoryChanged(
   return inventoryFingerprint(prev) !== inventoryFingerprint(next);
 }
 
+/** Canonical URL of a unit's own prerendered page. */
+export function unitPageUrl(unit: string): string {
+  return `${SITE_URL}/available-units/${unit}`;
+}
+
+/**
+ * Per-unit page URLs affected by an inventory change: units added, removed
+ * (rented), re-priced, or re-dated between two snapshots. Removed units are
+ * included deliberately — their page turns into a "no longer available"
+ * notice and engines should recrawl it promptly.
+ */
+export function changedUnitUrls(
+  prev: AvailabilityPayload | null,
+  next: AvailabilityPayload,
+): string[] {
+  if (!prev) return [];
+  const fingerprint = (u: AvailabilityPayload["units"][number]) =>
+    `${u.rent ?? ""}|${u.availableOn ?? ""}`;
+  const prevByUnit = new Map(prev.units.map((u) => [u.unit, fingerprint(u)]));
+  const nextByUnit = new Map(next.units.map((u) => [u.unit, fingerprint(u)]));
+  const changed: string[] = [];
+  for (const [unit, fp] of nextByUnit) {
+    if (!prevByUnit.has(unit) || prevByUnit.get(unit) !== fp) changed.push(unitPageUrl(unit));
+  }
+  for (const unit of prevByUnit.keys()) {
+    if (!nextByUnit.has(unit)) changed.push(unitPageUrl(unit));
+  }
+  return changed;
+}
+
 /**
  * Fire-and-forget IndexNow ping for an availability change. Skipped outside
- * production so dev/test refreshes never spam the endpoint.
+ * production so dev/test refreshes never spam the endpoint. `extraUrls`
+ * carries the specific per-unit pages affected by this change.
  */
-export function notifyAvailabilityChanged(log: MinimalLog = noopLog): void {
+export function notifyAvailabilityChanged(log: MinimalLog = noopLog, extraUrls: string[] = []): void {
   if (process.env.NODE_ENV !== "production") return;
-  void pingIndexNow(AVAILABILITY_URLS, log);
+  void pingIndexNow([...AVAILABILITY_URLS, ...extraUrls], log);
 }
 
 /** One-shot per process: submit the sitemap's key URLs after a publish. */

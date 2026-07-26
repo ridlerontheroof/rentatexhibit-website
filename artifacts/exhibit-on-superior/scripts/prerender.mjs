@@ -29,7 +29,19 @@ const {
   LEGACY_REDIRECTS,
   FLOOR_PLAN_COUNT,
   BAKED_UNIT_COUNT,
+  UNIT_PATHS,
 } = await import(pathToFileURL(serverEntry).href);
+
+// Per-unit pages (/available-units/<unit>): dynamic routes prerendered from
+// the baked availability snapshot. They intentionally live OUTSIDE PAGE_SEO /
+// ROUTE_PATHS (their head model comes from buildUnitSeoModel, and the unit set
+// changes with every publish), so the static parity guard below ignores them.
+const unitPaths = UNIT_PATHS ?? [];
+const allPaths = [...Object.keys(PAGE_SEO), ...unitPaths];
+const outPathFor = (routePath) =>
+  routePath === '/'
+    ? path.join(publicDir, 'index.html')
+    : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
 
 // Parity guard: every indexable page must have a route to render it, and every
 // content route must have SEO metadata. Fail the build on any mismatch so a new
@@ -102,7 +114,7 @@ if (!LCP_BLOCK.test(template)) {
   );
 }
 
-for (const routePath of seoPaths) {
+for (const routePath of allPaths) {
   const { html, head } = await render(routePath);
 
   if (!head.includes('<title>')) {
@@ -157,10 +169,7 @@ for (const routePath of seoPaths) {
     throw new Error(`Prerender aborted: head injection failed for ${routePath}.`);
   }
 
-  const outPath =
-    routePath === '/'
-      ? path.join(publicDir, 'index.html')
-      : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
+  const outPath = outPathFor(routePath);
 
   await fs.mkdir(path.dirname(outPath), { recursive: true });
   await fs.writeFile(outPath, page, 'utf8');
@@ -172,12 +181,8 @@ for (const routePath of seoPaths) {
 // page with no eager AVIF image) fails the build loudly.
 {
   const problems = [];
-  for (const routePath of seoPaths) {
-    const outPath =
-      routePath === '/'
-        ? path.join(publicDir, 'index.html')
-        : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
-    const page = await fs.readFile(outPath, 'utf8');
+  for (const routePath of allPaths) {
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
 
     // Split head/body so we compare the head's hint to the body's markup only.
     const headEnd = page.indexOf('</head>');
@@ -221,7 +226,7 @@ for (const routePath of seoPaths) {
         problems.map((p) => `  ${p}`).join('\n'),
     );
   }
-  console.log(`LCP preload verified on ${seoPaths.length} pages.`);
+  console.log(`LCP preload verified on ${allPaths.length} pages.`);
 }
 
 // Post-build guard: structured-data validation. Re-read every written page and
@@ -230,15 +235,12 @@ for (const routePath of seoPaths) {
 // node on ANY prerendered route fails the build before Google ever sees it.
 {
   const problems = [];
-  for (const routePath of seoPaths) {
-    const outPath =
-      routePath === '/'
-        ? path.join(publicDir, 'index.html')
-        : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
-    const page = await fs.readFile(outPath, 'utf8');
+  for (const routePath of allPaths) {
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
     const payloads = extractJsonLdPayloads(page);
     // Every indexable page must ship structured data; noindex pages skip it.
-    if (!PAGE_SEO[routePath].noindex && payloads.length === 0) {
+    // Unit pages (not in PAGE_SEO) are always indexable.
+    if (!PAGE_SEO[routePath]?.noindex && payloads.length === 0) {
       problems.push(`${routePath}: indexable page has no JSON-LD blocks`);
     }
     for (const problem of validateJsonLdPayloads(payloads, SITE_URL)) {
@@ -251,7 +253,7 @@ for (const routePath of seoPaths) {
         problems.map((p) => `  ${p}`).join('\n'),
     );
   }
-  console.log(`JSON-LD validated on ${seoPaths.length} pages.`);
+  console.log(`JSON-LD validated on ${allPaths.length} pages.`);
 }
 
 // Post-build guard: /available-units must publish machine-readable inventory —
@@ -302,6 +304,45 @@ for (const routePath of seoPaths) {
   );
 }
 
+// Post-build guard: every per-unit page must carry its own facts — the unit
+// number in <title> and canonical, an Apartment node with a lease Offer, and
+// the fact-first summary in the body. A regression that ships unit pages with
+// home/generic meta (the exact soft-duplicate failure these pages exist to
+// avoid) fails the build.
+{
+  const problems = [];
+  for (const routePath of unitPaths) {
+    const unit = routePath.split('/').pop();
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
+    if (!new RegExp(`<title>[^<]*${unit}`).test(page)) {
+      problems.push(`${routePath}: <title> does not mention unit ${unit}`);
+    }
+    if (!page.includes(`rel="canonical" href="${SITE_URL}${routePath}"`)) {
+      problems.push(`${routePath}: missing self-canonical`);
+    }
+    // renderToString splits dynamic text with <!-- --> comments, so check the
+    // body via a comment-tolerant fragment of the fact summary.
+    if (!page.replaceAll('<!-- -->', '').includes(`Apartment ${unit} at Exhibit On Superior is a`)) {
+      problems.push(`${routePath}: fact-first summary missing from body`);
+    }
+    const nodes = extractJsonLdPayloads(page).flatMap((raw) => {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed];
+    });
+    const apt = nodes.find((n) => n['@type'] === 'Apartment');
+    if (!apt || !apt.offers) {
+      problems.push(`${routePath}: missing Apartment node with Offer`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: per-unit page check failed:\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`Per-unit pages verified: ${unitPaths.length} unit page(s).`);
+}
+
 // Soft check: recommended schema.org properties (WARNINGS ONLY — never fails
 // the build). Google's rich-result eligibility improves with per-type
 // recommended properties (FAQ answers, ApartmentComplex address/telephone/
@@ -312,12 +353,8 @@ for (const routePath of seoPaths) {
 // allowlist, so this printout doubles as a diagnostic when that test fails.
 {
   let warned = 0;
-  for (const routePath of seoPaths) {
-    const outPath =
-      routePath === '/'
-        ? path.join(publicDir, 'index.html')
-        : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
-    const page = await fs.readFile(outPath, 'utf8');
+  for (const routePath of allPaths) {
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
     const warnings = checkRecommendedProperties(extractJsonLdPayloads(page), {
       allowlist: SITE_RECOMMENDED_ALLOWLIST,
     });
@@ -409,10 +446,20 @@ const urls = indexable
     const priority = p === '/' ? '1.0' : '0.8';
     return `  <url><loc>${canonicalFor(p)}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
   })
+  .concat(
+    // Per-unit pages: refreshed on every publish, churn with inventory —
+    // daily changefreq, slightly lower priority than the hub pages.
+    unitPaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`,
+    ),
+  )
   .join('\n');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 await fs.writeFile(path.join(publicDir, 'sitemap.xml'), sitemap, 'utf8');
 
 console.log(
-  `Prerendered ${seoPaths.length} routes; sitemap.xml written with ${indexable.length} indexable URLs.`,
+  `Prerendered ${allPaths.length} routes; sitemap.xml written with ${
+    indexable.length + unitPaths.length
+  } indexable URLs.`,
 );

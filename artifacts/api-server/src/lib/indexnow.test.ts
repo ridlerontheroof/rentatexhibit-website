@@ -6,6 +6,8 @@ import {
   CORE_SITEMAP_URLS,
   INDEXNOW_KEY,
   SITE_URL,
+  changedUnitUrls,
+  unitPageUrl,
   inventoryChanged,
   inventoryFingerprint,
   notifyAvailabilityChanged,
@@ -83,6 +85,23 @@ describe("inventory diffing", () => {
     expect(inventoryChanged(prev, payload([unit({ availableOn: "2026-10-01" })]))).toBe(true); // re-dated
   });
 
+  it("changedUnitUrls lists added, removed, and re-priced/re-dated unit pages", () => {
+    const prev = payload([a, unit({ unit: "0610", rent: 2271 })]);
+    // Added:
+    expect(
+      changedUnitUrls(prev, payload([a, unit({ unit: "0610", rent: 2271 }), unit({ unit: "2801" })])),
+    ).toEqual([unitPageUrl("2801")]);
+    // Removed (rented) — the sold-out page still needs a recrawl:
+    expect(changedUnitUrls(prev, payload([a]))).toEqual([unitPageUrl("0610")]);
+    // Re-priced:
+    expect(changedUnitUrls(prev, payload([a, unit({ unit: "0610", rent: 2400 })]))).toEqual([
+      unitPageUrl("0610"),
+    ]);
+    // No change / cold start:
+    expect(changedUnitUrls(prev, payload([a, unit({ unit: "0610", rent: 2271 })]))).toEqual([]);
+    expect(changedUnitUrls(null, payload([a]))).toEqual([]);
+  });
+
   it("ignores unit order and non-inventory churn (photos, copy)", () => {
     const p1 = payload([a, unit({ unit: "0610", rent: 2271 })]);
     const p2 = payload([
@@ -149,5 +168,18 @@ describe("production gating", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
     expect(body.urlList).toEqual(AVAILABILITY_URLS);
+  });
+
+  it("availability change includes the affected per-unit page URLs", () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200 });
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("NODE_ENV", "production");
+    notifyAvailabilityChanged(undefined, [unitPageUrl("0610"), unitPageUrl("2801")]);
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.urlList).toEqual([
+      ...AVAILABILITY_URLS,
+      unitPageUrl("0610"),
+      unitPageUrl("2801"),
+    ]);
   });
 });

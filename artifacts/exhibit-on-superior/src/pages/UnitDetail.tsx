@@ -19,6 +19,7 @@ import { variantIndexForUnit } from '../data/floorPlans';
 import { trackOutboundClick } from '../lib/analytics';
 import { youTubeEmbedUrl } from '../lib/youtube';
 import { APPLY_URL } from '../data/seo';
+import { buildUnitSeoModel, unitFactSummary, unitFloor } from '../data/unitPageSeo';
 
 const ADDRESS = '165 W Superior St, Chicago, IL 60654';
 
@@ -44,21 +45,34 @@ export function UnitDetail() {
   }
 
   if (!unit) {
+    // Graceful sold-out state: a unit URL that has left inventory (stale AI
+    // citation, old bookmark, search result) still lands on a helpful page —
+    // noindex, no hard 404 — pointing at what IS available right now.
     return (
       <div className="container mx-auto px-4 py-24 text-center">
         <Seo path={`/available-units/${params.unit}`} title="Residence Not Available | Exhibit On Superior" noindex />
         <h1 className="text-2xl font-semibold uppercase tracking-wider text-foreground">
-          This residence is no longer available
+          Apartment {params.unit} has been rented
         </h1>
-        <p className="mt-3 text-muted-foreground">
-          It may have just been leased. Browse the rest of our available residences below.
+        <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+          This residence is no longer available — it may have just been leased. Current
+          availability with live pricing and move-in dates is always listed on our Available
+          Units page, or the leasing team can suggest a similar home.
         </p>
-        <Link
-          href="/available-units"
-          className="mt-6 inline-block bg-primary px-6 py-3 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-        >
-          View floor plans &amp; availability
-        </Link>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/available-units"
+            className="inline-block bg-primary px-6 py-3 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+          >
+            See current availability
+          </Link>
+          <Link
+            href="/schedule-a-tour"
+            className="inline-block border border-border px-6 py-3 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            Schedule a tour
+          </Link>
+        </div>
       </div>
     );
   }
@@ -71,17 +85,16 @@ export function UnitDetail() {
   const tourUrl = unit.listingUrl ? tourUrlForListing(unit.listingUrl) : null;
   const heroPhotos = unit.photos.slice(0, 5);
   // Note: no VideoObject JSON-LD here — Google requires uploadDate, which
-  // AppFolio does not provide, and this page is noindex so the markup would
-  // carry no rich-result value anyway.
+  // AppFolio does not provide.
   const videoEmbedUrl = unit.videoUrl ? youTubeEmbedUrl(unit.videoUrl) : null;
+  const floor = unitFloor(unit.unit);
 
   return (
     <div className="pb-16 pt-10 md:pt-14">
-      <Seo
-        path={`/available-units/${unit.unit}`}
-        title={`Apt ${unit.unit} | Available Residences | Exhibit On Superior`}
-        noindex
-      />
+      {/* Indexable per-unit head: title/description/canonical/OG + Apartment/
+          OfferForLease JSON-LD from the shared model — identical to what the
+          prerenderer emits for this path (entry-server.tsx). */}
+      <Seo path={`/available-units/${unit.unit}`} model={buildUnitSeoModel(unit)} />
 
       <div className="container mx-auto px-4">
         <Link
@@ -91,6 +104,20 @@ export function UnitDetail() {
           <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All available residences
         </Link>
 
+        {/* Fact-first header: the first ~100 words of the page answer "what is
+            this apartment?" directly for visitors, crawlers, and AI assistants
+            — before photos or any expanded detail. */}
+        <div className="mx-auto mt-8 max-w-3xl text-center">
+          <h1 className="text-3xl font-semibold uppercase tracking-wider text-foreground md:text-4xl">
+            Apartment {unit.unit}
+            {floor !== null && (
+              <span className="sr-only"> — floor {floor}</span>
+            )}
+          </h1>
+          <p className="mt-2 text-muted-foreground">{ADDRESS}</p>
+          <p className="mt-5 text-base leading-relaxed text-foreground">{unitFactSummary(unit)}</p>
+        </div>
+
         {/* Photo collage */}
         {heroPhotos.length > 0 && (
           <button
@@ -99,9 +126,14 @@ export function UnitDetail() {
             className="relative mt-6 grid w-full cursor-pointer grid-cols-4 grid-rows-2 gap-1 overflow-hidden"
             aria-label={`View all ${unit.photos.length} photos of apartment ${unit.unit}`}
           >
+            {/* loading="lazy" on ALL collage photos: React 19 SSR auto-emits a
+                fixed-href image preload for any eager plain <img>, which the
+                prerender guard rejects (and these external AppFolio photos
+                can't go through SmartImg's manifest). */}
             <img
               src={heroPhotos[0]}
               alt={`Apartment ${unit.unit} interior`}
+              loading="lazy"
               className="col-span-2 row-span-2 h-full max-h-[420px] w-full object-cover"
             />
             {heroPhotos.slice(1).map((p, i) => (
@@ -199,12 +231,9 @@ export function UnitDetail() {
           )}
         </div>
 
-        {/* Title, address, description — centered content column */}
+        {/* Marketing story — centered content column (facts live in the
+            header block at the top of the page). */}
         <div className="mx-auto mt-16 max-w-3xl text-center">
-          <h1 className="text-3xl font-semibold uppercase tracking-wider text-foreground md:text-4xl">
-            Apartment {unit.unit}
-          </h1>
-          <p className="mt-2 text-muted-foreground">{ADDRESS}</p>
           {/* tracking-wider (not the 10px site display tracking): this is a
               sentence-length marketing line, and display-level letter-spacing
               makes it unreadable at this size. */}
@@ -280,6 +309,34 @@ export function UnitDetail() {
             </div>
           </div>
         )}
+
+        {/* Related pages — descriptive internal links so visitors (and
+            crawlers) can reach the building-wide facts behind this listing. */}
+        <div className="mx-auto mt-20 max-w-3xl">
+          <div className="mb-10 h-px bg-border" />
+          <h2 className="mb-6 text-center text-xl uppercase tracking-wider text-foreground">
+            More About Exhibit On Superior
+          </h2>
+          <ul className="flex flex-wrap items-center justify-center gap-3 text-center">
+            {[
+              { href: '/available-units', label: 'All available apartments & floor plans' },
+              { href: '/amenities', label: 'Building amenities' },
+              { href: '/fees', label: 'Fees, utilities & leasing costs' },
+              { href: '/parking-transportation', label: 'Parking & transportation' },
+              { href: '/pet-friendly', label: 'Pet policy' },
+              { href: `/schedule-a-tour?unit=${unit.unit}`, label: `Schedule a tour of Apt ${unit.unit}` },
+            ].map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  className="inline-block border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       {galleryOpen && <UnitGalleryLightbox unit={unit} onClose={() => setGalleryOpen(false)} />}

@@ -3,7 +3,7 @@ import { lazy, Suspense, useEffect, type ComponentType } from 'react';
 import { Layout } from './components/Layout';
 import { initAnalytics, trackPageView, trackOutboundClick } from './lib/analytics';
 import { APPLY_URL, AVAILABILITY_URL } from './data/seo';
-import { routes, getPreloadedComponent } from './routes';
+import { routes, getPreloadedComponent, UNIT_DETAIL_ROUTE } from './routes';
 import { LEGACY_REDIRECTS as SHARED_LEGACY_REDIRECTS } from './data/legacyRedirects';
 
 // Route-based code splitting: each page ships in its own chunk. The page list is
@@ -26,7 +26,16 @@ const lazyRoutes = routes.map((r) => {
 });
 
 const NotFound = lazy(() => import('./pages/not-found').then((m) => ({ default: m.NotFound })));
-const UnitDetail = lazy(() => import('./pages/UnitDetail').then((m) => ({ default: m.UnitDetail })));
+const UnitDetailLazy = lazy(
+  () => import('./pages/UnitDetail').then((m) => ({ default: m.UnitDetail })),
+);
+/** Prefer the boot-preloaded component (see routes.tsx) — same CLS guard as the
+    static routes: the prerendered unit page must never swap to the Suspense
+    fallback while the chunk downloads. */
+function UnitDetailRoute(_props: RouteComponentProps) {
+  const Preloaded = getPreloadedComponent(UNIT_DETAIL_ROUTE);
+  return Preloaded ? <Preloaded /> : <UnitDetailLazy />;
+}
 
 /**
  * Client-side redirect. Handles both internal route changes and external URLs.
@@ -125,8 +134,10 @@ function App() {
             <Route key={path} path={path} component={Component} />
           ))}
 
-          {/* Live availability: per-unit listing pages (client-only, noindex) */}
-          <Route path="/available-units/:unit" component={UnitDetail} />
+          {/* Live availability: per-unit listing pages. Prerendered per baked
+              unit at build time (scripts/prerender.mjs); hydrates from the live
+              feed so prices/dates self-correct between publishes. */}
+          <Route path={UNIT_DETAIL_ROUTE} component={UnitDetailRoute} />
 
           {/* /floor-plans is the page's former canonical URL — keep it working,
               preserving deep-link params like ?plan=<id> (and any hash). */}

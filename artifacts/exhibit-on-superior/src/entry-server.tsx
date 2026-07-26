@@ -1,11 +1,13 @@
 import { renderToString } from 'react-dom/server';
-import { Router } from 'wouter';
+import { Route, Router } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ComponentType } from 'react';
 import { Layout } from './components/Layout';
 import { routes } from './routes';
 import { NotFound } from './pages/not-found';
 import { buildSeoModel, renderHeadTags } from './data/seo';
+import { buildUnitSeoModel, unitPagePath } from './data/unitPageSeo';
+import { UnitDetail } from './pages/UnitDetail';
 import { floorPlansItemListJsonLd, planGroups } from './data/floorPlans';
 import { unitAvailabilityJsonLd } from './data/unitJsonLd';
 import { getBakedAvailability } from './data/availabilitySnapshot';
@@ -23,6 +25,12 @@ export { LEGACY_REDIRECTS } from './data/legacyRedirects';
 // structured data on /available-units (see scripts/prerender.mjs).
 export const FLOOR_PLAN_COUNT = planGroups.length;
 export const BAKED_UNIT_COUNT = getBakedAvailability()?.units.length ?? 0;
+
+// Per-unit pages: one prerendered route per baked available unit. The
+// prerenderer loops over these exactly like the static PAGE_SEO routes.
+export const UNIT_PATHS: string[] = (getBakedAvailability()?.units ?? []).map((u) =>
+  unitPagePath(u.unit),
+);
 
 /** Content-page paths, exported for the prerenderer's route<->PAGE_SEO parity check. */
 export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
@@ -54,6 +62,27 @@ export interface RenderResult {
  * on load (`createRoot().render`), so this output is purely for crawlers/bots.
  */
 export async function render(pathname: string): Promise<RenderResult> {
+  // Per-unit page (/available-units/<unit>): rendered through a wouter
+  // <Route> so useParams resolves, with the head built from the same shared
+  // model the client <Seo> emits. Only baked snapshot units are prerendered.
+  const unitMatch = pathname.match(/^\/available-units\/([^/]+)$/);
+  if (unitMatch) {
+    const unit = (getBakedAvailability()?.units ?? []).find((u) => u.unit === unitMatch[1]);
+    if (!unit) {
+      throw new Error(`render(${pathname}): unit ${unitMatch[1]} is not in the baked snapshot`);
+    }
+    const html = renderToString(
+      <QueryClientProvider client={new QueryClient()}>
+        <Router ssrPath={pathname}>
+          <Layout>
+            <Route path="/available-units/:unit" component={UnitDetail} />
+          </Layout>
+        </Router>
+      </QueryClientProvider>,
+    );
+    return { html, head: renderHeadTags(buildUnitSeoModel(unit)) };
+  }
+
   const match = routes.find((r) => r.path === pathname);
   const Component: ComponentType = match ? await match.load() : NotFound;
 
