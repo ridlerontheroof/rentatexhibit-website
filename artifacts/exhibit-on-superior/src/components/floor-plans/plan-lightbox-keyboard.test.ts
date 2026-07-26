@@ -284,6 +284,30 @@ describe('zoom keys while the coarse click-zoom mode is active', () => {
 });
 
 describe('Escape', () => {
+  it('first dismisses the shortcut legend without closing; second closes', () => {
+    pressKey('?');
+    expect(document.getElementById('plan-shortcuts-legend')).not.toBeNull();
+    pressKey('Escape');
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    expect(onClose).not.toHaveBeenCalled();
+    pressKey('Escape');
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('dismisses the legend before resetting zoom: legend, then zoom, then close', () => {
+    pressKey('+');
+    pressKey('?');
+    pressKey('Escape'); // 1: legend only
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    expect(readTransform().scale).toBeCloseTo(KEY_ZOOM_STEP, 5);
+    expect(onClose).not.toHaveBeenCalled();
+    pressKey('Escape'); // 2: reset zoom
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+    expect(onClose).not.toHaveBeenCalled();
+    pressKey('Escape'); // 3: close
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it('first resets a keyboard zoom to fit without closing; second closes', () => {
     pressKey('+');
     pressKey('ArrowLeft');

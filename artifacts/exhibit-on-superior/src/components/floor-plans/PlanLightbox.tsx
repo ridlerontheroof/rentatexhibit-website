@@ -602,6 +602,12 @@ export function PlanLightbox({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         onEscapeKeyDown={(e) => {
+          // First Escape dismisses the shortcut legend if it is open.
+          if (showShortcuts) {
+            e.preventDefault();
+            setShowShortcuts(false);
+            return;
+          }
           // First Escape while zoomed resets to fit; a second Escape closes.
           if (pinch.scale > 1.01 || zoomed) {
             e.preventDefault();
