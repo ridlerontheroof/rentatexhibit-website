@@ -150,6 +150,7 @@ export function ScheduleTour() {
                       <div className="flex items-center gap-3">
                         <Link
                           href={`/available-units/${u.unit}`}
+                          aria-label={`View details for apartment ${u.unit}`}
                           className="border border-border px-4 py-2 text-xs uppercase tracking-wider transition-colors hover:border-primary hover:text-primary"
                         >
                           View details
@@ -164,6 +165,7 @@ export function ScheduleTour() {
                                 floorPlan: u.unit,
                               })
                             }
+                            aria-label={`Schedule a tour of apartment ${u.unit}`}
                             className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                           >
                             Schedule a tour
@@ -172,6 +174,7 @@ export function ScheduleTour() {
                           <a
                             href="#request-a-showing"
                             onClick={() => setValue('unit', u.unit)}
+                            aria-label={`Schedule a tour of apartment ${u.unit}`}
                             className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                           >
                             Schedule a tour

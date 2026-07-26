@@ -15,7 +15,8 @@
     "check:rented": "node scripts/check-rented-noindex.mjs",
     "check:postpublish": "pnpm run check:knowledge && pnpm run check:rented",
     "check:fold:built": "node scripts/check-units-above-fold.mjs --built",
-    "check:prepublish": "pnpm run build && pnpm run check:fold:built",
+    "check:link-names": "node scripts/check-link-names.mjs",
+    "check:prepublish": "pnpm run build && pnpm run check:fold:built && pnpm run check:link-names",
     "generate:unit-rewrites": "node scripts/generate-unit-rewrites.mjs",
     "generate:unit-rewrites:check": "node scripts/generate-unit-rewrites.mjs --check"
   },

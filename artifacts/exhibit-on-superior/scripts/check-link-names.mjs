@@ -1,0 +1,99 @@
+#!/usr/bin/env node
+// Site-wide accessible-link-name guard (companion to the per-page test
+// src/pages/FaqHub.link-names.test.tsx).
+//
+// Screen-reader users pull up a list of a page's links by name. When several
+// links on one page share the same spoken name ("Read more", "View details",
+// "Schedule a tour" …) but go to DIFFERENT places, they are indistinguishable.
+// The fix is an aria-label that includes the link's subject, e.g.
+// aria-label="View details for apartment 0208" (see FaqHub / AvailableUnits).
+//
+// This script audits every prerendered page (dist/public/**/index.html) — the
+// exact HTML crawlers and first paints see — and fails when any page repeats
+// one accessible name across links with more than one distinct destination.
+//
+// Rules:
+// - The accessible name is the aria-label when present, else the link text.
+// - Same name + same href is fine (e.g. header and footer nav to /amenities).
+// - In-page hash links (href="#…") are skipped: a "#residents" jump link and
+//   a "/residents" page link legitimately share a name.
+//
+// Run after a build: node scripts/check-link-names.mjs   (wired into
+// check:prepublish so a publish can't ship newly ambiguous links).
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const dist = path.join(root, 'dist', 'public');
+
+if (!fs.existsSync(dist)) {
+  console.error(`check-link-names: ${dist} not found — run the build first.`);
+  process.exit(1);
+}
+
+/** All prerendered pages. */
+function walk(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) return walk(p);
+    return e.name === 'index.html' ? [p] : [];
+  });
+}
+
+/** Decode the entities React escapes, drop tags/SSR text markers, squash space. */
+function decode(s) {
+  return s
+    .replace(/<!-- -->/g, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const failures = [];
+const pages = walk(dist);
+
+for (const file of pages) {
+  const html = fs.readFileSync(file, 'utf8');
+  /** accessible name (lowercased) -> Set of hrefs */
+  const names = new Map();
+  for (const m of html.matchAll(/<a\b[^>]*>(.*?)<\/a>/gs)) {
+    const href = (m[0].match(/href="([^"]*)"/) || [])[1];
+    if (!href || href.startsWith('#')) continue;
+    const label = m[0].match(/aria-label="([^"]*)"/);
+    const name = decode(label ? label[1] : m[1]).toLowerCase();
+    if (!name) continue;
+    if (!names.has(name)) names.set(name, new Set());
+    names.get(name).add(decode(href));
+  }
+  for (const [name, hrefs] of names) {
+    if (hrefs.size > 1) {
+      failures.push({
+        page: file.slice(dist.length).replace(/\/index\.html$/, '') || '/',
+        name,
+        hrefs: [...hrefs],
+      });
+    }
+  }
+}
+
+if (failures.length > 0) {
+  console.error(
+    `check-link-names: ${failures.length} ambiguous spoken link name(s) — ` +
+      `links sharing one accessible name but pointing at different URLs.\n` +
+      `Fix: add an aria-label naming the subject (see FaqHub.tsx "Full answer" links).\n`,
+  );
+  for (const f of failures) {
+    console.error(`  ${f.page}  "${f.name}" ->`);
+    for (const h of f.hrefs) console.error(`      ${h}`);
+  }
+  process.exit(1);
+}
+
+console.log(`check-link-names: OK — ${pages.length} prerendered pages, no ambiguous link names.`);

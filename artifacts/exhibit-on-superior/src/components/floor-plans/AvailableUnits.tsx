@@ -308,6 +308,7 @@ export function AvailableUnits() {
                         href={u.videoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label={`Video tour of apartment ${u.unit}`}
                         className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
                       >
                         Video tour
@@ -334,6 +335,7 @@ export function AvailableUnits() {
                                   floorPlan: u.unit,
                                 })
                               }
+                              aria-label={`Schedule a tour of apartment ${u.unit}`}
                               className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
                             >
                               Schedule a tour
@@ -341,6 +343,7 @@ export function AvailableUnits() {
                           ) : (
                             <Link
                               href={`/schedule-a-tour?unit=${u.unit}`}
+                              aria-label={`Schedule a tour of apartment ${u.unit}`}
                               className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
                             >
                               Schedule a tour
@@ -355,6 +358,7 @@ export function AvailableUnits() {
                                 floorPlan: u.group?.typeLabel,
                               })
                             }
+                            aria-label={`Apply now for apartment ${u.unit}`}
                             className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                           >
                             Apply now
