@@ -94,6 +94,54 @@ describe('UnitGalleryLightbox', () => {
     cleanup();
   });
 
+  it('zooms with the Zoom button and resets to fit with the Fit button', () => {
+    const onClose = vi.fn();
+    const { getByLabelText, getByAltText, queryByLabelText, unmount } = render(
+      <UnitGalleryLightbox unit={unit} onClose={onClose} />,
+    );
+    const img = getByAltText('Apartment 0610, photo 1 of 2') as HTMLImageElement;
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(1)');
+
+    // Zoom in: image scales up and the control flips to "Zoom out" / Fit.
+    const zoomIn = getByLabelText('Zoom in');
+    fireEvent.click(zoomIn);
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
+    expect(queryByLabelText('Zoom in')).toBeNull();
+    const zoomOut = getByLabelText('Zoom out');
+    expect(zoomOut.textContent).toContain('Fit');
+
+    // Fit: scale returns to 1 and the control flips back to "Zoom in".
+    fireEvent.click(zoomOut);
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(1)');
+    expect(queryByLabelText('Zoom out')).toBeNull();
+    expect(getByLabelText('Zoom in').textContent).toContain('Zoom');
+    unmount();
+    cleanup();
+  });
+
+  it('keeps the Zoom/Fit toggle inside the dialog focus-trap tab order', () => {
+    const onClose = vi.fn();
+    const { container, getByLabelText, unmount } = render(
+      <UnitGalleryLightbox unit={unit} onClose={onClose} />,
+    );
+    const dialog = container.querySelector('[role="dialog"]')!;
+    // Same selector the focus trap uses to collect tab stops.
+    const focusables = Array.from(
+      dialog.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+    );
+    const toggle = getByLabelText('Zoom in');
+    expect(focusables).toContain(toggle);
+    expect(toggle.tabIndex).toBe(0);
+
+    // The toggle stays trapped even when it is the last focusable element.
+    const last = focusables[focusables.length - 1];
+    last.focus();
+    fireEvent.keyDown(window, { key: 'Tab' });
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    unmount();
+    cleanup();
+  });
+
   it('traps Tab focus within the dialog', () => {
     const onClose = vi.fn();
     const { container, unmount } = render(<UnitGalleryLightbox unit={unit} onClose={onClose} />);

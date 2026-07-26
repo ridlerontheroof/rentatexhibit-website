@@ -142,7 +142,6 @@ describe('FloorPlans plan-lightbox history behaviour', () => {
     expect(planParam()).not.toBeNull();
 
     clickButton(closeButton());
-
     expect(dialog()).toBeNull();
     // The X consumes the pushed entry via history.back(); jsdom performs
     // history traversal (and the resulting URL change + popstate)
