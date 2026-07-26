@@ -770,6 +770,9 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       { label: 'Parking & Transportation', href: '/parking-transportation' },
       { label: 'Fees & Leasing Costs', href: '/fees' },
     ],
+    externalLinks: [
+      { label: 'EVBOX website (charging pricing & subscriptions)', href: 'https://evbox.com' },
+    ],
   },
   {
     slug: 'is-there-guest-parking',

@@ -58,6 +58,11 @@ export interface KnowledgeArticle {
   related: string[];
   /** Internal site pages to continue to, e.g. { label, href: "/fees" }. */
   links: { label: string; href: string }[];
+  /**
+   * External resources (full https:// URLs), rendered after the internal
+   * links with rel="noopener" in a new tab. Not route-validated by tests.
+   */
+  externalLinks?: { label: string; href: string }[];
   /** Meta description (defaults to the answer, trimmed). */
   description?: string;
 }

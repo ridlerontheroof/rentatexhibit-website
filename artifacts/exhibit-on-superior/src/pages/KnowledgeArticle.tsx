@@ -114,6 +114,18 @@ export function KnowledgeArticle() {
                     </Link>
                   </li>
                 ))}
+                {(article.externalLinks ?? []).map((l) => (
+                  <li key={l.href}>
+                    <a
+                      href={l.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline underline-offset-4"
+                    >
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
