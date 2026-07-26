@@ -31,6 +31,28 @@ if (UNITS.length === 0) {
 }
 const [SAMPLE_UNIT, ...OTHER_UNITS] = UNITS;
 
+// Knowledge Center article slugs from the source of truth (pure-data TS
+// file). This script runs plain Node (no TS loader), so parse the slugs with
+// the same regex check-knowledge-pages.mjs uses; every article literal starts
+// with `slug:` immediately followed by `question:`.
+const knowledgeSrcPath = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'src',
+  'data',
+  'knowledgeArticles.ts',
+);
+const knowledgeSrc = await readFile(knowledgeSrcPath, 'utf8');
+const KNOWLEDGE_SLUGS = [
+  ...knowledgeSrc.matchAll(/slug:\s*'([^']+)',\s*\n\s*question:/g),
+].map((m) => m[1]);
+if (KNOWLEDGE_SLUGS.length < 10) {
+  console.error(
+    `Parsed only ${KNOWLEDGE_SLUGS.length} knowledge article slugs from knowledgeArticles.ts — parser out of sync with the data file.`,
+  );
+  process.exit(1);
+}
+
 const CRAWLERS = {
   'OAI-SearchBot':
     'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot',
@@ -119,10 +141,28 @@ for (const [pathName, spec] of Object.entries(URLS)) {
   }
 }
 
-// Sitemap ↔ snapshot cross-check: every snapshot unit must have a
-// /available-units/<unit> entry in /sitemap.xml, and the sitemap must not
-// list unit pages that are no longer in the snapshot (stale rented units —
-// Google would keep crawling a page that's about to 404 or go stale).
+// Sitemap ↔ data-source cross-checks, both directions:
+//   - unit-cross-check: every snapshot unit must have a
+//     /available-units/<unit> entry in /sitemap.xml, and the sitemap must not
+//     list unit pages that are no longer in the snapshot (stale rented units —
+//     Google would keep crawling a page that's about to 404 or go stale).
+//   - knowledge-cross-check: same for /knowledge/<slug> entries vs the
+//     article slugs in knowledgeArticles.ts (a dropped article would get
+//     quietly deindexed; a stale entry points at a deleted page).
+const CROSS_CHECKS = [
+  {
+    bot: 'unit-cross-check',
+    pattern: /^\/available-units\/([^/]+)\/?$/,
+    expected: UNITS,
+    label: 'unit(s)',
+  },
+  {
+    bot: 'knowledge-cross-check',
+    pattern: /^\/knowledge\/([^/]+)\/?$/,
+    expected: KNOWLEDGE_SLUGS,
+    label: 'article(s)',
+  },
+];
 try {
   const res = await fetch(`${BASE}/sitemap.xml`, {
     headers: { 'User-Agent': CRAWLERS.Googlebot },
@@ -130,39 +170,45 @@ try {
   });
   const xml = await res.text();
   if (res.status !== 200) {
-    failures++;
-    rows.push({ path: '/sitemap.xml', bot: 'unit-cross-check', status: res.status, bytes: Buffer.byteLength(xml), ok: 'FAIL', note: 'non-200 fetching sitemap for unit cross-check' });
+    for (const { bot } of CROSS_CHECKS) {
+      failures++;
+      rows.push({ path: '/sitemap.xml', bot, status: res.status, bytes: Buffer.byteLength(xml), ok: 'FAIL', note: 'non-200 fetching sitemap for cross-check' });
+    }
   } else {
     const locs = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map((m) => m[1]);
-    const sitemapUnits = new Set(
-      locs
-        .map((loc) => {
-          try {
-            const m = new URL(loc).pathname.match(/^\/available-units\/([^/]+)\/?$/);
-            return m ? m[1] : null;
-          } catch {
-            return null;
-          }
-        })
-        .filter(Boolean),
-    );
-    const missing = UNITS.filter((u) => !sitemapUnits.has(u));
-    const stale = [...sitemapUnits].filter((u) => !UNITS.includes(u));
-    const ok = missing.length === 0 && stale.length === 0;
-    if (!ok) failures++;
-    const note = ok
-      ? `${UNITS.length} unit(s) all listed`
-      : [
-          missing.length ? `missing from sitemap: ${missing.join(', ')}` : '',
-          stale.length ? `stale in sitemap (not in snapshot): ${stale.join(', ')}` : '',
-        ]
-          .filter(Boolean)
-          .join('; ');
-    rows.push({ path: '/sitemap.xml', bot: 'unit-cross-check', status: res.status, bytes: Buffer.byteLength(xml), ok: ok ? 'PASS' : 'FAIL', note });
+    for (const { bot, pattern, expected, label } of CROSS_CHECKS) {
+      const inSitemap = new Set(
+        locs
+          .map((loc) => {
+            try {
+              const m = new URL(loc).pathname.match(pattern);
+              return m ? m[1] : null;
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean),
+      );
+      const missing = expected.filter((u) => !inSitemap.has(u));
+      const stale = [...inSitemap].filter((u) => !expected.includes(u));
+      const ok = missing.length === 0 && stale.length === 0;
+      if (!ok) failures++;
+      const note = ok
+        ? `${expected.length} ${label} all listed`
+        : [
+            missing.length ? `missing from sitemap: ${missing.join(', ')}` : '',
+            stale.length ? `stale in sitemap (not in data source): ${stale.join(', ')}` : '',
+          ]
+            .filter(Boolean)
+            .join('; ');
+      rows.push({ path: '/sitemap.xml', bot, status: res.status, bytes: Buffer.byteLength(xml), ok: ok ? 'PASS' : 'FAIL', note });
+    }
   }
 } catch (err) {
-  failures++;
-  rows.push({ path: '/sitemap.xml', bot: 'unit-cross-check', status: 'ERR', bytes: 0, ok: 'FAIL', note: String(err.message || err) });
+  for (const { bot } of CROSS_CHECKS) {
+    failures++;
+    rows.push({ path: '/sitemap.xml', bot, status: 'ERR', bytes: 0, ok: 'FAIL', note: String(err.message || err) });
+  }
 }
 
 console.table(rows);
