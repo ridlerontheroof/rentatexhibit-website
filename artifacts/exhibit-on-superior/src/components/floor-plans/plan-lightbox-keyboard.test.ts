@@ -293,4 +293,31 @@ describe('Escape', () => {
     pressKey('Escape');
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('first backs out of the coarse click-zoom without closing; second closes', () => {
+    vi.useFakeTimers();
+    try {
+      // Enter coarse mode: single click, then let the single-tap timer elapse.
+      act(() => {
+        planImage().dispatchEvent(
+          new MouseEvent('click', { bubbles: true, cancelable: true, clientX: 400, clientY: 300 }),
+        );
+      });
+      act(() => {
+        vi.advanceTimersByTime(400); // past the 300ms double-tap window
+      });
+      expect(planImage().style.width).toBe('160%');
+
+      pressKey('Escape');
+      // Escape resets coarse mode instantly (no exit animation).
+      expect(planImage().style.width).toBe('');
+      expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+      expect(onClose).not.toHaveBeenCalled();
+
+      pressKey('Escape');
+      expect(onClose).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
