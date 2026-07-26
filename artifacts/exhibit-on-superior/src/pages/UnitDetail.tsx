@@ -172,22 +172,28 @@ export function UnitDetail() {
             className="relative mt-6 grid w-full cursor-pointer grid-cols-4 grid-rows-2 gap-1 overflow-hidden"
             aria-label={`View all ${unit.photos.length} photos of apartment ${unit.unit}`}
           >
-            {/* loading="lazy" on ALL collage photos: React 19 SSR auto-emits a
-                fixed-href image preload for any eager plain <img>, which the
-                prerender guard rejects (and these external AppFolio photos
-                can't go through SmartImg's manifest). */}
+            {/* The lead collage photo is above the fold, so it loads eagerly
+                with high fetch priority (lazy-loading the largest visible
+                image delays LCP). It is wrapped in <picture> because React 19
+                SSR auto-emits a fixed-href image preload for any eager plain
+                <img> outside <picture>, which the prerender guard rejects
+                (these external AppFolio photos can't go through SmartImg's
+                manifest). The remaining collage tiles stay lazy. */}
             {/* width/height: AppFolio listing photos are landscape 3:2; the
                 intrinsic ratio hint lets the browser reserve space before the
                 image loads (no layout shift), while object-cover + the grid
                 classes control the displayed size. */}
-            <img
-              src={heroPhotos[0]}
-              alt={`Apartment ${unit.unit} interior`}
-              loading="lazy"
-              width={1170}
-              height={780}
-              className="col-span-2 row-span-2 h-full max-h-[420px] w-full object-cover"
-            />
+            <picture className="col-span-2 row-span-2">
+              <img
+                src={heroPhotos[0]}
+                alt={`Apartment ${unit.unit} interior`}
+                loading="eager"
+                fetchPriority="high"
+                width={1170}
+                height={780}
+                className="h-full max-h-[420px] w-full object-cover"
+              />
+            </picture>
             {heroPhotos.slice(1).map((p, i) => (
               <img
                 key={p}
@@ -360,7 +366,9 @@ export function UnitDetail() {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 referrerPolicy="strict-origin-when-cross-origin"
-                className="absolute inset-0 h-full w-full"
+                width={1280}
+              height={720}
+              className="absolute inset-0 h-full w-full"
               />
             </div>
           </div>

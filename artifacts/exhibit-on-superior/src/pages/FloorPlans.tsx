@@ -5,16 +5,9 @@ import { Link } from 'wouter';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { ChevronDown, Search, SlidersHorizontal, X } from 'lucide-react';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { Input } from '../components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
 import { PlanCard } from '../components/floor-plans/PlanCard';
 import { AvailableUnits } from '../components/floor-plans/AvailableUnits';
@@ -430,18 +423,29 @@ export function FloorPlans() {
                         </SheetContent>
                       </Sheet>
 
-                      <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
-                        <SelectTrigger className="w-[170px]" aria-label="Sort plans">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
+                      {/* Native <select>: Radix Select renders a hidden native
+                          select clone that accessibility scanners flag
+                          (focusable element inside aria-hidden, unlabeled
+                          select). A styled native control has none of those
+                          issues and works before hydration. */}
+                      <label className="relative block">
+                        <span className="sr-only">Sort plans</span>
+                        <select
+                          value={sort}
+                          onChange={(e) => setSort(e.target.value as SortKey)}
+                          className="h-9 w-[170px] appearance-none rounded-md border border-input bg-background px-3 pr-8 text-sm shadow-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        >
                           {SORT_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
+                            <option key={opt.value} value={opt.value}>
                               {opt.label}
-                            </SelectItem>
+                            </option>
                           ))}
-                        </SelectContent>
-                      </Select>
+                        </select>
+                        <ChevronDown
+                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground opacity-50"
+                          aria-hidden="true"
+                        />
+                      </label>
                     </div>
                   </div>
                 </div>

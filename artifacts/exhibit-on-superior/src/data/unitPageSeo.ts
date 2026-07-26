@@ -107,8 +107,17 @@ export function unitTitle(u: AvailableUnit): string {
 }
 
 export function unitDescription(u: AvailableUnit): string {
-  // Meta-description-length restatement of the same hard facts.
-  return unitFactSummary(u);
+  // Meta description: the first (fact-dense) sentence of the summary plus a
+  // short location tail, clamped to ~160 chars. Search engines truncate longer
+  // descriptions mid-sentence, which reads badly in SERPs and ad previews;
+  // the full two-sentence summary still appears in the page body and JSON-LD.
+  const full = unitFactSummary(u);
+  const firstSentence = full.slice(0, full.indexOf('. ') + 1);
+  const withTail = `${firstSentence} River North, Chicago.`;
+  const text = withTail.length <= 160 ? withTail : firstSentence;
+  if (text.length <= 160) return text;
+  const cut = text.slice(0, 159);
+  return `${cut.slice(0, cut.lastIndexOf(' '))}\u2026`;
 }
 
 /** Apartment + OfferForLease JSON-LD @graph for one unit page (self-contained). */

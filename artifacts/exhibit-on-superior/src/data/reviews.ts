@@ -88,6 +88,19 @@ export function reviewsJsonLd(model: ReviewsPageModel): Record<string, unknown> 
     '@id': `${SITE_URL}#apartmentcomplex`,
     name: 'Exhibit On Superior',
     url: SITE_URL,
+    // Address + telephone repeated here (not only on the merged
+    // ApartmentComplex node) so validators that check each JSON-LD block in
+    // isolation — without merging nodes by @id — still see a complete
+    // LocalBusiness entity.
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '165 W Superior St',
+      addressLocality: 'Chicago',
+      addressRegion: 'IL',
+      postalCode: '60654',
+      addressCountry: 'US',
+    },
+    telephone: '312-450-0635',
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: model.rating,

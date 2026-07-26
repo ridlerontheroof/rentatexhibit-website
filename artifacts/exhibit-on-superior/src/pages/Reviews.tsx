@@ -110,6 +110,38 @@ export function Reviews() {
           </div>
         </section>
 
+        {/* Where reviews come from */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl uppercase tracking-wider mb-6 text-center">Where These Reviews Come From</h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+              <p>
+                The ratings and quotes above come straight from our Google Business Profile, so what
+                you read here is what residents and visitors have actually posted — feedback about our
+                River North apartments, the leasing and touring experience, building amenities, and
+                day-to-day life at 165 W Superior St. Because the aggregate rating and the quotes are
+                drawn from the same source, the star rating you see always reflects real reviews.
+              </p>
+              <p>
+                Deciding whether Exhibit On Superior is right for you? Preview homes and amenities with
+                the video and Matterport tours on the{' '}
+                <Link href="/virtual-tour" className="text-primary hover:underline">
+                  Virtual Tour
+                </Link>{' '}
+                page, browse current homes with live pricing on the{' '}
+                <Link href="/available-units" className="text-primary hover:underline">
+                  Available Units
+                </Link>{' '}
+                page, then{' '}
+                <Link href="/schedule-a-tour" className="text-primary hover:underline">
+                  schedule a tour
+                </Link>{' '}
+                to see it in person.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* CTA */}
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">

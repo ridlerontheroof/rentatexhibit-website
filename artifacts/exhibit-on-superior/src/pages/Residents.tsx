@@ -101,6 +101,44 @@ export function Residents() {
           </div>
         </section>
 
+        {/* Living well at Exhibit */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl uppercase tracking-wider mb-6 text-center">Living Well At Exhibit</h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+              <p>
+                From your resident portal you can pay rent securely online, submit maintenance
+                requests from your phone or computer, and keep up with building announcements and
+                resident events. For urgent maintenance issues, call us directly at{' '}
+                <a href="tel:312-883-5503" className="text-primary hover:underline">
+                  (312) 883-5503
+                </a>
+                ; for everything else, reach the office at{' '}
+                <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+                  exhibit@highlandptrs.com
+                </a>{' '}
+                or{' '}
+                <a href="tel:312-450-0635" className="text-primary hover:underline">
+                  312-450-0635
+                </a>{' '}
+                during office hours.
+              </p>
+              <p>
+                Make the most of the full-floor amenity deck, the 75&rsquo; lap pool, fitness center,
+                lounges, and work and meeting rooms — see it all on the{' '}
+                <Link href="/amenities" className="text-primary hover:underline">
+                  Amenities
+                </Link>{' '}
+                page. Pet owners can find the dog spa and gated outdoor dog walk on the{' '}
+                <Link href="/pet-friendly" className="text-primary hover:underline">
+                  Pet Friendly
+                </Link>{' '}
+                page.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
             <SplitHeadline caps="Need Help?" dark className="mb-6" />

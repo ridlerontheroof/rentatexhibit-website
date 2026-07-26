@@ -95,6 +95,7 @@ export function PlanFilters({
           value={state.sqft}
           onValueChange={(v) => onSqftChange([v[0], v[1]] as [number, number])}
           aria-label="Square footage range"
+          thumbLabels={['Minimum square footage', 'Maximum square footage']}
           className="my-4"
         />
         <div className="flex justify-between text-sm text-muted-foreground">

@@ -84,7 +84,7 @@ describe('prerendered /virtual-tour JSON-LD matches the shared virtualTours modu
       expect(li.item.name).toBe(matterportTours[i].name);
       expect(li.item.contentUrl).toBe(matterportTours[i].url);
       // Visible heading and iframe src in the prerendered body.
-      expect(html).toContain(`>${matterportTours[i].name}</h3>`);
+      expect(html).toContain(`>${matterportTours[i].name}</h2>`);
       expect(html).toContain(matterportTours[i].url.replace(/&/g, '&amp;'));
     });
   });
@@ -109,7 +109,7 @@ describe('prerendered /virtual-tour JSON-LD matches the shared virtualTours modu
     // same shared lifeAtExhibitVideo object.
     expect(video.name).toBe(lifeAtExhibitVideo.name);
     expect(video.embedUrl).toBe(lifeAtExhibitVideo.embedUrl);
-    expect(html).toContain(`>${lifeAtExhibitVideo.name}</h3>`);
+    expect(html).toContain(`>${lifeAtExhibitVideo.name}</h2>`);
     expect(html).toContain(lifeAtExhibitVideo.embedUrl.replace(/&/g, '&amp;'));
   });
 });

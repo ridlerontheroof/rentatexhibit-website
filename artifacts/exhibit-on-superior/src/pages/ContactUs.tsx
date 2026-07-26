@@ -301,6 +301,45 @@ export function ContactUs() {
             </div>
           </div>
         </section>
+
+        {/* What to expect when you reach out */}
+        <section className="py-16 px-4 bg-muted">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl uppercase tracking-wider mb-6 text-center">What To Expect</h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+              <p>
+                Reach the leasing team by email at{' '}
+                <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+                  exhibit@highlandptrs.com
+                </a>
+                , by phone at{' '}
+                <a href="tel:312-450-0635" className="text-primary hover:underline">
+                  312-450-0635
+                </a>
+                , or by visiting us at 165 W Superior St, Chicago, IL 60654. However you get in
+                touch, a member of our River North team will follow up to answer questions about
+                floor plans, pricing, fees, pets, and parking.
+              </p>
+              <p>
+                If you already have a home in mind, browse current homes with live pricing and
+                move-in dates on the{' '}
+                <Link href="/available-units" className="text-primary hover:underline">
+                  Available Units
+                </Link>{' '}
+                page, then{' '}
+                <Link href="/schedule-a-tour" className="text-primary hover:underline">
+                  schedule a tour
+                </Link>{' '}
+                right from the residence you like. Prefer to look around first? Preview apartments and
+                amenities remotely with the video and Matterport tours on our{' '}
+                <Link href="/virtual-tour" className="text-primary hover:underline">
+                  Virtual Tour
+                </Link>{' '}
+                page.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
         <FaqSection path="/contact-us" />
     </>

@@ -26,4 +26,5 @@
 - [Per-unit prerendered pages](unit-page-prerender.md) — dynamic /available-units/<unit> routes prerender via UNIT_PATHS; production needs explicit per-unit rewrite pairs (NO directory-index fallback), pinned to the snapshot by a prerender guard.
 - [Knowledge Center article system](knowledge-center.md) — /knowledge Q&A pages are data-driven like unit pages; new slugs need artifact.toml rewrite pairs; llms.txt/llms-full.txt regenerate in prerender.
 - [Apex→www 301 via Squarespace forwarding](apex-www-redirect.md) — forwarding rules won't save until the Domain Connect presets holding apex records are deleted; verify with curl, no dig in workspace.
+- [Static-serve trailing-slash 301s](static-serve-trailing-slash.md) — platform directory-index 301 beats non-slash rewrites; use trailing-slash URLs when a zero-redirect link matters (ads).
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.

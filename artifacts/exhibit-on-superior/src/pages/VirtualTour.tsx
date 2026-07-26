@@ -46,7 +46,7 @@ export function VirtualTour() {
                 the page's VideoObject JSON-LD (virtualTourVideoJsonLd), so
                 the visible embed and the schema can never drift. */}
             <div className="mb-12">
-              <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">{lifeAtExhibitVideo.name}</h3>
+              <h2 className="text-2xl uppercase tracking-wider mb-6 text-center">{lifeAtExhibitVideo.name}</h2>
               <div className="aspect-video bg-black border border-border">
                 <iframe
                   src={lifeAtExhibitVideo.embedUrl}
@@ -64,7 +64,7 @@ export function VirtualTour() {
                 headings and the schema can never drift. */}
             {matterportTours.map((tour) => (
               <div key={tour.url} className="mb-12">
-                <h3 className="text-2xl uppercase tracking-wider mb-6 text-center">{tour.name}</h3>
+                <h2 className="text-2xl uppercase tracking-wider mb-6 text-center">{tour.name}</h2>
                 <div className="aspect-video bg-black border border-border">
                   <iframe
                     src={tour.url}
@@ -78,6 +78,35 @@ export function VirtualTour() {
                 </div>
               </div>
             ))}
+
+            {/* How to use these tours */}
+            <div className="mt-16 max-w-3xl mx-auto">
+              <h2 className="text-2xl uppercase tracking-wider mb-6 text-center">How To Use These Tours</h2>
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
+                <p>
+                  These virtual tours let you preview Exhibit On Superior remotely. The video walks
+                  you through life in the community, while the interactive Matterport tours let you
+                  move room to room through apartment homes and the amenity spaces at 165 W Superior
+                  St. Together they&apos;re the next best thing to visiting in person — explore layouts,
+                  finishes, and views on your own schedule.
+                </p>
+                <p>
+                  For a closer look at interiors and amenity spaces, visit the{' '}
+                  <Link href="/photo-gallery" className="text-primary hover:underline">
+                    Photo Gallery
+                  </Link>{' '}
+                  page. When you&apos;re ready, browse current homes with live pricing on the{' '}
+                  <Link href="/available-units" className="text-primary hover:underline">
+                    Available Units
+                  </Link>{' '}
+                  page, then{' '}
+                  <Link href="/schedule-a-tour" className="text-primary hover:underline">
+                    schedule a tour
+                  </Link>{' '}
+                  to see it in person.
+                </p>
+              </div>
+            </div>
 
             <div className="text-center mt-16">
               <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" className="mb-6" />

@@ -4,8 +4,11 @@ import { cn } from '@/lib/utils';
 
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> & {
+    /** Accessible name per thumb (range sliders: [min, max]). */
+    thumbLabels?: string[];
+  }
+>(({ className, thumbLabels, ...props }, ref) => {
   // One thumb per value: a range slider (two values) must render two thumbs,
   // otherwise the second value has no thumb carrying aria-valuenow and the
   // control fails accessibility checks.
@@ -25,6 +28,10 @@ const Slider = React.forwardRef<
       {Array.from({ length: thumbCount }).map((_, i) => (
         <SliderPrimitive.Thumb
           key={i}
+          aria-label={
+            thumbLabels?.[i] ??
+            (thumbCount > 1 ? (i === 0 ? 'Minimum value' : 'Maximum value') : undefined)
+          }
           className="block h-4 w-4 rounded-full border border-primary/50 bg-background shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
         />
       ))}

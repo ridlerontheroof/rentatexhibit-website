@@ -166,6 +166,38 @@ export function PhotoGallery() {
           </div>
         )}
 
+        {/* What the photos show */}
+        <section className="py-16 px-4 bg-muted">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl uppercase tracking-wider mb-6 text-center">What You&apos;ll See In These Photos</h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+              <p>
+                These photos show Exhibit On Superior&apos;s apartment interiors, amenity spaces,
+                skyline views, and shared community areas at 165 W Superior St in River North.
+                Inside the homes, look for open-concept layouts, modern kitchens, and floor-to-ceiling
+                windows; across the amenity floor, you&apos;ll find the pool, fitness center, and resident
+                lounges. Use the filters above to jump to the category you want, and click any image
+                to view it full-screen.
+              </p>
+              <p>
+                When you&apos;re ready to go beyond photos, take an interactive walkthrough on the{' '}
+                <Link href="/virtual-tour" className="text-primary hover:underline">
+                  Virtual Tour
+                </Link>{' '}
+                page, or browse current homes with live pricing on the{' '}
+                <Link href="/available-units" className="text-primary hover:underline">
+                  Available Units
+                </Link>{' '}
+                page and{' '}
+                <Link href="/schedule-a-tour" className="text-primary hover:underline">
+                  schedule a tour
+                </Link>{' '}
+                to see it all in person.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
             <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" dark className="mb-6" />
