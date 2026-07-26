@@ -18,7 +18,7 @@ const gzip = promisify(zlib.gzip);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root, 'dist', 'public');
 
-const COMPRESSIBLE = new Set(['.html', '.js', '.mjs', '.css', '.svg', '.xml', '.txt', '.json', '.webmanifest']);
+const COMPRESSIBLE = new Set(['.html', '.js', '.mjs', '.css', '.svg', '.xml', '.txt', '.json', '.webmanifest', '.md']);
 const MIN_BYTES = 512; // below this, headers outweigh the savings
 
 async function* walk(dir) {

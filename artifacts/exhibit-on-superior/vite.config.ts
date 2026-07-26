@@ -140,6 +140,15 @@ export default defineConfig(async ({ command, isSsrBuild }) => {
              * emits a single server bundle.
              */
             manualChunks(id: string) {
+              // Baked availability snapshot (~53 KB JSON): keep it in exactly
+              // ONE chunk. Without this, Rollup inlined a full copy into every
+              // lazy chunk that touches it (AvailableUnits, UnitDetail,
+              // gallery lightbox, unitJsonLd) — pages that never render
+              // availability were shipping the whole snapshot (SEO Phase 4
+              // token-weight trim).
+              if (id.includes('src/data/availabilitySnapshot')) {
+                return 'availability-snapshot';
+              }
               if (!id.includes('node_modules')) return undefined;
               if (
                 /node_modules\/(react|react-dom|scheduler)\//.test(id)

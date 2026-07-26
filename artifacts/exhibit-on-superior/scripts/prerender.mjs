@@ -13,6 +13,7 @@ import {
   checkRecommendedProperties,
   SITE_RECOMMENDED_ALLOWLIST,
 } from './validate-jsonld.mjs';
+import { htmlToMarkdown, decodeEntities } from './html-to-markdown.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(scriptDir, '..');
@@ -731,6 +732,73 @@ console.log(
   console.log('404 page written (noindex, served with status 404 by the production server).');
 }
 
+// Markdown twins (SEO Phase 4 / AEO): every prerendered page gets a `.md`
+// variant at `<path>.md` (homepage: /index.md), generated from the page's own
+// rendered <main> content — answer-first text without the markup overhead
+// (page HTML is <15% visible text; the twin is ~90%+). The production server
+// (server/index.mjs) serves these directly and via `Accept: text/markdown`
+// content negotiation. Guarded: a page whose twin comes out empty or heading-
+// less fails the build.
+const mdPathFor = (routePath) =>
+  routePath === '/'
+    ? path.join(publicDir, 'index.md')
+    : path.join(publicDir, `${routePath.replace(/^\//, '')}.md`);
+{
+  // Stale-twin cleanup: remove any .md left over from routes that no longer
+  // exist (e.g. a rented unit) so old twins can't outlive their pages.
+  const expected = new Set(allPaths.map((p) => mdPathFor(p)));
+  const walk = async (dir) => {
+    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) await walk(p);
+      else if (p.endsWith('.md') && !expected.has(p)) await fs.rm(p);
+    }
+  };
+  await walk(publicDir);
+
+  const problems = [];
+  for (const routePath of allPaths) {
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
+    const title = decodeEntities(page.match(/<title>([^<]*)<\/title>/)?.[1] ?? '');
+    const description = decodeEntities(
+      page.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '',
+    );
+    const canonical = page.match(/<link rel="canonical" href="([^"]*)"/)?.[1] ?? `${SITE_URL}${routePath}`;
+    const mainMatch = page.match(/<main[\s\S]*?<\/main>/);
+    if (!mainMatch) {
+      problems.push(`${routePath}: no <main> element found for markdown generation`);
+      continue;
+    }
+    const body = htmlToMarkdown(mainMatch[0], { siteUrl: SITE_URL });
+    const md = [
+      '---',
+      `title: ${JSON.stringify(title)}`,
+      `description: ${JSON.stringify(description)}`,
+      `url: ${canonical}`,
+      '---',
+      '',
+      body,
+    ].join('\n');
+    const noindex = PAGE_SEO[routePath]?.noindex;
+    if (!body.includes('# ')) {
+      problems.push(`${routePath}: markdown twin has no heading`);
+    }
+    if (!noindex && body.length < 300) {
+      problems.push(`${routePath}: markdown twin suspiciously thin (${body.length} chars)`);
+    }
+    const outPath = mdPathFor(routePath);
+    await fs.mkdir(path.dirname(outPath), { recursive: true });
+    await fs.writeFile(outPath, md, 'utf8');
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: markdown twin generation failed on ${problems.length} page(s):\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`Markdown twins written for ${allPaths.length} pages.`);
+}
+
 // llms.txt + llms-full.txt: regenerated every build so they can never drift
 // from the deployed page set. llms.txt stays a concise entry point (curated
 // primary pages + the Knowledge Center hub); llms-full.txt is the rich
@@ -756,23 +824,25 @@ console.log(
     '# Exhibit On Superior — Full Page Catalog',
     '',
     '> Every indexable page on rentatexhibit.com with its title and a one-line description.',
+    '> Every page also has a clean Markdown twin: append `.md` to its URL (homepage: /index.md),',
+    '> or request any page URL with `Accept: text/markdown`.',
     '> Exhibit On Superior: 298-unit luxury apartment tower at 165 W Superior St, Chicago, IL 60654 (River North). Phone 312-450-0635. Email exhibit@highlandptrs.com.',
     '',
     '## Site Pages',
     '',
     ...indexable.map((p) => {
       const seo = PAGE_SEO[p];
-      return `- [${seo.title}](${canonicalFor(p)}): ${seo.description}`;
+      return `- [${seo.title}](${canonicalFor(p)}): ${seo.description} ([Markdown](${SITE_URL}${p === '/' ? '/index' : p}.md))`;
     }),
     '',
     '## Available Units (live inventory, refreshed each publish)',
     '',
-    ...unitPaths.map((p) => `- [Apartment ${p.split('/').pop()} at Exhibit On Superior](${SITE_URL}${p}): Current availability, rent, photos, and floor plan details for apartment ${p.split('/').pop()}.`),
+    ...unitPaths.map((p) => `- [Apartment ${p.split('/').pop()} at Exhibit On Superior](${SITE_URL}${p}): Current availability, rent, photos, and floor plan details for apartment ${p.split('/').pop()}. ([Markdown](${SITE_URL}${p}.md))`),
     '',
     '## Knowledge Center (answer-first Q&A)',
     '',
     ...(KNOWLEDGE_META ?? []).map(
-      (m) => `- [${m.question}](${SITE_URL}${m.path}): ${m.description}`,
+      (m) => `- [${m.question}](${SITE_URL}${m.path}): ${m.description} ([Markdown](${SITE_URL}${m.path}.md))`,
     ),
     '',
   ];

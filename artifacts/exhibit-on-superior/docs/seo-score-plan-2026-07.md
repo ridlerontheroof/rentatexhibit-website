@@ -149,6 +149,23 @@ Performance 40→~75, Security 46→~90, Crawlability 48→~90, Links 80→~95.
 
 ## Phase 4 — Agent Experience / AEO (50 → 85+)
 
+> **Status (2026-07-26): implemented, awaiting publish.** Every prerendered
+> page (101 routes incl. unit + knowledge pages) now gets a `.md` twin written
+> next to it (`/amenities.md`, homepage `/index.md`), generated in
+> `scripts/prerender.mjs` from the page's own rendered `<main>` via
+> `scripts/html-to-markdown.mjs` (frontmatter: title/description/canonical;
+> guards fail the build on heading-less or thin twins; stale twins from
+> removed routes are deleted). The production server serves `.md` files as
+> `text/markdown` (precompressed .br/.gz like other text) and negotiates
+> `Accept: text/markdown` on extensionless page URLs with `Vary: Accept`
+> (covered in `src/server/production-server.test.ts`). llms.txt and
+> llms-full.txt now advertise/index the Markdown variants per page.
+> Token-weight trim: the baked availability snapshot JSON was being inlined
+> into FOUR lazy JS chunks (incl. the gallery lightbox loaded by pages that
+> never render availability); a manualChunks rule now keeps it in exactly one
+> `availability-snapshot` chunk. Re-run the full squirrel audit after the next
+> publish and record the Agent Experience score here.
+
 1. **Markdown variants**: the build already produces `llms.txt` /
    `llms-full.txt`; add per-page `.md` twins (e.g. `/knowledge/pet-policy.md`)
    generated in the prerender step from the same page data, and serve

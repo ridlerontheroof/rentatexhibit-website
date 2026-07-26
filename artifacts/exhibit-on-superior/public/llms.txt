@@ -1,6 +1,7 @@
 # Exhibit On Superior
 
 > Exhibit On Superior is a 298-unit luxury apartment community at 165 W Superior St in Chicago's River North neighborhood. It offers studio, convertible, one-, two-, and three-bedroom apartments with a professional on-site management team.
+> Every page has a clean Markdown twin: append `.md` to its URL (e.g. https://www.rentatexhibit.com/amenities.md; homepage: https://www.rentatexhibit.com/index.md), or request any page with `Accept: text/markdown`. Full page catalog with Markdown links: https://www.rentatexhibit.com/llms-full.txt
 
 ## Primary Information
 

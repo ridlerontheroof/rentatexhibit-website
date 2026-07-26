@@ -133,6 +133,62 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
   });
 
   // -------------------------------------------------------------------------
+  // Markdown twins (SEO Phase 4)
+  // -------------------------------------------------------------------------
+  it('serves the .md twin at <path>.md with text/markdown', async () => {
+    const res = await get('/amenities.md');
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toContain('text/markdown');
+    const body = await res.text();
+    expect(body).toContain('---'); // frontmatter
+    expect(body).toContain('# ');
+  });
+
+  it('serves the homepage twin at /index.md', async () => {
+    const res = await get('/index.md');
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toContain('text/markdown');
+  });
+
+  it('negotiates Accept: text/markdown on page URLs', async () => {
+    for (const p of ['/', '/amenities']) {
+      const res = await get(p, { accept: 'text/markdown' });
+      expect(res.status, p).toBe(200);
+      expect(res.headers.get('content-type'), p).toContain('text/markdown');
+      expect(res.headers.get('vary'), p).toContain('Accept');
+    }
+  });
+
+  it('still serves HTML when Accept does not mention markdown, with Vary: Accept', async () => {
+    const res = await get('/amenities', { accept: 'text/html' });
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toContain('text/html');
+    expect(res.headers.get('vary')).toContain('Accept');
+  });
+
+  it('negotiates markdown for knowledge and unit pages', async () => {
+    const slug = firstPrerenderedChild('knowledge', ['not-found']);
+    const unit = firstPrerenderedChild('available-units');
+    for (const p of [`/knowledge/${slug}`, `/available-units/${unit}`]) {
+      const res = await get(p, { accept: 'text/markdown' });
+      expect(res.status, p).toBe(200);
+      expect(res.headers.get('content-type'), p).toContain('text/markdown');
+    }
+  });
+
+  it('falls back to HTML (not 404) for markdown Accept on paths without a twin', async () => {
+    const res = await get('/definitely-not-a-page', { accept: 'text/markdown' });
+    expect(res.status).toBe(404);
+    expect(res.headers.get('content-type')).toContain('text/html');
+  });
+
+  it('serves .md twins brotli-compressed when accepted', async () => {
+    const res = await get('/amenities.md', { 'accept-encoding': 'br' });
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-encoding')).toBe('br');
+  });
+
+  // -------------------------------------------------------------------------
   // Redirects
   // -------------------------------------------------------------------------
   it('301s trailing-slash URLs to the non-slash canonical (/amenities/ → /amenities)', async () => {
