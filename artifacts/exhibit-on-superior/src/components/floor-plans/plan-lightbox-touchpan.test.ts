@@ -160,6 +160,69 @@ describe('PlanLightbox one-finger touch pan tap suppression', () => {
   });
 });
 
+describe('PlanLightbox double-tap zoom toward the tapped point', () => {
+  it('double-tapping off-centre zooms to 2x with the tapped point kept in view', () => {
+    const { img } = renderLightbox();
+
+    // Double-tap at (700, 300), off the viewer centre (500, 400).
+    clickAt(img, 700, 300);
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    clickAt(img, 700, 300);
+
+    // tx = -(x - cx) * (scale - 1) = -200, ty = -(y - cy) * (scale - 1) = 100.
+    // The tapped point p maps to cx + tx + scale * (p - cx) = 500 - 200 + 400 = 700,
+    // i.e. it stays exactly under the finger — squarely in view.
+    expect(img.style.transform).toBe('translate(-200px, 100px) scale(2)');
+
+    // Sanity: with a 1000x800 image at 2x in a 1000x800 viewer, the hard pan
+    // bounds are ±500/±400, so this translation sits inside them.
+    expect(Math.abs(-200)).toBeLessThanOrEqual(500);
+    expect(Math.abs(100)).toBeLessThanOrEqual(400);
+  });
+
+  it('double-tapping near an edge clamps the translation to the hard pan bounds', () => {
+    const { img } = renderLightbox();
+
+    // Shrink the rendered image so the pan bounds are tighter than the raw
+    // tap translation: 600x400 image at 2x in a 1000x800 viewer gives
+    // maxTx = (1200 - 1000)/2 = 100 and maxTy = max(0, (800 - 800)/2) = 0.
+    Object.defineProperty(img, 'clientWidth', { value: 600, configurable: true });
+    Object.defineProperty(img, 'clientHeight', { value: 400, configurable: true });
+
+    // Double-tap near the bottom-right corner: unclamped tx/ty would be
+    // -(900-500)*1 = -400 and -(700-400)*1 = -300, far past the bounds.
+    clickAt(img, 900, 700);
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    clickAt(img, 900, 700);
+
+    // Hard-clamped to (-100, 0): the plan hugs the edge, no blank gutter.
+    expect(img.style.transform).toBe('translate(-100px, 0px) scale(2)');
+  });
+
+  it('a touch double-tap off-centre uses the same centered-zoom math', () => {
+    const { img, viewer } = renderLightbox();
+
+    // Two stationary touch taps in quick succession at (700, 300).
+    fireEvent.touchStart(viewer, { touches: [touch(700, 300)], changedTouches: [touch(700, 300)] });
+    act(() => {
+      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(700, 300)] });
+    });
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    fireEvent.touchStart(viewer, { touches: [touch(700, 300)], changedTouches: [touch(700, 300)] });
+    act(() => {
+      fireEvent.touchEnd(viewer, { touches: [], changedTouches: [touch(700, 300)] });
+    });
+
+    expect(img.style.transform).toBe('translate(-200px, 100px) scale(2)');
+  });
+});
+
 describe('PlanLightbox pinch ending with both fingers lifting at once', () => {
   it('keeps the zoom level, settles inside pan bounds, and never registers as a tap', () => {
     const { img, viewer } = renderLightbox();
