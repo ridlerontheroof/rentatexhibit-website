@@ -93,7 +93,7 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     });
     await Promise.race([waitForServer(base), exited]);
     child.removeAllListeners('exit');
-  }, 30000);
+  }, 150000); // > the 120s rebuild-wait poll above, so the hook doesn't time out first
 
   afterAll(() => {
     child?.kill('SIGTERM');
