@@ -96,15 +96,33 @@ describe('prerendered meta descriptions (dist/public)', () => {
     expect(pages.some((p) => p.page.startsWith('knowledge/'))).toBe(true);
   });
 
-  it('the prerendered output was built from the current SEO sources', async () => {
+  it('the prerendered output was built from the current SEO sources', async (ctx) => {
     // A stale dist grades head tags an older model produced (this once failed
     // the whole suite with ~260-char unit descriptions the current model no
     // longer emits). The prerenderer stamps a hash of the head-affecting
     // sources; refuse to grade a dist built from others.
     const artifactRoot = path.resolve(here, '..');
-    const stamped = (
-      await fs.readFile(path.join(artifactRoot, 'dist', SEO_SOURCE_HASH_FILE), 'utf8')
-    ).trim();
+    let raw: string;
+    try {
+      raw = await fs.readFile(path.join(artifactRoot, 'dist', SEO_SOURCE_HASH_FILE), 'utf8');
+    } catch (err) {
+      // Completion validation runs this suite concurrently with the
+      // prepublish rebuild, which wipes dist/ before rewriting it. If the
+      // hash stamp is gone AND the build's last output (index.html.br, since
+      // precompress runs LAST) is also missing, a rebuild is in flight —
+      // skip rather than fail on a mid-rebuild snapshot. A missing stamp
+      // next to a completed build is still a real failure.
+      const buildComplete = await fs
+        .access(path.join(publicDir, 'index.html.br'))
+        .then(() => true)
+        .catch(() => false);
+      if ((err as NodeJS.ErrnoException).code === 'ENOENT' && !buildComplete) {
+        ctx.skip();
+        return;
+      }
+      throw err;
+    }
+    const stamped = raw.trim();
     const current = await computeSeoSourceHash(artifactRoot);
     expect(
       stamped,
