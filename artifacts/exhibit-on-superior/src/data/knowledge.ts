@@ -90,8 +90,14 @@ function truncate(text: string, max = 158): string {
   return `${cut.slice(0, cut.lastIndexOf(' '))}\u2026`;
 }
 
+// Q&A titles are the question itself. Most questions already name the
+// property, so appending "| Exhibit On Superior Chicago" double-branded
+// every title and pushed all of them past Google's ~60-character display
+// limit (guarded by src/prerender-titles.test.ts). Only questions that
+// don't mention the property get a short brand suffix.
 export function knowledgeTitle(a: KnowledgeArticle): string {
-  return `${a.question} | Exhibit On Superior Chicago`;
+  if (a.question.includes('Exhibit On Superior')) return a.question;
+  return `${a.question} | Exhibit On Superior`;
 }
 
 export function knowledgeDescription(a: KnowledgeArticle): string {

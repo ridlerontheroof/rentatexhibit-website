@@ -20,7 +20,11 @@ const BASE = (args.find((a) => !a.startsWith('--')) || 'https://www.rentatexhibi
   /\/$/,
   '',
 );
-const TITLE_SUFFIX = ' | Exhibit On Superior Chicago'; // knowledgeTitle() in src/data/knowledge.ts
+// Mirrors knowledgeTitle() in src/data/knowledge.ts: the question is the
+// title; a short brand suffix is added only when the question doesn't
+// already name the property.
+const expectedTitleFor = (question) =>
+  question.includes('Exhibit On Superior') ? question : `${question} | Exhibit On Superior`;
 
 // --- Load slugs + questions from the source of truth (pure-data TS file). ---
 // Shared parser (scripts/lib/knowledge-slugs.mjs) validates the parsed count
@@ -77,7 +81,7 @@ for (const { slug, question } of sample) {
     fail(url, `HTTP ${status}`);
     continue;
   }
-  const expectedTitle = `${question}${TITLE_SUFFIX}`;
+  const expectedTitle = expectedTitleFor(question);
   const titleMatch = body.match(/<title>([^<]*)<\/title>/);
   const title = titleMatch ? decode(titleMatch[1]) : '';
   if (title !== expectedTitle) {
