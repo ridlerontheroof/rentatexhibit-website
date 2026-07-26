@@ -160,7 +160,7 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
     }
     const result = await createShowingGuestCard({ ...input, listableUid });
     heartbeat.record(req.log, Date.now(), "contact_ok");
-    recordAcceptedSubmission(req.log, Date.now(), "showing_contact");
+    void recordAcceptedSubmission(req.log, Date.now(), "showing_contact");
     void recordLiveShowingSuccess(req.log);
     req.log.info({ unit: input.unit }, "Created showing guest card in AppFolio");
     res.status(201).json({

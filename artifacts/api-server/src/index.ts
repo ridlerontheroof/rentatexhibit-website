@@ -7,6 +7,7 @@ import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
 import { startKnowledgePageCheck } from "./lib/knowledgeCheck";
 import { startShowingSchedulerCheck } from "./lib/showingSchedulerCheck";
 import { startRentedNoindexCheck } from "./lib/rentedCheck";
+import { startAcceptedVolumeWatch } from "./lib/botGuardAlert";
 
 const rawPort = process.env["PORT"];
 
@@ -62,4 +63,9 @@ app.listen(port, (err) => {
   // 6 hours, alerting (once/day) on definitive failures. Gracefully logs
   // and skips when the runtime has no headless Chromium.
   startRentedNoindexCheck(logger);
+
+  // Watchdog: hourly check of the shared last-accepted-submission timestamp;
+  // alerts (once/day) when no lead has been accepted for an unusually long
+  // stretch — the signature of silently broken forms.
+  startAcceptedVolumeWatch(logger);
 });

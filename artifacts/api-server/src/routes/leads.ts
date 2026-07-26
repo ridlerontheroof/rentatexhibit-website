@@ -81,7 +81,9 @@ router.post("/leads", leadLimiter, async (req, res) => {
     });
 
     res.status(201).json(data);
-    recordAcceptedSubmission(req.log, Date.now(), "leads");
+    // Fire-and-forget: counts toward the heartbeat, the shared accepted-spike
+    // counter, and the silence watchdog's last-accepted timestamp.
+    void recordAcceptedSubmission(req.log, Date.now(), "leads");
 
     // response already sent to the visitor.
     const leadForEmail = {

@@ -623,6 +623,99 @@ export function renderBotGuardAlert(opts: {
 }
 
 /**
+ * Operational alert: accepted (guard-passing) form submissions spiked past
+ * the daily anomaly threshold — either a genuinely busy leasing day or a
+ * smarter bot fully evading the guard and spamming the leasing inbox.
+ */
+export function renderAcceptedSpikeAlert(opts: {
+  acceptedToday: number;
+  threshold: number;
+  breakdown: string[];
+}): RenderedEmail {
+  const { acceptedToday, threshold, breakdown } = opts;
+  const subject =
+    "Website alert: accepted lead volume spiked past the daily anomaly threshold";
+
+  const intro = `The website's lead forms have accepted ${acceptedToday} submissions so far today (UTC), past the anomaly threshold of ${threshold}. Normal days see a handful of leads at most — this is either an unusually busy leasing day, or a smarter bot that fully evades the bot guard and is spamming the leasing inbox.`;
+  const impact =
+    "Every accepted submission emails the leasing inbox and may create an AppFolio guest card, so a bot slipping past the guard pollutes the real lead queue.";
+  const remedyText =
+    "open the leasing inbox and skim today's lead notifications. Real prospects have plausible names, emails, and messages; bot floods look templated or gibberish. If it's spam, the bot guard needs tightening (api-server botGuard.ts) — check the logs for what the submissions have in common. If they're real, congratulations, and consider raising the threshold. This alert is sent at most once per day.";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    (breakdown.length > 0
+      ? `<p style="${BODY_TEXT}"><strong>Breakdown (this server instance):</strong></p>` +
+        `<ul style="${BODY_TEXT}">${breakdown
+          .map((b) => `<li>${escapeHtml(b)}</li>`)
+          .join("")}</ul>`
+      : "") +
+    `<p style="${BODY_TEXT}">${escapeHtml(impact)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(remedyText)}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...(breakdown.length > 0
+      ? ["Breakdown (this server instance):", ...breakdown.map((b) => `- ${b}`), ""]
+      : []),
+    impact,
+    "",
+    `What to do: ${remedyText}`,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "Accepted lead volume spiked past the daily anomaly threshold.",
+    kicker: "Website Alert",
+    heading: "Accepted Lead Volume Spike",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
+ * Operational alert: no form submission has been accepted for an unusually
+ * long stretch — possible silent form breakage (JS error, broken route,
+ * guard false-positives swallowing everyone).
+ */
+export function renderAcceptedSilenceAlert(opts: {
+  hoursSinceLast: number;
+  lastAcceptedAt: string | null;
+  thresholdHours: number;
+}): RenderedEmail {
+  const { hoursSinceLast, lastAcceptedAt, thresholdHours } = opts;
+  const subject =
+    "Website alert: no lead form submission accepted in an unusually long time";
+
+  const lastSeen = lastAcceptedAt
+    ? `The last accepted submission was around ${lastAcceptedAt} (UTC).`
+    : "No accepted submission has been recorded since tracking began on this deployment.";
+  const intro = `The website has not accepted a single lead-form or showing-request submission in about ${Math.floor(hoursSinceLast)} hours — past the ${thresholdHours}-hour silence threshold. ${lastSeen} This may just be a quiet stretch, but it can also mean the forms are silently broken: a frontend error blocking submits, a broken API route, or the bot guard falsely rejecting everyone.`;
+  const remedyText =
+    "submit a test lead through the live site's contact form and confirm it arrives in the leasing inbox. If it doesn't, check the api-server logs for errors and for \"Rejected bot\" lines (guard false positives), and check the browser console on the form pages. This alert is sent at most once per day while the silence continues.";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(remedyText)}</p>`;
+
+  const text = [intro, "", `What to do: ${remedyText}`, "", TEXT_FOOTER].join(
+    "\n",
+  );
+
+  const htmlShell = renderEmailShell({
+    preheader: "No lead form submission accepted in an unusually long time.",
+    kicker: "Website Alert",
+    heading: "Lead Forms Gone Quiet",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
  * Operational alert: the automatic probe of AppFolio's unofficial showing
  * scheduler endpoints found a sustained failure (endpoints changed, CSRF or
  * captcha added) or identity verification switched on. Visitors still land

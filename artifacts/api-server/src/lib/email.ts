@@ -2,6 +2,8 @@ import { logger } from "./logger";
 import { allowProspectConfirmation } from "./emailThrottle";
 import { sendRawEmail, SENDER_EMAIL, warnIfUnconfigured } from "./mailer";
 import {
+  renderAcceptedSilenceAlert,
+  renderAcceptedSpikeAlert,
   renderApexRedirectAlert,
   renderBotGuardAlert,
   renderFeeCopyAlert,
@@ -399,6 +401,65 @@ export async function sendBotGuardAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL, rejectedToday: opts.rejectedToday },
     "Sent bot-guard rejection spike alert email",
+  );
+}
+
+/**
+ * Alert that accepted (guard-passing) form submissions spiked past the
+ * daily anomaly threshold — a busy day, or a smarter bot evading the guard
+ * and spamming the leasing inbox. Goes to the operational recipient; the
+ * follow-up is an inbox/log investigation. Throws when the mailer is
+ * unconfigured or the send fails; deduping lives in the caller
+ * (botGuardAlert).
+ */
+export async function sendAcceptedSpikeAlert(opts: {
+  acceptedToday: number;
+  threshold: number;
+  breakdown: string[];
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderAcceptedSpikeAlert(opts);
+  const { contentType, body } = buildMimeBody("acceptedspike", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL, acceptedToday: opts.acceptedToday },
+    "Sent accepted-lead volume spike alert email",
+  );
+}
+
+/**
+ * Alert that no form submission has been accepted for an unusually long
+ * stretch (possible silent form breakage). Goes to the operational
+ * recipient; the follow-up is a live-site form test. Throws when the mailer
+ * is unconfigured or the send fails; deduping lives in the caller
+ * (botGuardAlert).
+ */
+export async function sendAcceptedSilenceAlert(opts: {
+  hoursSinceLast: number;
+  lastAcceptedAt: string | null;
+  thresholdHours: number;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderAcceptedSilenceAlert(opts);
+  const { contentType, body } = buildMimeBody("acceptedsilence", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL, hoursSinceLast: opts.hoursSinceLast },
+    "Sent accepted-lead silence alert email",
   );
 }
 
