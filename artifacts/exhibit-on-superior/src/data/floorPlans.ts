@@ -41,7 +41,10 @@ export interface FloorBand {
 }
 
 export const FLOOR_BANDS: FloorBand[] = [
-  { id: 'podium', label: '2\u20135', name: 'Podium', min: 2, max: 5 },
+  // The podium tops out at the "4M" mezzanine (there is no floor 5 anywhere:
+  // not on the sheets and not in AppFolio). Internally the mezzanine is the
+  // fractional level MEZZANINE_FLOOR (4.5), which max: 5 comfortably covers.
+  { id: 'podium', label: '2\u20134M', name: 'Podium', min: 2, max: 5 },
   { id: 'mid', label: '6\u201316', name: 'Mid-Rise', min: 6, max: 16 },
   { id: 'high', label: '17\u201329', name: 'High-Rise', min: 17, max: 29 },
   { id: 'penthouse', label: '30\u201334', name: 'Penthouse', min: 30, max: 34 },
@@ -57,6 +60,40 @@ export const CATEGORIES: { id: Category; label: string; order: number }[] = [
 
 const IMG_BASE = '/images/floor-plans';
 
+/**
+ * The "4M" mezzanine as an internal floor value. The building has NO floor 5
+ * (neither the sheets nor AppFolio): the mezzanine is its own level named
+ * "4M", sitting between floor 4 and floor 6. Internally it is the fractional
+ * value 4.5 so numeric floor sorting/band math keeps working, and every
+ * display/unit-number surface must go through floorDisplayLabel/floorToken —
+ * never String(floor)/padStart — so it renders as "4M"/"04M", matching
+ * AppFolio's unit numbers exactly (e.g. "04M02").
+ */
+export const MEZZANINE_FLOOR = 4.5;
+
+/** Human-facing label for a floor value: 4.5 -> "4M", 6 -> "6". */
+export function floorDisplayLabel(floor: number): string {
+  return floor === MEZZANINE_FLOOR ? '4M' : String(floor);
+}
+
+/** Unit-number floor prefix, AppFolio style: 4.5 -> "04M", 6 -> "06". */
+export function floorToken(floor: number): string {
+  return floor === MEZZANINE_FLOOR ? '04M' : String(floor).padStart(2, '0');
+}
+
+/**
+ * Parse an apartment unit number into { floor, line }, accepting both the
+ * regular "FFUU" form ("0606") and AppFolio's mezzanine form "04M" + two-digit
+ * line ("04M02", 5 characters). Returns null for anything else.
+ */
+export function parseUnitNumber(unitNumber: string): { floor: number; line: number } | null {
+  const mezz = /^04M(\d{2})$/i.exec(unitNumber);
+  if (mezz) return { floor: MEZZANINE_FLOOR, line: Number(mezz[1]) };
+  const std = /^(\d{2})(\d{2})$/.exec(unitNumber);
+  if (!std) return null;
+  return { floor: Number(std[1]), line: Number(std[2]) };
+}
+
 export function parseFloors(label: string) {
   const mezzanine = label.includes('M');
   const clean = label.replace(/M/g, '');
@@ -65,22 +102,19 @@ export function parseFloors(label: string) {
     .map((s) => parseInt(s, 10))
     .filter((n) => !Number.isNaN(n));
   let min = parts[0];
-  let max = parts.length > 1 ? parts[parts.length - 1] : parts[0];
-  // The mezzanine counts as its own numbered residential level, one above the
-  // floor it sits on: the sheets have no "floor 5" yet the podium band runs
-  // 2-5 — level 5 IS the "4M" mezzanine, so unit line 2 there is unit 0502.
-  if (mezzanine) {
-    if (parts.length === 1 && /^[0-9]+M$/.test(label)) {
-      // A pure mezzanine sheet like "4M" covers only the mezzanine level.
-      min = max = max + 1;
-    } else {
-      // A range ending in the mezzanine ("3-4M", "4-4M") includes it.
-      max = max + 1;
-    }
-  }
+  const max = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+  // A trailing-M label includes the "4M" mezzanine as its own first-class
+  // level (MEZZANINE_FLOOR = 4.5): "4M" -> [4.5] only, "4-4M" -> [4, 4.5],
+  // "3-4M" -> [3, 4, 4.5]. It is NEVER renumbered to floor 5 — AppFolio
+  // writes those apartments as "04M" + line (e.g. "04M02"), not "05xx".
+  const pureMezzanine = mezzanine && parts.length === 1 && /^[0-9]+M$/.test(label);
   const floors: number[] = [];
-  for (let i = min; i <= max; i++) floors.push(i);
-  return { floors, min, max, mezzanine };
+  if (!pureMezzanine) {
+    for (let i = min; i <= max; i++) floors.push(i);
+  }
+  if (mezzanine) floors.push(MEZZANINE_FLOOR);
+  if (pureMezzanine) min = MEZZANINE_FLOOR;
+  return { floors, min, max: mezzanine ? MEZZANINE_FLOOR : max, mezzanine };
 }
 
 // Raw records, in sheet order. Fields: unit, floorLabel, category, typeLabel, beds, baths, den, sqft
@@ -249,7 +283,7 @@ export function bandLabelForGroup(g: PlanGroup): string {
  */
 export function unitNumbersForPlan(p: Plan): string[] {
   const line = String(p.unit).padStart(2, '0');
-  return p.floors.map((f) => `${String(f).padStart(2, '0')}${line}`);
+  return p.floors.map((f) => `${floorToken(f)}${line}`);
 }
 
 /**
@@ -258,18 +292,16 @@ export function unitNumbersForPlan(p: Plan): string[] {
  * floor cannot be parsed or no variant matches.
  */
 export function variantIndexForUnit(g: PlanGroup, unitNumber: string): number {
-  const digits = unitNumber.replace(/\D/g, '');
-  if (digits.length < 3) return 0;
-  const floor = Number(digits.slice(0, -2));
-  if (!Number.isFinite(floor)) return 0;
-  const idx = g.variants.findIndex((v) => v.floors.includes(floor));
+  const parsed = parseUnitNumber(unitNumber);
+  if (!parsed) return 0;
+  const idx = g.variants.findIndex((v) => v.floors.includes(parsed.floor));
   return idx >= 0 ? idx : 0;
 }
 
 /** Every apartment unit number across a group's full floor range. */
 export function unitNumbersForGroup(g: PlanGroup): string[] {
   const line = String(g.unit).padStart(2, '0');
-  return g.floors.map((f) => `${String(f).padStart(2, '0')}${line}`);
+  return g.floors.map((f) => `${floorToken(f)}${line}`);
 }
 
 /**
@@ -293,14 +325,26 @@ export function groupHasAdaUnits(g: PlanGroup): boolean {
 export function groupMatchesQuery(g: PlanGroup, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
+  // Mezzanine tokens: "4m" matches any group offered on the 4M level, and a
+  // full mezzanine unit number ("04m02", "4m02", "4m2") matches its group.
+  const mezzTokens: string[] = q.match(/\d+m(?:\d+)?/g) || [];
+  const unitNumbers = new Set(unitNumbersForGroup(g));
+  if (mezzTokens.length) {
+    return mezzTokens.every((tok) => {
+      const m = /^0?4m(\d+)?$/.exec(tok);
+      if (!m) return false;
+      if (!g.floors.includes(MEZZANINE_FLOOR)) return false;
+      // "4m" alone: any plan on the mezzanine. "4m02": that exact unit.
+      return m[1] === undefined || unitNumbers.has(`04M${m[1].padStart(2, '0')}`);
+    });
+  }
   // Any standalone numbers in the query
   const tokens: string[] = q.match(/\d+/g) || [];
   if (tokens.length) {
-    const unitNumbers = new Set(unitNumbersForGroup(g));
     return tokens.every((tok) => {
       const n = parseInt(tok, 10);
-      // Unit numbers are always 4 digits (pad2 floor + pad2 line), so a shorter
-      // numeric query is zero-padded to that form: "203" -> "0203".
+      // Regular unit numbers are 4 digits (pad2 floor + pad2 line), so a
+      // shorter numeric query is zero-padded to that form: "203" -> "0203".
       return g.unit === n || g.floors.includes(n) || unitNumbers.has(tok.padStart(4, '0'));
     });
   }
@@ -434,7 +478,9 @@ export function floorPlansItemListJsonLd(): Record<string, unknown> {
     name: 'Floor Plans at Exhibit On Superior',
     itemListElement: planGroups.map((g, i) => {
       const floorRange =
-        g.floors.length > 1 ? `floors ${g.floors[0]}\u2013${g.floors[g.floors.length - 1]}` : `floor ${g.floors[0]}`;
+        g.floors.length > 1
+          ? `floors ${floorDisplayLabel(g.floors[0])}\u2013${floorDisplayLabel(g.floors[g.floors.length - 1])}`
+          : `floor ${floorDisplayLabel(g.floors[0])}`;
       return {
         '@type': 'ListItem',
         position: i + 1,

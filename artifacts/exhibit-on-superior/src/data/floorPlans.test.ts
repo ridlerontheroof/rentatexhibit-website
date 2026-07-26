@@ -9,8 +9,12 @@ import {
   groupKey,
   groupMatchesFilters,
   groupMatchesQuery,
+  MEZZANINE_FLOOR,
   nextPosition,
   parseFloors,
+  parseUnitNumber,
+  floorDisplayLabel,
+  floorToken,
   slugFor,
   floorPlansItemListJsonLd,
   planGroups,
@@ -96,7 +100,7 @@ describe('variantIndexForUnit', () => {
     for (const g of planGroups) {
       for (const [i, v] of g.variants.entries()) {
         const line = String(g.unit).padStart(2, '0');
-        const unitNumber = `${String(v.floors[0]).padStart(2, '0')}${line}`;
+        const unitNumber = `${floorToken(v.floors[0])}${line}`;
         expect(variantIndexForUnit(g, unitNumber)).toBe(i);
       }
     }
@@ -135,16 +139,36 @@ describe('parseFloors', () => {
     });
   });
 
-  it('counts the mezzanine as its own level (one above the floor it tops)', () => {
-    // The building has no sheet for "floor 5": the podium band runs 2-5 and
-    // level 5 IS the "4M" mezzanine, so ranges ending in the mezzanine
-    // include it as max+1. Real unit numbers like 0502 depend on this.
-    expect(parseFloors('3-4M')).toEqual({ floors: [3, 4, 5], min: 3, max: 5, mezzanine: true });
-    expect(parseFloors('4-4M')).toEqual({ floors: [4, 5], min: 4, max: 5, mezzanine: true });
+  it('treats the "4M" mezzanine as its own first-class level (never floor 5)', () => {
+    // The building has no floor 5 at all: the mezzanine is the "4M" level
+    // (internally MEZZANINE_FLOOR = 4.5, between floors 4 and 6), matching
+    // AppFolio unit numbers like "04M02". It must never be renumbered to 5.
+    expect(parseFloors('3-4M')).toEqual({
+      floors: [3, 4, MEZZANINE_FLOOR],
+      min: 3,
+      max: MEZZANINE_FLOOR,
+      mezzanine: true,
+    });
+    expect(parseFloors('4-4M')).toEqual({
+      floors: [4, MEZZANINE_FLOOR],
+      min: 4,
+      max: MEZZANINE_FLOOR,
+      mezzanine: true,
+    });
   });
 
   it('parses a pure mezzanine sheet ("4M") as only the mezzanine level', () => {
-    expect(parseFloors('4M')).toEqual({ floors: [5], min: 5, max: 5, mezzanine: true });
+    expect(parseFloors('4M')).toEqual({
+      floors: [MEZZANINE_FLOOR],
+      min: MEZZANINE_FLOOR,
+      max: MEZZANINE_FLOOR,
+      mezzanine: true,
+    });
+  });
+
+  it('the mezzanine level sorts between floor 4 and floor 6', () => {
+    expect(MEZZANINE_FLOOR).toBeGreaterThan(4);
+    expect(MEZZANINE_FLOOR).toBeLessThan(6);
   });
 
   it('every floor it produces is a finite number (no NaN from "M")', () => {
@@ -152,7 +176,7 @@ describe('parseFloors', () => {
       const { floors, min, max } = parseFloors(label);
       expect(Number.isFinite(min)).toBe(true);
       expect(Number.isFinite(max)).toBe(true);
-      expect(floors.every((f) => Number.isInteger(f))).toBe(true);
+      expect(floors.every((f) => Number.isFinite(f))).toBe(true);
     }
   });
 });
@@ -483,14 +507,17 @@ describe('groupMatchesQuery', () => {
     expect(groupMatchesQuery(g, '0203')).toBe(true);
   });
 
-  it('finds real mezzanine-level units in the actual dataset (502 regression)', () => {
-    // Unit 0502 = unit line 2 on the "4M" mezzanine (level 5). Searching
-    // "502" or "0502" must surface it.
-    for (const q of ['502', '0502']) {
+  it('finds real mezzanine-level units in the actual dataset (04M02 regression)', () => {
+    // Unit 04M02 = unit line 2 on the "4M" mezzanine (AppFolio's format).
+    // Searching "4m", "4m02" or "04m02" must surface it.
+    for (const q of ['4m', '4m02', '04m02', '4M02']) {
       const hits = planGroups.filter((g) => groupMatchesQuery(g, q));
       expect(hits.length).toBeGreaterThan(0);
-      expect(hits.some((g) => g.unit === 2 && g.floors.includes(5))).toBe(true);
+      expect(hits.some((g) => g.unit === 2 && g.floors.includes(MEZZANINE_FLOOR))).toBe(true);
     }
+    // The old "floor 5" renumbering ("0502") must be gone — no group carries
+    // a floor-5 unit number anymore.
+    expect(planGroups.some((g) => unitNumbersForGroup(g).includes('0502'))).toBe(false);
   });
 
   it('text query matches the type label (case-insensitive)', () => {

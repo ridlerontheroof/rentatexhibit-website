@@ -243,7 +243,8 @@ async function findPublishedRentedUnit(liveUnits) {
     return null;
   }
   const published = new Set();
-  for (const m of xml.matchAll(/<loc>[^<]*\/available-units\/(\d{4})\s*<\/loc>/g)) {
+  // Unit segments are "FFUU" (0606) or AppFolio's mezzanine form "04M02".
+  for (const m of xml.matchAll(/<loc>[^<]*\/available-units\/(\d{4}|04M\d{2})\s*<\/loc>/g)) {
     published.add(m[1]);
   }
   if (published.size === 0) {
@@ -413,7 +414,7 @@ async function main() {
       const set = new Set();
       for (const node of allJsonLdNodes(s)) {
         if (isType(node, 'Apartment')) {
-          const m = /Apartment (\d{4})/.exec(String(node.name ?? ''));
+          const m = /Apartment (\d{4}|04M\d{2})/.exec(String(node.name ?? ''));
           if (m) set.add(m[1]);
         }
       }

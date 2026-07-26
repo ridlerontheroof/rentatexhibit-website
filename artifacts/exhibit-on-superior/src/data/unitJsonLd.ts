@@ -6,7 +6,7 @@
 // lease Offer (rent, availability date) sourced from the SAME baked
 // availability snapshot the page renders from.
 import { SITE_URL } from './seo';
-import { planGroups, type PlanGroup } from './floorPlans';
+import { parseUnitNumber, planGroups, type PlanGroup } from './floorPlans';
 import { getBakedAvailability } from './availabilitySnapshot';
 import type { AvailableUnit } from '../hooks/use-availability';
 import { adaDesignation, ADA_DISCLAIMER, type AdaDesignation } from './ada';
@@ -39,15 +39,15 @@ export function floorPlanNode(g: PlanGroup): Record<string, unknown> {
 }
 
 /**
- * The plan group a live unit number ("FFUU") belongs to: matching unit line
- * with the unit's floor inside one of the group's floor ranges.
+ * The plan group a live unit number belongs to: matching unit line with the
+ * unit's floor inside one of the group's floor ranges. Accepts both the
+ * regular "FFUU" form ("0606") and AppFolio's mezzanine form ("04M02").
  */
 export function planGroupForUnitNumber(unitNumber: string): PlanGroup | null {
-  if (!/^\d{4}$/.test(unitNumber)) return null;
-  const floor = Number(unitNumber.slice(0, 2));
-  const line = Number(unitNumber.slice(2));
+  const parsed = parseUnitNumber(unitNumber);
+  if (!parsed) return null;
   return (
-    planGroups.find((g) => g.unit === line && g.floors.includes(floor)) ?? null
+    planGroups.find((g) => g.unit === parsed.line && g.floors.includes(parsed.floor)) ?? null
   );
 }
 

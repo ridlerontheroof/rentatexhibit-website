@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createElement, type ReactNode } from 'react';
-import { act, cleanup, fireEvent, render } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import { FloorPlans } from './FloorPlans';
@@ -136,7 +136,7 @@ describe('FloorPlans plan-lightbox history behaviour', () => {
     expect(window.history.length).toBe(afterOpen);
   });
 
-  it('closing via the X removes ?plan from the URL', () => {
+  it('closing via the X removes ?plan from the URL', async () => {
     render(createElement(FloorPlans), { wrapper: Providers });
     clickButton(firstPlanCard());
     expect(planParam()).not.toBeNull();
@@ -144,7 +144,10 @@ describe('FloorPlans plan-lightbox history behaviour', () => {
     clickButton(closeButton());
 
     expect(dialog()).toBeNull();
-    expect(planParam()).toBeNull();
+    // The X consumes the pushed entry via history.back(); jsdom performs
+    // history traversal (and the resulting URL change + popstate)
+    // asynchronously, so wait for the URL to settle.
+    await waitFor(() => expect(planParam()).toBeNull());
   });
 
   it('a popstate to a URL without ?plan closes the pop-up (the Back press)', () => {

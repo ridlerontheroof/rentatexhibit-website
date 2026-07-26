@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getBakedAvailability } from '../data/availabilitySnapshot';
 
 export interface AvailableUnit {
-  /** Apartment number, e.g. "0606" (pad2 floor + pad2 unit line). */
+  /** Apartment number in AppFolio format: "0606" (pad2 floor + pad2 line) or "04M02" (4M mezzanine). */
   unit: string;
   bedrooms: number | null;
   bathrooms: number | null;

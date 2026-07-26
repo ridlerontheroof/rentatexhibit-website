@@ -66,9 +66,12 @@ describe('ADA registry', () => {
     expect(Object.keys(ADA_UNITS)).toHaveLength(62);
   });
 
-  it('has only valid 4-digit unit numbers on existing floors (no 5, 13, 16)', () => {
+  it('has only valid unit numbers on existing floors (no 5, 13, 16)', () => {
+    // Regular floors are "FFUU"; the "4M" mezzanine uses AppFolio's "04M" +
+    // line form (e.g. "04M02"). Floor 5 does not exist in this building.
     for (const n of Object.keys(ADA_UNITS)) {
-      expect(n).toMatch(/^\d{4}$/);
+      expect(n).toMatch(/^(\d{4}|04M\d{2})$/);
+      if (/^04M/.test(n)) continue;
       const floor = Number(n.slice(0, 2));
       expect(floor).toBeGreaterThanOrEqual(2);
       expect(floor).toBeLessThanOrEqual(34);

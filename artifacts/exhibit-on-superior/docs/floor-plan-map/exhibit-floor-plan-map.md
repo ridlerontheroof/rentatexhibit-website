@@ -6,25 +6,25 @@ floor plan, square footage, layout, floor, and building position band.
 
 ## 1. How unit numbers work (the core rule)
 
-**Unit number = 2-digit floor + 2-digit unit line, always zero-padded (FFUU).**
+**Unit number = 2-digit floor + 2-digit unit line, always zero-padded (FFUU), except the "4M" mezzanine which uses `04M` + line (5 characters, AppFolio format).**
 
 - Each floor plan is a **unit line**: a position on the floor plate (line 1–10) repeated across a range of floors.
-- Example: unit line 6 on floor 6 → apartment **0606**. Unit line 2 on floors 30–34 → **3002, 3102, 3202, 3302, 3402**.
-- Single-digit floors ARE zero-padded (floor 6 → "06"), so a valid unit number is always 4 digits. "203" should be interpreted as "0203".
+- Example: unit line 6 on floor 6 → apartment **0606**. Unit line 2 on floors 30–34 → **3002, 3102, 3202, 3302, 3402**. Unit line 2 on the mezzanine → **04M02**.
+- Single-digit floors ARE zero-padded (floor 6 → "06"), so a valid unit number is 4 digits ("203" → "0203") or the 5-character `04M` form.
 
-## 2. The mezzanine rule (why there is no "floor 5" sheet)
+## 2. The mezzanine rule (there is NO floor 5)
 
-The building's podium has a mezzanine above floor 4, and **the mezzanine counts as its own numbered level: level 5**.
+The building's podium has a mezzanine above floor 4. **It is its own level named "4M" — matching AppFolio — and is never renumbered to floor 5.**
 
-- A plan sheet labeled `4M` exists only on the mezzanine → floor **5** (e.g. unit line 4 there is apartment **0504**).
-- A range ending in M includes the mezzanine: `4-4M` → floors 4 and 5; `3-4M` → floors 3, 4, and 5.
-- So unit numbers like **0502** are real apartments even though no sheet says "floor 5".
+- A plan sheet labeled `4M` exists only on the mezzanine level. AppFolio writes its apartments as `04M` + two-digit unit line (e.g. unit line 4 there is apartment **04M04**, 5 characters).
+- A range ending in M includes the mezzanine: `4-4M` → floors 4 and 4M; `3-4M` → floors 3, 4, and 4M.
+- The 4M level sorts between floor 4 and floor 6; unit numbers like "0502" do NOT exist.
 
 ## 3. Floor bands (building position)
 
 | Band | Floors | Meaning |
 |---|---|---|
-| Podium | 2–5 | podium |
+| Podium | 2–4M | podium |
 | Mid-Rise | 6–16 | mid |
 | High-Rise | 17–29 | high |
 | Penthouse | 30–34 | penthouse |
@@ -57,12 +57,12 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 10 | 2 | 2–2 | 2 Bed / 2 Bath | 2 | 2 | No | 935 | 0210 | unit-10-floor-2 |
 | 1 | 3 | 3–3 | 2 Bed / 2 Bath | 2 | 2 | No | 1,135 | 0301 | unit-1-floor-3 |
 | 2 | 3 | 3–3 | Studio | 0 | 1 | No | 448 | 0302 | unit-2-floor-3 |
-| 3 | 3-4M | 3–5 | 1 Bed / 1 Bath | 1 | 1 | No | 656 | 0303, 0403, 0503 | unit-3-floors-3-4m |
+| 3 | 3-4M | 3–4M | 1 Bed / 1 Bath | 1 | 1 | No | 656 | 0303, 0403, 04M03 | unit-3-floors-3-4m |
 | 4 | 3 | 3–3 | 2 Bed / 2 Bath | 2 | 2 | No | 1,079 | 0304 | unit-4-floor-3 |
-| 1 | 4-4M | 4–5 | 1 Bed / 1 Bath | 1 | 1 | No | 768 | 0401, 0501 | unit-1-floors-4-4m |
-| 2 | 4-4M | 4–5 | 1 Bed / 1 Bath | 1 | 1 | No | 628 | 0402, 0502 | unit-2-floors-4-4m |
+| 1 | 4-4M | 4–4M | 1 Bed / 1 Bath | 1 | 1 | No | 768 | 0401, 04M01 | unit-1-floors-4-4m |
+| 2 | 4-4M | 4–4M | 1 Bed / 1 Bath | 1 | 1 | No | 628 | 0402, 04M02 | unit-2-floors-4-4m |
 | 4 | 4 | 4–4 | 2 Bed / 2 Bath | 2 | 2 | No | 1,026 | 0404 | unit-4-floor-4 |
-| 4 | 4M | 5–5 | 2 Bed / 2 Bath | 2 | 2 | No | 1,052 | 0504 | unit-4-floor-4m |
+| 4 | 4M | 4M–4M | 2 Bed / 2 Bath | 2 | 2 | No | 1,052 | 04M04 | unit-4-floor-4m |
 | 1 | 6-29 | 6–29 | 2 Bed / 2 Bath | 2 | 2 | No | 899 | 0601–2901 (24 units) | unit-1-floors-6-29 |
 | 2 | 6-29 | 6–29 | Convertible | 0 | 1 | No | 554 | 0602–2902 (24 units) | unit-2-floors-6-29 |
 | 3 | 6-29 | 6–29 | Studio | 0 | 1 | No | 484 | 0603–2903 (24 units) | unit-3-floors-6-29 |
@@ -88,18 +88,18 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 
 | Line | Layout | Category | Sq Ft | Bands | Sheet variants | Total units | Card ID |
 |---|---|---|---|---|---|---|---|
-| 5 | 2 Bed / 1 Bath | 2 Bed | 821 | Podium (2–5) | 2 | 1 | 5-2br-1-std |
-| 6 | 1 Bed / 1 Bath | 1 Bed | 619–651 | Podium (2–5), Penthouse (30–34) | 2; 30-34 | 6 | 6-1br-1-std |
-| 7 | 1 Bed / 1 Bath | 1 Bed | 630–672 | Podium (2–5), Mid-Rise (6–16), High-Rise (17–29) | 2; 6-16; 17-21; 22-29 | 25 | 7-1br-1-std |
-| 8 | 2 Bed / 2 Bath | 2 Bed | 1003 | Podium (2–5) | 2 | 1 | 8-2br-2-std |
-| 9 | 2 Bed / 2 Bath | 2 Bed | 929 | Podium (2–5) | 2 | 1 | 9-2br-2-std |
-| 10 | 2 Bed / 2 Bath | 2 Bed | 935 | Podium (2–5) | 2 | 1 | 10-2br-2-std |
-| 1 | 2 Bed / 2 Bath | 2 Bed | 899–1135 | Podium (2–5), Mid-Rise (6–16), High-Rise (17–29) | 3; 6-29 | 25 | 1-2br-2-std |
-| 2 | Studio | Studio | 448 | Podium (2–5) | 3 | 1 | 2-studio-1-std |
-| 3 | 1 Bed / 1 Bath | 1 Bed | 656 | Podium (2–5) | 3-4M | 3 | 3-1br-1-std |
-| 4 | 2 Bed / 2 Bath | 2 Bed | 1026–1079 | Podium (2–5) | 3; 4; 4M | 3 | 4-2br-2-std |
-| 1 | 1 Bed / 1 Bath | 1 Bed | 768 | Podium (2–5) | 4-4M | 2 | 1-1br-1-std |
-| 2 | 1 Bed / 1 Bath | 1 Bed | 628 | Podium (2–5) | 4-4M | 2 | 2-1br-1-std |
+| 5 | 2 Bed / 1 Bath | 2 Bed | 821 | Podium (2–4M) | 2 | 1 | 5-2br-1-std |
+| 6 | 1 Bed / 1 Bath | 1 Bed | 619–651 | Podium (2–4M), Penthouse (30–34) | 2; 30-34 | 6 | 6-1br-1-std |
+| 7 | 1 Bed / 1 Bath | 1 Bed | 630–672 | Podium (2–4M), Mid-Rise (6–16), High-Rise (17–29) | 2; 6-16; 17-21; 22-29 | 25 | 7-1br-1-std |
+| 8 | 2 Bed / 2 Bath | 2 Bed | 1003 | Podium (2–4M) | 2 | 1 | 8-2br-2-std |
+| 9 | 2 Bed / 2 Bath | 2 Bed | 929 | Podium (2–4M) | 2 | 1 | 9-2br-2-std |
+| 10 | 2 Bed / 2 Bath | 2 Bed | 935 | Podium (2–4M) | 2 | 1 | 10-2br-2-std |
+| 1 | 2 Bed / 2 Bath | 2 Bed | 899–1135 | Podium (2–4M), Mid-Rise (6–16), High-Rise (17–29) | 3; 6-29 | 25 | 1-2br-2-std |
+| 2 | Studio | Studio | 448 | Podium (2–4M) | 3 | 1 | 2-studio-1-std |
+| 3 | 1 Bed / 1 Bath | 1 Bed | 656 | Podium (2–4M) | 3-4M | 3 | 3-1br-1-std |
+| 4 | 2 Bed / 2 Bath | 2 Bed | 1026–1079 | Podium (2–4M) | 3; 4; 4M | 3 | 4-2br-2-std |
+| 1 | 1 Bed / 1 Bath | 1 Bed | 768 | Podium (2–4M) | 4-4M | 2 | 1-1br-1-std |
+| 2 | 1 Bed / 1 Bath | 1 Bed | 628 | Podium (2–4M) | 4-4M | 2 | 2-1br-1-std |
 | 2 | Convertible | Convertible / Jr. Convertible | 554 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 2-convertible-1-std |
 | 3 | Studio | Studio | 484 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 3-studio-1-std |
 | 4 | 2 Bed + Den / 2 Bath | 2 Bed | 983 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 4-2br-2-den |
@@ -147,14 +147,14 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 0403 | 1 Bed / 1 Bath | 656 | unit-3-floors-3-4m |
 | 0404 | 2 Bed / 2 Bath | 1,026 | unit-4-floor-4 |
 
-### Floor 5 (the "4M" mezzanine level) — Podium band
+### Floor 4M (the "4M" mezzanine level) — Podium band
 
 | Unit # | Layout | Sq Ft | Plan ID |
 |---|---|---|---|
-| 0501 | 1 Bed / 1 Bath | 768 | unit-1-floors-4-4m |
-| 0502 | 1 Bed / 1 Bath | 628 | unit-2-floors-4-4m |
-| 0503 | 1 Bed / 1 Bath | 656 | unit-3-floors-3-4m |
-| 0504 | 2 Bed / 2 Bath | 1,052 | unit-4-floor-4m |
+| 04M01 | 1 Bed / 1 Bath | 768 | unit-1-floors-4-4m |
+| 04M02 | 1 Bed / 1 Bath | 628 | unit-2-floors-4-4m |
+| 04M03 | 1 Bed / 1 Bath | 656 | unit-3-floors-3-4m |
+| 04M04 | 2 Bed / 2 Bath | 1,052 | unit-4-floor-4m |
 
 ### Floor 6 — Mid-Rise band
 

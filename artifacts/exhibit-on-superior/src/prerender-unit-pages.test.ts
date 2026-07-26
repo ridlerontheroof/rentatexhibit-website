@@ -17,7 +17,9 @@ import {
 describe('per-unit prerendered pages', () => {
   it('the baked snapshot yields unit paths to prerender', () => {
     expect(UNIT_PATHS.length).toBeGreaterThan(0);
-    for (const p of UNIT_PATHS) expect(p).toMatch(/^\/available-units\/\d{4}$/);
+    // Regular units are "FFUU"; mezzanine units use AppFolio's "04M" + line
+    // form (e.g. /available-units/04M02).
+    for (const p of UNIT_PATHS) expect(p).toMatch(/^\/available-units\/(\d{4}|04M\d{2})$/);
   });
 
   it.each(UNIT_PATHS)('%s: head carries unit title, canonical, and index robots', async (p) => {

@@ -18,6 +18,7 @@ import {
   offerPriceValidUntil,
   planGroupForUnitNumber,
 } from './unitJsonLd';
+import { floorDisplayLabel, parseUnitNumber } from './floorPlans';
 import type { AvailableUnit } from '../hooks/use-availability';
 
 export function unitPagePath(unitNumber: string): string {
@@ -28,11 +29,14 @@ export function unitCanonical(unitNumber: string): string {
   return `${SITE_URL}${unitPagePath(unitNumber)}`;
 }
 
-/** Floor number parsed from the "FFUU" apartment number, or null. */
-export function unitFloor(unitNumber: string): number | null {
-  if (!/^\d{4}$/.test(unitNumber)) return null;
-  const floor = Number(unitNumber.slice(0, 2));
-  return Number.isFinite(floor) && floor > 0 ? floor : null;
+/**
+ * Human-facing floor label parsed from the apartment number, or null.
+ * "0606" -> "6"; AppFolio's mezzanine form "04M02" -> "4M".
+ */
+export function unitFloor(unitNumber: string): string | null {
+  const parsed = parseUnitNumber(unitNumber);
+  if (!parsed || parsed.floor <= 0) return null;
+  return floorDisplayLabel(parsed.floor);
 }
 
 function bedsLabel(u: AvailableUnit): string | null {

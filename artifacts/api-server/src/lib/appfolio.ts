@@ -21,7 +21,7 @@ const APPFOLIO_BASE = `https://${APPFOLIO_DB}.appfolio.com/api/v2/reports`;
 const PROPERTY_MATCH = "exhibit";
 
 export interface AvailableUnit {
-  /** Apartment number, e.g. "0606" (pad2 floor + pad2 unit line). */
+  /** Apartment number as AppFolio writes it: "0606" (pad2 floor + pad2 line) or "04M02" (4M mezzanine). */
   unit: string;
   bedrooms: number | null;
   bathrooms: number | null;

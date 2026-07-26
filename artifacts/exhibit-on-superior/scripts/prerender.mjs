@@ -539,7 +539,8 @@ const LEGACY_REDIRECT_STUBS = LEGACY_REDIRECTS;
   const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
   const toml = await fs.readFile(tomlPath, 'utf8');
   const tomlUnits = new Set(
-    [...toml.matchAll(/^from = "\/available-units\/(\d+)\/?"$/gm)].map((m) => m[1]),
+    // Unit segments are "FFUU" or AppFolio's mezzanine form "04M02".
+    [...toml.matchAll(/^from = "\/available-units\/([0-9M]+)\/?"$/gm)].map((m) => m[1]),
   );
   const snapshotUnits = unitPaths.map((p) => p.split('/').pop());
   const missing = snapshotUnits.filter((u) => {

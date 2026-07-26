@@ -24,6 +24,9 @@ import {
   unitNumbersForGroup,
   bandsForFloors,
   planSqftLabel,
+  floorToken,
+  floorDisplayLabel,
+  MEZZANINE_FLOOR,
 } from '../src/data/floorPlans';
 
 const GENERATED = new Date().toISOString().slice(0, 10);
@@ -35,7 +38,7 @@ const planRows = plans
   .map((p) => {
     const units = unitNumbersForPlan(p);
     const unitsCell = units.length > 6 ? `${units[0]}–${units[units.length - 1]} (${units.length} units)` : units.join(', ');
-    return `| ${p.unit} | ${p.floorLabel} | ${p.floors[0]}–${p.floors[p.floors.length - 1]} | ${p.typeLabel} | ${p.beds} | ${p.baths} | ${p.den ? 'Yes' : 'No'} | ${planSqftLabel(p)} | ${unitsCell} | ${p.id} |`;
+    return `| ${p.unit} | ${p.floorLabel} | ${floorDisplayLabel(p.floors[0])}–${floorDisplayLabel(p.floors[p.floors.length - 1])} | ${p.typeLabel} | ${p.beds} | ${p.baths} | ${p.den ? 'Yes' : 'No'} | ${planSqftLabel(p)} | ${unitsCell} | ${p.id} |`;
   })
   .join('\n');
 
@@ -53,7 +56,7 @@ const groupRows = planGroups
 const byFloor = new Map<number, { unitNumber: string; plan: (typeof plans)[number] }[]>();
 for (const p of plans) {
   for (const f of p.floors) {
-    const unitNumber = `${String(f).padStart(2, '0')}${String(p.unit).padStart(2, '0')}`;
+    const unitNumber = `${floorToken(f)}${String(p.unit).padStart(2, '0')}`;
     if (!byFloor.has(f)) byFloor.set(f, []);
     byFloor.get(f)!.push({ unitNumber, plan: p });
   }
@@ -67,8 +70,7 @@ const floorSections = [...byFloor.keys()]
       .map(({ unitNumber, plan: p }) => `| ${unitNumber} | ${p.typeLabel} | ${planSqftLabel(p)} | ${p.id} |`)
       .join('\n');
     const band = bandsForFloors(f, f)[0];
-    const mezz = byFloor.get(f)!.some(({ plan: p }) => p.mezzanine && p.floors[p.floors.length - 1] === f && f === p.floorMax);
-    return `### Floor ${f}${f === 5 ? ' (the "4M" mezzanine level)' : ''} — ${band?.name ?? ''} band\n\n| Unit # | Layout | Sq Ft | Plan ID |\n|---|---|---|---|\n${rows}`;
+    return `### Floor ${floorDisplayLabel(f)}${f === MEZZANINE_FLOOR ? ' (the "4M" mezzanine level)' : ''} — ${band?.name ?? ''} band\n\n| Unit # | Layout | Sq Ft | Plan ID |\n|---|---|---|---|\n${rows}`;
   })
   .join('\n\n');
 
@@ -82,19 +84,19 @@ floor plan, square footage, layout, floor, and building position band.
 
 ## 1. How unit numbers work (the core rule)
 
-**Unit number = 2-digit floor + 2-digit unit line, always zero-padded (FFUU).**
+**Unit number = 2-digit floor + 2-digit unit line, always zero-padded (FFUU), except the "4M" mezzanine which uses \`04M\` + line (5 characters, AppFolio format).**
 
 - Each floor plan is a **unit line**: a position on the floor plate (line 1–10) repeated across a range of floors.
-- Example: unit line 6 on floor 6 → apartment **0606**. Unit line 2 on floors 30–34 → **3002, 3102, 3202, 3302, 3402**.
-- Single-digit floors ARE zero-padded (floor 6 → "06"), so a valid unit number is always 4 digits. "203" should be interpreted as "0203".
+- Example: unit line 6 on floor 6 → apartment **0606**. Unit line 2 on floors 30–34 → **3002, 3102, 3202, 3302, 3402**. Unit line 2 on the mezzanine → **04M02**.
+- Single-digit floors ARE zero-padded (floor 6 → "06"), so a valid unit number is 4 digits ("203" → "0203") or the 5-character \`04M\` form.
 
-## 2. The mezzanine rule (why there is no "floor 5" sheet)
+## 2. The mezzanine rule (there is NO floor 5)
 
-The building's podium has a mezzanine above floor 4, and **the mezzanine counts as its own numbered level: level 5**.
+The building's podium has a mezzanine above floor 4. **It is its own level named "4M" — matching AppFolio — and is never renumbered to floor 5.**
 
-- A plan sheet labeled \`4M\` exists only on the mezzanine → floor **5** (e.g. unit line 4 there is apartment **0504**).
-- A range ending in M includes the mezzanine: \`4-4M\` → floors 4 and 5; \`3-4M\` → floors 3, 4, and 5.
-- So unit numbers like **0502** are real apartments even though no sheet says "floor 5".
+- A plan sheet labeled \`4M\` exists only on the mezzanine level. AppFolio writes its apartments as \`04M\` + two-digit unit line (e.g. unit line 4 there is apartment **04M04**, 5 characters).
+- A range ending in M includes the mezzanine: \`4-4M\` → floors 4 and 4M; \`3-4M\` → floors 3, 4, and 4M.
+- The 4M level sorts between floor 4 and floor 6; unit numbers like "0502" do NOT exist.
 
 ## 3. Floor bands (building position)
 

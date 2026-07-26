@@ -1,8 +1,10 @@
 // ADA accessibility designations for Exhibit On Superior apartments.
 //
 // Source of truth: the building's as-built accessibility matrix (provided by
-// the leasing team). Each entry maps a 4-digit apartment number ("FFUU") to
-// its designation:
+// the leasing team). Each entry maps an apartment number to its designation.
+// Keys use the AppFolio unit format: 4-digit "FFUU" ("0403") for regular
+// floors, or "04M" + two-digit line ("04M02") for the 4M mezzanine level.
+// Designations:
 //   - 'A'  — Type A accessible/adaptable residence.
 //   - 'AC' — Type A unit with conduit line, per the as-built matrix.
 //
@@ -12,7 +14,7 @@
 
 export type AdaDesignation = 'A' | 'AC';
 
-/** Apartment number ("FFUU") → designation, from the as-built matrix. */
+/** Apartment number (AppFolio format, e.g. "0403" or "04M02") → designation, from the as-built matrix. */
 export const ADA_UNITS: Record<string, AdaDesignation> = {
   // Floor 34
   '3406': 'AC',
