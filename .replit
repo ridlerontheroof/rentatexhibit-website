@@ -28,6 +28,10 @@ args = "fold"
 task = "workflow.run"
 args = "prepublish-fold"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "unit-rewrites"
+
 [[workflows.workflow]]
 name = "test"
 author = "agent"
@@ -57,6 +61,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm --filter @workspace/exhibit-on-superior run check:prepublish"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "unit-rewrites"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/exhibit-on-superior run generate:unit-rewrites:check"
 
 [workflows.workflow.metadata]
 isValidation = true
