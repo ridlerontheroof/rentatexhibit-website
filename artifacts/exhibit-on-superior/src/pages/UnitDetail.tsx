@@ -21,6 +21,7 @@ import { youTubeEmbedUrl } from '../lib/youtube';
 import { APPLY_URL } from '../data/seo';
 import { buildUnitSeoModel, unitFactSummary, unitFloor } from '../data/unitPageSeo';
 import { adaDesignation, adaDesignationLabel, ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
+import { useModalHistory } from '../hooks/use-modal-history';
 import { Accessibility } from 'lucide-react';
 
 const ADDRESS = '165 W Superior St, Chicago, IL 60654';
@@ -36,6 +37,12 @@ export function UnitDetail() {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [planOpen, setPlanOpen] = useState(false);
   const [planVariant, setPlanVariant] = useState(0);
+  // Back-button contract (same as the /available-units floor-plan lightbox):
+  // opening either pop-up pushes a history entry so the phone's Back button
+  // closes it; the lightboxes' own close paths (X, Escape, backdrop) go
+  // through these wrappers, which consume the pushed entry.
+  const closeGallery = useModalHistory(galleryOpen, () => setGalleryOpen(false));
+  const closePlan = useModalHistory(planOpen, () => setPlanOpen(false));
 
   const unit: AvailableUnit | null = useMemo(
     () => data?.units.find((u) => u.unit === params.unit) ?? null,
@@ -414,13 +421,13 @@ export function UnitDetail() {
         </div>
       </div>
 
-      {galleryOpen && <UnitGalleryLightbox unit={unit} onClose={() => setGalleryOpen(false)} />}
+      {galleryOpen && <UnitGalleryLightbox unit={unit} onClose={closeGallery} />}
       {group && (
         <PlanLightbox
           group={planOpen ? group : null}
           variantIndex={planVariant}
           position={{ index: 0, total: 1 }}
-          onClose={() => setPlanOpen(false)}
+          onClose={closePlan}
           onNavigate={() => {}}
           onVariantChange={setPlanVariant}
         />

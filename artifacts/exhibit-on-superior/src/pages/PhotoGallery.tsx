@@ -8,6 +8,7 @@ import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { galleryImages, galleryCategories as categories, photoGalleryJsonLd } from '../data/gallery';
+import { useModalHistory } from '../hooks/use-modal-history';
 
 
 // Lightbox order: every photo on the page, album by album (in tab order), so
@@ -20,6 +21,10 @@ export const lightboxImages = categories
 export function PhotoGallery() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [filter, setFilter] = useState<string>('All');
+  // Back-button contract: opening the lightbox pushes a history entry so the
+  // phone's Back button closes it; manual closes consume that entry. All
+  // close paths (X, Escape) must go through closeLightbox.
+  const closeLightbox = useModalHistory(selectedImage !== null, () => setSelectedImage(null));
 
   const filteredImages = filter === 'All' 
     ? galleryImages 
@@ -37,11 +42,11 @@ export function PhotoGallery() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') showPrev();
       else if (e.key === 'ArrowRight') showNext();
-      else if (e.key === 'Escape') setSelectedImage(null);
+      else if (e.key === 'Escape') closeLightbox();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectedImage !== null, showPrev, showNext]);
+  }, [selectedImage !== null, showPrev, showNext, closeLightbox]);
 
   return (
     <>
@@ -123,7 +128,7 @@ export function PhotoGallery() {
         {selectedImage !== null && (
           <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
             <button
-              onClick={() => setSelectedImage(null)}
+              onClick={closeLightbox}
               className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
               aria-label="Close"
             >
