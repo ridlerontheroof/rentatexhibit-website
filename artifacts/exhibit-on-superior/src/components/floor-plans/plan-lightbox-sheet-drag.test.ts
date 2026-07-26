@@ -238,3 +238,82 @@ describe('mobile sheet drag snapping', () => {
     expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
   });
 });
+
+/** The grabber button at the top of the sheet (its aria-label reflects state). */
+function grabber(): HTMLButtonElement {
+  const el = document.querySelector(
+    'button[aria-label="Expand details"], button[aria-label="Collapse details"]',
+  );
+  if (!el) throw new Error('grabber button not rendered');
+  return el as HTMLButtonElement;
+}
+
+function clickGrabber() {
+  act(() => {
+    grabber().dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  });
+}
+
+describe('grabber button tap toggle', () => {
+  it('a click expands the collapsed sheet and flips the aria-label', () => {
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+    expect(grabber().getAttribute('aria-label')).toBe('Expand details');
+
+    clickGrabber();
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+    expect(grabber().getAttribute('aria-label')).toBe('Collapse details');
+  });
+
+  it('a second click collapses the expanded sheet back to 40dvh', () => {
+    clickGrabber();
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+
+    clickGrabber();
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+    expect(grabber().getAttribute('aria-label')).toBe('Expand details');
+  });
+});
+
+describe('sheet reset on plan-group change', () => {
+  it('collapses an expanded sheet when a different group id is shown', () => {
+    clickGrabber();
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+
+    const otherGroup = { ...makeGroup(), id: '7-2br-1-std' };
+    act(() => {
+      view!.rerender(
+        createElement(PlanLightbox, {
+          group: otherGroup,
+          variantIndex: 0,
+          position: { index: 1, total: 3 },
+          onClose: vi.fn(),
+          onNavigate: vi.fn(),
+          onVariantChange: vi.fn(),
+        }),
+      );
+    });
+
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+    expect(grabber().getAttribute('aria-label')).toBe('Expand details');
+  });
+
+  it('re-rendering with the same group id keeps the expanded sheet open', () => {
+    clickGrabber();
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+
+    act(() => {
+      view!.rerender(
+        createElement(PlanLightbox, {
+          group: makeGroup(), // same id, fresh object
+          variantIndex: 0,
+          position: { index: 0, total: 3 },
+          onClose: vi.fn(),
+          onNavigate: vi.fn(),
+          onVariantChange: vi.fn(),
+        }),
+      );
+    });
+
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+  });
+});
