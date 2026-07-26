@@ -6,6 +6,26 @@ vi.mock("./logger", () => ({
   logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
+// Simulate the shared `email_throttle_counters` table: an INSERT … ON CONFLICT
+// DO NOTHING RETURNING returns a row only when the key was newly inserted.
+const sharedKeys = new Set<string>();
+let dbDown = false;
+vi.mock("@workspace/db", () => ({
+  db: {
+    execute: vi.fn(async (query: { queryChunks?: unknown[] }) => {
+      if (dbDown) throw new Error("db unreachable");
+      const text = JSON.stringify(query);
+      if (text.includes("DELETE")) return { rows: [] };
+      // Extract the bound key param (the string starting with feecopy:)
+      const key = text.match(/feecopy:[^"\\]+/)?.[0];
+      if (typeof key !== "string") return { rows: [] };
+      if (sharedKeys.has(key)) return { rows: [] };
+      sharedKeys.add(key);
+      return { rows: [{ count: 1 }] };
+    }),
+  },
+}));
+
 import { reportStrippedFeeCopy, __resetFeeCopyAlertForTests } from "./feeCopyAlert";
 import { sendFeeCopyAlert } from "./email";
 import { mailerConfigured } from "./mailer";
@@ -21,6 +41,8 @@ const DAY1 = Date.parse("2026-07-25T10:00:00Z");
 describe("reportStrippedFeeCopy", () => {
   beforeEach(() => {
     __resetFeeCopyAlertForTests();
+    sharedKeys.clear();
+    dbDown = false;
     vi.clearAllMocks();
     mailerConfiguredMock.mockReturnValue(true);
   });
@@ -68,6 +90,31 @@ describe("reportStrippedFeeCopy", () => {
       unit: "0606",
       removed: ["Pet rent is $30."],
     });
+  });
+
+  it("dedupes across replicas/restarts via the shared database claim", async () => {
+    await reportStrippedFeeCopy("0606", ["Pet rent is $30/month."], DAY1);
+    // Simulate another replica (or a cold start): fresh in-memory state,
+    // same shared database.
+    __resetFeeCopyAlertForTests();
+    await reportStrippedFeeCopy("0606", ["Pet rent is $30/month."], DAY1 + 1000);
+    expect(sendFeeCopyAlertMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls back to in-memory dedupe when the database is unreachable", async () => {
+    dbDown = true;
+    await reportStrippedFeeCopy("0606", ["Pet rent is $30/month."], DAY1);
+    await reportStrippedFeeCopy("0606", ["Pet rent is $30/month."], DAY1 + 1000);
+    expect(sendFeeCopyAlertMock).toHaveBeenCalledTimes(1);
+    // The fallback path logs the DB failure but the alert still goes out.
+    expect(error).toHaveBeenCalled();
+  });
+
+  it("does not re-send during a DB outage after a successful shared claim", async () => {
+    await reportStrippedFeeCopy("0606", ["Pet rent is $30/month."], DAY1);
+    dbDown = true;
+    await reportStrippedFeeCopy("0606", ["Pet rent is $30/month."], DAY1 + 1000);
+    expect(sendFeeCopyAlertMock).toHaveBeenCalledTimes(1);
   });
 
   it("still logs but skips the email when the mailer is unconfigured", async () => {
