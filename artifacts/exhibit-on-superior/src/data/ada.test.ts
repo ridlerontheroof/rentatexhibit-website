@@ -27,6 +27,8 @@ import {
 import { apartmentNode, adaAmenityFeatures, unitAvailabilityJsonLd } from './unitJsonLd';
 import { unitPageJsonLd } from './unitPageSeo';
 import type { AvailableUnit } from '../hooks/use-availability';
+import { PAGE_SEO } from './seo';
+import { KNOWLEDGE_ARTICLES } from './knowledgeArticles';
 
 function makeFilters(over: Partial<GroupFilterState> = {}): GroupFilterState {
   return {
@@ -105,6 +107,32 @@ describe('ADA registry', () => {
       { unit: '0206', designation: 'AC' },
       { unit: '3406', designation: 'AC' },
     ]);
+  });
+});
+
+// --- published copy stays in sync with the registry ---------------------------
+
+describe('ADA counts in published copy', () => {
+  const counts = new RegExp(
+    `${ADA_COUNTS.total} apartments.*${ADA_COUNTS.a} Type A accessible/adaptable residences \\(A\\).*${ADA_COUNTS.ac} Type A units with conduit line \\(AC\\)`,
+  );
+
+  it('/amenities FAQ answer carries the registry counts', () => {
+    const faq = PAGE_SEO['/amenities'].faqs.find((f) => f.q.includes('ADA-accessible'))!;
+    expect(faq).toBeDefined();
+    expect(faq.a).toMatch(counts);
+  });
+
+  it('knowledge articles carry the registry counts', () => {
+    const article = KNOWLEDGE_ARTICLES.find((a) => a.slug === 'ada-accessible-apartments')!;
+    expect(article).toBeDefined();
+    expect(article.answer).toMatch(counts);
+
+    const contact = KNOWLEDGE_ARTICLES.find((a) => a.slug === 'accessibility-contact')!;
+    expect(contact).toBeDefined();
+    expect(contact.answer).toContain(`${ADA_COUNTS.total} apartments carry an ADA designation`);
+    expect(contact.answer).toContain(`${ADA_COUNTS.a} Type A “(A)”`);
+    expect(contact.answer).toContain(`${ADA_COUNTS.ac} Type A with conduit line “(AC)”`);
   });
 });
 

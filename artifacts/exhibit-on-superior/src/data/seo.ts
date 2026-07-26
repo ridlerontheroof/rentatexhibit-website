@@ -1,6 +1,8 @@
 // Central SEO / AEO data for Exhibit On Superior.
 // Source of truth: migration bundle seo-aeo-metadata + faq-answer-bank + schema manifest.
 
+import { ADA_COUNTS } from './ada';
+
 export const SITE_URL = 'https://www.rentatexhibit.com';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg`;
 
@@ -167,7 +169,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Are there ADA-accessible apartments at Exhibit On Superior?',
-        a: 'Yes. Per the as-built accessibility matrix, 62 apartments \u2014 more than 20% of the homes \u2014 carry an ADA designation: 34 Type A accessible/adaptable residences (A) and 28 Type A units with conduit line (AC). Use the ADA-accessible filter on the Available Units page, and contact leasing to verify a specific apartment\u2019s current configuration: exhibit@highlandptrs.com or 312-450-0635.',
+        a: `Yes. Per the as-built accessibility matrix, ${ADA_COUNTS.total} apartments \u2014 more than 20% of the homes \u2014 carry an ADA designation: ${ADA_COUNTS.a} Type A accessible/adaptable residences (A) and ${ADA_COUNTS.ac} Type A units with conduit line (AC). Use the ADA-accessible filter on the Available Units page, and contact leasing to verify a specific apartment\u2019s current configuration: exhibit@highlandptrs.com or 312-450-0635.`,
       },
       {
         q: 'Can amenity spaces be reserved?',

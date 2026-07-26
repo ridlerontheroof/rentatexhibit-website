@@ -12,6 +12,7 @@
 //   - Concrete facts over marketing phrasing ("75-foot lap pool, outdoor hot
 //     tub, sauna" — never "resort-style amenities").
 import type { KnowledgeArticle } from './knowledge';
+import { ADA_COUNTS } from './ada';
 
 export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   // -------------------------------------------------------------------------
@@ -380,7 +381,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'Does Exhibit On Superior have ADA-accessible apartments?',
     category: 'Apartments & Floor Plans',
     answer:
-      'Yes. Per the as-built accessibility matrix, 62 apartments at Exhibit On Superior — more than 20% of the homes — carry an ADA designation: 34 Type A accessible/adaptable residences (A) and 28 Type A units with conduit line (AC). Use the ADA-accessible filter on the Available Units page to see the designated floor plans and apartments. Contact leasing to verify a specific apartment\u2019s current configuration and discuss accessibility needs: exhibit@highlandptrs.com or 312-450-0635.',
+      `Yes. Per the as-built accessibility matrix, ${ADA_COUNTS.total} apartments at Exhibit On Superior — more than 20% of the homes — carry an ADA designation: ${ADA_COUNTS.a} Type A accessible/adaptable residences (A) and ${ADA_COUNTS.ac} Type A units with conduit line (AC). Use the ADA-accessible filter on the Available Units page to see the designated floor plans and apartments. Contact leasing to verify a specific apartment\u2019s current configuration and discuss accessibility needs: exhibit@highlandptrs.com or 312-450-0635.`,
     sections: [
       {
         heading: 'What the designations mean',
@@ -1489,7 +1490,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'Who do I contact about accessibility at Exhibit On Superior?',
     category: 'Building & Services',
     answer:
-      'For accessibility questions at Exhibit On Superior — including ADA-designated apartments, accessible unit features, or reasonable accommodation requests — contact the leasing team at exhibit@highlandptrs.com or 312-450-0635. Per the as-built accessibility matrix, 62 apartments carry an ADA designation (34 Type A “(A)” and 28 Type A with conduit line “(AC)”), browsable with the ADA-accessible filter on the Available Units page. The building has a 24-hour staffed front desk.',
+      `For accessibility questions at Exhibit On Superior — including ADA-designated apartments, accessible unit features, or reasonable accommodation requests — contact the leasing team at exhibit@highlandptrs.com or 312-450-0635. Per the as-built accessibility matrix, ${ADA_COUNTS.total} apartments carry an ADA designation (${ADA_COUNTS.a} Type A “(A)” and ${ADA_COUNTS.ac} Type A with conduit line “(AC)”), browsable with the ADA-accessible filter on the Available Units page. The building has a 24-hour staffed front desk.`,
     sections: [
       {
         paragraphs: [
