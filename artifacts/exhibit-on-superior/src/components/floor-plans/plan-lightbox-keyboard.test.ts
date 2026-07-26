@@ -235,6 +235,54 @@ describe('arrow keys', () => {
   });
 });
 
+describe('zoom keys while the coarse click-zoom mode is active', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  /** Single-click the plan image and let the single-tap timer elapse so the
+   *  coarse scroll-zoom mode (image width 160%) engages. */
+  function enterCoarseZoom() {
+    act(() => {
+      planImage().dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true, clientX: 400, clientY: 300 }),
+      );
+    });
+    act(() => {
+      vi.advanceTimersByTime(400); // past the 300ms double-tap window
+    });
+    expect(planImage().style.width).toBe('160%');
+  }
+
+  it("'+' exits coarse mode and takes over with the stepped fine zoom", () => {
+    enterCoarseZoom();
+    pressKey('+');
+    const img = planImage();
+    expect(img.style.width).not.toBe('160%');
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: KEY_ZOOM_STEP });
+    // Only the fine zoom is applied — no coarse width stacking on top.
+    expect(img.style.width).toBe('');
+  });
+
+  it("'-' exits coarse mode and lands on fit (scale stays clamped at 1)", () => {
+    enterCoarseZoom();
+    pressKey('-');
+    expect(planImage().style.width).toBe('');
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+  });
+
+  it("'0' fully resets from coarse mode: width back to fit, scale 1, no translation", () => {
+    enterCoarseZoom();
+    pressKey('0');
+    expect(planImage().style.width).toBe('');
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+  });
+});
+
 describe('Escape', () => {
   it('first resets a keyboard zoom to fit without closing; second closes', () => {
     pressKey('+');
