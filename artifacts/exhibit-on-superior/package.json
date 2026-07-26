@@ -18,7 +18,8 @@
     "check:fold:built": "node scripts/check-units-above-fold.mjs --built",
     "check:link-names": "node scripts/check-link-names.mjs",
     "check:server:built": "vitest run src/server/production-server.test.ts",
-    "check:prepublish": "pnpm run build && pnpm run check:fold:built && pnpm run check:link-names && pnpm run check:server:built",
+    "check:csp": "node scripts/check-csp-violations.mjs",
+    "check:prepublish": "pnpm run build && pnpm run check:fold:built && pnpm run check:link-names && pnpm run check:server:built && pnpm run check:csp",
     "generate:unit-rewrites": "node scripts/generate-unit-rewrites.mjs",
     "generate:unit-rewrites:check": "node scripts/generate-unit-rewrites.mjs --check"
   },
