@@ -194,6 +194,91 @@ describe('lightbox keyboard-shortcut ownership guard', () => {
     }
   });
 
+  // -------------------------------------------------------------------------
+  // Click-away side of the same contract: the legend's outside-click dismiss
+  // must come from the shared useDismissLegendOnOutsideClick hook
+  // (src/hooks/use-dismiss-legend-on-outside-click.ts). It was once
+  // copy-pasted per viewer and could silently drift apart.
+  // -------------------------------------------------------------------------
+
+  const DISMISS_HINT =
+    'The legend outside-click dismiss must go through ' +
+    'useDismissLegendOnOutsideClick ' +
+    '(src/hooks/use-dismiss-legend-on-outside-click.ts) — pass the viewer\'s ' +
+    'legend id instead of duplicating the handler.';
+
+  for (const viewer of VIEWERS) {
+    describe(`${viewer.name} — shared legend dismiss`, () => {
+      const raw = readViewerSource(viewer.file);
+      const code = stripComments(raw);
+
+      it('imports useDismissLegendOnOutsideClick from the shared hook', () => {
+        const importsHook =
+          /import\s*\{[^}]*\buseDismissLegendOnOutsideClick\b[^}]*\}\s*from\s*['"][^'"]*use-dismiss-legend-on-outside-click['"]/.test(
+            code,
+          );
+        expect(
+          importsHook,
+          `${viewer.name} no longer imports useDismissLegendOnOutsideClick. ${DISMISS_HINT}`,
+        ).toBe(true);
+      });
+
+      it('calls useDismissLegendOnOutsideClick', () => {
+        const callsHook = /\buseDismissLegendOnOutsideClick\s*\(/.test(code);
+        expect(
+          callsHook,
+          `${viewer.name} imports but never calls useDismissLegendOnOutsideClick, ` +
+            `so the legend's click-away dismiss is dead. ${DISMISS_HINT}`,
+        ).toBe(true);
+      });
+
+      it('attaches the dismiss handler via onClickCapture', () => {
+        const attaches = /onClickCapture\s*=\s*\{dismissLegendOnOutsideClick\}/.test(code);
+        expect(
+          attaches,
+          `${viewer.name} never attaches dismissLegendOnOutsideClick via ` +
+            `onClickCapture — the capture phase is what keeps the dismissing ` +
+            `click from reaching inner handlers. ${DISMISS_HINT}`,
+        ).toBe(true);
+      });
+
+      it('does not hand-roll the interactive-target dismiss rule', () => {
+        // The `button, a, [role="button"]` selector is the hook's signature
+        // rule; appearing in a viewer means the handler was re-inlined.
+        const handRolled = /closest\s*\(\s*['"`]button,\s*a,\s*\[role="button"\]['"`]/.test(code);
+        expect(
+          handRolled,
+          `${viewer.name} hand-rolls the legend dismiss's interactive-target ` +
+            `rule instead of leaving it to the shared hook. ${DISMISS_HINT}`,
+        ).toBe(false);
+      });
+    });
+  }
+
+  it('the shared dismiss hook itself still implements the dismiss rules', () => {
+    // Sanity check on the guard: if the hook is gutted, the viewer checks
+    // above would be guarding an empty contract.
+    const hook = stripComments(
+      readViewerSource('../hooks/use-dismiss-legend-on-outside-click.ts'),
+    );
+    expect(
+      /closest\s*\(\s*['"`]button,\s*a,\s*\[role="button"\]['"`]/.test(hook),
+      'use-dismiss-legend-on-outside-click.ts no longer contains the ' +
+        'interactive-target rule — the shared dismiss contract this guard ' +
+        'protects has changed; update the guard alongside the hook.',
+    ).toBe(true);
+    for (const [what, pattern] of [
+      ['the legend/toggle exclusion', /aria-controls="\$\{legendId\}"/],
+      ['the swallow of non-interactive clicks', /preventDefault\(\)/],
+    ] as const) {
+      expect(
+        pattern.test(hook),
+        `use-dismiss-legend-on-outside-click.ts no longer contains ${what} — ` +
+          'the shared dismiss contract this guard protects has changed.',
+      ).toBe(true);
+    }
+  });
+
   it('the shared hook itself still owns the window keydown listener', () => {
     // Sanity check on the guard: if the hook is ever rewritten to stop
     // attaching a window keydown listener, the viewer checks above would be

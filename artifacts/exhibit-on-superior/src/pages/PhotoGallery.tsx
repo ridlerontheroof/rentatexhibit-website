@@ -13,6 +13,7 @@ import { useModalHistory } from '../hooks/use-modal-history';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../hooks/use-pinch-zoom';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
 import { useLightboxShortcutKeys } from '../hooks/use-lightbox-shortcut-keys';
+import { useDismissLegendOnOutsideClick } from '../hooks/use-dismiss-legend-on-outside-click';
 
 
 // Lightbox order: every photo on the page, album by album (in tab order), so
@@ -106,33 +107,13 @@ export function PhotoGallery() {
     onEscape: closeLightbox,
   });
 
-  /**
-   * Clicking anywhere outside the open legend dismisses it, matching
-   * UnitGalleryLightbox. Runs in the capture phase so the dismissing click
-   * never reaches other handlers. Clicks inside the legend and on the "?"
-   * toggle are excluded so their own handlers keep working; clicks on other
-   * interactive controls dismiss the legend AND perform their action.
-   */
-  const dismissLegendOnOutsideClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (!showShortcuts) return;
-      const target = e.target as HTMLElement | null;
-      if (
-        target?.closest('#photo-gallery-shortcuts-legend') ||
-        target?.closest('[aria-controls="photo-gallery-shortcuts-legend"]')
-      ) {
-        return;
-      }
-      if (target?.closest('button, a, [role="button"]')) {
-        // Interactive control: dismiss the legend but let the click through.
-        setShowShortcuts(false);
-        return;
-      }
-      e.preventDefault();
-      e.stopPropagation();
-      setShowShortcuts(false);
-    },
-    [showShortcuts],
+  // Clicking outside the open legend dismisses it — shared capture-phase
+  // handler (see use-dismiss-legend-on-outside-click.ts for the rules),
+  // identical to PlanLightbox and UnitGalleryLightbox by construction.
+  const dismissLegendOnOutsideClick = useDismissLegendOnOutsideClick(
+    'photo-gallery-shortcuts-legend',
+    showShortcuts,
+    setShowShortcuts,
   );
 
   return (

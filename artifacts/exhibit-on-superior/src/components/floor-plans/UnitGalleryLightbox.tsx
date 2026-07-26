@@ -6,6 +6,7 @@ import { trackOutboundClick } from '../../lib/analytics';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../../hooks/use-pinch-zoom';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
 import { useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
+import { useDismissLegendOnOutsideClick } from '../../hooks/use-dismiss-legend-on-outside-click';
 
 interface UnitGalleryLightboxProps {
   unit: AvailableUnit;
@@ -180,34 +181,14 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
     };
   }, []);
 
-  /**
-   * Clicking anywhere outside the open legend dismisses it, matching
-   * PlanLightbox. Runs in the capture phase so the dismissing click never
-   * reaches the backdrop's onClick (which would close the whole gallery).
-   * Clicks inside the legend and on the "?" toggle are excluded so their own
-   * handlers keep working; clicks on other interactive controls dismiss the
-   * legend AND perform their action.
-   */
-  const dismissLegendOnOutsideClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (!showShortcuts) return;
-      const target = e.target as HTMLElement | null;
-      if (
-        target?.closest('#gallery-shortcuts-legend') ||
-        target?.closest('[aria-controls="gallery-shortcuts-legend"]')
-      ) {
-        return;
-      }
-      if (target?.closest('button, a, [role="button"]')) {
-        // Interactive control: dismiss the legend but let the click through.
-        setShowShortcuts(false);
-        return;
-      }
-      e.preventDefault();
-      e.stopPropagation();
-      setShowShortcuts(false);
-    },
-    [showShortcuts],
+  // Clicking outside the open legend dismisses it — shared capture-phase
+  // handler (see use-dismiss-legend-on-outside-click.ts for the rules). The
+  // capture phase matters here: the dismissing click must never reach the
+  // backdrop's onClick, which would close the whole gallery.
+  const dismissLegendOnOutsideClick = useDismissLegendOnOutsideClick(
+    'gallery-shortcuts-legend',
+    showShortcuts,
+    setShowShortcuts,
   );
 
   if (count === 0) return null;

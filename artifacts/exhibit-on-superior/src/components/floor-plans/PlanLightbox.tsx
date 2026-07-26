@@ -6,6 +6,7 @@ import { Link, useLocation } from 'wouter';
 import { unitNumbersForPlan, planSqftLabel, type PlanGroup } from '../../data/floorPlans';
 import { usePinchZoom } from '../../hooks/use-pinch-zoom';
 import { useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
+import { useDismissLegendOnOutsideClick } from '../../hooks/use-dismiss-legend-on-outside-click';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
 import {
   clampSheetDragHeight,
@@ -151,39 +152,14 @@ export function PlanLightbox({
   // Desktop-only keyboard shortcut legend (toggled by the "?" button or key).
   const [showShortcuts, setShowShortcuts] = useState(false);
 
-  /**
-   * Clicking anywhere outside the open legend dismisses it, matching common
-   * overlay behavior. Runs in the capture phase so the dismissing click never
-   * reaches the plan image's onClick (which would toggle zoom mode). Clicks
-   * inside the legend and on the "?" toggle are excluded so their own click
-   * handlers keep working (the toggle would otherwise close-then-reopen).
-   *
-   * Clicks on clearly interactive controls (prev/next arrows, the Zoom/Fit
-   * button, CTA links, etc.) both dismiss the legend AND perform their action:
-   * the swallow (preventDefault + stopPropagation) applies only to
-   * non-interactive targets like the plan image, where a stray click would
-   * otherwise toggle zoom mode.
-   */
-  const dismissLegendOnOutsideClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (!showShortcuts) return;
-      const target = e.target as HTMLElement | null;
-      if (
-        target?.closest('#plan-shortcuts-legend') ||
-        target?.closest('[aria-controls="plan-shortcuts-legend"]')
-      ) {
-        return;
-      }
-      if (target?.closest('button, a, [role="button"]')) {
-        // Interactive control: dismiss the legend but let the click through.
-        setShowShortcuts(false);
-        return;
-      }
-      e.preventDefault();
-      e.stopPropagation();
-      setShowShortcuts(false);
-    },
-    [showShortcuts],
+  // Clicking outside the open legend dismisses it — shared capture-phase
+  // handler (see use-dismiss-legend-on-outside-click.ts for the rules). The
+  // swallow matters here: a stray click on the plan image would otherwise
+  // toggle zoom mode.
+  const dismissLegendOnOutsideClick = useDismissLegendOnOutsideClick(
+    'plan-shortcuts-legend',
+    showShortcuts,
+    setShowShortcuts,
   );
 
   /** Toggle the scroll-zoom mode with a ~200ms scale animation in each direction. */
