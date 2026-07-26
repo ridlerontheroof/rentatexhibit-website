@@ -490,7 +490,10 @@ export function PlanLightbox({
   const onTouchStart = (e: React.TouchEvent) => {
     const g = gesture.current;
     if (!zoomed && e.touches.length === 2) {
-      // Begin pinch
+      // Begin pinch. Touch gestures never end in a click, so the
+      // click-capture dismiss (dismissLegendOnOutsideClick) can't run —
+      // clear the shortcut legend here too, matching sheet drags.
+      setShowShortcuts(false);
       g.mode = 'pinch';
       g.startDist = touchDist(e);
       g.startScale = pinch.scale;
@@ -502,7 +505,9 @@ export function PlanLightbox({
       return;
     }
     if (!zoomed && pinchZoomed && e.touches.length === 1) {
-      // One-finger pan while pinch-zoomed
+      // One-finger pan while pinch-zoomed. Same as the pinch branch above:
+      // no click will follow, so dismiss the legend at gesture start.
+      setShowShortcuts(false);
       g.mode = 'pan';
       g.panStartX = e.touches[0].clientX;
       g.panStartY = e.touches[0].clientY;

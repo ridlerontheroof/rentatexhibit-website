@@ -467,6 +467,50 @@ describe('click outside the shortcut legend', () => {
     ).not.toBeNull();
   });
 
+  /** Dispatch a touch event with the given touch points. jsdom has no
+   *  TouchEvent constructor, so fake one via a plain Event with touches
+   *  attached — React's synthetic event reads them straight off the native
+   *  event object. */
+  function touch(
+    target: Element,
+    type: 'touchstart' | 'touchmove' | 'touchend',
+    points: Array<{ clientX: number; clientY: number }>,
+  ) {
+    act(() => {
+      const ev = new Event(type, { bubbles: true, cancelable: true });
+      Object.assign(ev, { touches: points, changedTouches: points, targetTouches: points });
+      target.dispatchEvent(ev);
+    });
+  }
+
+  it('a two-finger pinch start on the plan dismisses the legend AND the pinch still zooms', () => {
+    openLegend();
+    const img = planImage();
+    // Two fingers down: gesture start alone dismisses the legend.
+    touch(img, 'touchstart', [
+      { clientX: 350, clientY: 300 },
+      { clientX: 450, clientY: 300 },
+    ]);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    // Spread the fingers: the pinch itself keeps working (scale grows).
+    touch(img, 'touchmove', [
+      { clientX: 300, clientY: 300 },
+      { clientX: 500, clientY: 300 },
+    ]);
+    expect(readTransform().scale).toBeCloseTo(2, 5);
+    touch(img, 'touchend', []);
+  });
+
+  it('a one-finger pan start while pinch-zoomed dismisses the legend AND still pans', () => {
+    pressKey('+'); // pinch-zoom in so a single finger pans
+    openLegend();
+    const img = planImage();
+    touch(img, 'touchstart', [{ clientX: 400, clientY: 300 }]);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    touch(img, 'touchmove', [{ clientX: 360, clientY: 300 }]);
+    expect(readTransform().tx).toBe(-40);
+  });
+
   it('the ? toggle button still toggles rather than close-then-reopen', () => {
     openLegend();
     const toggle = document.querySelector<HTMLButtonElement>(
