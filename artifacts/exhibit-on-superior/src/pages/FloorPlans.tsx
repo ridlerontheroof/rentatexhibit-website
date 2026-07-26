@@ -377,9 +377,9 @@ export function FloorPlans() {
                     <button
                       type="button"
                       onClick={resetAll}
-                      className="flex items-center gap-1.5 text-sm uppercase tracking-wide text-primary hover:underline"
+                      className="flex min-h-11 items-center gap-1.5 text-sm uppercase tracking-wide text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
-                      <X className="h-4 w-4" /> Clear all filters
+                      <X className="h-4 w-4" aria-hidden="true" /> Clear all filters
                     </button>
                   )}
                 </div>
@@ -398,13 +398,22 @@ export function FloorPlans() {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Search unit # or floor…"
-                      className="pl-9"
+                      className="h-11 pl-9"
                     />
                   </label>
 
                   <div className="flex items-center justify-between gap-4">
-                    <p className="text-sm uppercase tracking-wide text-muted-foreground" aria-live="polite">
-                      {filtered.length} {filtered.length === 1 ? 'plan' : 'plans'}
+                    {/* Doubles as the screen-reader live region: filtering
+                        re-renders this text, and role="status" (polite) makes
+                        assistive tech announce the new count without moving
+                        focus off the control that changed. */}
+                    <p
+                      role="status"
+                      aria-live="polite"
+                      aria-atomic="true"
+                      className="text-sm uppercase tracking-wide text-muted-foreground"
+                    >
+                      {filtered.length} {filtered.length === 1 ? 'plan' : 'plans'} shown
                     </p>
 
                     <div className="flex items-center gap-3">
@@ -413,7 +422,7 @@ export function FloorPlans() {
                         <SheetTrigger asChild>
                           <button
                             type="button"
-                            className="flex items-center gap-2 border border-border px-3 py-2 text-xs uppercase tracking-wide hover:border-primary lg:hidden"
+                            className="flex min-h-11 items-center gap-2 border border-border px-3 py-2 text-xs uppercase tracking-wide hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:hidden"
                           >
                             <SlidersHorizontal className="h-4 w-4" />
                             Filters
@@ -432,9 +441,9 @@ export function FloorPlans() {
                               <button
                                 type="button"
                                 onClick={resetAll}
-                                className="mt-6 flex items-center gap-1.5 text-sm uppercase tracking-wide text-primary hover:underline"
+                                className="mt-6 flex min-h-11 items-center gap-1.5 text-sm uppercase tracking-wide text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                               >
-                                <X className="h-4 w-4" /> Clear all filters
+                                <X className="h-4 w-4" aria-hidden="true" /> Clear all filters
                               </button>
                             )}
                           </div>
@@ -451,7 +460,7 @@ export function FloorPlans() {
                         <select
                           value={sort}
                           onChange={(e) => setSort(e.target.value as SortKey)}
-                          className="h-9 w-[170px] appearance-none rounded-md border border-input bg-background px-3 pr-8 text-sm shadow-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                          className="h-11 w-[170px] appearance-none rounded-md border border-input bg-background px-3 pr-8 text-sm shadow-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ring lg:h-9"
                         >
                           {SORT_OPTIONS.map((opt) => (
                             <option key={opt.value} value={opt.value}>

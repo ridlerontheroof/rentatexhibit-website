@@ -44,7 +44,7 @@ export function PlanFilters({
                 type="button"
                 aria-pressed={active}
                 onClick={() => onToggleCategory(cat.id)}
-                className={`px-3 py-2 text-xs uppercase tracking-wide transition-colors ${
+                className={`min-h-11 px-3 py-2 text-xs uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                   active
                     ? 'bg-primary text-white'
                     : 'border border-border hover:border-primary'
@@ -70,7 +70,7 @@ export function PlanFilters({
                 type="button"
                 aria-pressed={active}
                 onClick={() => onToggleBand(band.id)}
-                className={`px-3 py-2 text-xs uppercase tracking-wide transition-colors ${
+                className={`min-h-11 px-3 py-2 text-xs uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                   active
                     ? 'bg-primary text-white'
                     : 'border border-border hover:border-primary'
@@ -112,12 +112,15 @@ export function PlanFilters({
           type="button"
           aria-pressed={state.ada}
           onClick={onToggleAda}
-          className={`flex items-center gap-2 px-3 py-2 text-xs uppercase tracking-wide transition-colors ${
+          className={`flex min-h-11 items-center gap-2 px-3 py-2 text-xs uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
             state.ada ? 'bg-primary text-white' : 'border border-border hover:border-primary'
           }`}
         >
           <Accessibility className="h-4 w-4" aria-hidden="true" />
           ADA-accessible
+          {/* Screen-reader clarifier: without the surrounding visual context
+              the visible label alone doesn't say what toggling it does. */}
+          <span className="sr-only"> — show only ADA-accessible floor plans</span>
         </button>
         {state.ada && (
           <div className="mt-4 space-y-2 text-xs leading-relaxed text-muted-foreground">
