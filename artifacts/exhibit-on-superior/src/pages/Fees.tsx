@@ -17,7 +17,7 @@ const UTILITY_BUNDLE = [
   { type: 'Jr. Convertible', size: '450\u2013478 sq ft', fee: '$95' },
   { type: 'Convertible', size: '554 sq ft', fee: '$105' },
   { type: '1 Bedroom', size: '619\u2013768 sq ft', fee: '$115' },
-  { type: '2 Bedroom / 1 Bath', size: '776\u2013821 sq ft', fee: '$125' },
+  { type: '2 Bedroom / 1 Bath', size: '767\u2013821 sq ft', fee: '$125' },
   { type: '2 Bedroom / 2 Bath', size: '899\u20131,135 sq ft', fee: '$150' },
   { type: '2 Bedroom + Den', size: '983 sq ft', fee: '$165' },
   { type: '3 Bedroom / 3 Bath', size: '1,455\u20131,528 sq ft', fee: '$195' },

@@ -48,8 +48,9 @@ export function ApartmentGuide() {
               Every home at Exhibit On Superior starts with the same foundation: dramatic
               floor-to-ceiling windows, panoramic views of the Chicago skyline, driftwood plank
               floors throughout, and a modern kitchen with quartz countertops, tiled backsplash,
-              and energy-saving stainless-steel appliances. From there, thirty-five distinct floor
-              plans across floors 2&ndash;34 let you pick the size, layout, and outlook that fits.
+              and energy-saving stainless-steel appliances. From there, 27 floor-plan
+              configurations &mdash; with floor- and line-specific variations &mdash; across floors
+              2&ndash;34 let you pick the size, layout, and outlook that fits.
             </p>
             <p className="text-lg leading-relaxed">
               This guide walks through each residence type. When you&rsquo;re ready to compare
