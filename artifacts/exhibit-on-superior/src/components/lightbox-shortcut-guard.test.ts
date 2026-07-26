@@ -371,6 +371,49 @@ describe('lightbox keyboard-shortcut ownership guard', () => {
     ).toBe(true);
   });
 
+  // -------------------------------------------------------------------------
+  // Sheet-drag side of the same contract (PlanLightbox only): the mobile
+  // bottom-sheet drag handle uses pointer events, and pointer drags never end
+  // in a click, so the click-capture dismiss can't run there either. The
+  // sheet-drag start handler must clear the shortcut legend itself, or a drag
+  // would expand/collapse the sheet with the legend left stranded on top.
+  // -------------------------------------------------------------------------
+
+  describe('PlanLightbox — sheet-drag legend clearing', () => {
+    const code = stripComments(
+      readViewerSource('../components/floor-plans/PlanLightbox.tsx'),
+    );
+
+    it('clears the shortcut legend inside onSheetDragStart', () => {
+      // Capture the handler body up to the next top-level handler definition.
+      const block = code.match(
+        /onSheetDragStart\s*=\s*\((?:[^)]*)\)\s*=>\s*\{[\s\S]*?\n  \};/,
+      );
+      expect(
+        block,
+        'PlanLightbox no longer defines onSheetDragStart — if the sheet drag ' +
+          'handle was removed or renamed, update this guard alongside it.',
+      ).not.toBeNull();
+      expect(
+        /setShowShortcuts\(false\)/.test(block![0]),
+        'PlanLightbox\'s onSheetDragStart no longer calls ' +
+          'setShowShortcuts(false). Pointer drags on the sheet handle never ' +
+          'end in a click, so the click-capture dismiss cannot clear the ' +
+          'legend — without this call a drag strands the legend on top while ' +
+          'the sheet expands/collapses underneath.',
+      ).toBe(true);
+    });
+
+    it('the drag handle still routes pointerdown through onSheetDragStart', () => {
+      expect(
+        /onPointerDown\s*=\s*\{onSheetDragStart\}/.test(code),
+        'PlanLightbox no longer attaches onSheetDragStart via onPointerDown — ' +
+          'the sheet-drag legend-clearing contract this guard protects has ' +
+          'changed; update the guard alongside the component.',
+      ).toBe(true);
+    });
+  });
+
   it('the shared hook itself still owns the window keydown listener', () => {
     // Sanity check on the guard: if the hook is ever rewritten to stop
     // attaching a window keydown listener, the viewer checks above would be
