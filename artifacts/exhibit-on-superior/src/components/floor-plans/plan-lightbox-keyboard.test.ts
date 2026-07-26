@@ -283,6 +283,79 @@ describe('zoom keys while the coarse click-zoom mode is active', () => {
   });
 });
 
+describe('click outside the shortcut legend', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  function clickAt(target: Element, x = 400, y = 300) {
+    act(() => {
+      target.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true, clientX: x, clientY: y }),
+      );
+    });
+  }
+
+  function openLegend() {
+    pressKey('?');
+    expect(document.getElementById('plan-shortcuts-legend')).not.toBeNull();
+  }
+
+  it('a click on the plan dismisses the legend without toggling zoom', () => {
+    openLegend();
+    clickAt(planImage());
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    // The dismissing click must not also trigger the single-click zoom toggle.
+    act(() => {
+      vi.advanceTimersByTime(400); // past the 300ms single-tap window
+    });
+    expect(planImage().style.width).toBe(''); // coarse zoom not engaged
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+  });
+
+  it('the next click after dismissal toggles zoom as usual', () => {
+    openLegend();
+    clickAt(planImage());
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    clickAt(planImage());
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
+    expect(planImage().style.width).toBe('160%');
+  });
+
+  it('a click inside the legend leaves it open', () => {
+    openLegend();
+    const legend = document.getElementById('plan-shortcuts-legend')!;
+    clickAt(legend);
+    expect(document.getElementById('plan-shortcuts-legend')).not.toBeNull();
+  });
+
+  it('the × button inside the legend still dismisses it', () => {
+    openLegend();
+    const dismiss = document.querySelector<HTMLButtonElement>(
+      'button[aria-label="Dismiss keyboard shortcuts"]',
+    )!;
+    clickAt(dismiss);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+  });
+
+  it('the ? toggle button still toggles rather than close-then-reopen', () => {
+    openLegend();
+    const toggle = document.querySelector<HTMLButtonElement>(
+      'button[aria-controls="plan-shortcuts-legend"]',
+    )!;
+    clickAt(toggle);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    clickAt(toggle);
+    expect(document.getElementById('plan-shortcuts-legend')).not.toBeNull();
+  });
+});
+
 describe('Escape', () => {
   it('first dismisses the shortcut legend without closing; second closes', () => {
     pressKey('?');

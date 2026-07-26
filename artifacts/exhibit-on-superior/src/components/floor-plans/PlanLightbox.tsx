@@ -122,6 +122,30 @@ export function PlanLightbox({
   // Desktop-only keyboard shortcut legend (toggled by the "?" button or key).
   const [showShortcuts, setShowShortcuts] = useState(false);
 
+  /**
+   * Clicking anywhere outside the open legend dismisses it, matching common
+   * overlay behavior. Runs in the capture phase so the dismissing click never
+   * reaches the plan image's onClick (which would toggle zoom mode). Clicks
+   * inside the legend and on the "?" toggle are excluded so their own click
+   * handlers keep working (the toggle would otherwise close-then-reopen).
+   */
+  const dismissLegendOnOutsideClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!showShortcuts) return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target?.closest('#plan-shortcuts-legend') ||
+        target?.closest('[aria-controls="plan-shortcuts-legend"]')
+      ) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      setShowShortcuts(false);
+    },
+    [showShortcuts],
+  );
+
   const resetPinch = useCallback(() => {
     gesture.current.mode = null;
     mouseDrag.current = null;
@@ -628,7 +652,10 @@ export function PlanLightbox({
           mark to toggle the shortcut legend. Press Escape to close.
         </DialogDescription>
 
-        <div className="flex h-screen supports-[height:100svh]:h-[100svh] supports-[height:100dvh]:h-[100dvh] flex-col lg:grid lg:h-screen lg:grid-cols-[1fr_360px] lg:grid-rows-1">
+        <div
+          onClickCapture={dismissLegendOnOutsideClick}
+          className="flex h-screen supports-[height:100svh]:h-[100svh] supports-[height:100dvh]:h-[100dvh] flex-col lg:grid lg:h-screen lg:grid-cols-[1fr_360px] lg:grid-rows-1"
+        >
           {/* Image viewer */}
           <div className="relative flex min-h-0 flex-1 items-center justify-center bg-[#111] lg:flex-none">
             <div
