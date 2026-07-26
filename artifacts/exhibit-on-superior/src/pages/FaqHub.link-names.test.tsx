@@ -2,10 +2,12 @@
 //
 // Every FAQ with a knowledgeSlug renders a "Full answer →" link. Visually the
 // links are told apart by the question above them, but a screen reader reads
-// only the link's accessible name — without an aria-label all ~30 links would
-// announce identically as "Full answer". The JSX carries
-// aria-label={`Full answer: ${faq.q}`} today, but only this test keeps a
-// future edit or a new link pattern from silently dropping it.
+// only the link's accessible name — without extra context all ~30 links would
+// announce identically as "Full answer". The JSX appends the question in a
+// visually-hidden span (name-from-content) so the accessible name BEGINS with
+// the visible text verbatim — WCAG 2.5.3 label-in-name. An aria-label here
+// would fail 2.5.3 because it drops the visible "→"; this test keeps a future
+// edit from reintroducing that pattern or dropping the hidden context.
 //
 // The page is rendered with the same server renderer the prerenderer uses, so
 // what we assert here is exactly what ships in dist/public/faq/index.html.
@@ -26,14 +28,27 @@ function decode(s: string): string {
     .replace(/<!-- -->/g, '');
 }
 
-/** Every <a> tag whose visible text starts with "Full answer". */
-function fullAnswerLinks(html: string): { tag: string; ariaLabel: string | null }[] {
-  const links: { tag: string; ariaLabel: string | null }[] = [];
+interface FullAnswerLink {
+  tag: string;
+  /** Full text content = accessible name (name from content, no aria-label). */
+  name: string;
+  /** Text content with sr-only spans removed = what sighted users see. */
+  visible: string;
+  ariaLabel: string | null;
+}
+
+/** Every <a> tag whose text content starts with "Full answer". */
+function fullAnswerLinks(html: string): FullAnswerLink[] {
+  const links: FullAnswerLink[] = [];
   for (const m of html.matchAll(/<a\b[^>]*>(.*?)<\/a>/gs)) {
-    const text = decode(m[1].replace(/<[^>]+>/g, '')).trim();
-    if (!text.startsWith('Full answer')) continue;
+    const inner = m[1];
+    const name = decode(inner.replace(/<[^>]+>/g, '')).trim();
+    if (!name.startsWith('Full answer')) continue;
+    const visible = decode(
+      inner.replace(/<span[^>]*class="[^"]*sr-only[^"]*"[^>]*>.*?<\/span>/gs, '').replace(/<[^>]+>/g, ''),
+    ).trim();
     const label = m[0].match(/aria-label="([^"]*)"/);
-    links.push({ tag: m[0], ariaLabel: label ? decode(label[1]) : null });
+    links.push({ tag: m[0], name, visible, ariaLabel: label ? decode(label[1]) : null });
   }
   return links;
 }
@@ -58,18 +73,25 @@ describe('FAQ hub "Full answer" link accessible names', () => {
     expect(links.length).toBeGreaterThan(0);
   });
 
-  it('every Full-answer link has an accessible name that includes its question', () => {
-    const labels = links.map((l) => l.ariaLabel);
-    for (const [i, label] of labels.entries()) {
-      expect(
-        label,
-        `Full-answer link #${i + 1} lost its aria-label — all these links would ` +
-          `announce identically to screen readers: ${links[i].tag}`,
-      ).toBeTruthy();
+  it('no link uses an aria-label (it would override name-from-content and break 2.5.3)', () => {
+    for (const l of links) {
+      expect(l.ariaLabel, `unexpected aria-label on: ${l.tag}`).toBeNull();
     }
-    // Each linked question appears in exactly one label (order-independent).
+  });
+
+  it('every accessible name begins with the visible text verbatim (WCAG 2.5.3)', () => {
+    for (const l of links) {
+      expect(
+        l.name.startsWith(l.visible),
+        `accessible name "${l.name}" must start with visible text "${l.visible}"`,
+      ).toBe(true);
+    }
+  });
+
+  it('every Full-answer accessible name includes its question', () => {
+    // Each linked question appears in exactly one name (order-independent).
     for (const q of LINKED_QUESTIONS) {
-      const matching = labels.filter((l) => l && l.includes(q));
+      const matching = links.filter((l) => l.name.includes(q));
       expect(
         matching.length,
         `no Full-answer link's accessible name includes the question "${q}"`,
@@ -78,8 +100,8 @@ describe('FAQ hub "Full answer" link accessible names', () => {
   });
 
   it('all Full-answer accessible names are unique', () => {
-    const labels = links.map((l) => l.ariaLabel ?? 'Full answer');
-    const dupes = labels.filter((l, i) => labels.indexOf(l) !== i);
+    const names = links.map((l) => l.name);
+    const dupes = names.filter((l, i) => names.indexOf(l) !== i);
     expect(dupes, `duplicate spoken link names: ${dupes.join(' | ')}`).toEqual([]);
   });
 });
