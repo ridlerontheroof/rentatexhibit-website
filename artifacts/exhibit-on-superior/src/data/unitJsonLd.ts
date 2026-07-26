@@ -9,6 +9,7 @@ import { SITE_URL } from './seo';
 import { planGroups, type PlanGroup } from './floorPlans';
 import { getBakedAvailability } from './availabilitySnapshot';
 import type { AvailableUnit } from '../hooks/use-availability';
+import { adaDesignation, ADA_DISCLAIMER, type AdaDesignation } from './ada';
 
 const COMPLEX_ID = `${SITE_URL}#apartmentcomplex`;
 const PAGE_URL = `${SITE_URL}/available-units`;
@@ -70,6 +71,33 @@ export function offerPriceValidUntil(updatedAtIso: string): string | null {
   return new Date(updated + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
+/**
+ * amenityFeature accessibility nodes for a designated (A)/(AC) apartment, per
+ * the as-built accessibility matrix. Designations only — no specific installed
+ * features are claimed; the disclaimer rides along in the description.
+ */
+export function adaAmenityFeatures(designation: AdaDesignation): Record<string, unknown>[] {
+  const features: Record<string, unknown>[] = [
+    {
+      '@type': 'LocationFeatureSpecification',
+      name: 'ADA Type A accessible/adaptable',
+      value: true,
+      description:
+        `Type A accessible/adaptable residence (${designation}) per the building's as-built accessibility matrix. ` +
+        `Features and installed accessibility components may vary. ${ADA_DISCLAIMER}`,
+    },
+  ];
+  if (designation === 'AC') {
+    features.push({
+      '@type': 'LocationFeatureSpecification',
+      name: 'Conduit line (AC)',
+      value: true,
+      description: 'Type A unit with conduit line, per as-built accessibility matrix.',
+    });
+  }
+  return features;
+}
+
 export function apartmentNode(
   u: AvailableUnit,
   opts: { id?: string; url?: string; priceValidUntil?: string | null } = {},
@@ -77,6 +105,7 @@ export function apartmentNode(
   const group = planGroupForUnitNumber(u.unit);
   const sqft = u.sqft ?? group?.sqftMin ?? null;
   const image = u.photoUrl ?? (group ? `${SITE_URL}${group.images.detail}` : null);
+  const ada = adaDesignation(u.unit);
   return {
     '@type': 'Apartment',
     '@id': opts.id ?? `${PAGE_URL}#unit-${u.unit}`,
@@ -97,6 +126,7 @@ export function apartmentNode(
         }
       : {}),
     ...(image ? { image } : {}),
+    ...(ada ? { amenityFeature: adaAmenityFeatures(ada) } : {}),
     ...(u.rent !== null
       ? {
           offers: {

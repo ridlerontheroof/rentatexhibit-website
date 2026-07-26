@@ -31,6 +31,7 @@ import {
   floorPlansItemListJsonLd,
 } from '../data/floorPlans';
 import { unitAvailabilityJsonLd } from '../data/unitJsonLd';
+import { ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
 import {
   SQFT_MIN,
   SQFT_MAX,
@@ -77,6 +78,7 @@ export function FloorPlans() {
     categories: new Set<Category>(),
     bands: new Set<string>(),
     sqft: [SQFT_MIN, SQFT_MAX],
+    ada: false,
   });
   const [sort, setSort] = useState<SortKey>('featured');
   // Live-feed structured data: once the availability query resolves (it starts
@@ -150,16 +152,19 @@ export function FloorPlans() {
 
   const setSqft = (range: [number, number]) => setFilters((f) => ({ ...f, sqft: range }));
 
+  const toggleAda = () => setFilters((f) => ({ ...f, ada: !f.ada }));
+
   const hasActiveFilters =
     search.trim() !== '' ||
     filters.categories.size > 0 ||
     filters.bands.size > 0 ||
     filters.sqft[0] !== SQFT_MIN ||
-    filters.sqft[1] !== SQFT_MAX;
+    filters.sqft[1] !== SQFT_MAX ||
+    filters.ada;
 
   const resetAll = () => {
     setSearch('');
-    setFilters({ categories: new Set(), bands: new Set(), sqft: [SQFT_MIN, SQFT_MAX] });
+    setFilters({ categories: new Set(), bands: new Set(), sqft: [SQFT_MIN, SQFT_MAX], ada: false });
   };
 
   const filterProps = {
@@ -169,6 +174,7 @@ export function FloorPlans() {
     onToggleCategory: toggleCategory,
     onToggleBand: toggleBand,
     onSqftChange: setSqft,
+    onToggleAda: toggleAda,
   };
 
   return (
@@ -301,11 +307,27 @@ export function FloorPlans() {
                   </div>
                 </div>
 
+                {/* ADA designation key + disclaimer — always shown while the
+                    ADA filter is active, next to the results it explains. */}
+                {filters.ada && (
+                  <div className="mb-6 border border-border bg-white p-4 text-sm leading-relaxed text-muted-foreground">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-[2px] text-foreground">
+                      ADA designation key
+                    </p>
+                    {ADA_KEY.map((k) => (
+                      <p key={k.code}>
+                        <span className="font-semibold text-foreground">{k.label}</span>: {k.description}
+                      </p>
+                    ))}
+                    <p className="mt-2">{ADA_DISCLAIMER}</p>
+                  </div>
+                )}
+
                 {/* Grid or empty state */}
                 {filtered.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
                     {filtered.map((group) => (
-                      <PlanCard key={group.id} group={group} onOpen={handleOpen} />
+                      <PlanCard key={group.id} group={group} onOpen={handleOpen} showAda={filters.ada} />
                     ))}
                   </div>
                 ) : (

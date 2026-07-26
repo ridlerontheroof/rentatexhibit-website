@@ -167,7 +167,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Are there ADA-accessible apartments at Exhibit On Superior?',
-        a: 'Yes. More than 20% of the homes at Exhibit are ADA accessible. For details on specific accessible floor plans and features, or to arrange a reasonable accommodation, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+        a: 'Yes. Per the as-built accessibility matrix, 62 apartments \u2014 more than 20% of the homes \u2014 carry an ADA designation: 34 Type A accessible/adaptable residences (A) and 28 Type A units with conduit line (AC). Use the ADA-accessible filter on the Available Units page, and contact leasing to verify a specific apartment\u2019s current configuration: exhibit@highlandptrs.com or 312-450-0635.',
       },
       {
         q: 'Can amenity spaces be reserved?',

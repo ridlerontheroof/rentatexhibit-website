@@ -128,6 +128,8 @@ export function slugFor(unit: number, floorLabel: string): string {
   return `unit-${unit}-${prefix}-${floors.replace(/-/g, '-')}`;
 }
 
+import { adaUnitsAmong, isAdaQuery, type AdaDesignation } from './ada';
+
 export const plans: Plan[] = RAW.map(([unit, floorLabel, category, typeLabel, beds, baths, den, sqft]) => {
   const { floors, min, max, mezzanine } = parseFloors(floorLabel);
   const id = slugFor(unit, floorLabel);
@@ -256,6 +258,18 @@ export function unitNumbersForGroup(g: PlanGroup): string[] {
 }
 
 /**
+ * Designated (A)/(AC) apartments within a group's full floor range, from the
+ * as-built accessibility matrix (see data/ada.ts).
+ */
+export function adaUnitsForGroup(g: PlanGroup): { unit: string; designation: AdaDesignation }[] {
+  return adaUnitsAmong(unitNumbersForGroup(g));
+}
+
+export function groupHasAdaUnits(g: PlanGroup): boolean {
+  return adaUnitsForGroup(g).length > 0;
+}
+
+/**
  * Match a group against a free-text query. Numeric tokens match the unit line,
  * a floor number, or an apartment unit number — short forms are zero-padded to
  * the 4-digit unit-number form ("203" is treated as "0203"). Non-numeric text
@@ -275,6 +289,8 @@ export function groupMatchesQuery(g: PlanGroup, query: string): boolean {
       return g.unit === n || g.floors.includes(n) || unitNumbers.has(tok.padStart(4, '0'));
     });
   }
+  // ADA/accessibility terms match groups with designated (A)/(AC) apartments.
+  if (isAdaQuery(q)) return groupHasAdaUnits(g);
   // Text search across type label + "unit N" + floor labels
   const haystack = [
     g.typeLabel.toLowerCase(),
@@ -289,6 +305,8 @@ export interface GroupFilterState {
   categories: Set<Category>;
   bands: Set<string>;
   sqft: [number, number];
+  /** When true, only groups with designated (A)/(AC) apartments match. */
+  ada: boolean;
 }
 
 /** Match a group against the combined category / floor-band / sqft-range filter. */
@@ -297,6 +315,7 @@ export function groupMatchesFilters(g: PlanGroup, filters: GroupFilterState): bo
   if (filters.bands.size > 0 && !g.bands.some((b) => filters.bands.has(b.id))) return false;
   // sqft ranges overlap if the group's [min, max] intersects the filter's [lo, hi].
   if (g.sqftMax < filters.sqft[0] || g.sqftMin > filters.sqft[1]) return false;
+  if (filters.ada && !groupHasAdaUnits(g)) return false;
   return true;
 }
 

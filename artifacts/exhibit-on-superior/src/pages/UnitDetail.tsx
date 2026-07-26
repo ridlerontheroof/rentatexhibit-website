@@ -20,6 +20,8 @@ import { trackOutboundClick } from '../lib/analytics';
 import { youTubeEmbedUrl } from '../lib/youtube';
 import { APPLY_URL } from '../data/seo';
 import { buildUnitSeoModel, unitFactSummary, unitFloor } from '../data/unitPageSeo';
+import { adaDesignation, adaDesignationLabel, ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
+import { Accessibility } from 'lucide-react';
 
 const ADDRESS = '165 W Superior St, Chicago, IL 60654';
 
@@ -103,6 +105,7 @@ export function UnitDetail() {
   // AppFolio does not provide.
   const videoEmbedUrl = unit.videoUrl ? youTubeEmbedUrl(unit.videoUrl) : null;
   const floor = unitFloor(unit.unit);
+  const ada = adaDesignation(unit.unit);
 
   return (
     <div className="pb-16 pt-10 md:pt-14">
@@ -235,7 +238,35 @@ export function UnitDetail() {
                 </p>
               </div>
             )}
+            {ada && (
+              <div>
+                <p className="text-sm uppercase tracking-wider text-muted-foreground">Accessibility</p>
+                <p className="mt-1 flex items-center justify-center gap-2 text-lg font-medium text-foreground">
+                  <Accessibility className="h-5 w-5 text-primary" aria-hidden="true" />
+                  ADA ({ada})
+                </p>
+              </div>
+            )}
           </div>
+
+          {/* ADA designation detail: key + leasing disclaimer must accompany
+              the designation wherever it is shown (as-built matrix rule). */}
+          {ada && (
+            <div className="mx-auto mt-6 max-w-3xl border-t border-border pt-5 text-center text-sm leading-relaxed text-muted-foreground">
+              <p className="text-foreground">
+                Apartment {unit.unit} is designated as a {adaDesignationLabel(ada)} per the
+                building&rsquo;s as-built accessibility matrix.
+              </p>
+              <div className="mt-3 space-y-1 text-xs">
+                {ADA_KEY.map((k) => (
+                  <p key={k.code}>
+                    <span className="font-semibold text-foreground">{k.label}</span>: {k.description}
+                  </p>
+                ))}
+                <p className="mt-2">{ADA_DISCLAIMER}</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

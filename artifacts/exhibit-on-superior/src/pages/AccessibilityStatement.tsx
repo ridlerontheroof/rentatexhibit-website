@@ -1,4 +1,5 @@
 import { Seo } from '@/components/Seo';
+import { ADA_COUNTS, ADA_KEY, ADA_DISCLAIMER } from '@/data/ada';
 
 export function AccessibilityStatement() {
   return (
@@ -41,9 +42,26 @@ export function AccessibilityStatement() {
           <section className="space-y-3">
             <h2 className="text-xl uppercase tracking-wider">Physical Accessibility</h2>
             <p>
-              More than 20% of the homes at Exhibit On Superior are ADA accessible. For details
-              on specific accessible floor plans and features, or to arrange a reasonable
-              accommodation, please contact the leasing team at{' '}
+              Per the building&rsquo;s as-built accessibility matrix, {ADA_COUNTS.total} apartments
+              at Exhibit On Superior — more than 20% of the homes — carry an ADA designation:{' '}
+              {ADA_COUNTS.a} Type A accessible/adaptable residences (A) and {ADA_COUNTS.ac} Type A
+              units with conduit line (AC). You can browse them with the ADA-accessible filter on
+              the{' '}
+              <a href="/available-units" className="text-primary hover:underline">
+                Available Units &amp; Floor Plans
+              </a>{' '}
+              page.
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              {ADA_KEY.map((k) => (
+                <li key={k.code}>
+                  <strong>{k.label}</strong>: {k.description}
+                </li>
+              ))}
+            </ul>
+            <p>
+              {ADA_DISCLAIMER} To arrange a reasonable accommodation, please contact the leasing
+              team at{' '}
               <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
                 exhibit@highlandptrs.com
               </a>{' '}

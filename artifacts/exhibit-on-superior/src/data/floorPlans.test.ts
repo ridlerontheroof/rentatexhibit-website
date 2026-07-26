@@ -108,6 +108,7 @@ function makeFilters(over: Partial<GroupFilterState> = {}): GroupFilterState {
     categories: new Set<Category>(),
     bands: new Set<string>(),
     sqft: [SQFT_MIN, SQFT_MAX],
+    ada: false,
     ...over,
   };
 }

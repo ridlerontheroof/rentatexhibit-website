@@ -1,10 +1,13 @@
 import { Slider } from '../ui/slider';
+import { Accessibility } from 'lucide-react';
 import { CATEGORIES, FLOOR_BANDS, type Category } from '../../data/floorPlans';
+import { ADA_KEY, ADA_DISCLAIMER } from '../../data/ada';
 
 export interface FilterState {
   categories: Set<Category>;
   bands: Set<string>;
   sqft: [number, number];
+  ada: boolean;
 }
 
 interface PlanFiltersProps {
@@ -14,6 +17,7 @@ interface PlanFiltersProps {
   onToggleCategory: (c: Category) => void;
   onToggleBand: (id: string) => void;
   onSqftChange: (range: [number, number]) => void;
+  onToggleAda: () => void;
 }
 
 export function PlanFilters({
@@ -23,6 +27,7 @@ export function PlanFilters({
   onToggleCategory,
   onToggleBand,
   onSqftChange,
+  onToggleAda,
 }: PlanFiltersProps) {
   return (
     <div className="space-y-8">
@@ -96,6 +101,33 @@ export function PlanFilters({
           <span>{state.sqft[0].toLocaleString()} sq ft</span>
           <span>{state.sqft[1].toLocaleString()} sq ft</span>
         </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="mb-3 text-xs font-semibold uppercase tracking-[2px] text-muted-foreground">
+          Accessibility
+        </legend>
+        <button
+          type="button"
+          aria-pressed={state.ada}
+          onClick={onToggleAda}
+          className={`flex items-center gap-2 px-3 py-2 text-xs uppercase tracking-wide transition-colors ${
+            state.ada ? 'bg-primary text-white' : 'border border-border hover:border-primary'
+          }`}
+        >
+          <Accessibility className="h-4 w-4" aria-hidden="true" />
+          ADA-accessible
+        </button>
+        {state.ada && (
+          <div className="mt-4 space-y-2 text-xs leading-relaxed text-muted-foreground">
+            {ADA_KEY.map((k) => (
+              <p key={k.code}>
+                <span className="font-semibold text-foreground">{k.label}</span>: {k.description}
+              </p>
+            ))}
+            <p>{ADA_DISCLAIMER}</p>
+          </div>
+        )}
       </fieldset>
     </div>
   );

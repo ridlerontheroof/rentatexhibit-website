@@ -1,12 +1,15 @@
-import { Maximize2 } from 'lucide-react';
-import type { PlanGroup } from '../../data/floorPlans';
+import { Maximize2, Accessibility } from 'lucide-react';
+import { adaUnitsForGroup, type PlanGroup } from '../../data/floorPlans';
 
 interface PlanCardProps {
   group: PlanGroup;
   onOpen: (group: PlanGroup) => void;
+  /** When true (ADA filter active), list the designated (A)/(AC) apartments. */
+  showAda?: boolean;
 }
 
-export function PlanCard({ group, onOpen }: PlanCardProps) {
+export function PlanCard({ group, onOpen, showAda = false }: PlanCardProps) {
+  const adaUnits = showAda ? adaUnitsForGroup(group) : [];
   const sqftLabel =
     group.sqftMin === group.sqftMax
       ? `${group.sqftMin.toLocaleString()} sq ft`
@@ -52,6 +55,25 @@ export function PlanCard({ group, onOpen }: PlanCardProps) {
             </span>
           ))}
         </div>
+
+        {adaUnits.length > 0 && (
+          <div className="mt-4">
+            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-foreground">
+              <Accessibility className="h-4 w-4 text-primary" aria-hidden="true" />
+              ADA-designated apartments
+            </p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {adaUnits.map((u) => (
+                <span
+                  key={u.unit}
+                  className="border border-primary/40 px-2 py-0.5 text-xs tracking-wide text-muted-foreground"
+                >
+                  {u.unit} ({u.designation})
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         <span className="mt-4 inline-block text-sm uppercase tracking-wider text-primary underline-offset-4 group-hover:underline">
           View floor plan
