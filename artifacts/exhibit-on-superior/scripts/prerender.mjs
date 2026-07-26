@@ -555,7 +555,7 @@ const LEGACY_REDIRECT_STUBS = LEGACY_REDIRECTS;
       'Prerender aborted: artifact.toml per-unit rewrites are out of sync with the baked availability snapshot.\n' +
         (missing.length ? `  Units missing rewrite pairs (bare + trailing slash): ${missing.join(', ')}\n` : '') +
         (stale.length ? `  Stale rewrites for units no longer in the snapshot: ${stale.join(', ')}\n` : '') +
-        'Regenerate the [[services.production.rewrites]] unit block (ahead of the /knowledge/* and /* rules) from src/data/availabilitySnapshot.json.',
+        'Run `node scripts/generate-unit-rewrites.mjs` (or `pnpm run generate:unit-rewrites`) to regenerate the [[services.production.rewrites]] unit block from src/data/availabilitySnapshot.json.',
     );
   }
 }
