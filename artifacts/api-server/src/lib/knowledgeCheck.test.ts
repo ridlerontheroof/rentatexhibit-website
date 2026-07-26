@@ -276,4 +276,39 @@ describe("checkKnowledgePagesOnce alerting", () => {
     await checkKnowledgePagesOnce(logger as never, DAY1, brokenFetch());
     expect(sendAlert).not.toHaveBeenCalled();
   });
+
+  const heartbeats = () =>
+    vi
+      .mocked(logger.info)
+      .mock.calls.filter(
+        ([, msg]) => typeof msg === "string" && msg.includes("heartbeat"),
+      );
+
+  it("emits an info heartbeat on the first check, then at most once per UTC day", async () => {
+    await checkKnowledgePagesOnce(logger as never, DAY1, healthyFetch());
+    expect(heartbeats()).toHaveLength(1);
+    // Later checks the same UTC day stay silent.
+    await checkKnowledgePagesOnce(logger as never, DAY1_LATER, healthyFetch());
+    expect(heartbeats()).toHaveLength(1);
+    // The first check of the next UTC day emits the summary of the day's checks.
+    await checkKnowledgePagesOnce(logger as never, DAY2, healthyFetch());
+    const beats = heartbeats();
+    expect(beats).toHaveLength(2);
+    expect(beats[1]?.[0]).toMatchObject({ checks: 2, healthy: 2 });
+  });
+
+  it("counts unreachable and unhealthy runs in the heartbeat", async () => {
+    const deadFetch = makeFetch(() => new Error("network down"));
+    await checkKnowledgePagesOnce(logger as never, DAY1, deadFetch); // first check -> heartbeat
+    await checkKnowledgePagesOnce(logger as never, DAY1_LATER, brokenFetch());
+    await checkKnowledgePagesOnce(logger as never, DAY2, healthyFetch());
+    const beats = heartbeats();
+    expect(beats).toHaveLength(2);
+    expect(beats[1]?.[0]).toMatchObject({
+      checks: 2,
+      healthy: 1,
+      unreachable: 0,
+      unhealthy: 1,
+    });
+  });
 });
