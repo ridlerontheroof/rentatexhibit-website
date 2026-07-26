@@ -228,6 +228,7 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     ['/availableunits.aspx', '/available-units'],
     ['/amenities.aspx', '/amenities'],
     ['/contactus.aspx', '/contact-us'],
+    ['/brochure.aspx', '/apartment-guide'],
     ['/artist-in-residence', '/'],
   ];
 

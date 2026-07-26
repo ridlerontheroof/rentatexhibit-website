@@ -33,4 +33,5 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/availableunits.aspx': '/available-units',
   '/amenities.aspx': '/amenities',
   '/contactus.aspx': '/contact-us',
+  '/brochure.aspx': '/apartment-guide',
 };

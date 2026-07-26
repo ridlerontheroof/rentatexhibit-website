@@ -339,6 +339,14 @@ from = "/contactus.aspx/"
 to = "/contactus.aspx/index.html"
 
 [[services.production.rewrites]]
+from = "/brochure.aspx"
+to = "/brochure.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/brochure.aspx/"
+to = "/brochure.aspx/index.html"
+
+[[services.production.rewrites]]
 from = "/apartment-guide"
 to = "/apartment-guide/index.html"
 
