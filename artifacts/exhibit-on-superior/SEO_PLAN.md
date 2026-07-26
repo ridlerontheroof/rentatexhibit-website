@@ -94,6 +94,12 @@ The **one issue that undercuts all of that**: the site is a client-rendered SPA.
 6. Add per-floor-plan `Accommodation`/`Offer` schema alongside live availability. _(Finding 7)_
 7. Add `Review`/`AggregateRating` schema once real reviews are displayed. _(Finding 8)_
 
+**Rented-unit staleness window (documented expectation)**
+When a unit is rented between publishes, its prerendered HTML (old price, `index, follow`, Apartment/Offer JSON-LD) keeps being served until the next publish. That is acceptable because:
+- **Rendered crawls (Googlebot):** the client swaps in the accurate state within one availability-feed refresh — `noindex` robots (the stale prerendered robots meta is stripped pre-hydration in `main.tsx`), a "Residence Not Available" title, and no Apartment/Offer JSON-LD. `/available-units` likewise rebuilds its Offer graph from the live feed, so rented units drop out of the rendered structured data immediately.
+- **Raw-HTML fetches:** the Offer carries `priceValidUntil` (snapshot date + 7 days), so engines are told the quoted rent expires even without re-rendering. The stale window is bounded by the publish cadence.
+- **Bing/Copilot:** IndexNow pings the removed unit's URL the moment it leaves the feed (api-server `changedUnitUrls`), prompting a prompt recrawl. Google does not consume IndexNow; its window is its rendered-recrawl latency — typically days — during which any visitor who clicks through lands on the accurate sold-out page, never wrong facts presented as current.
+
 **Phase 4 — Ongoing**
 8. Optimize Google Business Profile; monitor GSC Coverage + Core Web Vitals monthly; keep titles/descriptions within range as content changes.
 

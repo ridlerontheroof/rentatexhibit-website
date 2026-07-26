@@ -73,6 +73,20 @@ describe('unit route edge cases', () => {
     });
   });
 
+  it('unknown unit page swaps in the sold-out title and emits no Offer JSON-LD', async () => {
+    render(<TestRoutes path="/available-units/9999" />);
+    await waitFor(() => {
+      expect(document.title).toContain('Residence Not Available');
+    });
+    // A rented unit must not re-emit Apartment/Offer structured data — the
+    // rendered crawl should see no lease Offer for a unit that left inventory.
+    for (const el of Array.from(
+      document.head.querySelectorAll('script[type="application/ld+json"]'),
+    )) {
+      expect(el.textContent ?? '').not.toContain('"Offer"');
+    }
+  });
+
   it('trailing-slash unit URL still resolves to the unit page', () => {
     render(<TestRoutes path="/available-units/0807/" />);
     expect(screen.getByRole('heading', { level: 1, name: /Apartment 0807/i })).toBeDefined();

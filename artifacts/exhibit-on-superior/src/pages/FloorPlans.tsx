@@ -18,6 +18,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
 import { PlanCard } from '../components/floor-plans/PlanCard';
 import { AvailableUnits } from '../components/floor-plans/AvailableUnits';
+import { useAvailability } from '../hooks/use-availability';
 import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFilters';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { SmartImg } from '../components/SmartImg';
@@ -65,7 +66,10 @@ function writePlanToUrl(id: string | null) {
 // Shared with the build-time prerenderer (see entry-server.tsx) so the static
 // HTML and the client emit identical floor-plan structured data.
 const structuredData = floorPlansItemListJsonLd();
-const unitStructuredData = unitAvailabilityJsonLd();
+// Baked fallback only — the component swaps in the live feed's units below so
+// rented apartments drop out of the rendered Apartment/Offer graph immediately
+// instead of lingering until the next publish.
+const bakedUnitStructuredData = unitAvailabilityJsonLd();
 
 export function FloorPlans() {
   const [search, setSearch] = useState('');
@@ -75,6 +79,18 @@ export function FloorPlans() {
     sqft: [SQFT_MIN, SQFT_MAX],
   });
   const [sort, setSort] = useState<SortKey>('featured');
+  // Live-feed structured data: once the availability query resolves (it starts
+  // from the baked snapshot via placeholderData), the Apartment/Offer graph
+  // reflects current inventory — a unit rented after the last publish
+  // disappears from the rendered JSON-LD within one feed refresh.
+  const { data: availability } = useAvailability();
+  const unitStructuredData = useMemo(
+    () =>
+      availability
+        ? unitAvailabilityJsonLd(availability.units, availability.updatedAt)
+        : bakedUnitStructuredData,
+    [availability],
+  );
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [openId, setOpenId] = useState<string | null>(null);

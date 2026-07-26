@@ -13,6 +13,15 @@ import './index.css';
 // copies coexist.
 document.querySelectorAll('script[data-ssr-jsonld]').forEach((el) => el.remove());
 
+// Remove the prerendered robots meta too: Helmet re-emits a live directive on
+// mount, and on a rented unit's page that directive flips to "noindex" while
+// the prerendered tag still says "index, follow". Google resolves conflicting
+// robots metas to the most restrictive, but leaving both makes the rendered
+// crawl ambiguous — dropping the stale one before hydration keeps exactly one
+// authoritative directive in the DOM. (Raw-HTML crawls are unaffected; they
+// see the original prerendered tag until the next publish.)
+document.querySelectorAll('head > meta[name="robots"]').forEach((el) => el.remove());
+
 const queryClient = new QueryClient();
 
 // Fetch the current page's code chunk BEFORE the first client render. The

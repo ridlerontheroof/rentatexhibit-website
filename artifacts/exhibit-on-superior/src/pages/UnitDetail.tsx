@@ -48,6 +48,21 @@ export function UnitDetail() {
     // Graceful sold-out state: a unit URL that has left inventory (stale AI
     // citation, old bookmark, search result) still lands on a helpful page —
     // noindex, no hard 404 — pointing at what IS available right now.
+    //
+    // Staleness expectation (why this is enough): the prerendered HTML for a
+    // rented unit keeps its old price/title until the next publish, but any
+    // crawler that renders JS (Googlebot does) sees this state within one
+    // availability-feed refresh: noindex robots, "Residence Not Available"
+    // title, and NO Apartment/Offer JSON-LD (main.tsx strips the prerendered
+    // copies pre-hydration, and noindex pages emit none). For raw-HTML
+    // fetches, the stale page is bounded by the publish cadence plus the
+    // Offer's priceValidUntil (snapshot date + 7 days) — engines are told the
+    // quoted rent expires even if they never re-render. Bing/Copilot are also
+    // pinged via IndexNow the moment the unit leaves the feed
+    // (api-server changedUnitUrls). Worst case: Google may show the old
+    // snippet until its next rendered recrawl — typically days — which is
+    // acceptable because the landing experience is this accurate sold-out
+    // page, never wrong facts presented as current.
     return (
       <div className="container mx-auto px-4 py-24 text-center">
         <Seo path={`/available-units/${params.unit}`} title="Residence Not Available | Exhibit On Superior" noindex />
