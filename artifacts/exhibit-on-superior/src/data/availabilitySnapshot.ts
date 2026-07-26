@@ -30,3 +30,26 @@ export function getBakedAvailability(now: number = Date.now()): AvailabilityData
   if (!Number.isFinite(updated) || now - updated > SNAPSHOT_MAX_AGE_MS) return null;
   return snapshot;
 }
+
+export type BakedSnapshotStatus = 'fresh' | 'stale' | 'invalid';
+
+/**
+ * Why the baked snapshot is (or is not) usable. The prerenderer FAILS THE
+ * BUILD on anything but 'fresh': a stale or malformed snapshot would silently
+ * drop every per-unit page (and its sitemap entries) from the publish —
+ * far worse than a loud build error telling you to re-fetch the snapshot.
+ */
+export function getBakedSnapshotStatus(now: number = Date.now()): BakedSnapshotStatus {
+  const data = raw as unknown;
+  if (
+    !data ||
+    typeof data !== 'object' ||
+    !Array.isArray((data as AvailabilityData).units) ||
+    typeof (data as AvailabilityData).updatedAt !== 'string'
+  ) {
+    return 'invalid';
+  }
+  const updated = Date.parse((data as AvailabilityData).updatedAt);
+  if (!Number.isFinite(updated)) return 'invalid';
+  return now - updated > SNAPSHOT_MAX_AGE_MS ? 'stale' : 'fresh';
+}

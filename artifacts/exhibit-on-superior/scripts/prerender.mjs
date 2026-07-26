@@ -30,7 +30,21 @@ const {
   FLOOR_PLAN_COUNT,
   BAKED_UNIT_COUNT,
   UNIT_PATHS,
+  BAKED_SNAPSHOT_STATUS,
 } = await import(pathToFileURL(serverEntry).href);
+
+// Snapshot freshness guard: per-unit pages, their sitemap entries, and the
+// /available-units Apartment/Offer nodes are all generated from the baked
+// availability snapshot. A stale (>48h) or malformed snapshot would silently
+// drop ALL of them from the publish — fail loudly instead, with the fix.
+if (BAKED_SNAPSHOT_STATUS !== 'fresh') {
+  throw new Error(
+    `Prerender aborted: baked availability snapshot is ${BAKED_SNAPSHOT_STATUS}. ` +
+      'Per-unit pages and unit-level structured data would silently vanish from this build. ' +
+      'Re-fetch it (scripts/fetch-availability-snapshot.mjs runs during `pnpm build`; it needs ' +
+      'the production /api/availability to be reachable) and rebuild.',
+  );
+}
 
 // Per-unit pages (/available-units/<unit>): dynamic routes prerendered from
 // the baked availability snapshot. They intentionally live OUTSIDE PAGE_SEO /

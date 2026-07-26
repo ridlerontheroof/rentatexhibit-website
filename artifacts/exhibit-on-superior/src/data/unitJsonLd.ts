@@ -58,9 +58,21 @@ export function planGroupForUnitNumber(unitNumber: string): PlanGroup | null {
  * the Apartment node always carries the image/floorSize crawlers reward —
  * never invented, always the plan sheet the unit is built from.
  */
+/**
+ * Offer expiry hint: the snapshot's own timestamp plus seven days. Prices are
+ * baked into the published HTML and can go stale between publishes; a
+ * priceValidUntil bounded to the data's actual age tells engines and AI
+ * assistants exactly how long the quoted rent may be trusted.
+ */
+export function offerPriceValidUntil(updatedAtIso: string): string | null {
+  const updated = Date.parse(updatedAtIso);
+  if (!Number.isFinite(updated)) return null;
+  return new Date(updated + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
 export function apartmentNode(
   u: AvailableUnit,
-  opts: { id?: string; url?: string } = {},
+  opts: { id?: string; url?: string; priceValidUntil?: string | null } = {},
 ): Record<string, unknown> {
   const group = planGroupForUnitNumber(u.unit);
   const sqft = u.sqft ?? group?.sqftMin ?? null;
@@ -93,6 +105,7 @@ export function apartmentNode(
             priceCurrency: 'USD',
             availability: 'https://schema.org/InStock',
             businessFunction: 'http://purl.org/goodrelations/v1#LeaseOut',
+            ...(opts.priceValidUntil ? { priceValidUntil: opts.priceValidUntil } : {}),
             ...(u.availableOn ? { availabilityStarts: u.availableOn } : {}),
             ...(u.listingUrl ? { url: u.listingUrl } : {}),
             offeredBy: { '@id': COMPLEX_ID },
@@ -109,7 +122,9 @@ export function apartmentNode(
  */
 export function unitAvailabilityJsonLd(
   units: AvailableUnit[] | null = getBakedAvailability()?.units ?? null,
+  updatedAt: string | null = getBakedAvailability()?.updatedAt ?? null,
 ): Record<string, unknown> {
+  const priceValidUntil = updatedAt ? offerPriceValidUntil(updatedAt) : null;
   const graph: Record<string, unknown>[] = [
     // Re-open the property entity (crawlers merge nodes by @id) to attach the
     // floor-plan links; the full definition lives in the base page @graph.
@@ -120,7 +135,7 @@ export function unitAvailabilityJsonLd(
     },
     ...planGroups.map(floorPlanNode),
     // Explicit lambda: Array#map's index argument must not leak into `opts`.
-    ...(units ?? []).map((u) => apartmentNode(u)),
+    ...(units ?? []).map((u) => apartmentNode(u, { priceValidUntil })),
   ];
   return { '@context': 'https://schema.org', '@graph': graph };
 }

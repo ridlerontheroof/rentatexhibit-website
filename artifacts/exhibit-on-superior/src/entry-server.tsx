@@ -10,7 +10,7 @@ import { buildUnitSeoModel, unitPagePath } from './data/unitPageSeo';
 import { UnitDetail } from './pages/UnitDetail';
 import { floorPlansItemListJsonLd, planGroups } from './data/floorPlans';
 import { unitAvailabilityJsonLd } from './data/unitJsonLd';
-import { getBakedAvailability } from './data/availabilitySnapshot';
+import { getBakedAvailability, getBakedSnapshotStatus } from './data/availabilitySnapshot';
 import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
 import { photoGalleryJsonLd } from './data/gallery';
 import { virtualToursJsonLd, virtualTourVideoJsonLd } from './data/virtualTours';
@@ -25,6 +25,11 @@ export { LEGACY_REDIRECTS } from './data/legacyRedirects';
 // structured data on /available-units (see scripts/prerender.mjs).
 export const FLOOR_PLAN_COUNT = planGroups.length;
 export const BAKED_UNIT_COUNT = getBakedAvailability()?.units.length ?? 0;
+
+// 'fresh' | 'stale' | 'invalid' — the prerenderer fails the build on anything
+// but 'fresh', because a stale/invalid snapshot would silently drop every
+// per-unit page (and its sitemap entries) from the publish.
+export const BAKED_SNAPSHOT_STATUS = getBakedSnapshotStatus();
 
 // Per-unit pages: one prerendered route per baked available unit. The
 // prerenderer loops over these exactly like the static PAGE_SEO routes.
@@ -80,7 +85,10 @@ export async function render(pathname: string): Promise<RenderResult> {
         </Router>
       </QueryClientProvider>,
     );
-    return { html, head: renderHeadTags(buildUnitSeoModel(unit)) };
+    return {
+      html,
+      head: renderHeadTags(buildUnitSeoModel(unit, getBakedAvailability()?.updatedAt ?? null)),
+    };
   }
 
   const match = routes.find((r) => r.path === pathname);

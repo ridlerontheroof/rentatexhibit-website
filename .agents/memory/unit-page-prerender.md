@@ -13,3 +13,5 @@ Per-unit pages (`/available-units/<unit>`) are prerendered from the baked availa
 - All unit photos are external AppFolio URLs: every collage `<img>` must be `loading="lazy"` or React 19 SSR auto-emits a fixed-href image preload that fails the prerender guard.
 - Clean URLs rely on static-host directory resolution (bare path 301s to trailing slash); no artifact.toml rewrites per unit — verify in production after publish.
 - Route-chunk preload (routes.tsx) has a regex branch for unit paths keyed on `UNIT_DETAIL_ROUTE` — required to avoid the prerender-collapses-to-Suspense CLS trap.
+- The prerenderer FAILS the build unless the baked snapshot is fresh (entry-server exports `BAKED_SNAPSHOT_STATUS`); a stale/invalid snapshot would otherwise silently drop every unit page + sitemap entry. Never soften this back to a silent gate.
+- Prerendered unit facts can outlive a publish: bounded-trust mitigation is `priceValidUntil` (snapshot updatedAt + 7d) in the Offer nodes plus a visible "pricing as of" line on the page — keep both when touching unit SEO.

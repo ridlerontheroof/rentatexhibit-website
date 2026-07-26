@@ -94,7 +94,10 @@ export function UnitDetail() {
       {/* Indexable per-unit head: title/description/canonical/OG + Apartment/
           OfferForLease JSON-LD from the shared model — identical to what the
           prerenderer emits for this path (entry-server.tsx). */}
-      <Seo path={`/available-units/${unit.unit}`} model={buildUnitSeoModel(unit)} />
+      <Seo
+        path={`/available-units/${unit.unit}`}
+        model={buildUnitSeoModel(unit, data?.updatedAt ?? null)}
+      />
 
       <div className="container mx-auto px-4">
         <Link
@@ -116,6 +119,24 @@ export function UnitDetail() {
           </h1>
           <p className="mt-2 text-muted-foreground">{ADDRESS}</p>
           <p className="mt-5 text-base leading-relaxed text-foreground">{unitFactSummary(unit)}</p>
+          {/* Freshness disclosure: prerendered pricing can outlive a publish,
+              so state the data's own date — visitors, crawlers, and AI
+              assistants all see how current the quoted rent is. After
+              hydration this reflects the live feed's timestamp. */}
+          {data?.updatedAt && !Number.isNaN(Date.parse(data.updatedAt)) && (
+            <p className="mt-3 text-xs uppercase tracking-wider text-muted-foreground">
+              Pricing and availability as of{' '}
+              {new Date(data.updatedAt).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+              {' — '}
+              <Link href="/available-units" className="underline hover:text-primary">
+                see current availability
+              </Link>
+            </p>
+          )}
         </div>
 
         {/* Photo collage */}
@@ -130,10 +151,16 @@ export function UnitDetail() {
                 fixed-href image preload for any eager plain <img>, which the
                 prerender guard rejects (and these external AppFolio photos
                 can't go through SmartImg's manifest). */}
+            {/* width/height: AppFolio listing photos are landscape 3:2; the
+                intrinsic ratio hint lets the browser reserve space before the
+                image loads (no layout shift), while object-cover + the grid
+                classes control the displayed size. */}
             <img
               src={heroPhotos[0]}
               alt={`Apartment ${unit.unit} interior`}
               loading="lazy"
+              width={1170}
+              height={780}
               className="col-span-2 row-span-2 h-full max-h-[420px] w-full object-cover"
             />
             {heroPhotos.slice(1).map((p, i) => (
@@ -142,6 +169,8 @@ export function UnitDetail() {
                 src={p}
                 alt={`Apartment ${unit.unit} interior ${i + 2}`}
                 loading="lazy"
+                width={585}
+                height={390}
                 className="h-full max-h-[208px] w-full object-cover"
               />
             ))}

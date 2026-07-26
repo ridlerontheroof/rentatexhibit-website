@@ -15,6 +15,7 @@ import {
 import {
   apartmentNode,
   floorPlanNode,
+  offerPriceValidUntil,
   planGroupForUnitNumber,
 } from './unitJsonLd';
 import type { AvailableUnit } from '../hooks/use-availability';
@@ -107,7 +108,7 @@ export function unitDescription(u: AvailableUnit): string {
 }
 
 /** Apartment + OfferForLease JSON-LD @graph for one unit page (self-contained). */
-export function unitPageJsonLd(u: AvailableUnit): Record<string, unknown> {
+export function unitPageJsonLd(u: AvailableUnit, updatedAt?: string | null): Record<string, unknown> {
   const canonical = unitCanonical(u.unit);
   const group = planGroupForUnitNumber(u.unit);
   const title = unitTitle(u);
@@ -148,7 +149,14 @@ export function unitPageJsonLd(u: AvailableUnit): Record<string, unknown> {
     webPage,
     breadcrumb,
     ...(group ? [floorPlanNode(group)] : []),
-    apartmentNode(u, { id: `${canonical}#apartment`, url: canonical }),
+    apartmentNode(u, {
+      id: `${canonical}#apartment`,
+      url: canonical,
+      // Bound the quoted rent to the availability data's own age: prerendered
+      // prices can outlive a publish, and priceValidUntil tells engines how
+      // long the offer may be trusted before recrawling.
+      priceValidUntil: updatedAt ? offerPriceValidUntil(updatedAt) : null,
+    }),
   ];
   return { '@context': 'https://schema.org', '@graph': graph };
 }
@@ -158,7 +166,7 @@ export function unitPageJsonLd(u: AvailableUnit): Record<string, unknown> {
  * share image when posted (no fixed width/height claimed — AppFolio does not
  * publish dimensions); otherwise the floor-plans share card is reused.
  */
-export function buildUnitSeoModel(u: AvailableUnit): SeoModel {
+export function buildUnitSeoModel(u: AvailableUnit, updatedAt?: string | null): SeoModel {
   const title = unitTitle(u);
   const description = unitDescription(u);
   const canonical = unitCanonical(u.unit);
@@ -186,5 +194,5 @@ export function buildUnitSeoModel(u: AvailableUnit): SeoModel {
     { name: 'twitter:image', content: ogImage },
   ];
 
-  return { title, canonical, metas, jsonLd: [unitPageJsonLd(u)] };
+  return { title, canonical, metas, jsonLd: [unitPageJsonLd(u, updatedAt)] };
 }
