@@ -17,6 +17,11 @@
 //
 // Deterministic: same inputs always produce the same cards. Requires
 // ImageMagick (`magick`) and the DejaVu fonts (both present in the workspace).
+//
+// After regenerating cards with changed artwork, bump OG_CARD_VERSION in
+// src/data/seo.ts and run `node scripts/stamp-og-cards.mjs` — the freshness
+// guard (src/data/og-cards-freshness.test.ts) fails if card bytes change
+// without a matching version bump.
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { execFile } from 'node:child_process';

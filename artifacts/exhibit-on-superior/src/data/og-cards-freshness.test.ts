@@ -15,6 +15,10 @@ import os from 'node:os';
 
 // @ts-expect-error -- plain .mjs build script, no types
 import { CARDS } from '../../scripts/generate-og-cards.mjs';
+// @ts-expect-error -- plain .mjs helper, no types
+import { hashOgCards } from '../../scripts/lib/og-cards-hash.mjs';
+import { OG_CARD_VERSION } from './seo';
+import stamp from './og-cards-stamp.json';
 
 const run = promisify(execFile);
 const root = path.resolve(__dirname, '..', '..');
@@ -59,5 +63,36 @@ describe('OG share cards are regenerated from the current map', () => {
         `Fix by rerunning: node scripts/generate-og-cards.mjs ${stale.join(' ')}\n` +
         `then commit the updated public/images/og/*.jpg files.`,
     ).toEqual([]);
+  });
+});
+
+describe('OG_CARD_VERSION cache-buster moves with the card bytes', () => {
+  // Social scrapers (Facebook, LinkedIn, iMessage) cache og:image by URL for
+  // weeks. The cards ship under ?v=OG_CARD_VERSION, so any change to the
+  // committed og/*.jpg bytes MUST be accompanied by a version bump or the old
+  // artwork keeps being served. The stamp (src/data/og-cards-stamp.json,
+  // written by scripts/stamp-og-cards.mjs) ties a hash of the committed bytes
+  // to the version they shipped under; the stamp script itself refuses to
+  // restamp changed bytes without a version bump.
+
+  it('the stamped version matches OG_CARD_VERSION in seo.ts', () => {
+    expect(
+      stamp.ogCardVersion,
+      `og-cards-stamp.json is stamped at v${stamp.ogCardVersion} but seo.ts has ` +
+        `OG_CARD_VERSION=${OG_CARD_VERSION}. After bumping the version, rerun: ` +
+        `node scripts/stamp-og-cards.mjs`,
+    ).toBe(OG_CARD_VERSION);
+  });
+
+  it('the committed card bytes match the stamped hash', async () => {
+    const current = await hashOgCards(committedDir);
+    expect(
+      current,
+      `public/images/og/*.jpg bytes changed without a cache-buster bump — ` +
+        `social networks would keep showing the old artwork.\n` +
+        `Fix: bump OG_CARD_VERSION in src/data/seo.ts, run ` +
+        `node scripts/stamp-og-cards.mjs, and commit seo.ts + og-cards-stamp.json ` +
+        `together with the updated cards.`,
+    ).toBe(stamp.cardsHash);
   });
 });

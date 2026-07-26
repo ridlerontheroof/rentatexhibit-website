@@ -7,6 +7,6 @@ Rule: any test that asserts on `dist/public` contents (prerendered pages, `.br`/
 
 **Why:** completion validation executes `pnpm test` and `check:prepublish` in the same run; the rebuild deletes dist/public before rewriting it, so a snapshot check taken mid-rebuild fails spuriously (observed: `.br` sibling "missing" while the build was in flight).
 
-**How to apply:** in dist-dependent vitest suites, wait up to ~2 min for `dist/public/index.html.br` in `beforeAll` (non-fatal) and in any test that hard-asserts precompression; keep the hard assert so a genuinely dropped precompress step still fails.
+**How to apply:** in dist-dependent vitest suites, gate with `describe.skipIf(!existsSync(dist/public/index.html.br))` at module load (skip, don't fail; never poll in beforeAll — see dist-based-test-guards). The prerender head guards (titles/meta-descriptions) use this pattern. A missing `dist/seo-source-hash.txt` beside a COMPLETED build (`index.html.br` present) is still a real failure.
 
-Also applies to `dist/seo-source-hash.txt`: the titles/meta-descriptions stale-source guard must skip (not fail) when both the hash stamp and `index.html.br` are missing (rebuild in flight); a missing stamp beside a completed build is still a real failure.
+Related trap: the SEO source hash (`scripts/seo-source-hash.mjs`) fingerprints ALL non-test `.ts/.tsx/.json` under `src/data`. Adding any head-irrelevant data/stamp file there marks dist stale, forces the prepublish rebuild mid-validation, and triggers this race — add an explicit exclusion for files that don't affect head markup (like the availability snapshot and og-cards stamp).

@@ -49,7 +49,11 @@ export async function computeSeoSourceHash(artifactRoot) {
         // The availability snapshot is refetched by every build (its committed
         // copy intentionally lags); dist↔snapshot consistency has its own
         // prerender guard, so it must not poison this source fingerprint.
-        !f.endsWith('availabilitySnapshot.json'),
+        !f.endsWith('availabilitySnapshot.json') &&
+        // The og-cards stamp ties share-card BYTES to OG_CARD_VERSION (its own
+        // guard: og-cards-freshness.test.ts). It never affects head markup, so
+        // restamping cards must not mark dist/public stale and force a rebuild.
+        !f.endsWith('og-cards-stamp.json'),
     ),
     path.join(artifactRoot, 'src', 'entry-server.tsx'),
     path.join(artifactRoot, 'scripts', 'prerender.mjs'),
