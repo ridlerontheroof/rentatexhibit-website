@@ -20,6 +20,7 @@
     "check:server:built": "vitest run src/server/production-server.test.ts",
     "check:csp": "node scripts/check-csp-violations.mjs",
     "check:prepublish": "pnpm run build && pnpm run check:fold:built && pnpm run check:link-names && pnpm run check:server:built && pnpm run check:csp",
+    "check:perf": "node scripts/check-perf.mjs",
     "generate:unit-rewrites": "node scripts/generate-unit-rewrites.mjs",
     "generate:unit-rewrites:check": "node scripts/generate-unit-rewrites.mjs --check"
   },
@@ -74,6 +75,7 @@
     "framer-motion": "catalog:",
     "input-otp": "^1.4.2",
     "jsdom": "^29.1.1",
+    "lighthouse": "^13.4.1",
     "lucide-react": "catalog:",
     "next-themes": "^0.4.6",
     "react": "catalog:",

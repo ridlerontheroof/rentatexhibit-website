@@ -44,4 +44,5 @@
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.
 - [Alert-email inbox verification](alert-email-inbox-verification.md) — leasingexhibit@ is IMAP-readable with the same app password; bodies are base64 MIME; claim rows prove send timing.
 - [Sitemap lastmod content-hash map](sitemap-lastmod-map.md) — lastmod comes from a committed twin-hash→date map, not build date; map is seo-source-hash-excluded; sitemap gen must stay after twins.
+- [Perf lab suite (check:perf)](perf-lab-suite.md) — Lighthouse vs dist via vite preview; calibrated per-page thresholds; run long checks as workflows, not nohup (ShellExec /tmp+bg isolated).
 - [Lead-form bot guard](lead-form-bot-guard.md) — honeypot+fill-time checked server-side before any side effect; showing fallback must never fire on a 400 rejection.

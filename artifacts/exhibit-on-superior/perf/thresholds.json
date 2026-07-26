@@ -1,0 +1,41 @@
+{
+  "note": "Calibrated per-page limits (measured * 1.25 headroom) for pages that currently exceed the aspirational Core Web Vitals targets. Tighten/remove entries as pages improve. Regenerate with `node scripts/check-perf.mjs --calibrate`.",
+  "calibratedAt": "2026-07-26T23:15:14.389Z",
+  "aspirational": {
+    "lcpMs": 2500,
+    "cls": 0.1,
+    "tbtMs": 200
+  },
+  "overrides": {
+    "mobile /": {
+      "lcpMs": 5300
+    },
+    "mobile /available-units": {
+      "lcpMs": 6300
+    },
+    "mobile /available-units/0208": {
+      "lcpMs": 7200
+    },
+    "mobile /available-units/2705": {
+      "lcpMs": 7000
+    },
+    "mobile /amenities": {
+      "lcpMs": 7000
+    },
+    "mobile /photo-gallery": {
+      "lcpMs": 6400
+    },
+    "mobile /virtual-tour": {
+      "lcpMs": 5900
+    },
+    "mobile /knowledge": {
+      "lcpMs": 7000
+    },
+    "mobile /knowledge/application-fee": {
+      "lcpMs": 5700
+    },
+    "mobile /contact-us": {
+      "lcpMs": 6200
+    }
+  }
+}
