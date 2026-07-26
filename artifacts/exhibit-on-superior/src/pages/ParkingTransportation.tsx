@@ -83,7 +83,7 @@ export function ParkingTransportation() {
                 </ul>
                 <ul className="mt-4 space-y-3">
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>On-site garage</strong> &mdash; indoor, attached multi-level garage; unreserved spaces are <strong>$335/month</strong>, subject to availability</span></li>
-                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>EV charging</strong> &mdash; 3 UVBOX Level 2 charging stations serving 6 designated alternative-fuel/EV spaces; charging costs are set and billed directly by UVBOX</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>EV charging</strong> &mdash; 3 EVBOX level-2 charging stations on the second garage level, each with 2 reserved EV spaces (6 total); pricing and subscriptions managed by EVBOX</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Guest / visitor parking</strong> &mdash; not offered in the garage; metered street parking is available on both sides of W Superior St in front of the building, and SpotHero lots are nearby</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Bike storage</strong> &mdash; complimentary, on the ground floor</span></li>
                 </ul>

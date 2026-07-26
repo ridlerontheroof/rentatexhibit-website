@@ -339,7 +339,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Is there EV charging?',
-        a: 'Yes. The garage has 3 UVBOX Level 2 charging stations serving 6 designated alternative-fuel/EV parking spaces. Charging costs are set and billed directly by UVBOX.',
+        a: 'Yes. The garage has 3 EVBOX level-2 charging stations on the second garage level, each with 2 reserved EV spaces (6 total). Pricing and subscriptions are managed by EVBOX.',
       },
       {
         q: 'Is there guest parking?',

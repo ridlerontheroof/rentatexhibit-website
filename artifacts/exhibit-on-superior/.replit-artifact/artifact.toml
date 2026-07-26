@@ -879,6 +879,14 @@ to = "/knowledge/accessibility-contact/index.html"
 from = "/knowledge/accessibility-contact/"
 to = "/knowledge/accessibility-contact/index.html"
 
+[[services.production.rewrites]]
+from = "/knowledge/smoking-policy"
+to = "/knowledge/smoking-policy/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/smoking-policy/"
+to = "/knowledge/smoking-policy/index.html"
+
 # Per-unit listing pages (/available-units/<unit>): one prerendered directory
 # per unit in the baked availability snapshot. The production static host does
 # NOT resolve directory indexes for unmatched paths (verified live 2026-07-26:

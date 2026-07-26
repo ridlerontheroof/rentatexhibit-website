@@ -86,7 +86,7 @@ engines that reward specific facts).
 
 **3. EV charging: available? how many chargers? cost?**
    - Visitors currently see: “(site copy defers all parking details)” _(Parking & Transportation page)_
-   - Answer: The garage has 3 EV charging stations serving 6 designated alternative-fuel/EV parking spaces.
+   - Answer: The garage has 3 EVBOX level-2 charging stations on the second garage level, each with 2 reserved EV spaces (6 total). Pricing and subscriptions are managed by EVBOX.
 
    `________________________________________________________________`
 

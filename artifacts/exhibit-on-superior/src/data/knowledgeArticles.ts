@@ -734,7 +734,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         heading: 'What the garage includes',
         paragraphs: [
           'The garage is indoor and attached to the building, so you never cross the street in Chicago weather. Spaces are unreserved and rented month to month alongside your lease.',
-          'The garage also has 3 EV charging stations serving 6 designated alternative-fuel/EV spaces, and complimentary bike storage is available on the ground floor.',
+          'The garage also has 3 EVBOX level-2 charging stations on the second level with 6 reserved EV spaces, and complimentary bike storage is available on the ground floor.',
         ],
       },
       {
@@ -756,12 +756,12 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'Does Exhibit On Superior have EV charging?',
     category: 'Parking & Transportation',
     answer:
-      'Yes. The attached indoor garage at Exhibit On Superior has 3 UVBOX Level 2 charging stations serving 6 designated alternative-fuel/EV parking spaces. Charging costs are set and billed directly by UVBOX, separate from the $335/month garage parking fee. For charger locations and current garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+      'Yes. The attached indoor garage at Exhibit On Superior has three level-2 EV charging stations on the second garage level, each with two reserved EV parking spaces (six spaces total). The stations are operated by EVBOX; for pricing and subscription details visit the EVBOX website. Standard unreserved garage parking is $335 per month.',
     sections: [
       {
         paragraphs: [
-          'Three UVBOX Level 2 charging stations serve six EV/alternative-fuel spaces in the multi-level garage. Level 2 chargers typically deliver 10–30 miles of range per hour of charging.',
-          'Charging costs are managed by UVBOX and billed through their platform, separate from your monthly garage parking fee.',
+          'The three EVBOX level-2 stations are located on the second level of the garage, each serving two dedicated EV spaces. All six spaces are reserved for EV charging use.',
+          'For current pricing and subscription options, visit the EVBOX website.',
         ],
       },
     ],
@@ -1347,7 +1347,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         paragraphs: [
           'With 298 residences over 34 floors, the tower offers a wide mix of floor plans and skyline outlooks.',
-          'More than 20% of the homes are ADA accessible; contact the leasing office for specific accessible plans.',
+          'More than 20% of the homes are ADA accessible, spanning Type A (accessible/adaptable) and Type AC (with conduit line) floor plans.',
         ],
       },
     ],
@@ -1499,6 +1499,26 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     links: [
       { label: 'Contact Us', href: '/contact-us' },
       { label: 'Apartment Guide', href: '/apartment-guide' },
+    ],
+  },
+  {
+    slug: 'smoking-policy',
+    question: 'Is Exhibit On Superior a smoke-free building?',
+    category: 'Building & Services',
+    answer:
+      'Yes. Exhibit On Superior is a completely smoke-free property. The policy covers all residential units, indoor and outdoor amenity spaces, and common areas throughout the building. For questions about the smoking policy, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+    sections: [
+      {
+        paragraphs: [
+          'The no-smoking policy applies to all parts of the building — every apartment, amenity floor, outdoor deck, and shared common area. There are no designated smoking areas on the premises.',
+          'For questions about the policy or other building rules, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+        ],
+      },
+    ],
+    related: ['full-amenity-list', 'front-desk-hours', 'who-manages-exhibit'],
+    links: [
+      { label: 'Contact Us', href: '/contact-us' },
+      { label: 'Amenities', href: '/amenities' },
     ],
   },
 ];
