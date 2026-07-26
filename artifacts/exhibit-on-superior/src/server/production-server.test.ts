@@ -7,8 +7,13 @@
 // negotiation, and traversal rejection — the things previously verified
 // only with manual curl.
 //
-// Skips gracefully when dist/public has no build output (fresh clone /
-// pre-build), like the other build-output guards.
+// Skips gracefully when dist/public has no COMPLETE build output — either no
+// index.html (fresh clone / pre-build) or no precompressed index.html.br
+// sibling (partial/foreign dist copy, or a rebuild in flight that wiped
+// dist/public; precompress runs LAST in the build chain, so its presence
+// marks a finished build). Polling for the sibling inside beforeAll was
+// removed: it could wait up to 120s against a 30s hook timeout and fail the
+// whole suite in environments where the build legitimately isn't complete.
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { spawn, type ChildProcess } from 'node:child_process';
@@ -20,7 +25,10 @@ const root = path.resolve(__dirname, '..', '..');
 const publicDir = path.join(root, 'dist', 'public');
 const serverPath = path.join(root, 'server', 'index.mjs');
 
-const hasBuild = fs.existsSync(path.join(publicDir, 'index.html'));
+const hasIndexHtml = fs.existsSync(path.join(publicDir, 'index.html'));
+// Precompress runs last in the build chain, so index.html.br marks a
+// complete, settled build — anything less is skipped, not failed.
+const hasBuild = hasIndexHtml && fs.existsSync(path.join(publicDir, 'index.html.br'));
 
 /** Pick a real prerendered slug from a dist directory so tests never go stale. */
 function firstPrerenderedChild(dir: string, exclude: string[] = []): string | null {
@@ -70,14 +78,6 @@ function get(pathname: string, headers: Record<string, string> = {}) {
 
 describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/public', () => {
   beforeAll(async () => {
-    // If a rebuild is in flight (CI runs this suite concurrently with the
-    // prepublish build, which wipes dist/public first), wait for the final
-    // build step's output so routes/siblings aren't asserted mid-rebuild.
-    // Non-fatal: the dedicated .br test still fails if precompress vanished.
-    const deadline = Date.now() + 120000;
-    while (!fs.existsSync(path.join(publicDir, 'index.html.br')) && Date.now() < deadline) {
-      await new Promise((r) => setTimeout(r, 1000));
-    }
     const port = await freePort();
     base = `http://127.0.0.1:${port}`;
     child = spawn(process.execPath, [serverPath], {
@@ -235,35 +235,21 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
   // -------------------------------------------------------------------------
   // Compression negotiation
   //
-  // The precompress step runs LAST in the build chain, and CI may run this
-  // suite concurrently with a rebuild (which wipes dist/public first). Poll
-  // for the sibling instead of asserting a point-in-time snapshot so a
-  // mid-rebuild race doesn't produce a false failure — a build that truly
-  // dropped the precompress step still fails after the polling window.
+  // The suite only runs when dist/public/index.html.br exists (see hasBuild),
+  // so the .br sibling is guaranteed here — no polling needed.
   // -------------------------------------------------------------------------
-  const brSibling = path.join(publicDir, 'index.html.br');
-  async function waitForBrotliSibling(timeoutMs = 120000): Promise<boolean> {
-    const deadline = Date.now() + timeoutMs;
-    while (Date.now() < deadline) {
-      if (fs.existsSync(brSibling)) return true;
-      await new Promise((r) => setTimeout(r, 1000));
-    }
-    return false;
-  }
-
-  it('build output includes pre-compressed .br siblings for HTML', async () => {
+  it('build output includes pre-compressed .br siblings for HTML', () => {
     expect(
-      await waitForBrotliSibling(),
+      fs.existsSync(path.join(publicDir, 'index.html.br')),
       'dist/public/index.html.br missing — precompress step did not run in the build',
     ).toBe(true);
-  }, 130000);
+  });
 
-  it('serves brotli when the client accepts br', async (ctx) => {
-    if (!(await waitForBrotliSibling())) return ctx.skip();
+  it('serves brotli when the client accepts br', async () => {
     const res = await get('/', { 'accept-encoding': 'br' });
     expect(res.headers.get('content-encoding')).toBe('br');
     expect(res.headers.get('vary')).toContain('Accept-Encoding');
-  }, 130000);
+  });
 
   it('serves gzip when the client accepts only gzip', async (ctx) => {
     if (!fs.existsSync(path.join(publicDir, 'index.html.gz'))) return ctx.skip();
@@ -323,7 +309,10 @@ describe('production server guard preconditions', () => {
   it('server entrypoint exists', () => {
     expect(fs.existsSync(serverPath)).toBe(true);
   });
-  it.skipIf(hasBuild)('skipped: dist/public has no build output (run the build to enable the guard)', () => {
-    expect(hasBuild).toBe(false);
-  });
+  it.skipIf(hasBuild)(
+    'skipped: dist/public has no complete build output incl. precompressed siblings (run the build to enable the guard)',
+    () => {
+      expect(hasBuild).toBe(false);
+    },
+  );
 });

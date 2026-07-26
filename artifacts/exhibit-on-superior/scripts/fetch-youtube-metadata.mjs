@@ -11,9 +11,13 @@
 // picks up units with new tour videos. Units whose video id is missing from
 // the cache simply ship without a VideoObject node (never a build failure).
 //
-// Usage: node scripts/fetch-youtube-metadata.mjs
+// Usage:
+//   node scripts/fetch-youtube-metadata.mjs                  # full refresh (fatal on any failure)
+//   node scripts/fetch-youtube-metadata.mjs --missing-only   # only fetch ids absent from the cache,
+//                                                            # keep existing entries, never fail
+//                                                            # (used by fetch-availability-snapshot.mjs)
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -45,6 +49,8 @@ function videoId(url) {
   return null;
 }
 
+const missingOnly = process.argv.includes('--missing-only');
+
 const snapshot = JSON.parse(readFileSync(SNAPSHOT, 'utf8'));
 const units = Array.isArray(snapshot) ? snapshot : snapshot.units;
 const ids = new Map(); // id -> canonical watch URL
@@ -55,7 +61,23 @@ for (const u of units) {
 }
 if (ids.size === 0) {
   console.error('No YouTube video URLs found in the availability snapshot.');
-  process.exit(1);
+  process.exit(missingOnly ? 0 : 1);
+}
+
+// In --missing-only mode, keep every existing cache entry (even for ids no
+// longer in the snapshot — a full refresh prunes those) and only fetch ids
+// the cache doesn't know about yet. Nothing to do → don't rewrite the file,
+// so fetchedAt doesn't churn on every snapshot refresh.
+const existing =
+  missingOnly && existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : { videos: {} };
+if (missingOnly) {
+  for (const id of ids.keys()) {
+    if (existing.videos?.[id]) ids.delete(id);
+  }
+  if (ids.size === 0) {
+    console.log('YouTube metadata cache already covers all snapshot videos; nothing to fetch.');
+    process.exit(0);
+  }
 }
 
 const UA =
@@ -101,17 +123,26 @@ async function fetchVideo(id, watchUrl) {
   };
 }
 
-const videos = {};
+const videos = missingOnly ? { ...existing.videos } : {};
+let fetched = 0;
 for (const [id, watchUrl] of [...ids.entries()].sort()) {
   try {
     videos[id] = await fetchVideo(id, watchUrl);
+    fetched += 1;
     console.log(`ok ${id}: ${videos[id].title} (${videos[id].uploadDate})`);
   } catch (err) {
-    console.error(`FAILED ${id}: ${err.message}`);
-    process.exitCode = 1;
+    console.error(`${missingOnly ? 'WARN' : 'FAILED'} ${id}: ${err.message}`);
+    if (!missingOnly) process.exitCode = 1;
   }
 }
 if (process.exitCode) process.exit(process.exitCode);
+// --missing-only: if every fetch failed (e.g. YouTube unreachable), keep the
+// committed cache untouched and exit 0 — pages for the new video ship without
+// a VideoObject node until the next refresh, never a broken build.
+if (missingOnly && fetched === 0) {
+  console.warn('WARN no new YouTube metadata could be fetched; keeping the existing cache.');
+  process.exit(0);
+}
 
 const cached = { fetchedAt: new Date().toISOString(), videos };
 writeFileSync(OUT, JSON.stringify(cached, null, 2) + '\n');

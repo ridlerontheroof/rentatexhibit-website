@@ -44,6 +44,26 @@ try {
     [path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'generate-unit-rewrites.mjs')],
     { stdio: 'inherit' },
   );
+  // A refreshed snapshot may introduce units with NEW tour videos. Top up the
+  // committed YouTube metadata cache for any ids it doesn't cover yet so those
+  // pages get VideoObject structured data without a manual step. Non-fatal by
+  // design (like this snapshot fetch): --missing-only never fails the build,
+  // and a total failure here shouldn't discard the snapshot we just wrote.
+  try {
+    execFileSync(
+      process.execPath,
+      [
+        path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'fetch-youtube-metadata.mjs'),
+        '--missing-only',
+      ],
+      { stdio: 'inherit' },
+    );
+  } catch (ytErr) {
+    console.warn(
+      `WARN YouTube metadata top-up failed (${ytErr?.message ?? ytErr}); ` +
+        'new tour videos will ship without VideoObject data until the next refresh.',
+    );
+  }
 } catch (err) {
   console.warn(
     `WARN availability snapshot refresh failed (${err?.message ?? err}); ` +
