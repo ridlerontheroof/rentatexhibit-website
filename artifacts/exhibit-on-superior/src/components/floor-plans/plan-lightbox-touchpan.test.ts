@@ -160,6 +160,78 @@ describe('PlanLightbox one-finger touch pan tap suppression', () => {
   });
 });
 
+describe('PlanLightbox pinch ending with both fingers lifting at once', () => {
+  it('keeps the zoom level, settles inside pan bounds, and never registers as a tap', () => {
+    const { img, viewer } = renderLightbox();
+
+    // Two-finger pinch out from fit: symmetric spread around the centre → 2x.
+    fireEvent.touchStart(viewer, {
+      touches: [touch(400, 400), touch(600, 400)],
+      changedTouches: [touch(400, 400), touch(600, 400)],
+    });
+    act(() => {
+      fireEvent.touchMove(viewer, {
+        touches: [touch(300, 400), touch(700, 400)],
+        changedTouches: [touch(300, 400), touch(700, 400)],
+      });
+    });
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
+
+    // Both fingers lift in a single touchend while gesture mode is still 'pinch'.
+    act(() => {
+      fireEvent.touchEnd(viewer, {
+        touches: [],
+        changedTouches: [touch(300, 400), touch(700, 400)],
+      });
+    });
+
+    // Zoom is kept and settled inside the hard pan bounds — no snap back to fit.
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
+
+    // The final lift must not have scheduled the single-tap timer, so the
+    // coarse scroll-zoom mode (width 160%) must not engage later.
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    expect(img.style.width).not.toBe('160%');
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(2)');
+  });
+
+  it('a pinch ending near fit (scale <= 1.05) snaps cleanly back to fit', () => {
+    const { img, viewer } = renderLightbox();
+
+    // Slight pinch out: distance 200 → 205 gives scale 1.025 (within the
+    // 1.05 near-fit threshold).
+    fireEvent.touchStart(viewer, {
+      touches: [touch(400, 400), touch(600, 400)],
+      changedTouches: [touch(400, 400), touch(600, 400)],
+    });
+    act(() => {
+      fireEvent.touchMove(viewer, {
+        touches: [touch(397.5, 400), touch(602.5, 400)],
+        changedTouches: [touch(397.5, 400), touch(602.5, 400)],
+      });
+    });
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(1.025)');
+
+    // Both fingers lift at once: near-fit snaps back to scale 1, no translation.
+    act(() => {
+      fireEvent.touchEnd(viewer, {
+        touches: [],
+        changedTouches: [touch(397.5, 400), touch(602.5, 400)],
+      });
+    });
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(1)');
+
+    // And no tap toggle afterwards either.
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    expect(img.style.width).not.toBe('160%');
+    expect(img.style.transform).toBe('translate(0px, 0px) scale(1)');
+  });
+});
+
 describe('PlanLightbox pinch → pan handoff', () => {
   it('lifting one finger after a pinch continues panning from the re-baselined start and the final lift is not a tap', () => {
     const { img, viewer } = renderLightbox();
