@@ -29,6 +29,23 @@ describe('knowledge center content rules', () => {
     }
   });
 
+  it('every article carries at least 300 words of core content (thin-content floor)', () => {
+    // The 2026-07-26 squirrelscan audit flagged ~70 /knowledge pages under
+    // 300 words as thin content. Core content = question + answer + section
+    // headings/paragraphs (the page adds byline/related/links on top), so a
+    // 300-word core keeps the rendered page comfortably above the floor.
+    for (const a of KNOWLEDGE_ARTICLES) {
+      let words = wordCount(a.question) + wordCount(a.answer);
+      for (const s of a.sections) {
+        if (s.heading) words += wordCount(s.heading);
+        for (const p of s.paragraphs) words += wordCount(p);
+      }
+      expect(words, `${a.slug} core content is ${words} words (<300 = thin)`).toBeGreaterThanOrEqual(
+        300,
+      );
+    }
+  });
+
   it('slugs are unique and URL-safe', () => {
     const slugs = KNOWLEDGE_ARTICLES.map((a) => a.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
