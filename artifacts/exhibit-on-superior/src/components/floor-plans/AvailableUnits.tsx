@@ -325,30 +325,19 @@ export function AvailableUnits() {
                       const applyUrl = (u.listingUrl && applyUrlForListing(u.listingUrl)) || APPLY_URL;
                       return (
                         <>
-                          {tourUrl ? (
-                            <a
-                              href={tourUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() =>
-                                trackOutboundClick('tour', tourUrl, 'floor_plans_available_units', {
-                                  floorPlan: u.unit,
-                                })
-                              }
-                              aria-label={`Schedule a tour of apartment ${u.unit}`}
-                              className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
-                            >
-                              Schedule a tour
-                            </a>
-                          ) : (
-                            <Link
-                              href={`/schedule-a-tour?unit=${u.unit}`}
-                              aria-label={`Schedule a tour of apartment ${u.unit}`}
-                              className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
-                            >
-                              Schedule a tour
-                            </Link>
-                          )}
+                          {/* Posted units book through the on-site scheduler
+                              (Exhibit-branded, real AppFolio showing times). */}
+                          <Link
+                            href={
+                              tourUrl
+                                ? `/schedule-showing?unit=${u.unit}`
+                                : `/schedule-a-tour?unit=${u.unit}`
+                            }
+                            aria-label={`Schedule a tour of apartment ${u.unit}`}
+                            className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
+                          >
+                            Schedule a tour
+                          </Link>
                           <a
                             href={applyUrl}
                             target="_blank"

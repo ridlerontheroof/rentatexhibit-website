@@ -298,26 +298,19 @@ export function UnitDetail() {
           >
             Apply now
           </a>
-          {tourUrl ? (
-            <a
-              href={tourUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() =>
-                trackOutboundClick('tour', tourUrl, 'unit_detail', { floorPlan: unit.unit })
-              }
-              className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
-            >
-              Schedule a tour
-            </a>
-          ) : (
-            <Link
-              href={`/schedule-a-tour?unit=${unit.unit}`}
-              className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
-            >
-              Schedule a tour
-            </Link>
-          )}
+          {/* Posted listings book through the Exhibit-branded scheduler
+              (real AppFolio showing times, no external hop); unposted units
+              fall back to the general tour-request form. */}
+          <Link
+            href={
+              tourUrl
+                ? `/schedule-showing?unit=${unit.unit}`
+                : `/schedule-a-tour?unit=${unit.unit}`
+            }
+            className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
+          >
+            Schedule a tour
+          </Link>
         </div>
 
         {/* Marketing story — centered content column (facts live in the
@@ -415,7 +408,12 @@ export function UnitDetail() {
               { href: '/fees', label: 'Fees, utilities & leasing costs' },
               { href: '/parking-transportation', label: 'Parking & transportation' },
               { href: '/pet-friendly', label: 'Pet policy' },
-              { href: `/schedule-a-tour?unit=${unit.unit}`, label: `Schedule a tour of Apt ${unit.unit}` },
+              {
+                href: tourUrl
+                  ? `/schedule-showing?unit=${unit.unit}`
+                  : `/schedule-a-tour?unit=${unit.unit}`,
+                label: `Schedule a tour of Apt ${unit.unit}`,
+              },
             ].map((l) => (
               <li key={l.href}>
                 <Link

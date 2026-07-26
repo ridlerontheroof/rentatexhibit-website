@@ -12,7 +12,8 @@
 - [Recovering larger originals via Cloudinary](cloudinary-source-recovery.md) — WXR files in the migration bundle hold Cloudinary URLs; bump the h_400,w_400 transform to fetch sharp same-crop originals.
 - [Image sources live in images-src/](image-source-relocation.md) — originals aren't in public/images; manifest keys are lookup keys, not shipped files; new photos go in images-src/.
 - [AppFolio guest-card lead push](appfolio-guest-cards.md) — tour leads become AppFolio prospects via the public listings guest_cards endpoint; resolve unit→listableUid server-side only.
-- [AppFolio availability integration](appfolio-availability.md) — unit_vacancy Reports API feeds /availability; AppFolio blocks ALL workspace egress, verify only from production.
+- [AppFolio availability integration](appfolio-availability.md) — unit_vacancy Reports API feeds /availability; egress note is stale — AppFolio was reachable from the workspace on 2026-07-26.
+- [AppFolio showing scheduler](appfolio-showing-scheduler.md) — /schedule-showing books real showings via api-server proxies; camelCase guest card + X-JWT header, snake_case availabilities/booking, mandatory lead+hosted-URL fallback.
 - [Headless Chromium PDF printing](fact-sheet-pdf-headless.md) — nix store ships playwright-browsers chromium; CLI `--print-to-pdf` works with no library; fact-sheet PDF reprints itself.
 - [OG share-card generation](og-card-recipe.md) — share cards are script-generated from a page→photo/tagline map; edit the map + rerun, never hand-run ImageMagick.
 - [Matterport signed asset URLs expire in CDN cache](matterport-signed-urls.md) — player-models `image` URLs can be stale-signed (410 content.gone); cache-bust the API call for fresh URLs.

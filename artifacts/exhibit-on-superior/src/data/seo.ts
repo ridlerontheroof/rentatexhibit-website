@@ -529,6 +529,19 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
     ],
   },
+  '/schedule-showing': {
+    path: '/schedule-showing',
+    label: 'Schedule a Showing',
+    title: 'Schedule a Showing | Exhibit On Superior',
+    description:
+      'Book an in-person showing of an available apartment at Exhibit On Superior in River North Chicago — pick a real time on the leasing calendar.',
+    quickAnswer:
+      'Pick an available apartment, share your contact details, and choose a real open time on the leasing calendar to book an in-person showing at Exhibit On Superior.',
+    faqs: [],
+    // Transactional per-visit booking page; the indexable tour entry point is
+    // /schedule-a-tour.
+    noindex: true,
+  },
   '/privacy-policy': {
     path: '/privacy-policy',
     label: 'Privacy Policy',

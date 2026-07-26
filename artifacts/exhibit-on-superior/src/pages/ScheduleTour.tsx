@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Seo } from '../components/Seo';
-import { trackLead, trackOutboundClick } from '../lib/analytics';
+import { trackLead } from '../lib/analytics';
 import { tourUrlForListing } from '../components/floor-plans/UnitGalleryLightbox';
 import { formatRent, groupForUnit } from '../components/floor-plans/AvailableUnits';
 import { QuickAnswer } from '../components/QuickAnswer';
@@ -156,20 +156,13 @@ export function ScheduleTour() {
                           View details
                         </Link>
                         {tourUrl ? (
-                          <a
-                            href={tourUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() =>
-                              trackOutboundClick('tour', tourUrl, 'schedule_tour_page', {
-                                floorPlan: u.unit,
-                              })
-                            }
+                          <Link
+                            href={`/schedule-showing?unit=${u.unit}`}
                             aria-label={`Schedule a tour of apartment ${u.unit}`}
                             className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                           >
                             Schedule a tour
-                          </a>
+                          </Link>
                         ) : (
                           <a
                             href="#request-a-showing"

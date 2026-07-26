@@ -136,6 +136,14 @@ from = "/residents/"
 to = "/residents/index.html"
 
 [[services.production.rewrites]]
+from = "/schedule-showing"
+to = "/schedule-showing/index.html"
+
+[[services.production.rewrites]]
+from = "/schedule-showing/"
+to = "/schedule-showing/index.html"
+
+[[services.production.rewrites]]
 from = "/schedule-a-tour"
 to = "/schedule-a-tour/index.html"
 
