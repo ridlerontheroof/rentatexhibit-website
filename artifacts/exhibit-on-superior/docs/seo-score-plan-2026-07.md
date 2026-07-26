@@ -36,8 +36,17 @@ Current category scores and the ceiling holding each one down:
 > canonicals; unknown paths get a prerendered noindex 404 page with status
 > 404 (`/knowledge/*` keeps its stub; `/sitemaps.xml` now 404s). The server
 > parses the artifact.toml rewrite table at startup so routing cannot drift
-> from the guarded config. Re-run the full squirrel audit after the next
-> publish and record scores in `seo-audit-2026-07-26.md`.
+> from the guarded config.
+>
+> **Update (2026-07-26, post-publish): verified live.** Overall 58→69;
+> Crawlability 48→94, Core SEO 79→95, Links 80→85, Performance 40→52,
+> Security 46→48 (details in `seo-audit-2026-07-26.md`). The scanner ignores
+> Report-Only CSP, so the CSP allowlist was verified in-browser (only Google
+> Maps needed additions: Google fonts + mapsresources-pa endpoint),
+> `CSP_ENFORCE=1` is set in the production deployment env, and the server now
+> sends ETag/Last-Modified + 304s (was the last `perf/bad-caching` failure).
+> Both land with the next publish. Remaining Performance ceiling is Phase 2
+> (bundle size, image weight, LCP hints).
 
 Every "platform-served, not configurable" deferral — compression, caching,
 security headers, soft 404s, trailing-slash redirect direction — has a single

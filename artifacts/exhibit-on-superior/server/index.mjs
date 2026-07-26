@@ -68,13 +68,14 @@ const CSP = [
   // 'unsafe-inline' is required by the GTM bootstrap + availability-prefetch
   // inline scripts in the prerendered head.
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com",
-  "style-src 'self' 'unsafe-inline'",
-  "font-src 'self' data:",
+  // Google Maps JS injects its own stylesheet + font loads at runtime.
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
   // Photography is served from the AppFolio CDN, tour thumbnails from
   // Matterport/Vimeo CDNs, map tiles from gstatic — https: keeps this robust.
   "img-src 'self' data: https:",
   "media-src 'self' https:",
-  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://maps.googleapis.com https://my.matterport.com",
+  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com",
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://my.matterport.com https://www.google.com https://maps.google.com https://www.googletagmanager.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
@@ -137,7 +138,24 @@ function serveFile(req, res, filePath, status = 200, urlPathForCache = null) {
       res.set('Content-Encoding', 'gzip');
     }
   }
-  res.set('Content-Length', String(fs.statSync(finalPath).size));
+  const stat = fs.statSync(finalPath);
+  // Conditional-request validators (perf/bad-caching): weak ETag from
+  // size+mtime plus Last-Modified, honouring If-None-Match / If-Modified-Since.
+  const etag = `W/"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
+  res.set('ETag', etag);
+  res.set('Last-Modified', stat.mtime.toUTCString());
+  if (status === 200) {
+    const inm = req.headers['if-none-match'];
+    const ims = req.headers['if-modified-since'];
+    const etagMatch = inm && inm.split(',').map((s) => s.trim()).includes(etag);
+    const timeMatch = !inm && ims && Math.floor(stat.mtimeMs / 1000) <= Math.floor(Date.parse(ims) / 1000);
+    if (etagMatch || timeMatch) {
+      res.removeHeader('Content-Encoding');
+      res.removeHeader('Content-Length');
+      return res.status(304).end();
+    }
+  }
+  res.set('Content-Length', String(stat.size));
   if (req.method === 'HEAD') return res.end();
   fs.createReadStream(finalPath).pipe(res);
 }
