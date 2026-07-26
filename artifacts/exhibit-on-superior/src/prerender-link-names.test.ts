@@ -21,42 +21,10 @@ import { beforeAll, describe, expect, it } from 'vitest';
 //     label so "click <visible text>" works);
 //   - icon-only elements (no visible text) always pass.
 
+import { spokenWords, visibleTextFromHtml } from './lib/link-name-lint';
+
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.resolve(here, '..', 'dist', 'public');
-
-/** Decode the handful of HTML entities React escapes in attributes/text. */
-function decode(s: string): string {
-  return s
-    .replaceAll('&quot;', '"')
-    .replaceAll('&#39;', "'")
-    .replaceAll('&#x27;', "'")
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&amp;', '&')
-    .replaceAll('<!-- -->', '');
-}
-
-/**
- * Reduce a string to the words a speech-input user would say: decoded,
- * lowercased, symbols (arrows, bullets, punctuation) dropped, whitespace
- * collapsed. Keeps letters, digits and spaces only.
- */
-function spokenWords(s: string): string {
-  return decode(s)
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-/** Visible text of an element's inner HTML: strip sr-only spans, then tags. */
-function visibleText(inner: string): string {
-  return spokenWords(
-    inner
-      .replace(/<span[^>]*class="[^"]*sr-only[^"]*"[^>]*>.*?<\/span>/gs, ' ')
-      .replace(/<[^>]+>/g, ' '),
-  );
-}
 
 interface Offender {
   page: string;
@@ -77,7 +45,7 @@ function offendersIn(page: string, html: string): Offender[] {
     const labelMatch = attrs.match(/aria-label="([^"]*)"/i);
     if (!labelMatch) continue;
     const label = spokenWords(labelMatch[1]);
-    const visible = visibleText(m[3]);
+    const visible = visibleTextFromHtml(m[3]);
     if (!visible) continue; // icon-only — nothing visible to mismatch
     if (label.startsWith(visible)) continue;
     out.push({
