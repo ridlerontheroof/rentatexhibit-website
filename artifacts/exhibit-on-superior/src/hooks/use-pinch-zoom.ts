@@ -115,6 +115,16 @@ export function usePinchZoom(options: UsePinchZoomOptions = {}) {
     startTy: number;
     startMidX: number;
     startMidY: number;
+    /**
+     * The image's untransformed centre (screen px), captured at pinch start.
+     * This is the coordinate origin the translate/scale transform is applied
+     * around (transform-origin: center center), so the anchor math must use
+     * it — the viewer's rect centre can differ from it (e.g. the floor-plan
+     * lightbox's padded, flex-centred layout), which made the image drift
+     * sideways instead of staying under the fingers.
+     */
+    originX: number;
+    originY: number;
     panStartX: number;
     panStartY: number;
   }>({
@@ -125,6 +135,8 @@ export function usePinchZoom(options: UsePinchZoomOptions = {}) {
     startTy: 0,
     startMidX: 0,
     startMidY: 0,
+    originX: 0,
+    originY: 0,
     panStartX: 0,
     panStartY: 0,
   });
@@ -312,6 +324,19 @@ export function usePinchZoom(options: UsePinchZoomOptions = {}) {
       g.startTy = pinch.ty;
       g.startMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
       g.startMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      // Anchor origin: the image's untransformed centre. Its current rect
+      // centre is (untransformed centre + current translation) — scaling
+      // about the centre doesn't move it — so subtract the live translation.
+      // Fall back to the viewer's rect centre if the image ref is missing.
+      const imgRect = imgRef.current?.getBoundingClientRect();
+      if (imgRect) {
+        g.originX = imgRect.left + imgRect.width / 2 - pinch.tx;
+        g.originY = imgRect.top + imgRect.height / 2 - pinch.ty;
+      } else {
+        const rect = viewerRef.current?.getBoundingClientRect();
+        g.originX = rect ? rect.left + rect.width / 2 : 0;
+        g.originY = rect ? rect.top + rect.height / 2 : 0;
+      }
       touchStartX.current = null;
       return;
     }
@@ -389,18 +414,17 @@ export function usePinchZoom(options: UsePinchZoomOptions = {}) {
       const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
       const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
       // Keep the image point that was under the pinch midpoint anchored under
-      // the fingers (see anchorPinchTranslation in lib/panBounds.ts).
-      const viewer = viewerRef.current;
-      const rect = viewer?.getBoundingClientRect();
-      const cx = rect ? rect.left + rect.width / 2 : 0;
-      const cy = rect ? rect.top + rect.height / 2 : 0;
+      // the fingers (see anchorPinchTranslation in lib/panBounds.ts), using
+      // the image's own untransformed centre (captured at gesture start) as
+      // the transform origin — not the viewer's rect centre, which can be
+      // offset from it and made the image drift sideways while pinching.
       const anchored = anchorPinchTranslation(
         midX,
         midY,
         g.startMidX,
         g.startMidY,
-        cx,
-        cy,
+        g.originX,
+        g.originY,
         scale,
         g.startScale,
         g.startTx,

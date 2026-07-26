@@ -213,6 +213,48 @@ describe('two-finger pinch', () => {
     expect(t.ty + t.scale * 100).toBeCloseTo(100, 5);
   });
 
+  it('anchors around the image centre, not the viewer centre, when the two differ', () => {
+    // Regression: with the floor-plan lightbox's padded, flex-centred layout
+    // the image's centre can sit away from the viewer's rect centre; the old
+    // math used the viewer centre as origin and drifted the image sideways.
+    // Give the image an offset rect (centre at (400, 240), while the viewer's
+    // rect centre stays at jsdom's all-zero (0, 0)).
+    const imgRect = {
+      left: 100,
+      top: 40,
+      width: 600,
+      height: 400,
+      right: 700,
+      bottom: 440,
+      x: 100,
+      y: 40,
+      toJSON: () => ({}),
+    } as DOMRect;
+    vi.spyOn(HTMLImageElement.prototype, 'getBoundingClientRect').mockReturnValue(imgRect);
+
+    // Pinch symmetrically around the image centre: the image must stay put.
+    fireTouch('touchstart', [{ x: 350, y: 240 }, { x: 450, y: 240 }]);
+    fireTouch('touchmove', [{ x: 300, y: 240 }, { x: 500, y: 240 }]);
+    let t = readTransform();
+    expect(t.scale).toBeCloseTo(2, 5);
+    expect(t.tx).toBeCloseTo(0, 5); // old math produced -400 here
+    expect(t.ty).toBeCloseTo(0, 5);
+    fireTouch('touchend', [], [{ x: 300, y: 240 }, { x: 500, y: 240 }]);
+
+    // Off-centre pinch: the image point under the start midpoint stays under
+    // the fingers: origin + t + s * q === mid, q = (startMid - origin - t0)/s0.
+    fireTouch('touchstart', [{ x: 450, y: 290 }, { x: 550, y: 390 }]);
+    fireTouch('touchmove', [{ x: 425, y: 265 }, { x: 575, y: 415 }]);
+    t = readTransform();
+    expect(t.scale).toBeCloseTo(3, 5); // 2 * (150√2 / 100√2)... dist ratio 1.5 on start scale 2
+    const originX = 400;
+    const originY = 240;
+    const qx = (500 - originX - 0) / 2; // startMid 500, t0 = 0 after the hard clamp
+    const qy = (340 - originY - 0) / 2;
+    expect(originX + t.tx + t.scale * qx).toBeCloseTo(500, 5);
+    expect(originY + t.ty + t.scale * qy).toBeCloseTo(340, 5);
+  });
+
   it('rubber-bands the anchored translation during the gesture, hard-clamps on release', () => {
     // Pinch anchored far off-centre so the anchor formula overshoots the
     // pan bounds. At scale 2 the hard max |tx| is 800*(2-1)/2 = 400, with a
