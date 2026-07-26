@@ -14,7 +14,7 @@
 // The AppFolio database name comes from the management company's Duda CMS
 // sync ("AppFolio Database: highlandrealestatepartners"), overridable via env
 // if the database is ever renamed.
-import { reportStrippedFeeCopy } from "./feeCopyAlert";
+import { recordFeeCopyCheck, reportStrippedFeeCopy } from "./feeCopyAlert";
 
 const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners";
 const APPFOLIO_BASE = `https://${APPFOLIO_DB}.appfolio.com/api/v2/reports`;
@@ -646,9 +646,15 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
       if (info.strippedFeeCopy.length > 0) {
         void reportStrippedFeeCopy(unit.unit, info.strippedFeeCopy);
       }
+      // Daily proof-of-life: healthy (clean) checks are otherwise silent,
+      // so record every check for the once-per-UTC-day info heartbeat.
+      recordFeeCopyCheck(info.strippedFeeCopy.length > 0 ? "stripped" : "clean");
     } catch {
       unit.photos = [];
       unit.details = [];
+      // The detail page could not be fetched, so its copy went unchecked —
+      // still counts toward the heartbeat so the watchdog proves liveness.
+      recordFeeCopyCheck("failed");
     }
   }
 

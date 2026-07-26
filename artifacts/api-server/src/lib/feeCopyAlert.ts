@@ -31,6 +31,62 @@ import { sendFeeCopyAlert } from "./email";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * Daily liveness heartbeat, mirroring the apex-redirect watchdog's
+ * recordAndMaybeHeartbeat. Clean fee-copy checks are completely silent, so in
+ * production (info-level) logs a silently-dead availability refresh — the
+ * loop that actually runs the sanitizer — looks identical to weeks of healthy
+ * checks. Once per UTC day (after the first check of a new day) we emit a
+ * single info-level line summarizing the checks run since the previous
+ * heartbeat, proving the fee-copy watchdog is still checking listings.
+ */
+let heartbeatDay: string | null = null;
+let checksSinceHeartbeat = 0;
+let cleanSinceHeartbeat = 0;
+let strippedSinceHeartbeat = 0;
+let failedSinceHeartbeat = 0;
+
+/**
+ * Record one fee-copy check of a unit's listing copy and, at most once per
+ * UTC day, log an info heartbeat summarizing checks since the last one.
+ * Called by the availability refresh for every posted unit whose detail page
+ * it inspects — "clean" (no contradicting copy), "stripped" (sanitizer
+ * removed copy), or "failed" (the detail page couldn't be fetched, so the
+ * copy wasn't checked).
+ */
+export function recordFeeCopyCheck(
+  outcome: "clean" | "stripped" | "failed",
+  now: number = Date.now(),
+): void {
+  checksSinceHeartbeat += 1;
+  if (outcome === "clean") cleanSinceHeartbeat += 1;
+  else if (outcome === "stripped") strippedSinceHeartbeat += 1;
+  else failedSinceHeartbeat += 1;
+
+  const day = utcDay(now);
+  if (heartbeatDay === null) {
+    // First check of this process: emit immediately so a fresh deploy's logs
+    // show liveness right away, then settle into once per UTC day.
+    heartbeatDay = day;
+  } else if (heartbeatDay === day) {
+    return;
+  }
+  heartbeatDay = day;
+  logger.info(
+    {
+      checks: checksSinceHeartbeat,
+      clean: cleanSinceHeartbeat,
+      stripped: strippedSinceHeartbeat,
+      failed: failedSinceHeartbeat,
+    },
+    "Fee-copy watchdog heartbeat — still checking listing copy against the fee policy",
+  );
+  checksSinceHeartbeat = 0;
+  cleanSinceHeartbeat = 0;
+  strippedSinceHeartbeat = 0;
+  failedSinceHeartbeat = 0;
+}
+
 /** hash(unit + removed text) → UTC day ("YYYY-MM-DD") it was last notified.
  *  In-memory fallback, only authoritative when the database is unreachable. */
 const notifiedOn = new Map<string, string>();
@@ -144,4 +200,9 @@ export async function reportStrippedFeeCopy(
 /** Test-only: clear the per-process fallback dedupe state. */
 export function __resetFeeCopyAlertForTests(): void {
   notifiedOn.clear();
+  heartbeatDay = null;
+  checksSinceHeartbeat = 0;
+  cleanSinceHeartbeat = 0;
+  strippedSinceHeartbeat = 0;
+  failedSinceHeartbeat = 0;
 }

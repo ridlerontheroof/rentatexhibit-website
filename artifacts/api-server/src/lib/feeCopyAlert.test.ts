@@ -26,7 +26,11 @@ vi.mock("@workspace/db", () => ({
   },
 }));
 
-import { reportStrippedFeeCopy, __resetFeeCopyAlertForTests } from "./feeCopyAlert";
+import {
+  recordFeeCopyCheck,
+  reportStrippedFeeCopy,
+  __resetFeeCopyAlertForTests,
+} from "./feeCopyAlert";
 import { sendFeeCopyAlert } from "./email";
 import { mailerConfigured } from "./mailer";
 import { logger } from "./logger";
@@ -130,5 +134,41 @@ describe("reportStrippedFeeCopy", () => {
       reportStrippedFeeCopy("0606", ["Pet rent is $30/month."], DAY1),
     ).resolves.toBeUndefined();
     expect(error).toHaveBeenCalledOnce();
+  });
+});
+
+describe("recordFeeCopyCheck heartbeat", () => {
+  const info = vi.mocked(logger.info);
+  const heartbeats = () =>
+    info.mock.calls.filter(
+      ([, msg]) => typeof msg === "string" && msg.includes("heartbeat"),
+    );
+
+  beforeEach(() => {
+    __resetFeeCopyAlertForTests();
+    vi.clearAllMocks();
+  });
+
+  it("emits an info heartbeat on the first check, then at most once per UTC day", () => {
+    recordFeeCopyCheck("clean", DAY1);
+    expect(heartbeats()).toHaveLength(1);
+    recordFeeCopyCheck("clean", DAY1 + 5 * 60 * 1000);
+    recordFeeCopyCheck("clean", DAY1 + 60 * 60 * 1000);
+    expect(heartbeats()).toHaveLength(1);
+    recordFeeCopyCheck("clean", DAY1 + 24 * 60 * 60 * 1000);
+    const beats = heartbeats();
+    expect(beats).toHaveLength(2);
+    // The second heartbeat summarizes the 3 checks since the first one.
+    expect(beats[1]?.[0]).toMatchObject({ checks: 3, clean: 3, stripped: 0, failed: 0 });
+  });
+
+  it("counts stripped and failed checks in the heartbeat", () => {
+    recordFeeCopyCheck("clean", DAY1); // first check -> immediate heartbeat
+    recordFeeCopyCheck("stripped", DAY1 + 1000);
+    recordFeeCopyCheck("failed", DAY1 + 2000);
+    recordFeeCopyCheck("clean", DAY1 + 24 * 60 * 60 * 1000);
+    const beats = heartbeats();
+    expect(beats).toHaveLength(2);
+    expect(beats[1]?.[0]).toMatchObject({ checks: 3, clean: 1, stripped: 1, failed: 1 });
   });
 });
