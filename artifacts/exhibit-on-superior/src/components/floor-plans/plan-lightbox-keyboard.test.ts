@@ -483,6 +483,22 @@ describe('click outside the shortcut legend', () => {
     });
   }
 
+  it('a one-finger swipe dismisses the legend AND still navigates to the next plan', () => {
+    openLegend();
+    const img = planImage();
+    // Fully zoomed out: a horizontal swipe past the 50px threshold navigates.
+    touch(img, 'touchstart', [{ clientX: 400, clientY: 300 }]);
+    // Gesture start alone must not have dismissed it (only swipes navigate).
+    expect(document.getElementById('plan-shortcuts-legend')).not.toBeNull();
+    touch(img, 'touchmove', [{ clientX: 250, clientY: 300 }]);
+    touch(img, 'touchend', [{ clientX: 250, clientY: 300 }]);
+    // The swipe changed the plan underneath, so the legend must not stay
+    // stranded on top — swipes never produce a click, bypassing the
+    // click-capture dismiss path.
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    expect(onNavigate).toHaveBeenCalledWith(1);
+  });
+
   it('a two-finger pinch start on the plan dismisses the legend AND the pinch still zooms', () => {
     openLegend();
     const img = planImage();

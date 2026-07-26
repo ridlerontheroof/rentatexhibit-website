@@ -107,7 +107,16 @@ export function PlanLightbox({
       return false;
     },
     onSingleTap: () => animateZoomToggle(),
-    onSwipe: (dir) => onNavigate(dir),
+    onSwipe: (dir) => {
+      // A swipe never produces a click, so it bypasses the click-capture
+      // dismiss (dismissLegendOnOutsideClick). Clear the shortcut legend here
+      // like onGestureStart does — otherwise the plan would change underneath
+      // while the legend stays stranded on top. (Arrow-key navigation
+      // deliberately keeps it open for keyboard users; a swipe is a touch
+      // gesture, so no keyboard user is served by leaving it up.)
+      setShowShortcuts(false);
+      onNavigate(dir);
+    },
     // Touch pinch/pan gestures never end in a click, so the click-capture
     // dismiss (dismissLegendOnOutsideClick) can't run — clear the shortcut
     // legend at gesture start too, matching sheet drags.
