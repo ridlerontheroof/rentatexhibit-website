@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, type RenderResult } from '@testing-library/react';
 import { createElement } from 'react';
 import { UnitGalleryLightbox } from './UnitGalleryLightbox';
+import { stubTransformAwareRects } from './lightbox-rect-stub';
 import type { AvailableUnit } from '../../hooks/use-availability';
 
 // ---------------------------------------------------------------------------
@@ -57,28 +58,7 @@ function stubClientSize(proto: object, prop: string, value: number) {
 beforeEach(() => {
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
-  // Transform-aware rect stub: in a real browser getBoundingClientRect
-  // reflects the element's translate(tx, ty), and clampPan measures the
-  // image-centre offset as (rect centre − live translation). A static rect
-  // would make that measurement report a spurious offset of −tx/−ty.
-  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
-    this: HTMLElement,
-  ) {
-    const m = /translate\((-?[\d.]+)px, (-?[\d.]+)px\)/.exec(this.style?.transform ?? '');
-    const tx = m ? Number(m[1]) : 0;
-    const ty = m ? Number(m[2]) : 0;
-    return {
-      x: tx,
-      y: ty,
-      left: tx,
-      top: ty,
-      right: VIEWER_W + tx,
-      bottom: VIEWER_H + ty,
-      width: VIEWER_W,
-      height: VIEWER_H,
-      toJSON: () => ({}),
-    } as DOMRect;
-  });
+  stubTransformAwareRects({ viewerWidth: VIEWER_W, viewerHeight: VIEWER_H });
 
   view = render(
     createElement(UnitGalleryLightbox, { unit, onClose: vi.fn() }),
@@ -275,6 +255,28 @@ describe('keyboard zoom', () => {
     keyDown('ArrowLeft');
     expect(document.body.textContent).toContain('1 / 2');
     expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+  });
+
+  it('padded layout: the pan clamp reaches — but never passes — every edge', () => {
+    // Image centre 60px right / 40px below the viewer centre (padded/flex
+    // layout). The clamp bounds shift by the offset: with overflow m per
+    // side, tx ∈ [−m − 60, m − 60] and ty ∈ [−m − 40, m − 40].
+    stubTransformAwareRects({
+      viewerWidth: VIEWER_W,
+      viewerHeight: VIEWER_H,
+      imgOffsetX: 60,
+      imgOffsetY: 40,
+    });
+    keyDown('+'); // 1.25
+    keyDown('+'); // 1.5625 — overflow 225px (x), 168.75px (y) per side
+    for (let i = 0; i < 10; i++) keyDown('ArrowLeft');
+    expect(readTransform().tx).toBe(225 - 60); // reaches the left edge, never past
+    for (let i = 0; i < 20; i++) keyDown('ArrowRight');
+    expect(readTransform().tx).toBe(-225 - 60); // right edge
+    for (let i = 0; i < 10; i++) keyDown('ArrowUp');
+    expect(readTransform().ty).toBe(168.75 - 40); // top edge
+    for (let i = 0; i < 20; i++) keyDown('ArrowDown');
+    expect(readTransform().ty).toBe(-168.75 - 40); // bottom edge
   });
 
   it('zooming out with - rescales the pan so it stays proportional', () => {

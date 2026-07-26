@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, type RenderResult } from '@testing-library/react';
 import { createElement } from 'react';
 import { PlanLightbox } from './PlanLightbox';
+import { stubTransformAwareRects } from './lightbox-rect-stub';
 import type { Plan, PlanGroup } from '../../data/floorPlans';
 
 // ---------------------------------------------------------------------------
@@ -96,19 +97,7 @@ beforeEach(() => {
 
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
-  // The double-tap anchor math reads the viewer's bounding rect for the
-  // centre point; give it a deterministic rect matching the client size.
-  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
-    x: 0,
-    y: 0,
-    left: 0,
-    top: 0,
-    right: VIEWER_W,
-    bottom: VIEWER_H,
-    width: VIEWER_W,
-    height: VIEWER_H,
-    toJSON: () => ({}),
-  } as DOMRect);
+  stubTransformAwareRects({ viewerWidth: VIEWER_W, viewerHeight: VIEWER_H });
 
   view = render(
     createElement(PlanLightbox, {

@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, type RenderResult } from '@testing-library/react';
 import { createElement } from 'react';
 import { PlanLightbox } from './PlanLightbox';
+import { stubTransformAwareRects } from './lightbox-rect-stub';
 import type { Plan, PlanGroup } from '../../data/floorPlans';
 
 // ---------------------------------------------------------------------------
@@ -93,6 +94,9 @@ beforeEach(() => {
   // scale s the max pan is (size * (s - 1)) / 2 on each axis).
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
+  // Without a rect stub, jsdom's zero-size rects silently exercise the
+  // "no layout info" fallback in clampPan instead of the real offset path.
+  stubTransformAwareRects({ viewerWidth: VIEWER_W, viewerHeight: VIEWER_H });
 
   onClose = vi.fn();
   onNavigate = vi.fn();

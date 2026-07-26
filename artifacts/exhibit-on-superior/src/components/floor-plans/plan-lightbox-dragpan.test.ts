@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, type RenderResult } from '@testing-library/react';
 import { createElement } from 'react';
 import { PlanLightbox } from './PlanLightbox';
+import { stubTransformAwareRects } from './lightbox-rect-stub';
 import type { Plan, PlanGroup } from '../../data/floorPlans';
 
 // ---------------------------------------------------------------------------
@@ -89,17 +90,7 @@ beforeEach(() => {
 
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
-  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
-    x: 0,
-    y: 0,
-    left: 0,
-    top: 0,
-    right: VIEWER_W,
-    bottom: VIEWER_H,
-    width: VIEWER_W,
-    height: VIEWER_H,
-    toJSON: () => ({}),
-  } as DOMRect);
+  stubTransformAwareRects({ viewerWidth: VIEWER_W, viewerHeight: VIEWER_H });
 
   view = render(
     createElement(PlanLightbox, {
@@ -244,6 +235,41 @@ describe('drag-to-pan click suppression', () => {
     });
     // The lone tap toggled the coarse scroll-zoom mode (which resets pinch).
     expect(planImage().style.width).toBe('160%');
+  });
+
+  it('padded layout: drag-pan reaches — but never passes — every edge', () => {
+    // Image centre 60px right / 40px below the viewer centre (models the
+    // p-4 sm:p-8 padded viewer). At scale 2 the overflow is 400px (x) /
+    // 300px (y) per side, so the bounds shift to tx ∈ [−460, 340] and
+    // ty ∈ [−340, 260].
+    stubTransformAwareRects({
+      viewerWidth: VIEWER_W,
+      viewerHeight: VIEWER_H,
+      imgOffsetX: 60,
+      imgOffsetY: 40,
+    });
+    // Double-click at the image's centre so the zoom lands with no pan.
+    doubleClickAt(CX + 60, CY + 40);
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: DOUBLE_TAP_SCALE });
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
+    mouseDownAt(CX, CY);
+    mouseMoveTo(CX + 2000, CY);
+    mouseUp();
+    expect(readTransform().tx).toBe(400 - 60); // left edge reached, never passed
+    mouseDownAt(CX, CY);
+    mouseMoveTo(CX - 4000, CY);
+    mouseUp();
+    expect(readTransform().tx).toBe(-400 - 60); // right edge
+    mouseDownAt(CX, CY);
+    mouseMoveTo(CX, CY + 2000);
+    mouseUp();
+    expect(readTransform().ty).toBe(300 - 40); // top edge
+    mouseDownAt(CX, CY);
+    mouseMoveTo(CX, CY - 4000);
+    mouseUp();
+    expect(readTransform().ty).toBe(-300 - 40); // bottom edge
   });
 
   it('mousedown while not zoomed in never starts a drag or suppresses the click', () => {
