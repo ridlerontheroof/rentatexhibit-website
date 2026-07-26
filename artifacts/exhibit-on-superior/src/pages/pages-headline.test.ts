@@ -97,6 +97,21 @@ describe.each(PAGES)('$name page branded headline', ({ Component }) => {
     expect(caps, 'hero h1 must contain a .headline-caps line').not.toBeNull();
     expect(caps!.textContent?.trim().length).toBeGreaterThan(0);
 
+    // Run-together guard: every heading that combines a script line with a
+    // caps line must yield whitespace between the parts in its flattened
+    // textContent (what crawlers and screen readers extract). A
+    // lowercase-letter immediately followed by an uppercase letter across the
+    // span boundary means the lines merged (e.g. "Urban BlissJust Outside…").
+    for (const heading of Array.from(container.querySelectorAll('h1, h2, h3, h4, h5, h6'))) {
+      const script = heading.querySelector('.headline-script');
+      const capsLine = heading.querySelector('.headline-caps');
+      if (!script || !capsLine) continue;
+      expect(
+        script.textContent,
+        `${heading.tagName} script line must end with whitespace so it doesn't merge with the caps line: "${heading.textContent}"`,
+      ).toMatch(/\s$/);
+    }
+
     // Branded typography present on the page overall.
     expect(
       container.querySelector('.headline-script'),

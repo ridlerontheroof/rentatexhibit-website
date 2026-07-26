@@ -24,12 +24,22 @@ describe('SplitHeadline branded typography', () => {
     const { container } = renderHeadline({ script: 'Urban Bliss', caps: 'Just Outside Your Door' });
     const script = container.querySelector('.headline-script');
     const caps = container.querySelector('.headline-caps');
-    expect(script?.textContent).toBe('Urban Bliss');
+    expect(script?.textContent).toBe('Urban Bliss ');
     expect(caps?.textContent).toBe('Just Outside Your Door');
     expect(container.querySelector('.headline-rule')).not.toBeNull();
     // Light (default) palette: script uses foreground color, caps stays default.
     expect(script?.className).toContain('text-foreground');
     expect(caps?.className).not.toContain('text-white');
+  });
+
+  it('separates the script and caps lines with whitespace in extracted text', () => {
+    // Crawlers/screen readers read the heading's flattened textContent; the
+    // block spans must not run together ("Urban BlissJust Outside…").
+    const { container } = renderHeadline({ script: 'Urban Bliss', caps: 'Just Outside Your Door' });
+    const heading = container.querySelector('h2');
+    expect(heading?.textContent).toContain('Urban Bliss Just Outside Your Door');
+    // No lowercase-to-uppercase run-on across the span boundary.
+    expect(heading?.textContent).not.toMatch(/[a-z][A-Z]/);
   });
 
   it('renders a caps-only headline without a script line', () => {
@@ -71,8 +81,10 @@ describe('Home page headline regressions', () => {
 
     const h1 = container.querySelector('h1');
     expect(h1).not.toBeNull();
-    expect(h1?.querySelector('.headline-script')?.textContent).toBe('River North Chicago');
+    expect(h1?.querySelector('.headline-script')?.textContent).toBe('River North Chicago ');
     expect(h1?.querySelector('.headline-caps')?.textContent).toBe('Luxury Apartments');
+    // Flattened text must not run together for crawlers/screen readers.
+    expect(h1?.textContent).toContain('River North Chicago Luxury Apartments');
     // The home hero is the one headline that must NOT carry the gold rule.
     expect(h1?.querySelector('.headline-rule')).toBeNull();
 

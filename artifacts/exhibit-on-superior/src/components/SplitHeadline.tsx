@@ -40,6 +40,7 @@ export function SplitHeadline({
           className={`headline-script block ${scriptClassName ?? (dark ? 'text-white' : 'text-foreground')}`}
         >
           {script}
+          {/* Trailing space keeps extracted text ("script caps") from running together */}{' '}
         </span>
       )}
       {caps && (
