@@ -144,17 +144,32 @@ class Cdp {
     });
   }
 
-  /** Evaluate an expression in the page; returns the JSON value. */
-  async eval(expression) {
-    const { result, exceptionDetails } = await this.send('Runtime.evaluate', {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
-    if (exceptionDetails) {
-      throw new Error(`Page evaluation threw: ${exceptionDetails.text} ${result?.description ?? ''}`);
+  /** Evaluate an expression in the page; returns the JSON value.
+   *  Retries when the page's execution context is torn down mid-eval (a Vite
+   *  dev-server reload can destroy the context under concurrent validation
+   *  runs) — every expression this script evaluates is an idempotent read or
+   *  poll, so re-running it against the fresh context is safe. */
+  async eval(expression, attempts = 3) {
+    for (let attempt = 1; ; attempt++) {
+      try {
+        const { result, exceptionDetails } = await this.send('Runtime.evaluate', {
+          expression,
+          returnByValue: true,
+          awaitPromise: true,
+        });
+        if (exceptionDetails) {
+          throw new Error(`Page evaluation threw: ${exceptionDetails.text} ${result?.description ?? ''}`);
+        }
+        return result.value;
+      } catch (err) {
+        const msg = String(err?.message ?? err);
+        const contextGone =
+          msg.includes('Execution context was destroyed') || msg.includes('Cannot find context');
+        if (!contextGone || attempt >= attempts) throw err;
+        console.log(`  (page context reloaded mid-eval; retrying ${attempt}/${attempts - 1})`);
+        await sleep(1000);
+      }
     }
-    return result.value;
   }
 
   close() {
