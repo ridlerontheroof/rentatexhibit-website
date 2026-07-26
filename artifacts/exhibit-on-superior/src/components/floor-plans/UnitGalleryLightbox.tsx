@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import type { AvailableUnit } from '../../hooks/use-availability';
 import { trackOutboundClick } from '../../lib/analytics';
 import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
@@ -459,6 +459,27 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
             </button>
           </>
         )}
+        {/* Zoom toggle — visible control mirroring PlanLightbox, for visitors
+            who don't know the pinch/double-tap gestures (and assistive tech). */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (pinchZoomed) {
+              resetPinch();
+            } else {
+              setPinch({
+                scale: DOUBLE_TAP_SCALE,
+                ...clampPan(0, 0, DOUBLE_TAP_SCALE, 0),
+              });
+            }
+          }}
+          className="absolute bottom-4 left-4 flex min-h-11 items-center gap-2 bg-black/60! px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80!"
+          aria-label={pinchZoomed ? 'Zoom out' : 'Zoom in'}
+        >
+          {pinchZoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
+          {pinchZoomed ? 'Fit' : 'Zoom'}
+        </button>
       </div>
     </div>
   );
