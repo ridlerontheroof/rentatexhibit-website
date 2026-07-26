@@ -2,6 +2,8 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
+// @ts-expect-error -- plain .mjs helper shared with scripts/prerender.mjs
+import { computeSeoSourceHash, SEO_SOURCE_HASH_FILE } from '../scripts/seo-source-hash.mjs';
 
 // Task: keep every page's search snippet from getting cut off mid-sentence.
 //
@@ -92,6 +94,22 @@ describe('prerendered meta descriptions (dist/public)', () => {
     expect(pages.some((p) => p.page === 'index.html')).toBe(true);
     expect(pages.some((p) => p.page.startsWith('available-units/'))).toBe(true);
     expect(pages.some((p) => p.page.startsWith('knowledge/'))).toBe(true);
+  });
+
+  it('the prerendered output was built from the current SEO sources', async () => {
+    // A stale dist grades head tags an older model produced (this once failed
+    // the whole suite with ~260-char unit descriptions the current model no
+    // longer emits). The prerenderer stamps a hash of the head-affecting
+    // sources; refuse to grade a dist built from others.
+    const artifactRoot = path.resolve(here, '..');
+    const stamped = (
+      await fs.readFile(path.join(artifactRoot, 'dist', SEO_SOURCE_HASH_FILE), 'utf8')
+    ).trim();
+    const current = await computeSeoSourceHash(artifactRoot);
+    expect(
+      stamped,
+      'dist/public is stale relative to the SEO sources — run `pnpm run build` and re-run this suite',
+    ).toBe(current);
   });
 
   it('every indexable page has a non-empty meta description', () => {

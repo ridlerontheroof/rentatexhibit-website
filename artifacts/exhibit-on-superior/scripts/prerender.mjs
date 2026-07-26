@@ -781,3 +781,14 @@ console.log(
     `llms-full.txt written with ${indexable.length + unitPaths.length + (KNOWLEDGE_META ?? []).length} pages; llms.txt Knowledge Center section ensured.`,
   );
 }
+
+// Stamp the SEO-source fingerprint (outside dist/public so it's never served).
+// The prerender-titles and prerender-meta-descriptions suites recompute this
+// hash and refuse to grade a dist built from older sources — a stale dist once
+// failed both suites with titles/descriptions the current model no longer emits.
+{
+  const { computeSeoSourceHash, SEO_SOURCE_HASH_FILE } = await import('./seo-source-hash.mjs');
+  const digest = await computeSeoSourceHash(root);
+  await fs.writeFile(path.join(root, 'dist', SEO_SOURCE_HASH_FILE), `${digest}\n`, 'utf8');
+  console.log('SEO source hash stamped into dist/ for the head-tag guard suites.');
+}
