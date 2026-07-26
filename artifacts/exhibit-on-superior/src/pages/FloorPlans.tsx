@@ -349,6 +349,7 @@ export function FloorPlans() {
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       type="search"
+                      aria-label="Search by unit or floor"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Search unit # or floor…"
@@ -377,6 +378,7 @@ export function FloorPlans() {
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       type="search"
+                      aria-label="Search by unit or floor"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Search unit # or floor…"

@@ -12,7 +12,10 @@ const Slider = React.forwardRef<
   // One thumb per value: a range slider (two values) must render two thumbs,
   // otherwise the second value has no thumb carrying aria-valuenow and the
   // control fails accessibility checks.
-  const thumbCount = (props.value ?? props.defaultValue ?? [0]).length;
+  // Radix only applies aria-valuenow after hydration; mirror the value here so
+  // the prerendered (SSR) markup already carries it and passes static a11y audits.
+  const values = props.value ?? props.defaultValue ?? [0];
+  const thumbCount = values.length;
   return (
     <SliderPrimitive.Root
       ref={ref}
@@ -28,6 +31,9 @@ const Slider = React.forwardRef<
       {Array.from({ length: thumbCount }).map((_, i) => (
         <SliderPrimitive.Thumb
           key={i}
+          aria-valuenow={values[i]}
+          aria-valuemin={props.min}
+          aria-valuemax={props.max}
           aria-label={
             thumbLabels?.[i] ??
             (thumbCount > 1 ? (i === 0 ? 'Minimum value' : 'Maximum value') : undefined)
