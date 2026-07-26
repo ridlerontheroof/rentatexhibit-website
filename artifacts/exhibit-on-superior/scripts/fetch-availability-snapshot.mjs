@@ -10,6 +10,7 @@
 // an older baked snapshot. The client always refreshes with live data anyway,
 // and the snapshot module ignores snapshots older than its max age.
 import { promises as fs } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -32,6 +33,16 @@ try {
   await fs.writeFile(outPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   console.log(
     `Availability snapshot refreshed: ${payload.units.length} unit(s), updatedAt ${payload.updatedAt}.`,
+  );
+  // Keep the per-unit rewrite block in artifact.toml in lockstep with the
+  // snapshot we just wrote, so the "unit-rewrites" check stays green without a
+  // manual regenerate step. Failures here propagate: a refreshed snapshot with
+  // stale rewrites would fail the prerender parity guard later anyway, so fail
+  // fast with the generator's own error message.
+  execFileSync(
+    process.execPath,
+    [path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'generate-unit-rewrites.mjs')],
+    { stdio: 'inherit' },
   );
 } catch (err) {
   console.warn(
