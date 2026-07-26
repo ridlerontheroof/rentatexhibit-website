@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
-import { unitNumbersForPlan, type PlanGroup } from '../../data/floorPlans';
+import { unitNumbersForPlan, planSqftLabel, type PlanGroup } from '../../data/floorPlans';
 import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
 import {
@@ -417,7 +417,7 @@ export function PlanLightbox({
   if (!group) return null;
 
   const variant = group.variants[variantIndex] ?? group.variants[0];
-  const sqftLabel = `${variant.sqft.toLocaleString()} sq ft`;
+  const sqftLabel = `${planSqftLabel(variant)} sq ft`;
   /** Non-PII plan identifier attached to availability clicks from the lightbox. */
   const planLabel = `${variant.typeLabel} · Unit ${String(variant.unit).padStart(2, '0')}`;
 
@@ -845,7 +845,7 @@ export function PlanLightbox({
             <dl className="grid grid-cols-2 gap-4 border-y border-border py-5">
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted-foreground">Square Feet</dt>
-                <dd className="text-xl font-semibold text-foreground">{variant.sqft.toLocaleString()}</dd>
+                <dd className="text-xl font-semibold text-foreground">{planSqftLabel(variant)}</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted-foreground">Bathrooms</dt>
@@ -901,7 +901,7 @@ export function PlanLightbox({
                       }`}
                     >
                       Flr {v.floorLabel.replace(/-/g, '\u2013')}
-                      <span className="ml-1 opacity-70">{v.sqft.toLocaleString()} sf</span>
+                      <span className="ml-1 opacity-70">{planSqftLabel(v)} sf</span>
                     </button>
                   ))}
                 </div>

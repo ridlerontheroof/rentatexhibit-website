@@ -1,6 +1,6 @@
 # Exhibit On Superior — Floor Plan Logic & Unit Map
 
-Generated 2026-07-24 directly from the website's floor-plan dataset (rentatexhibit.com).
+Generated 2026-07-26 directly from the website's floor-plan dataset (rentatexhibit.com).
 Purpose: give an AI assistant everything needed to map any apartment unit number to its
 floor plan, square footage, layout, floor, and building position band.
 
@@ -41,9 +41,9 @@ The building's podium has a mezzanine above floor 4, and **the mezzanine counts 
 
 ## 5. How plans are grouped on the website
 
-The site shows **27 floor-plan cards**, grouped from **35 sheet-level plans**. Plans with the same unit line + category + bath count + den flag are one "residence line" card; each floor-band variant may differ slightly in sq ft (layouts shift between the podium, tower, and penthouse floor plates). When mapping a specific apartment, always use the variant whose floor range contains that apartment's floor.
+The site shows **27 floor-plan cards**, grouped from **34 sheet-level plans**. Plans with the same unit line + category + bath count + den flag are one "residence line" card; each floor-band variant may differ slightly in sq ft (layouts shift between the podium, tower, and penthouse floor plates). When mapping a specific apartment, always use the variant whose floor range contains that apartment's floor.
 
-## 6. All 35 sheet-level plans (authoritative)
+## 6. All 34 sheet-level plans (authoritative)
 
 Columns: unit line; floor label as printed on the sheet; expanded floor range; layout; beds; baths; den; sq ft; the real apartment numbers it produces; the plan's website ID (used in `?plan=` deep links and image filenames).
 
@@ -52,29 +52,29 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 5 | 2 | 2–2 | 2 Bed / 1 Bath | 2 | 1 | No | 821 | 0205 | unit-5-floor-2 |
 | 6 | 2 | 2–2 | 1 Bed / 1 Bath | 1 | 1 | No | 619 | 0206 | unit-6-floor-2 |
 | 7 | 2 | 2–2 | 1 Bed / 1 Bath | 1 | 1 | No | 630 | 0207 | unit-7-floor-2 |
-| 8 | 2 | 2–2 | 2 Bed / 2 Bath | 2 | 2 | No | 1003 | 0208 | unit-8-floor-2 |
+| 8 | 2 | 2–2 | 2 Bed / 2 Bath | 2 | 2 | No | 1,003 | 0208 | unit-8-floor-2 |
 | 9 | 2 | 2–2 | 2 Bed / 2 Bath | 2 | 2 | No | 929 | 0209 | unit-9-floor-2 |
 | 10 | 2 | 2–2 | 2 Bed / 2 Bath | 2 | 2 | No | 935 | 0210 | unit-10-floor-2 |
-| 1 | 3 | 3–3 | 2 Bed / 2 Bath | 2 | 2 | No | 1135 | 0301 | unit-1-floor-3 |
+| 1 | 3 | 3–3 | 2 Bed / 2 Bath | 2 | 2 | No | 1,135 | 0301 | unit-1-floor-3 |
 | 2 | 3 | 3–3 | Studio | 0 | 1 | No | 448 | 0302 | unit-2-floor-3 |
 | 3 | 3-4M | 3–5 | 1 Bed / 1 Bath | 1 | 1 | No | 656 | 0303, 0403, 0503 | unit-3-floors-3-4m |
-| 4 | 3 | 3–3 | 2 Bed / 2 Bath | 2 | 2 | No | 1079 | 0304 | unit-4-floor-3 |
+| 4 | 3 | 3–3 | 2 Bed / 2 Bath | 2 | 2 | No | 1,079 | 0304 | unit-4-floor-3 |
 | 1 | 4-4M | 4–5 | 1 Bed / 1 Bath | 1 | 1 | No | 768 | 0401, 0501 | unit-1-floors-4-4m |
 | 2 | 4-4M | 4–5 | 1 Bed / 1 Bath | 1 | 1 | No | 628 | 0402, 0502 | unit-2-floors-4-4m |
-| 4 | 4 | 4–4 | 2 Bed / 2 Bath | 2 | 2 | No | 1026 | 0404 | unit-4-floor-4 |
-| 4 | 4M | 5–5 | 2 Bed / 2 Bath | 2 | 2 | No | 1052 | 0504 | unit-4-floor-4m |
+| 4 | 4 | 4–4 | 2 Bed / 2 Bath | 2 | 2 | No | 1,026 | 0404 | unit-4-floor-4 |
+| 4 | 4M | 5–5 | 2 Bed / 2 Bath | 2 | 2 | No | 1,052 | 0504 | unit-4-floor-4m |
 | 1 | 6-29 | 6–29 | 2 Bed / 2 Bath | 2 | 2 | No | 899 | 0601–2901 (24 units) | unit-1-floors-6-29 |
 | 2 | 6-29 | 6–29 | Convertible | 0 | 1 | No | 554 | 0602–2902 (24 units) | unit-2-floors-6-29 |
 | 3 | 6-29 | 6–29 | Studio | 0 | 1 | No | 484 | 0603–2903 (24 units) | unit-3-floors-6-29 |
 | 4 | 6-29 | 6–29 | 2 Bed + Den / 2 Bath | 2 | 2 | Yes | 983 | 0604–2904 (24 units) | unit-4-floors-6-29 |
 | 5 | 6-29 | 6–29 | Jr. Convertible | 0 | 1 | No | 450 | 0605–2905 (24 units) | unit-5-floors-6-29 |
-| 6 | 6-16 | 6–16 | 2 Bed / 1 Bath | 2 | 1 | No | 776 | 0606–1606 (11 units) | unit-6-floors-6-16 |
+| 6 | 6-29 | 6–29 | 2 Bed / 1 Bath | 2 | 1 | No | 769–776 | 0606–2906 (24 units) | unit-6-floors-6-29 |
 | 7 | 6-16 | 6–16 | 1 Bed / 1 Bath | 1 | 1 | No | 665 | 0607–1607 (11 units) | unit-7-floors-6-16 |
 | 8 | 6-29 | 6–29 | 1 Bed / 1 Bath | 1 | 1 | No | 645 | 0608–2908 (24 units) | unit-8-floors-6-29 |
 | 9 | 6-29 | 6–29 | 2 Bed / 1 Bath | 2 | 1 | No | 779 | 0609–2909 (24 units) | unit-9-floors-6-29 |
 | 10 | 6-29 | 6–29 | Jr. Convertible | 0 | 1 | No | 478 | 0610–2910 (24 units) | unit-10-floors-6-29 |
-| 1 | 30-34 | 30–34 | 3 Bed / 3 Bath | 3 | 3 | No | 1455 | 3001, 3101, 3201, 3301, 3401 | unit-1-floors-30-34 |
-| 2 | 30-34 | 30–34 | 3 Bed / 3 Bath | 3 | 3 | No | 1528 | 3002, 3102, 3202, 3302, 3402 | unit-2-floors-30-34 |
+| 1 | 30-34 | 30–34 | 3 Bed / 3 Bath | 3 | 3 | No | 1,455 | 3001, 3101, 3201, 3301, 3401 | unit-1-floors-30-34 |
+| 2 | 30-34 | 30–34 | 3 Bed / 3 Bath | 3 | 3 | No | 1,528 | 3002, 3102, 3202, 3302, 3402 | unit-2-floors-30-34 |
 | 3 | 30-34 | 30–34 | Jr. Convertible | 0 | 1 | No | 456 | 3003, 3103, 3203, 3303, 3403 | unit-3-floors-30-34 |
 | 4 | 30-34 | 30–34 | 2 Bed / 1 Bath | 2 | 1 | No | 767 | 3004, 3104, 3204, 3304, 3404 | unit-4-floors-30-34 |
 | 5 | 30-34 | 30–34 | 1 Bed / 1 Bath | 1 | 1 | No | 669 | 3005, 3105, 3205, 3305, 3405 | unit-5-floors-30-34 |
@@ -83,7 +83,6 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 8 | 30-34 | 30–34 | Jr. Convertible | 0 | 1 | No | 478 | 3008, 3108, 3208, 3308, 3408 | unit-8-floors-30-34 |
 | 7 | 22-29 | 22–29 | 1 Bed / 1 Bath | 1 | 1 | No | 672 | 2207–2907 (8 units) | unit-7-floors-22-29 |
 | 7 | 17-21 | 17–21 | 1 Bed / 1 Bath | 1 | 1 | No | 669 | 1707, 1807, 1907, 2007, 2107 | unit-7-floors-17-21 |
-| 6 | 17-21 | 17–21 | 2 Bed / 1 Bath | 2 | 1 | No | 769 | 1706, 1806, 1906, 2006, 2106 | unit-6-floors-17-21 |
 
 ## 7. The 27 website floor-plan cards (grouped view)
 
@@ -105,7 +104,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 3 | Studio | Studio | 484 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 3-studio-1-std |
 | 4 | 2 Bed + Den / 2 Bath | 2 Bed | 983 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 4-2br-2-den |
 | 5 | Jr. Convertible | Convertible / Jr. Convertible | 450 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 5-convertible-1-std |
-| 6 | 2 Bed / 1 Bath | 2 Bed | 769–776 | Mid-Rise (6–16), High-Rise (17–29) | 6-16; 17-21 | 16 | 6-2br-1-std |
+| 6 | 2 Bed / 1 Bath | 2 Bed | 769–776 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 6-2br-1-std |
 | 8 | 1 Bed / 1 Bath | 1 Bed | 645 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 8-1br-1-std |
 | 9 | 2 Bed / 1 Bath | 2 Bed | 779 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 9-2br-1-std |
 | 10 | Jr. Convertible | Convertible / Jr. Convertible | 478 | Mid-Rise (6–16), High-Rise (17–29) | 6-29 | 24 | 10-convertible-1-std |
@@ -117,7 +116,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 7 | 2 Bed / 1 Bath | 2 Bed | 779 | Penthouse (30–34) | 30-34 | 5 | 7-2br-1-std |
 | 8 | Jr. Convertible | Convertible / Jr. Convertible | 478 | Penthouse (30–34) | 30-34 | 5 | 8-convertible-1-std |
 
-## 8. Complete unit roster by floor (290 apartments)
+## 8. Complete unit roster by floor (298 apartments)
 
 ### Floor 2 — Podium band
 
@@ -126,7 +125,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 0205 | 2 Bed / 1 Bath | 821 | unit-5-floor-2 |
 | 0206 | 1 Bed / 1 Bath | 619 | unit-6-floor-2 |
 | 0207 | 1 Bed / 1 Bath | 630 | unit-7-floor-2 |
-| 0208 | 2 Bed / 2 Bath | 1003 | unit-8-floor-2 |
+| 0208 | 2 Bed / 2 Bath | 1,003 | unit-8-floor-2 |
 | 0209 | 2 Bed / 2 Bath | 929 | unit-9-floor-2 |
 | 0210 | 2 Bed / 2 Bath | 935 | unit-10-floor-2 |
 
@@ -134,10 +133,10 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 
 | Unit # | Layout | Sq Ft | Plan ID |
 |---|---|---|---|
-| 0301 | 2 Bed / 2 Bath | 1135 | unit-1-floor-3 |
+| 0301 | 2 Bed / 2 Bath | 1,135 | unit-1-floor-3 |
 | 0302 | Studio | 448 | unit-2-floor-3 |
 | 0303 | 1 Bed / 1 Bath | 656 | unit-3-floors-3-4m |
-| 0304 | 2 Bed / 2 Bath | 1079 | unit-4-floor-3 |
+| 0304 | 2 Bed / 2 Bath | 1,079 | unit-4-floor-3 |
 
 ### Floor 4 — Podium band
 
@@ -146,7 +145,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 0401 | 1 Bed / 1 Bath | 768 | unit-1-floors-4-4m |
 | 0402 | 1 Bed / 1 Bath | 628 | unit-2-floors-4-4m |
 | 0403 | 1 Bed / 1 Bath | 656 | unit-3-floors-3-4m |
-| 0404 | 2 Bed / 2 Bath | 1026 | unit-4-floor-4 |
+| 0404 | 2 Bed / 2 Bath | 1,026 | unit-4-floor-4 |
 
 ### Floor 5 (the "4M" mezzanine level) — Podium band
 
@@ -155,7 +154,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 0501 | 1 Bed / 1 Bath | 768 | unit-1-floors-4-4m |
 | 0502 | 1 Bed / 1 Bath | 628 | unit-2-floors-4-4m |
 | 0503 | 1 Bed / 1 Bath | 656 | unit-3-floors-3-4m |
-| 0504 | 2 Bed / 2 Bath | 1052 | unit-4-floor-4m |
+| 0504 | 2 Bed / 2 Bath | 1,052 | unit-4-floor-4m |
 
 ### Floor 6 — Mid-Rise band
 
@@ -166,7 +165,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 0603 | Studio | 484 | unit-3-floors-6-29 |
 | 0604 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 0605 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 0606 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 0606 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 0607 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 0608 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 0609 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -181,7 +180,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 0703 | Studio | 484 | unit-3-floors-6-29 |
 | 0704 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 0705 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 0706 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 0706 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 0707 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 0708 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 0709 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -196,7 +195,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 0803 | Studio | 484 | unit-3-floors-6-29 |
 | 0804 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 0805 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 0806 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 0806 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 0807 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 0808 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 0809 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -211,7 +210,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 0903 | Studio | 484 | unit-3-floors-6-29 |
 | 0904 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 0905 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 0906 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 0906 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 0907 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 0908 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 0909 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -226,7 +225,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1003 | Studio | 484 | unit-3-floors-6-29 |
 | 1004 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1005 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1006 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 1006 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1007 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 1008 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1009 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -241,7 +240,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1103 | Studio | 484 | unit-3-floors-6-29 |
 | 1104 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1105 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1106 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 1106 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1107 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 1108 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1109 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -256,7 +255,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1203 | Studio | 484 | unit-3-floors-6-29 |
 | 1204 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1205 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1206 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 1206 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1207 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 1208 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1209 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -271,7 +270,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1303 | Studio | 484 | unit-3-floors-6-29 |
 | 1304 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1305 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1306 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 1306 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1307 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 1308 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1309 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -286,7 +285,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1403 | Studio | 484 | unit-3-floors-6-29 |
 | 1404 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1405 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1406 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 1406 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1407 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 1408 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1409 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -301,7 +300,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1503 | Studio | 484 | unit-3-floors-6-29 |
 | 1504 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1505 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1506 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 1506 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1507 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 1508 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1509 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -316,7 +315,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1603 | Studio | 484 | unit-3-floors-6-29 |
 | 1604 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1605 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1606 | 2 Bed / 1 Bath | 776 | unit-6-floors-6-16 |
+| 1606 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1607 | 1 Bed / 1 Bath | 665 | unit-7-floors-6-16 |
 | 1608 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1609 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -331,7 +330,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1703 | Studio | 484 | unit-3-floors-6-29 |
 | 1704 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1705 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1706 | 2 Bed / 1 Bath | 769 | unit-6-floors-17-21 |
+| 1706 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1707 | 1 Bed / 1 Bath | 669 | unit-7-floors-17-21 |
 | 1708 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1709 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -346,7 +345,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1803 | Studio | 484 | unit-3-floors-6-29 |
 | 1804 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1805 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1806 | 2 Bed / 1 Bath | 769 | unit-6-floors-17-21 |
+| 1806 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1807 | 1 Bed / 1 Bath | 669 | unit-7-floors-17-21 |
 | 1808 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1809 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -361,7 +360,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 1903 | Studio | 484 | unit-3-floors-6-29 |
 | 1904 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 1905 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 1906 | 2 Bed / 1 Bath | 769 | unit-6-floors-17-21 |
+| 1906 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 1907 | 1 Bed / 1 Bath | 669 | unit-7-floors-17-21 |
 | 1908 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 1909 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -376,7 +375,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2003 | Studio | 484 | unit-3-floors-6-29 |
 | 2004 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2005 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 2006 | 2 Bed / 1 Bath | 769 | unit-6-floors-17-21 |
+| 2006 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2007 | 1 Bed / 1 Bath | 669 | unit-7-floors-17-21 |
 | 2008 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2009 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -391,7 +390,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2103 | Studio | 484 | unit-3-floors-6-29 |
 | 2104 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2105 | Jr. Convertible | 450 | unit-5-floors-6-29 |
-| 2106 | 2 Bed / 1 Bath | 769 | unit-6-floors-17-21 |
+| 2106 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2107 | 1 Bed / 1 Bath | 669 | unit-7-floors-17-21 |
 | 2108 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2109 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -406,6 +405,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2203 | Studio | 484 | unit-3-floors-6-29 |
 | 2204 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2205 | Jr. Convertible | 450 | unit-5-floors-6-29 |
+| 2206 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2207 | 1 Bed / 1 Bath | 672 | unit-7-floors-22-29 |
 | 2208 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2209 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -420,6 +420,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2303 | Studio | 484 | unit-3-floors-6-29 |
 | 2304 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2305 | Jr. Convertible | 450 | unit-5-floors-6-29 |
+| 2306 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2307 | 1 Bed / 1 Bath | 672 | unit-7-floors-22-29 |
 | 2308 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2309 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -434,6 +435,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2403 | Studio | 484 | unit-3-floors-6-29 |
 | 2404 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2405 | Jr. Convertible | 450 | unit-5-floors-6-29 |
+| 2406 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2407 | 1 Bed / 1 Bath | 672 | unit-7-floors-22-29 |
 | 2408 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2409 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -448,6 +450,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2503 | Studio | 484 | unit-3-floors-6-29 |
 | 2504 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2505 | Jr. Convertible | 450 | unit-5-floors-6-29 |
+| 2506 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2507 | 1 Bed / 1 Bath | 672 | unit-7-floors-22-29 |
 | 2508 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2509 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -462,6 +465,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2603 | Studio | 484 | unit-3-floors-6-29 |
 | 2604 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2605 | Jr. Convertible | 450 | unit-5-floors-6-29 |
+| 2606 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2607 | 1 Bed / 1 Bath | 672 | unit-7-floors-22-29 |
 | 2608 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2609 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -476,6 +480,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2703 | Studio | 484 | unit-3-floors-6-29 |
 | 2704 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2705 | Jr. Convertible | 450 | unit-5-floors-6-29 |
+| 2706 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2707 | 1 Bed / 1 Bath | 672 | unit-7-floors-22-29 |
 | 2708 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2709 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -490,6 +495,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2803 | Studio | 484 | unit-3-floors-6-29 |
 | 2804 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2805 | Jr. Convertible | 450 | unit-5-floors-6-29 |
+| 2806 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2807 | 1 Bed / 1 Bath | 672 | unit-7-floors-22-29 |
 | 2808 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2809 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -504,6 +510,7 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 | 2903 | Studio | 484 | unit-3-floors-6-29 |
 | 2904 | 2 Bed + Den / 2 Bath | 983 | unit-4-floors-6-29 |
 | 2905 | Jr. Convertible | 450 | unit-5-floors-6-29 |
+| 2906 | 2 Bed / 1 Bath | 769–776 | unit-6-floors-6-29 |
 | 2907 | 1 Bed / 1 Bath | 672 | unit-7-floors-22-29 |
 | 2908 | 1 Bed / 1 Bath | 645 | unit-8-floors-6-29 |
 | 2909 | 2 Bed / 1 Bath | 779 | unit-9-floors-6-29 |
@@ -513,8 +520,8 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 
 | Unit # | Layout | Sq Ft | Plan ID |
 |---|---|---|---|
-| 3001 | 3 Bed / 3 Bath | 1455 | unit-1-floors-30-34 |
-| 3002 | 3 Bed / 3 Bath | 1528 | unit-2-floors-30-34 |
+| 3001 | 3 Bed / 3 Bath | 1,455 | unit-1-floors-30-34 |
+| 3002 | 3 Bed / 3 Bath | 1,528 | unit-2-floors-30-34 |
 | 3003 | Jr. Convertible | 456 | unit-3-floors-30-34 |
 | 3004 | 2 Bed / 1 Bath | 767 | unit-4-floors-30-34 |
 | 3005 | 1 Bed / 1 Bath | 669 | unit-5-floors-30-34 |
@@ -526,8 +533,8 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 
 | Unit # | Layout | Sq Ft | Plan ID |
 |---|---|---|---|
-| 3101 | 3 Bed / 3 Bath | 1455 | unit-1-floors-30-34 |
-| 3102 | 3 Bed / 3 Bath | 1528 | unit-2-floors-30-34 |
+| 3101 | 3 Bed / 3 Bath | 1,455 | unit-1-floors-30-34 |
+| 3102 | 3 Bed / 3 Bath | 1,528 | unit-2-floors-30-34 |
 | 3103 | Jr. Convertible | 456 | unit-3-floors-30-34 |
 | 3104 | 2 Bed / 1 Bath | 767 | unit-4-floors-30-34 |
 | 3105 | 1 Bed / 1 Bath | 669 | unit-5-floors-30-34 |
@@ -539,8 +546,8 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 
 | Unit # | Layout | Sq Ft | Plan ID |
 |---|---|---|---|
-| 3201 | 3 Bed / 3 Bath | 1455 | unit-1-floors-30-34 |
-| 3202 | 3 Bed / 3 Bath | 1528 | unit-2-floors-30-34 |
+| 3201 | 3 Bed / 3 Bath | 1,455 | unit-1-floors-30-34 |
+| 3202 | 3 Bed / 3 Bath | 1,528 | unit-2-floors-30-34 |
 | 3203 | Jr. Convertible | 456 | unit-3-floors-30-34 |
 | 3204 | 2 Bed / 1 Bath | 767 | unit-4-floors-30-34 |
 | 3205 | 1 Bed / 1 Bath | 669 | unit-5-floors-30-34 |
@@ -552,8 +559,8 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 
 | Unit # | Layout | Sq Ft | Plan ID |
 |---|---|---|---|
-| 3301 | 3 Bed / 3 Bath | 1455 | unit-1-floors-30-34 |
-| 3302 | 3 Bed / 3 Bath | 1528 | unit-2-floors-30-34 |
+| 3301 | 3 Bed / 3 Bath | 1,455 | unit-1-floors-30-34 |
+| 3302 | 3 Bed / 3 Bath | 1,528 | unit-2-floors-30-34 |
 | 3303 | Jr. Convertible | 456 | unit-3-floors-30-34 |
 | 3304 | 2 Bed / 1 Bath | 767 | unit-4-floors-30-34 |
 | 3305 | 1 Bed / 1 Bath | 669 | unit-5-floors-30-34 |
@@ -565,8 +572,8 @@ Columns: unit line; floor label as printed on the sheet; expanded floor range; l
 
 | Unit # | Layout | Sq Ft | Plan ID |
 |---|---|---|---|
-| 3401 | 3 Bed / 3 Bath | 1455 | unit-1-floors-30-34 |
-| 3402 | 3 Bed / 3 Bath | 1528 | unit-2-floors-30-34 |
+| 3401 | 3 Bed / 3 Bath | 1,455 | unit-1-floors-30-34 |
+| 3402 | 3 Bed / 3 Bath | 1,528 | unit-2-floors-30-34 |
 | 3403 | Jr. Convertible | 456 | unit-3-floors-30-34 |
 | 3404 | 2 Bed / 1 Bath | 767 | unit-4-floors-30-34 |
 | 3405 | 1 Bed / 1 Bath | 669 | unit-5-floors-30-34 |

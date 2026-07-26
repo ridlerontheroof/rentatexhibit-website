@@ -48,6 +48,7 @@ function makePlan(): Plan {
     baths: 1,
     den: false,
     sqft: 750,
+    sqftMin: 750,
     images: {
       thumb: '/images/floor-plans/thumb.webp',
       detail: '/images/floor-plans/detail.webp',

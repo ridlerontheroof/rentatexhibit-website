@@ -23,6 +23,7 @@ import {
   unitNumbersForPlan,
   unitNumbersForGroup,
   bandsForFloors,
+  planSqftLabel,
 } from '../src/data/floorPlans';
 
 const GENERATED = new Date().toISOString().slice(0, 10);
@@ -34,7 +35,7 @@ const planRows = plans
   .map((p) => {
     const units = unitNumbersForPlan(p);
     const unitsCell = units.length > 6 ? `${units[0]}–${units[units.length - 1]} (${units.length} units)` : units.join(', ');
-    return `| ${p.unit} | ${p.floorLabel} | ${p.floors[0]}–${p.floors[p.floors.length - 1]} | ${p.typeLabel} | ${p.beds} | ${p.baths} | ${p.den ? 'Yes' : 'No'} | ${p.sqft} | ${unitsCell} | ${p.id} |`;
+    return `| ${p.unit} | ${p.floorLabel} | ${p.floors[0]}–${p.floors[p.floors.length - 1]} | ${p.typeLabel} | ${p.beds} | ${p.baths} | ${p.den ? 'Yes' : 'No'} | ${planSqftLabel(p)} | ${unitsCell} | ${p.id} |`;
   })
   .join('\n');
 
@@ -63,7 +64,7 @@ const floorSections = [...byFloor.keys()]
     const rows = byFloor
       .get(f)!
       .sort((a, b) => a.unitNumber.localeCompare(b.unitNumber))
-      .map(({ unitNumber, plan: p }) => `| ${unitNumber} | ${p.typeLabel} | ${p.sqft} | ${p.id} |`)
+      .map(({ unitNumber, plan: p }) => `| ${unitNumber} | ${p.typeLabel} | ${planSqftLabel(p)} | ${p.id} |`)
       .join('\n');
     const band = bandsForFloors(f, f)[0];
     const mezz = byFloor.get(f)!.some(({ plan: p }) => p.mezzanine && p.floors[p.floors.length - 1] === f && f === p.floorMax);

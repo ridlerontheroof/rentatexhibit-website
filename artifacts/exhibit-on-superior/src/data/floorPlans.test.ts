@@ -177,8 +177,8 @@ describe('slugFor', () => {
 // --- plans dataset integrity ------------------------------------------------
 
 describe('plans dataset', () => {
-  it('has a unique id for every plan (no slug collisions across the 35 sheets)', () => {
-    expect(plans).toHaveLength(35);
+  it('has a unique id for every plan (no slug collisions across the 34 sheets)', () => {
+    expect(plans).toHaveLength(34);
     const ids = plans.map((p) => p.id);
     expect(new Set(ids).size).toBe(ids.length);
   });

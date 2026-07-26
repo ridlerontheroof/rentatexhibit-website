@@ -1,5 +1,5 @@
 // Floor plan dataset for Exhibit On Superior.
-// Source of truth: the 35 owned floor-plan sheets. Each record is one plan
+// Source of truth: the 34 owned floor-plan sheets (v0.7 book). Each record is one plan
 // (a unit position on a specific floor band). Near-duplicate plans that repeat
 // the same residence line across floor bands are grouped client-side into a
 // single card (see `planGroups`).
@@ -24,7 +24,10 @@ export interface Plan {
   beds: number;
   baths: number;
   den: boolean;
+  /** Representative square footage (the sheet's figure; upper bound when the sheet prints a range). */
   sqft: number;
+  /** Lower bound of the sheet's printed square footage (equals sqft unless the sheet prints a range). */
+  sqftMin: number;
   images: { thumb: string; detail: string; zoom: string };
 }
 
@@ -81,7 +84,8 @@ export function parseFloors(label: string) {
 }
 
 // Raw records, in sheet order. Fields: unit, floorLabel, category, typeLabel, beds, baths, den, sqft
-type Raw = [number, string, Category, string, number, number, boolean, number];
+// (sqft is a single figure, or [min, max] when the sheet prints a range).
+type Raw = [number, string, Category, string, number, number, boolean, number | [number, number]];
 
 const RAW: Raw[] = [
   [5, '2', '2br', '2 Bed / 1 Bath', 2, 1, false, 821],
@@ -103,7 +107,10 @@ const RAW: Raw[] = [
   [3, '6-29', 'studio', 'Studio', 0, 1, false, 484],
   [4, '6-29', '2br', '2 Bed + Den / 2 Bath', 2, 2, true, 983],
   [5, '6-29', 'convertible', 'Jr. Convertible', 0, 1, false, 450],
-  [6, '6-16', '2br', '2 Bed / 1 Bath', 2, 1, false, 776],
+  // v0.7 book consolidated unit line 6's former 6-16 / 17-21 sheets into one
+  // 6-29 sheet (printed "769-776 SF") — this also gives apartment 2406 (AC) a
+  // covering plan card (see data/ada.ts).
+  [6, '6-29', '2br', '2 Bed / 1 Bath', 2, 1, false, [769, 776]],
   [7, '6-16', '1br', '1 Bed / 1 Bath', 1, 1, false, 665],
   [8, '6-29', '1br', '1 Bed / 1 Bath', 1, 1, false, 645],
   [9, '6-29', '2br', '2 Bed / 1 Bath', 2, 1, false, 779],
@@ -118,7 +125,6 @@ const RAW: Raw[] = [
   [8, '30-34', 'convertible', 'Jr. Convertible', 0, 1, false, 478],
   [7, '22-29', '1br', '1 Bed / 1 Bath', 1, 1, false, 672],
   [7, '17-21', '1br', '1 Bed / 1 Bath', 1, 1, false, 669],
-  [6, '17-21', '2br', '2 Bed / 1 Bath', 2, 1, false, 769],
 ];
 
 export function slugFor(unit: number, floorLabel: string): string {
@@ -130,9 +136,10 @@ export function slugFor(unit: number, floorLabel: string): string {
 
 import { adaUnitsAmong, isAdaQuery, type AdaDesignation } from './ada';
 
-export const plans: Plan[] = RAW.map(([unit, floorLabel, category, typeLabel, beds, baths, den, sqft]) => {
+export const plans: Plan[] = RAW.map(([unit, floorLabel, category, typeLabel, beds, baths, den, rawSqft]) => {
   const { floors, min, max, mezzanine } = parseFloors(floorLabel);
   const id = slugFor(unit, floorLabel);
+  const [sqftMin, sqft] = Array.isArray(rawSqft) ? rawSqft : [rawSqft, rawSqft];
   return {
     id,
     unit,
@@ -147,6 +154,7 @@ export const plans: Plan[] = RAW.map(([unit, floorLabel, category, typeLabel, be
     baths,
     den,
     sqft,
+    sqftMin,
     images: {
       thumb: `${IMG_BASE}/${id}-thumb.webp`,
       detail: `${IMG_BASE}/${id}-detail.webp`,
@@ -194,7 +202,7 @@ export const planGroups: PlanGroup[] = (() => {
   for (const [key, variants] of map) {
     const sorted = [...variants].sort((a, b) => a.floorMin - b.floorMin);
     const rep = sorted[0];
-    const sqfts = sorted.map((v) => v.sqft);
+    const sqfts = sorted.flatMap((v) => [v.sqftMin, v.sqft]);
     const floors = Array.from(new Set(sorted.flatMap((v) => v.floors))).sort((a, b) => a - b);
     const bandSet = new Map<string, FloorBand>();
     for (const v of sorted) {
@@ -220,8 +228,15 @@ export const planGroups: PlanGroup[] = (() => {
   return groups;
 })();
 
-export const SQFT_MIN = Math.min(...plans.map((p) => p.sqft));
+export const SQFT_MIN = Math.min(...plans.map((p) => p.sqftMin));
 export const SQFT_MAX = Math.max(...plans.map((p) => p.sqft));
+
+/** "776" or "769–776" — a plan's printed square footage, formatted. */
+export function planSqftLabel(p: Plan): string {
+  return p.sqftMin === p.sqft
+    ? p.sqft.toLocaleString()
+    : `${p.sqftMin.toLocaleString()}\u2013${p.sqft.toLocaleString()}`;
+}
 
 export function bandLabelForGroup(g: PlanGroup): string {
   return g.bands.map((b) => b.label).join(', ');

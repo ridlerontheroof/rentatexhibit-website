@@ -74,13 +74,12 @@ describe('ADA registry', () => {
     }
   });
 
-  it('every registry unit belongs to a real plan group (known exception: 2406)', () => {
-    // 2406 is designated (AC) in the as-built matrix, but no owned plan sheet
-    // covers unit line 6 on floors 22-29 — the registry is still the source of
-    // truth for the designation; it simply has no plan card to badge.
+  it('every registry unit belongs to a real plan group', () => {
+    // Since the v0.7 plan book, unit line 6's sheet covers floors 6-29, so
+    // 2406 (AC) — formerly the lone uncovered designation — has a plan card.
     const all = new Set(planGroups.flatMap((g) => unitNumbersForGroup(g)));
     const uncovered = Object.keys(ADA_UNITS).filter((n) => !all.has(n));
-    expect(uncovered).toEqual(['2406']);
+    expect(uncovered).toEqual([]);
   });
 
   it('spot-checks designations from the matrix', () => {
@@ -117,11 +116,11 @@ describe('ADA plan filtering', () => {
     expect(adaGroups.length).toBeGreaterThan(0);
     expect(adaGroups.length).toBeLessThan(planGroups.length);
     for (const g of adaGroups) expect(groupHasAdaUnits(g)).toBe(true);
-    // Every registry unit with a plan sheet is represented across the
-    // filtered groups (2406 has no covering sheet — see registry test).
+    // Every registry unit is represented across the filtered groups —
+    // including 2406, covered by the v0.7 unit-6 floors 6-29 sheet.
     const covered = new Set(adaGroups.flatMap((g) => adaUnitsForGroup(g).map((u) => u.unit)));
-    expect(covered.size).toBe(61);
-    expect(covered.has('2406')).toBe(false);
+    expect(covered.size).toBe(62);
+    expect(covered.has('2406')).toBe(true);
   });
 
   it('ada:false leaves the group list unchanged', () => {
