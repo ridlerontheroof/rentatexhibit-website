@@ -6,6 +6,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
+import { ADA_COUNTS, ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
 
 export function Amenities() {
   return (
@@ -185,10 +186,24 @@ export function Amenities() {
               </div>
               <div className="bg-white border border-border p-6">
                 <h3 className="text-lg uppercase tracking-wider mb-2">Accessibility</h3>
+                <p className="leading-relaxed text-muted-foreground mb-3">
+                  Per the building&rsquo;s as-built accessibility matrix, {ADA_COUNTS.total} apartments
+                  &mdash; more than 20% of the homes &mdash; carry an ADA designation:{' '}
+                  {ADA_COUNTS.a} Type A accessible/adaptable residences (A) and {ADA_COUNTS.ac} Type A
+                  units with conduit line (AC). Use the ADA-accessible filter on the{' '}
+                  <Link href="/available-units" className="text-primary underline">Available Units &amp; Floor Plans</Link>{' '}
+                  page to see the designated floor plans and apartment numbers.
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-1 mb-3">
+                  {ADA_KEY.map((k) => (
+                    <li key={k.code}>
+                      <strong>{k.label}</strong>: {k.description}
+                    </li>
+                  ))}
+                </ul>
                 <p className="leading-relaxed text-muted-foreground">
-                  More than 20% of the homes at Exhibit are ADA accessible. For details on
-                  specific accessible floor plans and features, or to arrange a reasonable
-                  accommodation, contact the leasing team at{' '}
+                  {ADA_DISCLAIMER} To arrange a reasonable accommodation, contact the leasing team
+                  at{' '}
                   <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline">exhibit@highlandptrs.com</a>{' '}
                   or <a href="tel:312-450-0635" className="text-primary underline">312-450-0635</a>.
                   See also our{' '}
