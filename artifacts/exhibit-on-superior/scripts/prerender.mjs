@@ -195,12 +195,37 @@ for (const routePath of allPaths) {
   await fs.writeFile(outPath, page, 'utf8');
 }
 
+// Key routes that MUST ship an imagesrcset LCP preload. The self-consistency
+// guard below would happily pass a page that lost its eager hero entirely
+// (no eager AVIF image -> no hint expected -> "consistent"), so a redesign
+// could silently strip the fast-loading hint from a major landing page. These
+// routes fail the build instead if their preload disappears.
+const LCP_REQUIRED_ROUTES = [
+  '/',
+  '/available-units',
+  '/amenities',
+  '/neighborhood',
+  '/photo-gallery',
+  '/pet-friendly',
+  '/apartment-guide',
+];
+
 // Post-build guard: re-read every written page from disk and cross-check its
 // injected LCP preload against its OWN rendered body. A template/injection bug
 // (e.g. a page shipping the home hero's hint, or a leftover template hint on a
 // page with no eager AVIF image) fails the build loudly.
 {
   const problems = [];
+  // Parity: required routes must actually be rendered pages, so a route rename
+  // can't quietly drop one from the required set.
+  for (const routePath of LCP_REQUIRED_ROUTES) {
+    if (!allPaths.includes(routePath)) {
+      problems.push(
+        `${routePath}: listed in LCP_REQUIRED_ROUTES but is not a prerendered route ` +
+          '(renamed or removed? update the list in scripts/prerender.mjs).',
+      );
+    }
+  }
   for (const routePath of allPaths) {
     const page = await fs.readFile(outPathFor(routePath), 'utf8');
 
@@ -220,6 +245,15 @@ for (const routePath of allPaths) {
     const actualLinks = (headHtml.match(/<link\b[^>]*rel="preload"[^>]*>/gi) ?? []).filter((tag) =>
       /\bimagesrcset="/i.test(tag),
     );
+
+    if (!expected && LCP_REQUIRED_ROUTES.includes(routePath)) {
+      problems.push(
+        `${routePath}: key landing page has NO eager AVIF hero, so it ships without an LCP ` +
+          'preload hint (performance regression). Restore the eager fetchPriority="high" ' +
+          '<SmartImg> hero, or — if the redesign is intentional — remove the route from ' +
+          'LCP_REQUIRED_ROUTES in scripts/prerender.mjs.',
+      );
+    }
 
     if (expected) {
       if (actualLinks.length !== 1) {
