@@ -66,7 +66,7 @@ export function PetFriendly() {
                     <div>
                       <h3 className="text-lg uppercase tracking-wider mb-2">Nearby Parks</h3>
                       <p className="text-sm">
-                        Steps from River North dog parks and walking trails, including Ohio Street Beach dog-friendly area.
+                        Steps from River North dog parks and walking trails, including A. Montgomery Ward Park and the Chicago Riverwalk.
                       </p>
                     </div>
                   </div>

@@ -98,7 +98,7 @@ export function Amenities() {
                 <h2 className="text-2xl uppercase tracking-wider mb-6">Apartment Features</h2>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Dramatic Floor-to-Ceiling Windows</span></li>
-                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private Balconies</span></li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Private balconies (nearly every home)</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Panoramic Views Of The Chicago Skyline</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Driftwood Plank Floors Throughout</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Energy Saving Stainless-Steel Appliances</span></li>

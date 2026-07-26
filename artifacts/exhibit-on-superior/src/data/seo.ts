@@ -304,7 +304,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'A complete guide to Exhibit On Superior apartments — studio, convertible, 1, 2 & 3 bedroom layouts, finishes, in-home laundry, and skyline views.',
     quickAnswer:
-      'Exhibit On Superior offers studio, convertible, one, two, and three-bedroom apartments from about 448 to 1,528 square feet across floors 2\u201334, finished with driftwood plank floors, quartz countertops, stainless-steel appliances, in-home washers and dryers, floor-to-ceiling windows, and private balconies.',
+      'Exhibit On Superior offers studio, convertible, one, two, and three-bedroom apartments from about 448 to 1,528 square feet across floors 2\u201334, finished with driftwood plank floors, quartz countertops, stainless-steel appliances, in-home washers and dryers, floor-to-ceiling windows, and private balconies in nearly every home.',
     faqs: [
       {
         q: 'Does Exhibit On Superior have convertible apartments?',
@@ -722,7 +722,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       {
         q: 'What finishes do apartments have?',
         knowledgeSlug: 'apartment-finishes',
-        a: 'Homes feature driftwood plank floors, quartz countertops, tiled backsplashes, stainless-steel appliances, floor-to-ceiling windows, and private balconies.',
+        a: 'Homes feature driftwood plank floors, quartz countertops, tiled backsplashes, stainless-steel appliances, floor-to-ceiling windows, and private balconies in nearly every home.',
       },
       {
         q: 'What is the largest apartment?',
@@ -1036,7 +1036,7 @@ export const APARTMENT_COMPLEX_NODE = {
     'Private dining room and party suite',
     'Library nook',
     'Floor-to-ceiling windows',
-    'Private balconies',
+    'Private balconies (nearly every home)',
     'In-home washer/dryer',
     'Quartz countertops',
     'Stainless-steel appliances',
