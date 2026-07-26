@@ -22,13 +22,14 @@ import { sendRentedCheckAlert } from "./email";
  * exactly what the workspace-only `postpublish` workflow runs, so there is
  * one implementation of the checks, not two.
  *
- * Environment reality: the deployed image may not ship a usable Chromium
- * (deploy BUILDS are known to die when Chromium is executed; the runtime
- * container is separate but unproven). So:
- *   - "No headless Chromium found" → outcome `unsupported`: logged loudly
- *     (warn, plus the daily heartbeat carries an `unsupported` counter so
- *     deployment logs show the gap), never emailed — the workspace watcher
- *     still covers this check when the workspace is open.
+ * Environment reality: the deployed runtime ships no Chromium (only the
+ * nodejs module closure). The script now degrades itself: with no Chromium
+ * it runs a browserless HTTP-level subset (raw-page integrity + shipped
+ * bundle still contains the sold-out/noindex logic) and exits 0/1 like the
+ * full check, printing a "MODE: http-fallback" marker that this module
+ * surfaces in its per-run log line. So:
+ *   - "No headless Chromium found" (only possible from an older script
+ *     build) → outcome `unsupported`: logged loudly, never emailed.
  *   - Spawn/timeout problems → outcome `errored`: ambiguous, logged only,
  *     but escalated to an alert after several consecutive runs (mirroring
  *     knowledgeCheck's unreachability escalation) via a counter persisted
@@ -42,6 +43,14 @@ import { sendRentedCheckAlert } from "./email";
  */
 
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // every 6 hours
+/**
+ * Delay before the startup (post-publish) run. Deployment log ingestion
+ * provably drops the first ~25s of a fresh container's stdout (the 2026-07-26
+ * publish lost every log line before 19:24:25Z), so an immediate fast-path
+ * run would report its outcome into the void. One minute costs nothing at a
+ * 6-hour cadence and makes the post-publish outcome visible in deploy logs.
+ */
+const STARTUP_DELAY_MS = 60 * 1000;
 const RUN_TIMEOUT_MS = 8 * 60 * 1000; // generous: chromium boot + 2 page renders
 const DAY_MS = 24 * 60 * 60 * 1000;
 /** Consecutive errored runs (spawn/timeout) before escalating to an alert. */
@@ -262,7 +271,12 @@ export async function checkRentedNoindexOnce(
         "Rented-unit check run errored (ambiguous — not alert-worthy yet)",
       );
     } else {
-      log.debug({}, "Rented-unit indexability check passed");
+      // info (not debug): deployment logs must show each run's outcome —
+      // the once-daily heartbeat alone is too sparse to confirm a publish.
+      log.info(
+        { mode: /MODE: http-fallback/.test(run.outputTail) ? "http-fallback" : "chromium" },
+        "Rented-unit indexability check passed",
+      );
     }
     return;
   }
@@ -286,9 +300,9 @@ export async function checkRentedNoindexOnce(
 
 /**
  * Start the periodic rented-unit indexability watchdog. Production only.
- * Kicks off an immediate check (a publish restarts this server, so the
- * start-up run doubles as the post-publish check), then repeats every
- * CHECK_INTERVAL_MS.
+ * Runs the post-publish check STARTUP_DELAY_MS after boot (a publish
+ * restarts this server; the delay keeps the outcome out of the log-ingestion
+ * blind spot at container start), then repeats every CHECK_INTERVAL_MS.
  */
 export function startRentedNoindexCheck(log: Logger = defaultLogger): void {
   if (process.env.NODE_ENV !== "production") return;
@@ -296,14 +310,21 @@ export function startRentedNoindexCheck(log: Logger = defaultLogger): void {
     log.warn({}, "Rented-unit indexability watchdog disabled via RENTED_CHECK_DISABLED=1");
     return;
   }
-  void checkRentedNoindexOnce(log);
+  const startupTimer = setTimeout(
+    () => void checkRentedNoindexOnce(log),
+    STARTUP_DELAY_MS,
+  );
+  startupTimer.unref?.();
   const timer = setInterval(
     () => void checkRentedNoindexOnce(log),
     CHECK_INTERVAL_MS,
   );
   timer.unref?.();
   log.info(
-    { intervalHours: CHECK_INTERVAL_MS / 3_600_000 },
+    {
+      intervalHours: CHECK_INTERVAL_MS / 3_600_000,
+      startupDelaySeconds: STARTUP_DELAY_MS / 1000,
+    },
     "Rented-unit indexability watchdog started",
   );
 }

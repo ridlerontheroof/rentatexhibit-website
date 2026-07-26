@@ -102,6 +102,26 @@ describe("checkRentedNoindexOnce", () => {
   it("does not alert when the check passes", async () => {
     await checkRentedNoindexOnce(log, DAY1, pass);
     expect(sendAlert).not.toHaveBeenCalled();
+    // Each passing run logs an info line so deploy logs show the outcome.
+    expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+      { mode: "chromium" },
+      "Rented-unit indexability check passed",
+    );
+  });
+
+  it("labels a passing HTTP-fallback run with its reduced mode", async () => {
+    const httpPass = (): Promise<RentedCheckRun> =>
+      Promise.resolve({
+        exitCode: 0,
+        outputTail:
+          "MODE: http-fallback (no headless Chromium in this environment) — running browserless HTTP-level subset.\nAll HTTP-level subset of the rented-unit indexability checks passed",
+      });
+    await checkRentedNoindexOnce(log, DAY1, httpPass);
+    expect(sendAlert).not.toHaveBeenCalled();
+    expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+      { mode: "http-fallback" },
+      "Rented-unit indexability check passed",
+    );
   });
 
   it("alerts once per UTC day on a definitive failure, again the next day", async () => {

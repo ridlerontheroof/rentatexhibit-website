@@ -36,11 +36,21 @@
 // every published unit page is still available does it fall back to a
 // synthetic absent unit number (which exercises the SPA fallback instead).
 //
-// Usage: node scripts/check-rented-noindex.mjs [baseUrl] [--unit NNNN]
+// Environments without a headless Chromium (e.g. the deployed api-server
+// runtime, which only ships the nodejs module closure) automatically fall
+// back to a browserless HTTP-level subset of the check (forceable with
+// --http-only). It cannot observe hydration, so instead it asserts the
+// ingredients hydration needs: the raw page is intact (one robots meta,
+// module scripts present) and the shipped JS bundles still contain the
+// sold-out title and a noindex directive — i.e. Google's renderer WILL
+// reach the noindex branch. The output clearly marks the reduced mode.
+//
+// Usage: node scripts/check-rented-noindex.mjs [baseUrl] [--unit NNNN] [--http-only]
 //   default baseUrl: https://www.rentatexhibit.com
 //   --unit: force a specific absent unit number (default: prefer a
 //           published-but-now-rented unit page; otherwise derive a synthetic
 //           absent number from the live feed).
+//   --http-only: skip Chromium even if available; run the HTTP-level subset.
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -49,6 +59,7 @@ import path from 'node:path';
 const args = process.argv.slice(2);
 const unitFlag = args.indexOf('--unit');
 const FORCED_UNIT = unitFlag >= 0 ? args[unitFlag + 1] : null;
+const HTTP_ONLY = args.includes('--http-only');
 const BASE = (
   args.find((a, i) => !a.startsWith('--') && i !== unitFlag + 1) ||
   'https://www.rentatexhibit.com'
@@ -326,10 +337,24 @@ async function main() {
   }
   console.log(`Rented/absent-unit page under test: /available-units/${absentUnit} [${unitKind}]`);
 
-  // --- 3. Headless Chromium. -------------------------------------------------
-  const chrome = findChromium();
+  const failures = [];
+  const fail = (what, msg) => {
+    failures.push(`${what}: ${msg}`);
+    console.error(`FAIL  ${what}: ${msg}`);
+  };
+  const ok = (what, msg) => console.log(`ok    ${what}: ${msg}`);
+
+  // --- 3. Headless Chromium (or the browserless HTTP-level subset). -----------
+  const chrome = HTTP_ONLY ? null : findChromium();
   if (!chrome) {
-    throw new Error('No headless Chromium found (checked CHROME_BIN, PATH, ms-playwright cache, nix store).');
+    console.log(
+      HTTP_ONLY
+        ? 'MODE: http-fallback (forced via --http-only) — running browserless HTTP-level subset.'
+        : 'MODE: http-fallback (no headless Chromium in this environment) — running browserless HTTP-level subset.',
+    );
+    await httpFallbackChecks({ absentUnit, liveUnits, fail, ok });
+    finish(failures, 'HTTP-level subset of the ');
+    return;
   }
   const debugPort = 9222 + Math.floor(Math.random() * 20000);
   const profileDir = mkdtempSync(path.join(tmpdir(), 'rented-check-'));
@@ -365,13 +390,6 @@ async function main() {
   const cdp = await Cdp.connect(pageWsUrl);
   await cdp.send('Page.enable');
   await cdp.send('Runtime.enable');
-
-  const failures = [];
-  const fail = (what, msg) => {
-    failures.push(`${what}: ${msg}`);
-    console.error(`FAIL  ${what}: ${msg}`);
-  };
-  const ok = (what, msg) => console.log(`ok    ${what}: ${msg}`);
 
   // --- 4. Rented/absent unit page. -------------------------------------------
   const rentedUrl = `${BASE}/available-units/${absentUnit}`;
@@ -450,12 +468,135 @@ async function main() {
 
   cdp.close();
 
+  finish(failures, '');
+}
+
+/** Shared pass/fail summary + exit code. `modePrefix` labels reduced modes. */
+function finish(failures, modePrefix) {
   if (failures.length) {
     console.error(`\n${failures.length} check(s) FAILED against ${BASE}. A rented apartment page may be indexable with stale pricing — inspect main.tsx (pre-hydration stripping), the Seo component, and UnitDetail.tsx's sold-out branch, then re-publish.`);
     process.exitCode = 1;
   } else {
-    console.log(`\nAll rented-unit indexability checks passed against ${BASE}.`);
+    console.log(`\nAll ${modePrefix}rented-unit indexability checks passed against ${BASE}.`);
   }
+}
+
+/**
+ * Browserless HTTP-level subset (no Chromium). Cannot watch hydration flip
+ * the head to noindex, so it asserts the ingredients that make that flip
+ * inevitable for Google's (JS-rendering) crawler:
+ *   a. the rented/absent unit URL serves an intact page: HTTP 200, exactly
+ *      one robots meta in the RAW HTML, and module scripts (hydration ships);
+ *   b. the shipped JS bundles reachable from that page still contain the
+ *      sold-out title and a noindex directive (the sold-out branch + Seo
+ *      noindex logic were not refactored away);
+ *   c. /available-units' RAW HTML has exactly one robots meta and it is NOT
+ *      noindex (the availability page must stay indexable).
+ */
+async function httpFallbackChecks({ absentUnit, liveUnits, fail, ok }) {
+  const get = async (url) => {
+    const res = await fetch(url, { headers: { 'user-agent': 'rented-noindex-check' } });
+    return { res, text: await res.text() };
+  };
+  const robotsMetas = (html) =>
+    [...html.matchAll(/<meta[^>]+name=["']robots["'][^>]*>/gi)].map(
+      (m) => /content=["']([^"']*)["']/i.exec(m[0])?.[1] ?? '',
+    );
+
+  // --- a. Rented/absent unit raw page is intact. -----------------------------
+  const rentedUrl = `${BASE}/available-units/${absentUnit}`;
+  let rentedHtml = '';
+  try {
+    const { res, text } = await get(rentedUrl);
+    rentedHtml = text;
+    if (res.status === 404) {
+      // A unit with no rewrite pair 404s in production — a 404 cannot be
+      // indexed, so there is no stale-pricing risk on this URL at all.
+      ok(rentedUrl, 'HTTP 404 — not indexable, no stale-pricing risk on this URL.');
+    } else if (!res.ok) {
+      fail(rentedUrl, `HTTP ${res.status} — the page should serve (prerendered page, SPA fallback, or a clean 404).`);
+    } else {
+      ok(rentedUrl, `HTTP ${res.status}.`);
+      const robots = robotsMetas(rentedHtml);
+      if (robots.length !== 1) {
+        fail(rentedUrl, `${robots.length} robots metas in RAW HTML [${robots.join(' | ')}] — expected exactly 1 (hydration owns its value; a stale index,follow here is expected and fixed client-side).`);
+      } else ok(rentedUrl, `exactly one robots meta in raw HTML ("${robots[0]}").`);
+      if (!/<script[^>]+type=["']module["']/i.test(rentedHtml)) {
+        fail(rentedUrl, 'no <script type="module"> in raw HTML — hydration cannot run, so the stale head would never be corrected.');
+      } else ok(rentedUrl, 'hydration module scripts present.');
+    }
+  } catch (err) {
+    fail(rentedUrl, `fetch failed: ${err.message}`);
+  }
+
+  // --- b. Shipped bundles still contain the sold-out + noindex logic. --------
+  try {
+    const assetUrls = new Set();
+    for (const m of rentedHtml.matchAll(/(?:src|href)=["']([^"']*\/assets\/[^"']+\.js)["']/g)) {
+      assetUrls.add(new URL(m[1], `${BASE}/`).href);
+    }
+    if (assetUrls.size === 0) {
+      fail(rentedUrl, 'no JS asset references found in the raw HTML — cannot verify the shipped bundle.');
+    } else {
+      // One level of chunk-graph expansion: lazy route chunks (UnitDetail)
+      // are referenced by path inside the fetched chunks.
+      let foundTitle = false;
+      let foundNoindex = false;
+      const queue = [...assetUrls];
+      const seen = new Set(queue);
+      const MAX_ASSETS = 40;
+      while (queue.length > 0 && seen.size <= MAX_ASSETS && !(foundTitle && foundNoindex)) {
+        const url = queue.shift();
+        let js = '';
+        try {
+          const { res, text } = await get(url);
+          if (!res.ok) continue;
+          js = text;
+        } catch {
+          continue;
+        }
+        if (js.includes(SOLD_OUT_TITLE)) foundTitle = true;
+        if (/noindex/i.test(js)) foundNoindex = true;
+        for (const m of js.matchAll(/["']([\w./-]*assets\/[\w.-]+\.js)["']/g)) {
+          const next = new URL(m[1].replace(/^\.\//, ''), `${BASE}/`).href;
+          if (!seen.has(next) && seen.size < MAX_ASSETS) {
+            seen.add(next);
+            queue.push(next);
+          }
+        }
+      }
+      if (!foundTitle) {
+        fail('shipped JS bundles', `sold-out title "${SOLD_OUT_TITLE}" not found in ${seen.size} reachable chunk(s) — the UnitDetail sold-out branch may have been refactored away (or is no longer reachable from the unit page).`);
+      } else ok('shipped JS bundles', 'sold-out title present in the shipped code.');
+      if (!foundNoindex) {
+        fail('shipped JS bundles', 'no "noindex" directive found in any reachable chunk — the Seo noindex logic may have been removed.');
+      } else ok('shipped JS bundles', 'noindex directive present in the shipped code.');
+    }
+  } catch (err) {
+    fail('shipped JS bundles', `bundle scan failed: ${err.message}`);
+  }
+
+  // --- c. /available-units raw head stays indexable. --------------------------
+  const listUrl = `${BASE}/available-units`;
+  try {
+    const { res, text } = await get(listUrl);
+    if (!res.ok) {
+      fail(listUrl, `HTTP ${res.status}.`);
+    } else {
+      const robots = robotsMetas(text);
+      if (robots.length !== 1) {
+        fail(listUrl, `${robots.length} robots metas in RAW HTML [${robots.join(' | ')}] — expected exactly 1.`);
+      } else if (/noindex/i.test(robots[0])) {
+        fail(listUrl, `raw robots meta says "${robots[0]}" — the availability page must stay indexable.`);
+      } else ok(listUrl, `exactly one robots meta, indexable ("${robots[0]}").`);
+    }
+  } catch (err) {
+    fail(listUrl, `fetch failed: ${err.message}`);
+  }
+
+  console.log(
+    `note  HTTP-level subset only: hydration behaviour (${liveUnits.size} live units vs rendered JSON-LD, rendered noindex flip) needs Chromium and is covered by workspace/postpublish runs.`,
+  );
 }
 
 main()
