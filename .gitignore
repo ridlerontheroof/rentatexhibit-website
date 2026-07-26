@@ -51,3 +51,4 @@ email-previews/
 
 # Runtime-generated availability snapshot (rebuilt on server start)
 artifacts/api-server/src/data/availabilitySeed.json
+artifacts/exhibit-on-superior/src/data/availabilitySnapshot.json
