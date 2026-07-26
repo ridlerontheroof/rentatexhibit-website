@@ -14,6 +14,13 @@ export const TOUR_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
 export interface Faq {
   q: string;
   a: string;
+  /**
+   * Slug of the fuller Knowledge Center article this quick answer summarizes.
+   * Drives the "Full answer →" cross-link on /faq and the FAQ↔Knowledge
+   * consistency guard (src/data/faq-knowledge-alignment.test.ts): the slug
+   * must resolve, and concrete facts in the two answers must agree.
+   */
+  knowledgeSlug?: string;
 }
 
 export interface PageSeo {
@@ -568,6 +575,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'Where is Exhibit On Superior located?',
+        knowledgeSlug: 'building-address',
         a: 'Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654 in the River North area.',
       },
       {
@@ -580,6 +588,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       },
       {
         q: 'Who manages Exhibit On Superior?',
+        knowledgeSlug: 'who-manages-exhibit',
         a: 'The community is professionally managed on site; contact the leasing office at exhibit@highlandptrs.com or 312-450-0635.',
       },
     ],
@@ -591,22 +600,27 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'What apartment sizes are available?',
+        knowledgeSlug: 'what-apartment-sizes',
         a: 'The community offers studio, convertible, one, two, and three-bedroom apartment homes from about 448 to 1,528 square feet across floors 2\u201334.',
       },
       {
         q: 'Do apartments have in-unit laundry?',
+        knowledgeSlug: 'in-unit-laundry',
         a: 'Yes. In-home washer/dryers are a standard apartment feature.',
       },
       {
         q: 'What finishes do apartments have?',
+        knowledgeSlug: 'apartment-finishes',
         a: 'Homes feature driftwood plank floors, quartz countertops, tiled backsplashes, stainless-steel appliances, floor-to-ceiling windows, and private balconies.',
       },
       {
         q: 'What is the largest apartment?',
+        knowledgeSlug: 'largest-apartment',
         a: 'A three-bedroom, three-bath residence of 1,528 square feet on the penthouse-level floors 30\u201334.',
       },
       {
         q: 'Are furnished apartments available?',
+        knowledgeSlug: 'are-apartments-furnished',
         a: 'No. Apartments are offered unfurnished only.',
       },
     ],
@@ -618,22 +632,27 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'How do I check current pricing and availability?',
+        knowledgeSlug: 'how-much-is-rent',
         a: 'The Available Units page lists every available residence with live rent, photos, and move-in dates synced from the leasing system.',
       },
       {
         q: 'What fees are required in addition to rent?',
+        knowledgeSlug: 'what-fees-in-addition-to-rent',
         a: 'Each unit\u2019s listing shows its application fee. There is also a $500 non-refundable administration fee per apartment and a monthly Utility & Service Amenity fee of $95\u2013$195 by floor plan. There is no security deposit.',
       },
       {
         q: 'Are utilities included?',
+        knowledgeSlug: 'what-utility-fee-covers',
         a: 'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, A/C, and natural gas for cooking and the dryer; electricity is billed directly by ComEd.',
       },
       {
         q: 'Does Exhibit offer move-in specials?',
+        knowledgeSlug: 'move-in-specials',
         a: 'Exhibit is not offering move-in concessions at this time \u2014 ask the leasing team about future offers.',
       },
       {
         q: 'How much is parking?',
+        knowledgeSlug: 'how-much-does-parking-cost',
         a: 'Garage parking in the attached indoor garage is $335 per month per unreserved space, subject to availability.',
       },
     ],
@@ -645,22 +664,27 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'What amenities does Exhibit On Superior offer?',
+        knowledgeSlug: 'full-amenity-list',
         a: 'Amenities include a full-floor amenity deck, fitness center, 75-foot lap pool, outdoor hot tub, sauna, lounges, work and meeting rooms, music studio, dog spa, grilling stations, fire pits, and outdoor areas.',
       },
       {
         q: 'Does Exhibit On Superior have a pool?',
+        knowledgeSlug: 'is-there-a-pool',
         a: 'Yes \u2014 a 75-foot lap pool on the amenity floor, plus an outdoor hot tub and sauna.',
       },
       {
         q: 'Is there space to work from home?',
+        knowledgeSlug: 'work-from-home-spaces',
         a: 'Yes. Private work and meeting rooms, a tech lounge with charging stations and kitchen, a library nook, and reading alcoves.',
       },
       {
         q: 'Does Exhibit have on-site retail?',
+        knowledgeSlug: 'on-site-retail',
         a: 'Yes. On-site retail and wellness options include fitness, food, and spa services.',
       },
       {
         q: 'Is there a 24-hour concierge?',
+        knowledgeSlug: 'front-desk-hours',
         a: 'Yes. The front desk is staffed 24 hours a day, and indoor amenities are open 24/7.',
       },
     ],
@@ -672,14 +696,17 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'Is Exhibit On Superior pet-friendly?',
+        knowledgeSlug: 'how-many-pets',
         a: 'Yes. Cats and dogs are welcome, with a maximum of 2 pets per apartment.',
       },
       {
         q: 'Are there pet amenities?',
+        knowledgeSlug: 'pet-amenities',
         a: 'Yes \u2014 a doggie spa and lounge inside the building and a gated outdoor dog walk.',
       },
       {
         q: 'What are the pet fees and breed rules?',
+        knowledgeSlug: 'what-are-pet-fees',
         a: 'One-time non-refundable pet fee: $650 for one dog or $750 for two, $325 for cats. No pet deposit, no monthly pet rent, no weight limits. Breed restrictions apply \u2014 see a leasing consultant for details.',
       },
     ],
@@ -691,22 +718,27 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'What neighborhood is Exhibit On Superior in?',
+        knowledgeSlug: 'what-neighborhood',
         a: 'Exhibit On Superior is in River North in Chicago.',
       },
       {
         q: 'How close is the CTA?',
+        knowledgeSlug: 'cta-proximity',
         a: 'The Chicago Brown/Purple Line station (Chicago & Franklin) is about two blocks away; the Chicago Red Line station (Chicago & State) is roughly 0.3 miles.',
       },
       {
         q: 'Is Exhibit close to a grocery store?',
+        knowledgeSlug: 'neighborhood-groceries',
         a: 'Yes. Whole Foods (3 W Chicago Ave), Jewel-Osco (550 N State St), and Trader Joe\u2019s (44 E Ontario St) are all within about half a mile.',
       },
       {
         q: 'Is Exhibit walkable to the Loop?',
+        knowledgeSlug: 'walk-to-the-loop',
         a: 'Yes \u2014 the Loop is roughly a mile south, about a 20-minute walk or one Brown Line stop.',
       },
       {
         q: 'What is nearby?',
+        knowledgeSlug: 'whats-near-superior-and-wells',
         a: 'Cafes, restaurants, shops, parks, the Chicago River, West Loop, Old Town, and Fulton Market.',
       },
     ],
@@ -718,22 +750,27 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'How do I schedule a tour?',
+        knowledgeSlug: 'schedule-a-tour',
         a: 'Choose the residence you\u2019re interested in on the Available Units page and use its Schedule a Tour button, email exhibit@highlandptrs.com, or call 312-450-0635.',
       },
       {
         q: 'Can I tour virtually?',
+        knowledgeSlug: 'virtual-tours',
         a: 'Yes. The Virtual Tour page includes video and Matterport tour embeds for apartment and amenity previews.',
       },
       {
         q: 'How do I apply?',
+        knowledgeSlug: 'how-do-i-apply',
         a: 'Open any available residence on the Available Units page and use its Apply Now button \u2014 each unit links directly to its own secure online application.',
       },
       {
         q: 'What credit score is required and are guarantors accepted?',
+        knowledgeSlug: 'credit-score-required',
         a: 'A minimum credit score of 700 is required, or 600+ with a qualified co-signer. Qualified co-signers are accepted.',
       },
       {
         q: 'What lease terms are available?',
+        knowledgeSlug: 'lease-terms',
         a: '12+ month lease terms are available; short-term leases are offered based on availability. Approval typically takes 1\u20133 business days.',
       },
     ],
@@ -745,10 +782,12 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
     faqs: [
       {
         q: 'Who should residents contact?',
+        knowledgeSlug: 'who-manages-exhibit',
         a: 'Residents can contact Exhibit On Superior at exhibit@highlandptrs.com or 312-450-0635.',
       },
       {
         q: 'Where should residents log in?',
+        knowledgeSlug: 'resident-portal',
         a: 'Current residents use the resident portal linked from the Residents page for payments and maintenance requests.',
       },
     ],

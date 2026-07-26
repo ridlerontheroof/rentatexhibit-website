@@ -5,6 +5,7 @@ import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { Plus } from 'lucide-react';
 import { FAQ_HUB_TOPICS } from '../data/seo';
+import { knowledgePath } from '../data/knowledge';
 import { KnowledgeLinks } from '../components/KnowledgeLinks';
 
 /**
@@ -53,6 +54,16 @@ export function FaqHub() {
                         <Plus className="h-5 w-5 shrink-0 text-primary transition-transform duration-200 group-open:rotate-45" />
                       </summary>
                       <p className="mt-3 leading-relaxed text-muted-foreground">{faq.a}</p>
+                      {faq.knowledgeSlug ? (
+                        <p className="mt-2">
+                          <Link
+                            href={knowledgePath(faq.knowledgeSlug)}
+                            className="text-sm text-primary underline underline-offset-4"
+                          >
+                            Full answer &rarr;
+                          </Link>
+                        </p>
+                      ) : null}
                     </details>
                   ))}
                 </div>
