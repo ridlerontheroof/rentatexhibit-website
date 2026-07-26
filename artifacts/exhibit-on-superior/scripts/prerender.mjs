@@ -718,6 +718,19 @@ console.log(
   console.log('Knowledge not-found stub written (noindex, served via /knowledge/* rewrite).');
 }
 
+// Site-wide 404 page: the production server (server/index.mjs) serves this
+// with a real 404 status for any unknown path, replacing the old static-host
+// soft-404 (200 + homepage HTML). noindex keeps it out of the index; the SPA
+// hydrates into its NotFound route for JS-enabled visitors.
+{
+  const stub = template.replace(
+    SEO_BLOCK,
+    `<!-- seo:start -->\n    <title>Page Not Found | Exhibit On Superior</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This page does not exist. Visit ${SITE_URL} for luxury apartments in River North, Chicago." />\n    <!-- seo:end -->`,
+  );
+  await fs.writeFile(path.join(publicDir, '404.html'), stub, 'utf8');
+  console.log('404 page written (noindex, served with status 404 by the production server).');
+}
+
 // llms.txt + llms-full.txt: regenerated every build so they can never drift
 // from the deployed page set. llms.txt stays a concise entry point (curated
 // primary pages + the Knowledge Center hub); llms-full.txt is the rich

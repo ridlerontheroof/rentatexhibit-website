@@ -13,9 +13,22 @@ localPort = 25383
 [services.development]
 run = "pnpm --filter @workspace/exhibit-on-superior run dev"
 
+# SEO Phase 1: production serves via server/index.mjs (Express) instead of the
+# platform static edge, adding compression, cache headers, security headers,
+# non-slash 301s, and real 404s. The rewrite table below stays authoritative:
+# the server parses it at startup, and the prerender/unit-rewrite guards keep
+# it in sync with the page data.
 [services.production]
-serve = "static"
-publicDir = "artifacts/exhibit-on-superior/dist/public"
+
+[services.production.run]
+args = [ "node", "artifacts/exhibit-on-superior/server/index.mjs" ]
+
+[services.production.run.env]
+PORT = "25383"
+NODE_ENV = "production"
+
+[services.production.health.startup]
+path = "/healthz"
 
 # CI=true marks this as a deployment build so the fact-sheet PDF guard in
 # scripts/generate-fact-sheet.ts warns instead of failing when the deploy

@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
-    "build": "node scripts/fetch-availability-snapshot.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs && tsx scripts/generate-fact-sheet.ts",
+    "build": "node scripts/fetch-availability-snapshot.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs && tsx scripts/generate-fact-sheet.ts && node scripts/precompress.mjs",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
+    "start": "node server/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "check:fold": "node scripts/check-units-above-fold.mjs",
@@ -89,6 +90,7 @@
     "zod": "catalog:"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "react-helmet-async": "^3.0.0"
   }
 }

@@ -24,6 +24,21 @@ Current category scores and the ceiling holding each one down:
 
 ## Phase 1 — Serve the site from a small server (unblocks 4 categories at once)
 
+> **Status (2026-07-26): implemented, awaiting publish.** `server/index.mjs`
+> (Express) now serves `dist/public` in production (autoscale run in
+> `artifact.toml`, `/healthz` startup probe). Build pre-compresses all text
+> assets to `.br`/`.gz` (`scripts/precompress.mjs`, ~3.8 MB → ~0.76 MB brotli);
+> hashed assets/images ship `max-age=31536000, immutable`, HTML
+> `max-age=300, must-revalidate`. Security headers live (HSTS, XFO DENY,
+> nosniff, Referrer-Policy, Permissions-Policy); CSP ships **Report-Only**
+> (set `CSP_ENFORCE=1` to enforce after verifying GTM/YouTube/Maps/AppFolio
+> load clean in production). Trailing-slash URLs 301 to the non-slash
+> canonicals; unknown paths get a prerendered noindex 404 page with status
+> 404 (`/knowledge/*` keeps its stub; `/sitemaps.xml` now 404s). The server
+> parses the artifact.toml rewrite table at startup so routing cannot drift
+> from the guarded config. Re-run the full squirrel audit after the next
+> publish and record scores in `seo-audit-2026-07-26.md`.
+
 Every "platform-served, not configurable" deferral — compression, caching,
 security headers, soft 404s, trailing-slash redirect direction — has a single
 structural fix: stop using the platform static-serve edge and serve
