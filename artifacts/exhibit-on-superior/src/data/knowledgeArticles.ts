@@ -1008,12 +1008,12 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'What are the occupancy limits at Exhibit On Superior?',
     category: 'Leasing & Applications',
     answer:
-      'Occupancy at Exhibit On Superior complies with Chicago Building Code requirements. Because limits depend on the apartment size and code, confirm the maximum for a specific floor plan with the leasing team at exhibit@highlandptrs.com or 312-450-0635. Every adult occupant applies through the online application, at $60 per applicant.',
+      'Occupancy at Exhibit On Superior follows the Chicago Building Code standard: 2 persons per sleeping room plus 1 additional occupant per apartment. A studio or convertible counts as 1 sleeping room (3 occupants); a one-bedroom allows 4; a two-bedroom allows 5; a three-bedroom allows 7. Every adult on the lease submits their own application at $60 per applicant.',
     sections: [
       {
         paragraphs: [
-          'Rather than a flat per-unit number, occupancy follows Chicago Building Code, which the leasing office applies to each floor plan.',
-          'Each adult on the lease submits their own application and pays the $60 application fee.',
+          'The formula — 2 per sleeping room + 1 — is set by Chicago Building Code and applies uniformly across floor plans by bedroom count.',
+          'Each adult occupant submits their own application and pays the $60 application fee.',
         ],
       },
     ],
