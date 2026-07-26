@@ -59,6 +59,7 @@ export function FaqHub() {
                           <Link
                             href={knowledgePath(faq.knowledgeSlug)}
                             className="text-sm text-primary underline underline-offset-4"
+                            aria-label={`Full answer: ${faq.q}`}
                           >
                             Full answer &rarr;
                           </Link>
