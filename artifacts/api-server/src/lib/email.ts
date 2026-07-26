@@ -8,6 +8,7 @@ import {
   renderLeadNotification,
   renderProspectConfirmation,
   renderSeedStaleAlert,
+  renderShowingSchedulerAlert,
 } from "./emailTemplates";
 import {
   EMAIL_LOGO_BASE64,
@@ -310,6 +311,35 @@ export async function sendFeeCopyAlert(opts: {
   logger.info(
     { recipient: LEASING_INBOX_EMAIL, unit: opts.unit },
     "Sent fee-copy contradiction alert email",
+  );
+}
+
+/**
+ * Alert that the Exhibit-branded showing scheduler's AppFolio probe keeps
+ * failing (endpoints changed) or that identity verification switched on.
+ * Goes to the operational recipient because the fix is investigation/code,
+ * not a leasing action. Throws when the mailer is unconfigured or the send
+ * fails; deduping lives in the caller (showingSchedulerCheck).
+ */
+export async function sendShowingSchedulerAlert(opts: {
+  reason: "idv_enabled" | "sustained_failure";
+  detail: string;
+  failedRuns: number;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderShowingSchedulerAlert(opts);
+  const { contentType, body } = buildMimeBody("showingalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL, reason: opts.reason },
+    "Sent showing-scheduler broken alert email",
   );
 }
 

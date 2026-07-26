@@ -5,6 +5,7 @@ import { startAvailabilityCacheWarmer } from "./routes/availability";
 import { submitCoreUrlsOnce } from "./lib/indexnow";
 import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
 import { startKnowledgePageCheck } from "./lib/knowledgeCheck";
+import { startShowingSchedulerCheck } from "./lib/showingSchedulerCheck";
 
 const rawPort = process.env["PORT"];
 
@@ -49,4 +50,9 @@ app.listen(port, (err) => {
   // prerendered HTML after every publish (server restart = post-publish
   // check), then every 6 hours; alerts at most once per day on failure.
   startKnowledgePageCheck(logger);
+
+  // Watchdog: hourly probe of AppFolio's unofficial showing-scheduler
+  // endpoints (slot fetch + IDV status) against a posted unit; alerts
+  // (once/day) on sustained failure or an enabled IDV gate.
+  startShowingSchedulerCheck(logger);
 });
