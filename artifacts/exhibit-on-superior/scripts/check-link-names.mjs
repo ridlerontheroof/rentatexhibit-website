@@ -13,8 +13,11 @@
 // one accessible name across links with more than one distinct destination.
 //
 // Rules:
-// - The accessible name is the aria-label when present, else the link text
-//   (falling back to nested <img alt="…"> text, per the accname algorithm).
+// - The accessible name follows the accname algorithm: an aria-labelledby
+//   that resolves to text (references are resolved within the same page)
+//   wins, else the aria-label when present, else the link text (falling back
+//   to nested <img alt="…"> text). A labelledby whose referenced ids are all
+//   missing or empty contributes nothing and falls through.
 // - Same name + same href is fine (e.g. header and footer nav to /amenities).
 // - In-page hash links (href="#…") are skipped: a "#residents" jump link and
 //   a "/residents" page link legitimately share a name.
@@ -126,8 +129,13 @@ for (const file of pages) {
     const inner = m[2];
     const href = (attrs.match(/href="([^"]*)"/) || [])[1];
     if (!href || href.startsWith('#')) continue;
+    // accname precedence: aria-labelledby (when it resolves to text) beats
+    // aria-label, which beats content. A labelledby whose referenced ids are
+    // missing or empty contributes nothing and falls through to the next
+    // source — so a broken reference with no other name source is flagged.
+    const labelledby = resolveLabelledby(attrs, html);
     const label = attrs.match(/aria-label="([^"]*)"/);
-    let name = decode(label ? label[1] : inner).toLowerCase();
+    let name = labelledby || decode(label ? label[1] : inner).toLowerCase();
     if (!name) {
       // accname fallback: alt text of nested images.
       name = [...inner.matchAll(/<img\b[^>]*\balt="([^"]*)"/g)]
@@ -137,7 +145,9 @@ for (const file of pages) {
         .toLowerCase();
     }
     if (!name) {
-      // Icon-only link with no spoken name at all — announces as just "link".
+      // No spoken name: either icon-only with no text/label/alt, or an
+      // aria-labelledby that points at a missing or empty element — the link
+      // announces as just "link".
       if (!/aria-hidden="true"/.test(attrs)) {
         unnamed.push({ page, href: decode(href) });
       }
