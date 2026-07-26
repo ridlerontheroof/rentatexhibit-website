@@ -355,6 +355,11 @@ export function PlanLightbox({
 
   // Desktop: click-and-drag pans while zoomed in.
   const onMouseDown = (e: React.MouseEvent) => {
+    // A drag's synthetic click (if any) fires before the next mousedown; a
+    // still-set flag means the click never arrived (e.g. mouseup happened off
+    // the image), so clear it here rather than letting it swallow this
+    // interaction's deliberate click. Mirrors the sheet's pointerdown clear.
+    suppressClick.current = false;
     if (e.button !== 0 || pinch.scale <= 1) return;
     e.preventDefault();
     mouseDrag.current = {
