@@ -35,6 +35,8 @@ import { ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
 import {
   SQFT_MIN,
   SQFT_MAX,
+  FLOOR_BANDS,
+  CATEGORIES,
   type Category,
   type PlanGroup,
   type SortKey,
@@ -62,21 +64,74 @@ function readAdaFromUrl(): boolean {
   return value === '1' || value === 'true';
 }
 
-function writeAdaToUrl(on: boolean) {
-  if (typeof window === 'undefined') return;
-  const params = new URLSearchParams(window.location.search);
-  if (on) params.set('ada', '1');
-  else params.delete('ada');
-  const query = params.toString();
-  const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
-  window.history.replaceState(null, '', newUrl);
-}
-
 function writePlanToUrl(id: string | null) {
   if (typeof window === 'undefined') return;
   const params = new URLSearchParams(window.location.search);
   if (id) params.set('plan', id);
   else params.delete('plan');
+  const query = params.toString();
+  const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
+  window.history.replaceState(null, '', newUrl);
+}
+
+// Shareable filters: bedroom categories (`beds`), floor bands (`floors`), and
+// the square-footage range (`sqft=min-max`) round-trip to the URL the same way
+// `ada` does, so copying the address bar reproduces the filtered view.
+const VALID_CATEGORIES = new Set<Category>(['studio', 'convertible', '1br', '2br', '3br']);
+const VALID_BANDS = new Set(FLOOR_BANDS.map((b) => b.id));
+
+export function readFiltersFromUrl(): FilterState {
+  const base: FilterState = {
+    categories: new Set<Category>(),
+    bands: new Set<string>(),
+    sqft: [SQFT_MIN, SQFT_MAX],
+    ada: readAdaFromUrl(),
+  };
+  if (typeof window === 'undefined') return base;
+  const params = new URLSearchParams(window.location.search);
+
+  for (const raw of (params.get('beds') ?? '').split(',')) {
+    const value = raw.trim() as Category;
+    if (VALID_CATEGORIES.has(value)) base.categories.add(value);
+  }
+  for (const raw of (params.get('floors') ?? '').split(',')) {
+    const value = raw.trim();
+    if (VALID_BANDS.has(value)) base.bands.add(value);
+  }
+  const sqft = params.get('sqft');
+  if (sqft) {
+    const match = /^(\d+)-(\d+)$/.exec(sqft.trim());
+    if (match) {
+      const lo = Math.max(SQFT_MIN, Math.min(SQFT_MAX, Number(match[1])));
+      const hi = Math.max(SQFT_MIN, Math.min(SQFT_MAX, Number(match[2])));
+      if (lo <= hi) base.sqft = [lo, hi];
+    }
+  }
+  return base;
+}
+
+export function writeFiltersToUrl(filters: FilterState) {
+  if (typeof window === 'undefined') return;
+  const params = new URLSearchParams(window.location.search);
+
+  if (filters.categories.size > 0) {
+    // Keep a stable, canonical order so equivalent views share one URL.
+    const beds = CATEGORIES.filter((c) => filters.categories.has(c.id)).map((c) => c.id);
+    params.set('beds', beds.join(','));
+  } else params.delete('beds');
+
+  if (filters.bands.size > 0) {
+    const floors = FLOOR_BANDS.filter((b) => filters.bands.has(b.id)).map((b) => b.id);
+    params.set('floors', floors.join(','));
+  } else params.delete('floors');
+
+  if (filters.sqft[0] !== SQFT_MIN || filters.sqft[1] !== SQFT_MAX) {
+    params.set('sqft', `${filters.sqft[0]}-${filters.sqft[1]}`);
+  } else params.delete('sqft');
+
+  if (filters.ada) params.set('ada', '1');
+  else params.delete('ada');
+
   const query = params.toString();
   const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
   window.history.replaceState(null, '', newUrl);
@@ -92,12 +147,7 @@ const bakedUnitStructuredData = unitAvailabilityJsonLd();
 
 export function FloorPlans() {
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState<FilterState>({
-    categories: new Set<Category>(),
-    bands: new Set<string>(),
-    sqft: [SQFT_MIN, SQFT_MAX],
-    ada: readAdaFromUrl(),
-  });
+  const [filters, setFilters] = useState<FilterState>(readFiltersFromUrl);
   const [sort, setSort] = useState<SortKey>('featured');
   // Live-feed structured data: once the availability query resolves (it starts
   // from the baked snapshot via placeholderData), the Apartment/Offer graph
@@ -154,28 +204,32 @@ export function FloorPlans() {
     writePlanToUrl(nextGroup.id);
   };
 
-  const toggleCategory = (c: Category) =>
+  // Single funnel for filter changes so the URL always mirrors the state.
+  const updateFilters = (update: (f: FilterState) => FilterState) =>
     setFilters((f) => {
+      const next = update(f);
+      writeFiltersToUrl(next);
+      return next;
+    });
+
+  const toggleCategory = (c: Category) =>
+    updateFilters((f) => {
       const categories = new Set(f.categories);
       categories.has(c) ? categories.delete(c) : categories.add(c);
       return { ...f, categories };
     });
 
   const toggleBand = (id: string) =>
-    setFilters((f) => {
+    updateFilters((f) => {
       const bands = new Set(f.bands);
       bands.has(id) ? bands.delete(id) : bands.add(id);
       return { ...f, bands };
     });
 
-  const setSqft = (range: [number, number]) => setFilters((f) => ({ ...f, sqft: range }));
+  const setSqft = (range: [number, number]) =>
+    updateFilters((f) => ({ ...f, sqft: range }));
 
-  const toggleAda = () =>
-    setFilters((f) => {
-      const ada = !f.ada;
-      writeAdaToUrl(ada);
-      return { ...f, ada };
-    });
+  const toggleAda = () => updateFilters((f) => ({ ...f, ada: !f.ada }));
 
   const hasActiveFilters =
     search.trim() !== '' ||
@@ -187,8 +241,12 @@ export function FloorPlans() {
 
   const resetAll = () => {
     setSearch('');
-    setFilters({ categories: new Set(), bands: new Set(), sqft: [SQFT_MIN, SQFT_MAX], ada: false });
-    writeAdaToUrl(false);
+    updateFilters(() => ({
+      categories: new Set(),
+      bands: new Set(),
+      sqft: [SQFT_MIN, SQFT_MAX],
+      ada: false,
+    }));
   };
 
   const filterProps = {
