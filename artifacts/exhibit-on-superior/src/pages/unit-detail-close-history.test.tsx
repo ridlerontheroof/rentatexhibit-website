@@ -82,7 +82,7 @@ function dialogOpen(): boolean {
 
 describe('UnitDetail photo gallery lightbox vs. history', () => {
   function openGallery() {
-    const btn = screen.getByRole('button', { name: /view all .* photos/i });
+    const btn = screen.getByRole('button', { name: /photos of apartment .* view all/i });
     act(() => {
       fireEvent.click(btn);
     });

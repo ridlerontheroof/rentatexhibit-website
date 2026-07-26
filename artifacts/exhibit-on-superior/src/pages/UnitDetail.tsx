@@ -171,7 +171,10 @@ export function UnitDetail() {
             type="button"
             onClick={() => setGalleryOpen(true)}
             className="relative mt-6 grid w-full cursor-pointer grid-cols-4 grid-rows-2 gap-1 overflow-hidden"
-            aria-label={`View all ${unit.photos.length} photos of apartment ${unit.unit}`}
+            // Visible badge text is "{n} photos", so the accessible name must
+            // BEGIN with it (WCAG 2.5.3 label-in-name — guarded site-wide by
+            // prerender-link-names.test.ts).
+            aria-label={`${unit.photos.length} photos of apartment ${unit.unit} — view all`}
           >
             {/* The lead collage photo is above the fold, so it loads eagerly
                 with high fetch priority (lazy-loading the largest visible
