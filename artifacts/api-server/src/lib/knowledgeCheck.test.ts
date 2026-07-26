@@ -225,6 +225,52 @@ describe("checkKnowledgePagesOnce alerting", () => {
     expect(sendAlert).not.toHaveBeenCalled();
   });
 
+  it("escalates after 4 consecutive all-fetch-error runs, throttled once/day", async () => {
+    const deadFetch = makeFetch(() => new Error("ENOTFOUND"));
+    for (let i = 0; i < 3; i++) {
+      await checkKnowledgePagesOnce(logger as never, DAY1, deadFetch);
+    }
+    expect(sendAlert).not.toHaveBeenCalled();
+
+    await checkKnowledgePagesOnce(logger as never, DAY1, deadFetch);
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+    expect(sendAlert.mock.calls[0]![0].failures[0]).toMatch(/unreachable/);
+
+    // Still down later the same day — throttle blocks a second email.
+    await checkKnowledgePagesOnce(logger as never, DAY1_LATER, deadFetch);
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+
+    // Still down the next day — one more email.
+    await checkKnowledgePagesOnce(logger as never, DAY2, deadFetch);
+    expect(sendAlert).toHaveBeenCalledTimes(2);
+  });
+
+  it("a successful run resets the unreachable-run counter", async () => {
+    const deadFetch = makeFetch(() => new Error("ENOTFOUND"));
+    for (let i = 0; i < 3; i++) {
+      await checkKnowledgePagesOnce(logger as never, DAY1, deadFetch);
+    }
+    await checkKnowledgePagesOnce(logger as never, DAY1, healthyFetch());
+    // Three more failures after the reset — still below the threshold.
+    for (let i = 0; i < 3; i++) {
+      await checkKnowledgePagesOnce(logger as never, DAY1, deadFetch);
+    }
+    expect(sendAlert).not.toHaveBeenCalled();
+  });
+
+  it("a partially-reachable run (some fetches succeed) does not count as unreachable", async () => {
+    // Sitemap loads, but every page fetch errors — not total unreachability.
+    const partialFetch = makeFetch((url) =>
+      url.endsWith("/sitemap.xml")
+        ? { status: 200, body: sitemapXml() }
+        : new Error("timeout"),
+    );
+    for (let i = 0; i < 6; i++) {
+      await checkKnowledgePagesOnce(logger as never, DAY1, partialFetch);
+    }
+    expect(sendAlert).not.toHaveBeenCalled();
+  });
+
   it("skips the send (but still claims) when the mailer is unconfigured", async () => {
     mailerConfiguredMock.mockReturnValue(false);
     await checkKnowledgePagesOnce(logger as never, DAY1, brokenFetch());

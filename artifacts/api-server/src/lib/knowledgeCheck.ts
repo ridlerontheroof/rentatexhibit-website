@@ -38,9 +38,18 @@ const FETCH_TIMEOUT_MS = 20_000;
 const SAMPLE_SIZE = 10;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const USER_AGENT = "exhibit-knowledge-check/1.0";
+/**
+ * How many consecutive runs where EVERY fetch errored (production totally
+ * unreachable) before escalating to an alert. At the 6-hour interval, 4 runs
+ * ≈ a full day of unreachability — no longer plausibly a transient blip.
+ */
+const UNREACHABLE_ESCALATION_RUNS = 4;
 
 /** UTC day ("YYYY-MM-DD") the alert was last sent — in-memory fallback only. */
 let alertedOnDay: string | null = null;
+
+/** Consecutive runs in which every single fetch failed (per-process). */
+let consecutiveUnreachableRuns = 0;
 
 function utcDay(now: number): string {
   return new Date(now).toISOString().slice(0, 10);
@@ -132,9 +141,9 @@ export async function runKnowledgeChecks(
 
   // --- Discover slugs from the sitemap ------------------------------------
   let slugs: string[];
+  checkedCount++;
   try {
     const { status, body } = await fetchText(`${SITE}/sitemap.xml`, fetchImpl);
-    checkedCount++;
     if (status !== 200) {
       failures.push(`${SITE}/sitemap.xml: HTTP ${status}`);
       return { failures, fetchErrors, checkedCount };
@@ -245,7 +254,28 @@ export async function checkKnowledgePagesOnce(
 ): Promise<void> {
   const result = await runKnowledgeChecks(log, fetchImpl);
 
-  if (result.failures.length === 0) {
+  // Track total-unreachability: a run where EVERY attempted fetch errored.
+  // A single such run is treated as transient, but many in a row means
+  // production (or DNS/CDN) has been down for ~a day and must escalate.
+  const allFetchesErrored =
+    result.fetchErrors.length > 0 &&
+    result.fetchErrors.length === result.checkedCount;
+  consecutiveUnreachableRuns = allFetchesErrored
+    ? consecutiveUnreachableRuns + 1
+    : 0;
+
+  let failures = result.failures;
+  if (
+    failures.length === 0 &&
+    allFetchesErrored &&
+    consecutiveUnreachableRuns >= UNREACHABLE_ESCALATION_RUNS
+  ) {
+    failures = [
+      `Production has been unreachable for ${consecutiveUnreachableRuns} consecutive knowledge-page check runs (every fetch failed each time) — likely a DNS, CDN, or hosting outage. Latest errors: ${result.fetchErrors.join("; ")}`,
+    ];
+  }
+
+  if (failures.length === 0) {
     log.debug(
       { checkedCount: result.checkedCount },
       "Knowledge-page check passed",
@@ -254,7 +284,7 @@ export async function checkKnowledgePagesOnce(
   }
 
   log.error(
-    { failures: result.failures, checkedCount: result.checkedCount },
+    { failures, checkedCount: result.checkedCount },
     "Knowledge Center pages are serving the wrong content — crawlers see the homepage instead of the answers",
   );
 
@@ -276,7 +306,7 @@ export async function checkKnowledgePagesOnce(
     if (!claimed) return;
     if (!mailerConfigured()) return;
     await sendKnowledgeCheckAlert({
-      failures: result.failures,
+      failures,
       checkedCount: result.checkedCount,
     });
   } catch (err) {
@@ -307,4 +337,5 @@ export function startKnowledgePageCheck(log: Logger = defaultLogger): void {
 /** Test-only: clear the per-process fallback dedupe state. */
 export function __resetKnowledgeCheckForTests(): void {
   alertedOnDay = null;
+  consecutiveUnreachableRuns = 0;
 }
