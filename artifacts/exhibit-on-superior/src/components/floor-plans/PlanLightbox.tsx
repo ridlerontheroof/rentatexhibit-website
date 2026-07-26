@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { LightboxShortcutControls } from '../LightboxShortcutControls';
 import { Link, useLocation } from 'wouter';
 import { unitNumbersForPlan, planSqftLabel, type PlanGroup } from '../../data/floorPlans';
 import { usePinchZoom } from '../../hooks/use-pinch-zoom';
@@ -459,73 +460,24 @@ export function PlanLightbox({
               />
             </div>
 
-            {/* Zoom toggle */}
-            <button
-              type="button"
-              onClick={() => {
+            {/* Shared zoom / "?" cluster + shortcut legend (mirrors the unit
+                photo gallery and the Photo Gallery page by construction). */}
+            <LightboxShortcutControls
+              legendId="plan-shortcuts-legend"
+              showShortcuts={showShortcuts}
+              onToggleShortcuts={() => setShowShortcuts((s) => !s)}
+              onDismissShortcuts={() => setShowShortcuts(false)}
+              zoomedIn={zoomed || pinchZoomed}
+              onZoomToggle={() => {
                 if (pinchZoomed) {
                   resetPinch();
                 } else {
                   animateZoomToggle();
                 }
               }}
-              className="absolute bottom-4 left-4 flex min-h-11 items-center gap-2 bg-black/60 px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80"
-              aria-label={zoomed || pinchZoomed ? 'Zoom out' : 'Zoom in'}
-            >
-              {zoomed || pinchZoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
-              {zoomed || pinchZoomed ? 'Fit' : 'Zoom'}
-            </button>
-
-            {/* Keyboard shortcuts hint (desktop / fine-pointer only) */}
-            <button
-              type="button"
-              onClick={() => setShowShortcuts((s) => !s)}
-              aria-expanded={showShortcuts}
-              aria-controls="plan-shortcuts-legend"
-              aria-label={showShortcuts ? 'Hide keyboard shortcuts' : 'Show keyboard shortcuts'}
-              className="absolute bottom-4 left-[7.5rem] hidden min-h-11 min-w-11 items-center justify-center bg-black/60 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-black/80 pointer-fine:lg:flex"
-            >
-              ?
-            </button>
-            {showShortcuts && (
-              <div
-                id="plan-shortcuts-legend"
-                role="region"
-                aria-label="Keyboard shortcuts"
-                className="absolute bottom-16 left-4 z-10 hidden w-60 bg-black/80 p-4 text-white backdrop-blur-sm pointer-fine:lg:block"
-              >
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="text-[11px] font-semibold uppercase tracking-[2px] text-white/70">
-                    Keyboard shortcuts
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setShowShortcuts(false)}
-                    aria-label="Dismiss keyboard shortcuts"
-                    className="-mr-1 -mt-1 px-1 text-white/60 transition-colors hover:text-white"
-                  >
-                    ×
-                  </button>
-                </div>
-                <dl className="space-y-1.5 text-xs">
-                  {[
-                    ['+ / −', 'Zoom in / out'],
-                    ['0', 'Reset zoom'],
-                    ['← →', 'Next / previous plan'],
-                    ['Arrows', 'Pan while zoomed'],
-                    ['Esc', 'Fit, then close'],
-                    ['?', 'Toggle this panel'],
-                  ].map(([key, desc]) => (
-                    <div key={key} className="flex items-center justify-between gap-3">
-                      <dt className="whitespace-nowrap border border-white/25 px-1.5 py-0.5 font-mono text-[11px] text-white/90">
-                        {key}
-                      </dt>
-                      <dd className="text-right text-white/70">{desc}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            )}
+              navDescription="Next / previous plan"
+              escDescription="Fit, then close"
+            />
 
             {/* Prev / next */}
             {position.total > 1 && (

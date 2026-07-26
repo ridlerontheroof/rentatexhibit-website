@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LightboxShortcutControls } from '../LightboxShortcutControls';
 import type { AvailableUnit } from '../../hooks/use-availability';
 import { trackOutboundClick } from '../../lib/analytics';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../../hooks/use-pinch-zoom';
@@ -354,12 +355,15 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
             </button>
           </>
         )}
-        {/* Zoom toggle — visible control mirroring PlanLightbox, for visitors
-            who don't know the pinch/double-tap gestures (and assistive tech). */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
+        {/* Shared zoom / "?" cluster + shortcut legend (mirrors PlanLightbox
+            and the Photo Gallery page by construction). */}
+        <LightboxShortcutControls
+          legendId="gallery-shortcuts-legend"
+          showShortcuts={showShortcuts}
+          onToggleShortcuts={() => setShowShortcuts((s) => !s)}
+          onDismissShortcuts={() => setShowShortcuts(false)}
+          zoomedIn={pinchZoomed}
+          onZoomToggle={() => {
             if (pinchZoomed) {
               resetPinch();
             } else {
@@ -369,67 +373,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
               });
             }
           }}
-          className="absolute bottom-4 left-4 flex min-h-11 items-center gap-2 bg-black/60! px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80!"
-          aria-label={pinchZoomed ? 'Zoom out' : 'Zoom in'}
-        >
-          {pinchZoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
-          {pinchZoomed ? 'Fit' : 'Zoom'}
-        </button>
-
-        {/* Keyboard shortcuts hint (desktop / fine-pointer only) — mirrors PlanLightbox */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowShortcuts((s) => !s);
-          }}
-          aria-expanded={showShortcuts}
-          aria-controls="gallery-shortcuts-legend"
-          aria-label={showShortcuts ? 'Hide keyboard shortcuts' : 'Show keyboard shortcuts'}
-          className="absolute bottom-4 left-[7.5rem] hidden min-h-11 min-w-11 items-center justify-center bg-black/60! px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-black/80! pointer-fine:lg:flex"
-        >
-          ?
-        </button>
-        {showShortcuts && (
-          <div
-            id="gallery-shortcuts-legend"
-            role="region"
-            aria-label="Keyboard shortcuts"
-            onClick={(e) => e.stopPropagation()}
-            className="absolute bottom-16 left-4 z-10 hidden w-60 bg-black/80! p-4 text-white backdrop-blur-sm pointer-fine:lg:block"
-          >
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-[11px] font-semibold uppercase tracking-[2px] text-white/70">
-                Keyboard shortcuts
-              </p>
-              <button
-                type="button"
-                onClick={() => setShowShortcuts(false)}
-                aria-label="Dismiss keyboard shortcuts"
-                className="-mr-1 -mt-1 px-1 text-white/60 transition-colors hover:text-white"
-              >
-                ×
-              </button>
-            </div>
-            <dl className="space-y-1.5 text-xs">
-              {[
-                ['+ / −', 'Zoom in / out'],
-                ['0', 'Reset zoom'],
-                ['← →', 'Next / previous photo'],
-                ['Arrows', 'Pan while zoomed'],
-                ['Esc', 'Close'],
-                ['?', 'Toggle this panel'],
-              ].map(([key, desc]) => (
-                <div key={key} className="flex items-center justify-between gap-3">
-                  <dt className="whitespace-nowrap border border-white/25 px-1.5 py-0.5 font-mono text-[11px] text-white/90">
-                    {key}
-                  </dt>
-                  <dd className="text-right text-white/70">{desc}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        )}
+        />
       </div>
     </div>
   );
