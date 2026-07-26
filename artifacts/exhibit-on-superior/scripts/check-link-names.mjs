@@ -29,6 +29,16 @@
 //   (removed from the a11y tree), and buttons carrying aria-labelledby
 //   (named by another element — we can't resolve the reference with this
 //   regex scan, so they're trusted). No other exceptions exist today.
+// - Elements with role="button" (div/span click targets) get the same
+//   empty-name audit: screen readers announce them as buttons too, so an
+//   icon-only one with no text, aria-label, or img alt announces as just
+//   "button". Exceptions: same as <button> — aria-hidden="true" and
+//   aria-labelledby carriers are skipped. No other exceptions exist today.
+// - <input type="button|submit|reset|image"> is audited as well: the
+//   accessible name comes from value (or alt for type="image"), falling back
+//   to aria-label; submit/reset have spec default labels ("Submit"/"Reset")
+//   so only button/image can end up nameless. Exceptions: same aria-hidden /
+//   aria-labelledby escapes. No other exceptions exist today.
 //
 // Run after a build: node scripts/check-link-names.mjs   (wired into
 // check:prepublish so a publish can't ship newly ambiguous links).
@@ -118,6 +128,40 @@ for (const file of pages) {
     }
     if (!name && !/aria-hidden="true"/.test(attrs) && !/aria-labelledby="/.test(attrs)) {
       // Icon-only button with no spoken name — announces as just "button".
+      unnamedButtons.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
+    }
+  }
+  // role="button" elements (div/span click targets) announce as buttons too.
+  for (const m of html.matchAll(/<(\w+)\b([^>]*\brole="button"[^>]*)>(.*?)<\/\1>/gs)) {
+    const tag = m[1];
+    if (tag === 'a' || tag === 'button' || tag === 'input') continue; // audited above/below
+    const attrs = m[2];
+    const inner = m[3];
+    const label = attrs.match(/aria-label="([^"]*)"/);
+    let name = decode(label ? label[1] : inner).toLowerCase();
+    if (!name) {
+      name = [...inner.matchAll(/<img\b[^>]*\balt="([^"]*)"/g)]
+        .map((a) => decode(a[1]))
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+    }
+    if (!name && !/aria-hidden="true"/.test(attrs) && !/aria-labelledby="/.test(attrs)) {
+      unnamedButtons.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
+    }
+  }
+  // Input buttons: name comes from value (alt for type="image") or aria-label.
+  for (const m of html.matchAll(/<input\b([^>]*)\/?>/gs)) {
+    const attrs = m[1];
+    const type = ((attrs.match(/type="([^"]*)"/) || [])[1] || 'text').toLowerCase();
+    if (!['button', 'submit', 'reset', 'image'].includes(type)) continue;
+    const label = attrs.match(/aria-label="([^"]*)"/);
+    const value = attrs.match(/value="([^"]*)"/);
+    const alt = attrs.match(/alt="([^"]*)"/);
+    let name = decode(label ? label[1] : (value ? value[1] : '')).toLowerCase();
+    if (!name && type === 'image') name = decode(alt ? alt[1] : '').toLowerCase();
+    if (!name && (type === 'submit' || type === 'reset')) name = type; // spec default label
+    if (!name && !/aria-hidden="true"/.test(attrs) && !/aria-labelledby="/.test(attrs)) {
       unnamedButtons.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
     }
   }
