@@ -25,4 +25,5 @@
 - [Prerender + lazy routes CLS trap](prerender-lazy-cls.md) — boot must preload the current route chunk before first render or the prerendered page collapses to the Suspense fallback (0.31 CLS site-wide).
 - [Per-unit prerendered pages](unit-page-prerender.md) — dynamic /available-units/<unit> routes prerender via UNIT_PATHS; production needs explicit per-unit rewrite pairs (NO directory-index fallback), pinned to the snapshot by a prerender guard.
 - [Knowledge Center article system](knowledge-center.md) — /knowledge Q&A pages are data-driven like unit pages; new slugs need artifact.toml rewrite pairs; llms.txt/llms-full.txt regenerate in prerender.
+- [Apex→www 301 via Squarespace forwarding](apex-www-redirect.md) — forwarding rules won't save until the Domain Connect presets holding apex records are deleted; verify with curl, no dig in workspace.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.
