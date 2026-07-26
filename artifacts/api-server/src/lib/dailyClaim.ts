@@ -15,9 +15,9 @@ import type { Logger } from "pino";
  *
  * If the database is unreachable, the claim falls back to a per-process
  * in-memory map — a DB outage degrades dedupe to per-replica instead of
- * either disabling alerts or spamming the inbox. Successful shared claims
- * are mirrored into the in-memory map so a later DB outage the same day
- * (same process) still can't re-send.
+ * either disabling alerts or spamming the inbox. Every shared-claim outcome
+ * (win or loss) is mirrored into the in-memory map so a later DB outage the
+ * same day (same process) can't re-send or grant the fallback claim.
  *
  * The factory is parameterized by the throttle-key prefix and the
  * fallback-path log message, so all three watchdogs share the exact same
@@ -103,9 +103,11 @@ export function createDailyClaim(options: {
       let claimed: boolean;
       try {
         claimed = await claimShared(key, now);
-        // Mirror successful shared claims so a later DB outage the same day
-        // (same process) still can't re-send.
-        if (claimed) claimedOn.set(subKey, day);
+        // Mirror every shared-claim outcome (win *or* loss) so a later DB
+        // outage the same day (same process) can't grant the fallback claim:
+        // either this replica already sent today's alert, or another replica
+        // holds the day's claim.
+        claimedOn.set(subKey, day);
       } catch (err) {
         log.error({ ...opts?.logFields, err }, claimFailedMessage);
         claimed = claimInMemory(subKey, day);

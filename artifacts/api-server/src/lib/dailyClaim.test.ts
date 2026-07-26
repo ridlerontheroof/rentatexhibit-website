@@ -99,17 +99,17 @@ describe("createDailyClaim", () => {
     expect(await claim.claim(log, DAY1_LATER)).toBe(false);
   });
 
-  it("DB outage after a shared *loss* does not grant the fallback claim... unless memory never saw it", async () => {
-    // Replica B lost the shared claim (replica A holds it). Without a mirror
-    // of the loss, B's memory is empty — documenting the degraded-dedupe
-    // contract: a later DB outage lets B win its per-process fallback once.
+  it("DB outage after a shared *loss* does not grant the fallback claim", async () => {
+    // Replica B lost the shared claim (replica A holds it). The loss is
+    // mirrored into B's memory, so a later DB outage the same day can't let
+    // B send a duplicate alert via its per-process fallback.
     const claimA = makeClaim();
     const claimB = makeClaim();
     expect(await claimA.claim(log, DAY1)).toBe(true);
     expect(await claimB.claim(log, DAY1)).toBe(false);
     dbDown = true;
-    expect(await claimB.claim(log, DAY1_LATER)).toBe(true); // per-replica degrade
-    expect(await claimB.claim(log, DAY1_LATER)).toBe(false); // but only once
+    expect(await claimB.claim(log, DAY1_LATER)).toBe(false);
+    expect(await claimB.claim(log, DAY1_LATER)).toBe(false);
   });
 
   it("scopes shared claims by subKey", async () => {
