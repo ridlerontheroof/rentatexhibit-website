@@ -11,6 +11,8 @@
     "test": "vitest run",
     "check:fold": "node scripts/check-units-above-fold.mjs",
     "check:knowledge": "node scripts/check-knowledge-pages.mjs",
+    "check:rented": "node scripts/check-rented-noindex.mjs",
+    "check:postpublish": "pnpm run check:knowledge && pnpm run check:rented",
     "check:fold:built": "node scripts/check-units-above-fold.mjs --built",
     "check:prepublish": "pnpm run build && pnpm run check:fold:built"
   },
