@@ -43,6 +43,15 @@
 //   to aria-label; submit/reset have spec default labels ("Submit"/"Reset")
 //   so only button/image can end up nameless. Exceptions: same aria-hidden
 //   escape; aria-labelledby references are resolved the same way.
+// - Form fields (non-button <input>, <select>, <textarea>) are audited too:
+//   the accessible name comes from aria-labelledby (resolved within the same
+//   page), aria-label, or a <label for="…"> pointing at the field's id (or a
+//   <label> wrapping the field). placeholder does NOT count as a name — it
+//   disappears on input and many screen readers ignore it. A field with none
+//   of these (including a labelledby/label[for] pointing at a missing or
+//   empty element) announces with no name and is a failure. Exceptions:
+//   type="hidden", aria-hidden="true", and style display:none (all removed
+//   from the a11y tree — e.g. Radix Slider's hidden form-bridge <input>).
 //
 // Run after a build: node scripts/check-link-names.mjs   (wired into
 // check:prepublish so a publish can't ship newly ambiguous links).
@@ -117,6 +126,7 @@ function resolveLabelledby(attrs, html) {
 const failures = [];
 const unnamed = [];
 const unnamedButtons = [];
+const unnamedFields = [];
 const pages = walk(dist);
 
 for (const file of pages) {
@@ -212,6 +222,54 @@ for (const file of pages) {
       unnamedButtons.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
     }
   }
+  // Form fields: non-button inputs, selects, textareas. Name comes from
+  // aria-labelledby (resolved), aria-label, or an associated <label> — a
+  // <label for="…"> pointing at the field's id, or a wrapping <label>.
+  // placeholder does NOT count. A broken reference leaves the field unnamed.
+  const fieldChecks = [
+    ...[...html.matchAll(/<input\b([^>]*)\/?>/gs)].filter((m) => {
+      const type = ((m[1].match(/type="([^"]*)"/) || [])[1] || 'text').toLowerCase();
+      return !['button', 'submit', 'reset', 'image', 'hidden'].includes(type);
+    }),
+    ...html.matchAll(/<select\b([^>]*)>/gs),
+    ...html.matchAll(/<textarea\b([^>]*)>/gs),
+  ];
+  for (const m of fieldChecks) {
+    const attrs = m[1];
+    if (/aria-hidden="true"/.test(attrs)) continue;
+    // display:none removes the field from the a11y tree entirely (Radix
+    // Slider renders a hidden form-bridge <input style="display:none">).
+    if (/style="[^"]*display:\s*none/.test(attrs)) continue;
+    // accname precedence: labelledby (resolved) > aria-label > label element.
+    let name = resolveLabelledby(attrs, html) || '';
+    if (!name) {
+      const label = attrs.match(/aria-label="([^"]*)"/);
+      name = decode(label ? label[1] : '').toLowerCase();
+    }
+    if (!name) {
+      // <label for="id"> pointing at this field's id, resolved like
+      // labelledby: a reference to a missing/empty label contributes nothing.
+      const idm = attrs.match(/\bid="([^"]*)"/);
+      if (idm && idm[1]) {
+        const esc = idm[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const lab = html.match(new RegExp(`<label\\b[^>]*\\bfor="${esc}"[^>]*>(.*?)</label>`, 's'));
+        if (lab) name = decode(lab[1]);
+      }
+    }
+    if (!name) {
+      // Wrapping <label> (no for=): find a label element whose body contains
+      // this exact field markup.
+      for (const lab of html.matchAll(/<label\b[^>]*>(.*?)<\/label>/gs)) {
+        if (lab[1].includes(m[0])) {
+          name = decode(lab[1]);
+          break;
+        }
+      }
+    }
+    if (!name) {
+      unnamedFields.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
+    }
+  }
   for (const [name, hrefs] of names) {
     if (hrefs.size > 1) {
       failures.push({
@@ -253,8 +311,19 @@ if (unnamedButtons.length > 0) {
   for (const u of unnamedButtons) console.error(`  ${u.page}  ${u.snippet}`);
 }
 
-if (failures.length > 0 || unnamed.length > 0 || unnamedButtons.length > 0) process.exit(1);
+if (unnamedFields.length > 0) {
+  console.error(
+    `check-link-names: ${unnamedFields.length} form field(s) with NO accessible name — ` +
+      `inputs/selects/textareas without a label, aria-label, or resolvable aria-labelledby ` +
+      `announce with no name (placeholder does not count).\n` +
+      `Fix: add a <label for="…"> or aria-label, and make sure referenced ids exist.\n`,
+  );
+  for (const u of unnamedFields) console.error(`  ${u.page}  ${u.snippet}`);
+}
+
+if (failures.length > 0 || unnamed.length > 0 || unnamedButtons.length > 0 || unnamedFields.length > 0)
+  process.exit(1);
 
 console.log(
-  `check-link-names: OK — ${pages.length} prerendered pages, no ambiguous or unnamed links or buttons.`,
+  `check-link-names: OK — ${pages.length} prerendered pages, no ambiguous or unnamed links, buttons, or form fields.`,
 );
