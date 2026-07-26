@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { PageHero } from '../components/PageHero';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { SmartImg } from '../components/SmartImg';
 import { QuickAnswer } from '../components/QuickAnswer';
@@ -9,6 +9,8 @@ import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { galleryImages, galleryCategories as categories, photoGalleryJsonLd } from '../data/gallery';
 import { useModalHistory } from '../hooks/use-modal-history';
+import { DOUBLE_TAP_SCALE, usePinchZoom } from '../hooks/use-pinch-zoom';
+import { useReducedMotion } from '../hooks/use-reduced-motion';
 
 
 // Lightbox order: every photo on the page, album by album (in tab order), so
@@ -25,6 +27,11 @@ export function PhotoGallery() {
   // phone's Back button closes it; manual closes consume that entry. All
   // close paths (X, Escape) must go through closeLightbox.
   const closeLightbox = useModalHistory(selectedImage !== null, () => setSelectedImage(null));
+  const reducedMotion = useReducedMotion();
+
+  // Desktop-only keyboard shortcut legend (toggled by the "?" button or key),
+  // mirroring UnitGalleryLightbox / PlanLightbox.
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   const filteredImages = filter === 'All' 
     ? galleryImages 
@@ -37,16 +44,145 @@ export function PhotoGallery() {
     setSelectedImage(i => (i === null ? i : (i + 1) % lightboxImages.length));
   }, []);
 
+  // ---------------------------------------------------------------------
+  // Pinch-to-zoom / pan / double-tap / wheel / keyboard zoom gestures —
+  // shared with the floor-plan and unit-photo lightboxes via usePinchZoom.
+  // Swipe changes photos only while fully zoomed out.
+  // ---------------------------------------------------------------------
+  const {
+    pinch,
+    setPinch,
+    pinchZoomed,
+    viewerRef,
+    imgRef,
+    resetPinch,
+    resetTap,
+    clampPan,
+    keyboardZoom,
+    panBy,
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd,
+    onMouseDown,
+    mouseDragging,
+    isGesturing,
+  } = usePinchZoom({
+    // Re-attach the native wheel listener when the lightbox (re)mounts —
+    // the viewer element only exists while a photo is selected.
+    active: selectedImage !== null,
+    // Touch gestures never end in a click, so the click-capture dismiss
+    // (dismissLegendOnOutsideClick) can't run — clear the shortcut legend
+    // at gesture start / swipe, matching UnitGalleryLightbox.
+    onGestureStart: () => setShowShortcuts(false),
+    onSwipe: (dir) => {
+      setShowShortcuts(false);
+      if (dir === 1) showNext();
+      else showPrev();
+    },
+  });
+
+  // Reset zoom whenever the shown photo changes (or the lightbox closes).
+  useEffect(() => {
+    resetPinch();
+    resetTap();
+  }, [selectedImage, resetPinch, resetTap]);
+
+  /** Arrow-key pan step while pinch-zoomed (px), matching UnitGalleryLightbox. */
+  const KEY_PAN_STEP = 60;
+
   useEffect(() => {
     if (selectedImage === null) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') showPrev();
-      else if (e.key === 'ArrowRight') showNext();
-      else if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'Escape') {
+        // First Escape dismisses the shortcut legend if it is open,
+        // matching UnitGalleryLightbox.
+        if (showShortcuts) {
+          e.preventDefault();
+          setShowShortcuts(false);
+          return;
+        }
+        closeLightbox();
+        return;
+      }
+      if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcuts((s) => !s);
+        return;
+      }
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        keyboardZoom(1);
+        return;
+      }
+      if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        keyboardZoom(-1);
+        return;
+      }
+      if (e.key === '0') {
+        e.preventDefault();
+        resetPinch();
+        return;
+      }
+      if (e.key.startsWith('Arrow')) {
+        // While pinch-zoomed in, arrows pan the photo instead of navigating
+        // (matches UnitGalleryLightbox), so keyboard users can inspect
+        // details without losing their zoom.
+        if (pinchZoomed) {
+          e.preventDefault();
+          const dx =
+            e.key === 'ArrowLeft' ? KEY_PAN_STEP : e.key === 'ArrowRight' ? -KEY_PAN_STEP : 0;
+          const dy =
+            e.key === 'ArrowUp' ? KEY_PAN_STEP : e.key === 'ArrowDown' ? -KEY_PAN_STEP : 0;
+          panBy(dx, dy);
+          return;
+        }
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'ArrowRight') showNext();
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectedImage !== null, showPrev, showNext, closeLightbox]);
+  }, [
+    selectedImage !== null,
+    showPrev,
+    showNext,
+    closeLightbox,
+    keyboardZoom,
+    resetPinch,
+    pinchZoomed,
+    panBy,
+    showShortcuts,
+  ]);
+
+  /**
+   * Clicking anywhere outside the open legend dismisses it, matching
+   * UnitGalleryLightbox. Runs in the capture phase so the dismissing click
+   * never reaches other handlers. Clicks inside the legend and on the "?"
+   * toggle are excluded so their own handlers keep working; clicks on other
+   * interactive controls dismiss the legend AND perform their action.
+   */
+  const dismissLegendOnOutsideClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!showShortcuts) return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target?.closest('#photo-gallery-shortcuts-legend') ||
+        target?.closest('[aria-controls="photo-gallery-shortcuts-legend"]')
+      ) {
+        return;
+      }
+      if (target?.closest('button, a, [role="button"]')) {
+        // Interactive control: dismiss the legend but let the click through.
+        setShowShortcuts(false);
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      setShowShortcuts(false);
+    },
+    [showShortcuts],
+  );
 
   return (
     <>
@@ -126,10 +262,13 @@ export function PhotoGallery() {
 
         {/* Lightbox */}
         {selectedImage !== null && (
-          <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+            onClickCapture={dismissLegendOnOutsideClick}
+          >
             <button
               onClick={closeLightbox}
-              className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+              className="absolute top-4 right-4 z-10 text-white/80 hover:text-white transition-colors"
               aria-label="Close"
             >
               <X className="w-8 h-8" strokeWidth={1.5} />
@@ -148,14 +287,107 @@ export function PhotoGallery() {
             >
               <ChevronRight className="w-6 h-6" strokeWidth={1.5} />
             </button>
-            <SmartImg
-              src={lightboxImages[selectedImage].src}
-              alt={lightboxImages[selectedImage].alt}
-              sizes="100vw"
-              loading="eager"
-              className="max-w-full max-h-full object-contain"
-            />
-            <div className="absolute bottom-4 left-0 right-0 text-center text-white">
+            <div
+              ref={viewerRef}
+              className="flex h-full w-full items-center justify-center overflow-hidden"
+              style={{ touchAction: pinchZoomed ? 'none' : 'pan-y' }}
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+              onMouseDown={onMouseDown}
+            >
+              <SmartImg
+                ref={imgRef}
+                src={lightboxImages[selectedImage].src}
+                alt={lightboxImages[selectedImage].alt}
+                sizes="100vw"
+                loading="eager"
+                draggable={false}
+                className="max-w-full max-h-full object-contain"
+                style={{
+                  transform: `translate(${pinch.tx}px, ${pinch.ty}px) scale(${pinch.scale})`,
+                  transformOrigin: 'center center',
+                  transition:
+                    reducedMotion || isGesturing() || mouseDragging
+                      ? 'none'
+                      : 'transform 200ms ease',
+                  cursor: pinchZoomed ? (mouseDragging ? 'grabbing' : 'grab') : undefined,
+                }}
+              />
+            </div>
+            {/* Zoom toggle — visible control mirroring UnitGalleryLightbox, for
+                visitors who don't know the pinch/double-tap gestures (and
+                assistive tech). */}
+            <button
+              type="button"
+              onClick={() => {
+                if (pinchZoomed) {
+                  resetPinch();
+                } else {
+                  setPinch({
+                    scale: DOUBLE_TAP_SCALE,
+                    ...clampPan(0, 0, DOUBLE_TAP_SCALE, 0),
+                  });
+                }
+              }}
+              className="absolute bottom-4 left-4 z-10 flex min-h-11 items-center gap-2 bg-black/60! px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80!"
+              aria-label={pinchZoomed ? 'Zoom out' : 'Zoom in'}
+            >
+              {pinchZoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
+              {pinchZoomed ? 'Fit' : 'Zoom'}
+            </button>
+
+            {/* Keyboard shortcuts hint (desktop / fine-pointer only) — mirrors UnitGalleryLightbox */}
+            <button
+              type="button"
+              onClick={() => setShowShortcuts((s) => !s)}
+              aria-expanded={showShortcuts}
+              aria-controls="photo-gallery-shortcuts-legend"
+              aria-label={showShortcuts ? 'Hide keyboard shortcuts' : 'Show keyboard shortcuts'}
+              className="absolute bottom-4 left-[7.5rem] z-10 hidden min-h-11 min-w-11 items-center justify-center bg-black/60! px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-black/80! pointer-fine:lg:flex"
+            >
+              ?
+            </button>
+            {showShortcuts && (
+              <div
+                id="photo-gallery-shortcuts-legend"
+                role="region"
+                aria-label="Keyboard shortcuts"
+                className="absolute bottom-16 left-4 z-10 hidden w-60 bg-black/80! p-4 text-white backdrop-blur-sm pointer-fine:lg:block"
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-[11px] font-semibold uppercase tracking-[2px] text-white/70">
+                    Keyboard shortcuts
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowShortcuts(false)}
+                    aria-label="Dismiss keyboard shortcuts"
+                    className="-mr-1 -mt-1 px-1 text-white/60 transition-colors hover:text-white"
+                  >
+                    ×
+                  </button>
+                </div>
+                <dl className="space-y-1.5 text-xs">
+                  {[
+                    ['+ / −', 'Zoom in / out'],
+                    ['0', 'Reset zoom'],
+                    ['← →', 'Next / previous photo'],
+                    ['Arrows', 'Pan while zoomed'],
+                    ['Esc', 'Close'],
+                    ['?', 'Toggle this panel'],
+                  ].map(([key, desc]) => (
+                    <div key={key} className="flex items-center justify-between gap-3">
+                      <dt className="whitespace-nowrap border border-white/25 px-1.5 py-0.5 font-mono text-[11px] text-white/90">
+                        {key}
+                      </dt>
+                      <dd className="text-right text-white/70">{desc}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+            <div className="absolute bottom-4 left-0 right-0 text-center text-white pointer-events-none">
               <div className="uppercase tracking-[3px] text-xs text-white/70 mb-1">
                 {lightboxImages[selectedImage].category}
               </div>

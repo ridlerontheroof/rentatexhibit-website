@@ -1,10 +1,12 @@
-import type { ImgHTMLAttributes } from 'react';
+import type { ImgHTMLAttributes, Ref } from 'react';
 import { IMAGE_MANIFEST } from '../data/imageManifest';
 
 interface SmartImgProps extends ImgHTMLAttributes<HTMLImageElement> {
   /** Original image path (e.g. "/images/foo.jpg") — resolved to AVIF/WebP variants. */
   src: string;
   alt: string;
+  /** Forwarded to the inner <img> (React 19 ref-as-prop). */
+  ref?: Ref<HTMLImageElement>;
 }
 
 /**
