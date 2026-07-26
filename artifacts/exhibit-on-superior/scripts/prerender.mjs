@@ -242,6 +242,19 @@ const LCP_NO_HERO_ROUTES = [
       );
     }
   }
+  // Parity: exempt no-hero routes must also be real prerendered routes, so a
+  // rename/removal can't leave a stale entry silently exempting nothing.
+  for (const routePath of LCP_NO_HERO_ROUTES) {
+    if (!allPaths.includes(routePath)) {
+      problems.push(
+        `${routePath}: listed in LCP_NO_HERO_ROUTES but is not a prerendered route ` +
+          '(renamed or removed? update the list in scripts/prerender.mjs).',
+      );
+    }
+  }
+  // Soft notice: exempt routes that now DO ship a preload hint — the entry is
+  // stale and can be removed so the "lost its hero" warning re-arms.
+  const staleExemptions = [];
   for (const routePath of allPaths) {
     const page = await fs.readFile(outPathFor(routePath), 'utf8');
 
@@ -284,6 +297,11 @@ const LCP_NO_HERO_ROUTES = [
       hintlessWarnings.push(routePath);
     }
 
+    // Exempt route now ships a hint: the LCP_NO_HERO_ROUTES entry is stale.
+    if (expected && LCP_NO_HERO_ROUTES.includes(routePath)) {
+      staleExemptions.push(routePath);
+    }
+
     if (expected) {
       if (actualLinks.length !== 1) {
         problems.push(
@@ -308,6 +326,15 @@ const LCP_NO_HERO_ROUTES = [
       `Prerender aborted: LCP preload verification failed on ${problems.length} page(s):\n` +
         problems.map((p) => `  ${p}`).join('\n'),
     );
+  }
+  if (staleExemptions.length) {
+    for (const routePath of staleExemptions) {
+      console.warn(
+        `WARN ${routePath}: listed in LCP_NO_HERO_ROUTES but now ships an LCP preload hint ` +
+          '(it gained an eager hero). Remove it from LCP_NO_HERO_ROUTES in scripts/prerender.mjs ' +
+          'so the no-hero warning re-arms if the hero ever disappears.',
+      );
+    }
   }
   if (hintlessWarnings.length) {
     for (const routePath of hintlessWarnings) {
