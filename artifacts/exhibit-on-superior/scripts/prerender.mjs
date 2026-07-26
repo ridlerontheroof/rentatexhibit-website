@@ -210,12 +210,28 @@ const LCP_REQUIRED_ROUTES = [
   '/apartment-guide',
 ];
 
+// Routes known to intentionally ship without an eager hero image (and thus no
+// LCP preload hint). Pages here are skipped by the soft "lost its hint"
+// warning below; if one of them gains an eager hero later, its hint is picked
+// up automatically — remove it from this list to start warning again if the
+// hero ever disappears.
+const LCP_NO_HERO_ROUTES = [
+  // Knowledge Center hub: a text-first Q&A index with no hero image by design.
+  '/knowledge',
+];
+
 // Post-build guard: re-read every written page from disk and cross-check its
 // injected LCP preload against its OWN rendered body. A template/injection bug
 // (e.g. a page shipping the home hero's hint, or a leftover template hint on a
 // page with no eager AVIF image) fails the build loudly.
 {
   const problems = [];
+  // Soft check (WARNINGS ONLY — never fails the build): non-key indexable
+  // pages that ship without an LCP preload hint. Allowed by design (only
+  // LCP_REQUIRED_ROUTES hard-fail), but a broad redesign could quietly strip
+  // the eager hero from many smaller pages — make that visible in build
+  // output, like the recommended-schema soft check.
+  const hintlessWarnings = [];
   // Parity: required routes must actually be rendered pages, so a route rename
   // can't quietly drop one from the required set.
   for (const routePath of LCP_REQUIRED_ROUTES) {
@@ -255,6 +271,19 @@ const LCP_REQUIRED_ROUTES = [
       );
     }
 
+    // Soft warning: any other indexable PAGE_SEO page without a hint. Noindex
+    // pages, unit/knowledge pages (outside PAGE_SEO), and deliberate no-hero
+    // routes are exempt.
+    if (
+      !expected &&
+      !LCP_REQUIRED_ROUTES.includes(routePath) &&
+      !LCP_NO_HERO_ROUTES.includes(routePath) &&
+      routePath in PAGE_SEO &&
+      !PAGE_SEO[routePath]?.noindex
+    ) {
+      hintlessWarnings.push(routePath);
+    }
+
     if (expected) {
       if (actualLinks.length !== 1) {
         problems.push(
@@ -280,7 +309,22 @@ const LCP_REQUIRED_ROUTES = [
         problems.map((p) => `  ${p}`).join('\n'),
     );
   }
-  console.log(`LCP preload verified on ${allPaths.length} pages.`);
+  if (hintlessWarnings.length) {
+    for (const routePath of hintlessWarnings) {
+      console.warn(
+        `WARN ${routePath}: page ships without an LCP preload hint (no eager ` +
+          'fetchPriority="high" <SmartImg> hero rendered). Allowed for non-key pages, but if ' +
+          'this used to have a hero it quietly lost its fast-loading hint. If intentional, add ' +
+          'the route to LCP_NO_HERO_ROUTES in scripts/prerender.mjs.',
+      );
+    }
+  }
+  console.log(
+    `LCP preload verified on ${allPaths.length} pages` +
+      (hintlessWarnings.length
+        ? ` — ${hintlessWarnings.length} page(s) without a hint (warnings above, build not failed).`
+        : '.'),
+  );
 }
 
 // Post-build guard: structured-data validation. Re-read every written page and
