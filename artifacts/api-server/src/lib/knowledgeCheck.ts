@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendKnowledgeCheckAlert } from "./email";
@@ -46,8 +47,15 @@ const USER_AGENT = "exhibit-knowledge-check/1.0";
  */
 const UNREACHABLE_ESCALATION_RUNS = 4;
 
-/** UTC day ("YYYY-MM-DD") the alert was last sent — in-memory fallback only. */
-let alertedOnDay: string | null = null;
+/**
+ * Once-per-UTC-day alert dedupe (shared implementation — see dailyClaim.ts):
+ * cluster-wide database claim with a per-process in-memory fallback.
+ */
+const dailyClaim = createDailyClaim({
+  prefix: "knowledgecheck",
+  claimFailedMessage:
+    "Knowledge-check alert database claim failed; falling back to in-memory dedupe",
+});
 
 /**
  * Daily liveness heartbeat (shared implementation — see dailyHeartbeat.ts),
@@ -82,10 +90,6 @@ let consecutiveUnreachableRuns = 0;
 
 /** Shared-table key holding the persisted consecutive-unreachable-run count. */
 const UNREACHABLE_COUNTER_KEY = "knowledgecheck:unreachable-runs";
-
-function utcDay(now: number): string {
-  return new Date(now).toISOString().slice(0, 10);
-}
 
 /** Outcome of one full check run. Exported for tests. */
 export interface KnowledgeCheckResult {
@@ -253,22 +257,6 @@ export async function runKnowledgeChecks(
 }
 
 /**
- * Try to claim the shared once-per-day alert slot. Returns true when this
- * process won the claim. Throws when the database is unreachable — the
- * caller falls back to per-process memory.
- */
-async function claimShared(day: string, now: number): Promise<boolean> {
-  const expiresAt = new Date(now + 2 * DAY_MS);
-  const result = await db.execute(sql`
-    INSERT INTO email_throttle_counters (key, count, expires_at)
-    VALUES (${`knowledgecheck:${day}`}, 1, ${expiresAt})
-    ON CONFLICT (key) DO NOTHING
-    RETURNING count
-  `);
-  return result.rows.length > 0;
-}
-
-/**
  * Persist one more consecutive-unreachable run in the shared table and
  * return the new total. Throws when the database is unreachable — the
  * caller falls back to the per-process mirror.
@@ -293,12 +281,6 @@ async function resetUnreachableShared(): Promise<void> {
     DELETE FROM email_throttle_counters
     WHERE key = ${UNREACHABLE_COUNTER_KEY}
   `);
-}
-
-function claimInMemory(day: string): boolean {
-  if (alertedOnDay === day) return false;
-  alertedOnDay = day;
-  return true;
 }
 
 /**
@@ -383,21 +365,7 @@ export async function checkKnowledgePagesOnce(
   );
 
   try {
-    const day = utcDay(now);
-    let claimed: boolean;
-    try {
-      claimed = await claimShared(day, now);
-      // Mirror successful shared claims so a later DB outage the same day
-      // (same process) still can't re-send.
-      if (claimed) alertedOnDay = day;
-    } catch (err) {
-      log.error(
-        { err },
-        "Knowledge-check alert database claim failed; falling back to in-memory dedupe",
-      );
-      claimed = claimInMemory(day);
-    }
-    if (!claimed) return;
+    if (!(await dailyClaim.claim(log, now))) return;
     if (!mailerConfigured()) return;
     await sendKnowledgeCheckAlert({
       failures,
@@ -430,7 +398,7 @@ export function startKnowledgePageCheck(log: Logger = defaultLogger): void {
 
 /** Test-only: clear the per-process fallback dedupe state. */
 export function __resetKnowledgeCheckForTests(): void {
-  alertedOnDay = null;
+  dailyClaim.reset();
   consecutiveUnreachableRuns = 0;
   heartbeat.reset();
 }

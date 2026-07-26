@@ -1,7 +1,6 @@
-import { sql } from "drizzle-orm";
-import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendApexRedirectAlert } from "./email";
@@ -31,10 +30,16 @@ const APEX_CHECK_URL = "https://rentatexhibit.com/fees";
 const EXPECTED_HOST = "www.rentatexhibit.com";
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // every 6 hours
 const FETCH_TIMEOUT_MS = 15_000;
-const DAY_MS = 24 * 60 * 60 * 1000;
 
-/** UTC day ("YYYY-MM-DD") the alert was last sent — in-memory fallback only. */
-let alertedOnDay: string | null = null;
+/**
+ * Once-per-UTC-day alert dedupe (shared implementation — see dailyClaim.ts):
+ * cluster-wide database claim with a per-process in-memory fallback.
+ */
+const dailyClaim = createDailyClaim({
+  prefix: "apexredirect",
+  claimFailedMessage:
+    "Apex redirect alert database claim failed; falling back to in-memory dedupe",
+});
 
 /**
  * Daily liveness heartbeat (shared implementation — see dailyHeartbeat.ts).
@@ -56,10 +61,6 @@ function recordAndMaybeHeartbeat(
   outcome: "healthy" | "unreachable" | "unhealthy",
 ): void {
   heartbeat.record(log, now, outcome);
-}
-
-function utcDay(now: number): string {
-  return new Date(now).toISOString().slice(0, 10);
 }
 
 /** Result of inspecting one apex response. */
@@ -118,28 +119,6 @@ export function evaluateApexResponse(
 }
 
 /**
- * Try to claim the shared once-per-day alert slot. Returns true when this
- * process won the claim. Throws when the database is unreachable — the
- * caller falls back to per-process memory.
- */
-async function claimShared(day: string, now: number): Promise<boolean> {
-  const expiresAt = new Date(now + 2 * DAY_MS);
-  const result = await db.execute(sql`
-    INSERT INTO email_throttle_counters (key, count, expires_at)
-    VALUES (${`apexredirect:${day}`}, 1, ${expiresAt})
-    ON CONFLICT (key) DO NOTHING
-    RETURNING count
-  `);
-  return result.rows.length > 0;
-}
-
-function claimInMemory(day: string): boolean {
-  if (alertedOnDay === day) return false;
-  alertedOnDay = day;
-  return true;
-}
-
-/**
  * Run one check of the apex redirect. Exported for tests. Best-effort:
  * never throws, so a network or mail outage can't crash the interval.
  */
@@ -183,21 +162,7 @@ export async function checkApexRedirectOnce(
   );
 
   try {
-    const day = utcDay(now);
-    let claimed: boolean;
-    try {
-      claimed = await claimShared(day, now);
-      // Mirror successful shared claims so a later DB outage the same day
-      // (same process) still can't re-send.
-      if (claimed) alertedOnDay = day;
-    } catch (err) {
-      log.error(
-        { err },
-        "Apex redirect alert database claim failed; falling back to in-memory dedupe",
-      );
-      claimed = claimInMemory(day);
-    }
-    if (!claimed) return;
+    if (!(await dailyClaim.claim(log, now))) return;
     if (!mailerConfigured()) return;
     await sendApexRedirectAlert({
       status: result.status,
@@ -227,6 +192,6 @@ export function startApexRedirectCheck(log: Logger = defaultLogger): void {
 
 /** Test-only: clear the per-process fallback dedupe state. */
 export function __resetApexRedirectCheckForTests(): void {
-  alertedOnDay = null;
+  dailyClaim.reset();
   heartbeat.reset();
 }
