@@ -474,6 +474,52 @@ export function renderApexRedirectAlert(opts: {
   return { subject, html: htmlShell, text };
 }
 
+/**
+ * Operational alert: the production Knowledge Center smoke-check found
+ * /knowledge/<slug> pages serving the wrong prerendered HTML (usually the SPA
+ * homepage shell after a broken artifact.toml rewrite) or a damaged
+ * llms-full.txt. Crawlers then index the homepage instead of the answers.
+ */
+export function renderKnowledgeCheckAlert(opts: {
+  failures: string[];
+  checkedCount: number;
+}): RenderedEmail {
+  const { failures, checkedCount } = opts;
+  const subject = "Website alert: Knowledge Center pages are serving the wrong content";
+
+  const intro = `The automatic post-publish check of www.rentatexhibit.com found ${failures.length} problem(s) across ${checkedCount} Knowledge Center checks. Affected pages are likely serving the SPA homepage shell instead of their own prerendered answer, so search engines and AI crawlers see the wrong content.`;
+  const remedy =
+    "What to do: inspect the [[services.production.rewrites]] /knowledge blocks in the website's artifact.toml, run `pnpm --filter @workspace/exhibit-on-superior run check:knowledge` locally for detail, and re-publish. This alert is sent at most once per day.";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<ul style="${BODY_TEXT}">${failures
+      .map((f) => `<li>${escapeHtml(f)}</li>`)
+      .join("")}</ul>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+      "inspect the [[services.production.rewrites]] /knowledge blocks in the website's artifact.toml, run the check:knowledge script locally for detail, and re-publish. This alert is sent at most once per day.",
+    )}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...failures.map((f) => `- ${f}`),
+    "",
+    remedy,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "Knowledge Center pages are serving the wrong prerendered content.",
+    kicker: "Website Alert",
+    heading: "Knowledge Center Check Failed",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
 export function renderLeadNotification(lead: LeadNotification): RenderedEmail {
   const fullName = `${lead.firstName} ${lead.lastName}`.trim();
   const typeLabel = leadTypeLabel(lead.type);

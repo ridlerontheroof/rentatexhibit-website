@@ -4,6 +4,7 @@ import { sendRawEmail, SENDER_EMAIL, warnIfUnconfigured } from "./mailer";
 import {
   renderApexRedirectAlert,
   renderFeeCopyAlert,
+  renderKnowledgeCheckAlert,
   renderLeadNotification,
   renderProspectConfirmation,
   renderSeedStaleAlert,
@@ -226,6 +227,34 @@ export async function sendSeedStaleAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL },
     "Sent stale availability-seed alert email",
+  );
+}
+
+/**
+ * Alert that production Knowledge Center pages are serving the wrong
+ * prerendered content (broken /knowledge rewrites or damaged llms-full.txt).
+ * Goes to the operational recipient because the fix is a re-publish, not a
+ * leasing action. Throws when the mailer is unconfigured or the send fails;
+ * deduping lives in the caller (knowledgeCheck).
+ */
+export async function sendKnowledgeCheckAlert(opts: {
+  failures: string[];
+  checkedCount: number;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderKnowledgeCheckAlert(opts);
+  const { contentType, body } = buildMimeBody("knowledgealert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent knowledge-page check failure alert email",
   );
 }
 

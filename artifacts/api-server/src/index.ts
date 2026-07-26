@@ -4,6 +4,7 @@ import { startLeadNotificationRetry } from "./lib/leadNotificationRetry";
 import { startAvailabilityCacheWarmer } from "./routes/availability";
 import { submitCoreUrlsOnce } from "./lib/indexnow";
 import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
+import { startKnowledgePageCheck } from "./lib/knowledgeCheck";
 
 const rawPort = process.env["PORT"];
 
@@ -43,4 +44,9 @@ app.listen(port, (err) => {
   // Watchdog: alert (once/day) if the apex domain stops 301-redirecting to
   // www — e.g. a Domain Connect reconnection re-provisioned the apex A record.
   startApexRedirectCheck(logger);
+
+  // Watchdog: verify the production /knowledge pages still serve their own
+  // prerendered HTML after every publish (server restart = post-publish
+  // check), then every 6 hours; alerts at most once per day on failure.
+  startKnowledgePageCheck(logger);
 });
