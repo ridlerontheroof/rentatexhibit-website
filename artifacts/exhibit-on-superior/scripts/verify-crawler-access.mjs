@@ -24,11 +24,12 @@ const snapshotPath = path.join(
   'data',
   'availabilitySnapshot.json',
 );
-const SAMPLE_UNIT = JSON.parse(await readFile(snapshotPath, 'utf8')).units[0]?.unit;
-if (!SAMPLE_UNIT) {
-  console.error('No units in availabilitySnapshot.json — cannot verify a unit page.');
+const UNITS = JSON.parse(await readFile(snapshotPath, 'utf8')).units.map((u) => u.unit);
+if (UNITS.length === 0) {
+  console.error('No units in availabilitySnapshot.json — cannot verify unit pages.');
   process.exit(1);
 }
+const [SAMPLE_UNIT, ...OTHER_UNITS] = UNITS;
 
 const CRAWLERS = {
   'OAI-SearchBot':
@@ -51,25 +52,40 @@ const CRAWLERS = {
     'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/125.0.0.0 Safari/537.36',
 };
 
+// Per-unit page requirements: the unit's own prerendered <title>, a
+// self-canonical link, and an Apartment JSON-LD node. The SPA homepage shell
+// would fail all three.
+const unitSpec = (unit) => ({
+  minBytes: 20000,
+  mustIncludeAll: [
+    `<title>Apartment ${unit}`,
+    `rel="canonical" href="${BASE}/available-units/${unit}"`,
+    '"@type":"Apartment"',
+  ],
+});
+
 // path -> minimum plausible full-response size in bytes (guards against
 // challenge/interstitial pages, which are much smaller than the real page).
+// Full crawler matrix on shared pages and the first unit; every remaining
+// snapshot unit is checked with a single crawler UA to keep runtime sane —
+// a missing per-unit rewrite pair fails regardless of UA.
+const SINGLE_CRAWLER = { Googlebot: CRAWLERS.Googlebot };
 const URLS = {
-  '/': { minBytes: 20000, mustInclude: '<title>' },
-  '/available-units': { minBytes: 20000, mustInclude: '<title>' },
-  '/robots.txt': { minBytes: 60, mustInclude: 'Sitemap:' },
-  '/sitemap.xml': { minBytes: 500, mustInclude: '<urlset' },
-  '/llms.txt': { minBytes: 200, mustInclude: 'Exhibit' },
-  [`/available-units/${SAMPLE_UNIT}`]: {
-    minBytes: 20000,
-    // The unit's own prerendered <title> — the SPA homepage shell would fail this.
-    mustInclude: `<title>Apartment ${SAMPLE_UNIT}`,
-  },
+  '/': { minBytes: 20000, mustIncludeAll: ['<title>'] },
+  '/available-units': { minBytes: 20000, mustIncludeAll: ['<title>'] },
+  '/robots.txt': { minBytes: 60, mustIncludeAll: ['Sitemap:'] },
+  '/sitemap.xml': { minBytes: 500, mustIncludeAll: ['<urlset'] },
+  '/llms.txt': { minBytes: 200, mustIncludeAll: ['Exhibit'] },
+  [`/available-units/${SAMPLE_UNIT}`]: unitSpec(SAMPLE_UNIT),
 };
+for (const unit of OTHER_UNITS) {
+  URLS[`/available-units/${unit}`] = { ...unitSpec(unit), crawlers: SINGLE_CRAWLER };
+}
 
 let failures = 0;
 const rows = [];
 for (const [pathName, spec] of Object.entries(URLS)) {
-  for (const [bot, ua] of Object.entries(CRAWLERS)) {
+  for (const [bot, ua] of Object.entries(spec.crawlers ?? CRAWLERS)) {
     const url = BASE + pathName;
     let status = 'ERR';
     let bytes = 0;
@@ -90,10 +106,11 @@ for (const [pathName, spec] of Object.entries(URLS)) {
       }
       const body = await res.text();
       bytes = Buffer.byteLength(body);
-      ok = res.status === 200 && bytes >= spec.minBytes && body.includes(spec.mustInclude);
+      const missing = spec.mustIncludeAll.filter((needle) => !body.includes(needle));
+      ok = res.status === 200 && bytes >= spec.minBytes && missing.length === 0;
       if (res.status !== 200) note = 'non-200';
       else if (bytes < spec.minBytes) note = `too small (<${spec.minBytes})`;
-      else if (!body.includes(spec.mustInclude)) note = `missing "${spec.mustInclude}"`;
+      else if (missing.length > 0) note = `missing "${missing[0]}"`;
     } catch (err) {
       note = String(err.message || err);
     }
