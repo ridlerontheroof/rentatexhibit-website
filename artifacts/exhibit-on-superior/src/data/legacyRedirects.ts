@@ -29,6 +29,9 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/floor-plans': '/available-units',
   // RentCafe-era .aspx URLs (2026-07 SEO audit): 404 live today, but 301s
   // preserve any legacy link equity.
+  // Wix-era URL still indexed by Google (2026-07): "Studio, 1, 2 & 3 Bedroom
+  // Apartments" listing page.
+  '/availableunits': '/available-units',
   '/floorplans.aspx': '/available-units',
   '/availableunits.aspx': '/available-units',
   '/amenities.aspx': '/amenities',

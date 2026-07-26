@@ -315,6 +315,14 @@ from = "/floorplans.aspx/"
 to = "/floorplans.aspx/index.html"
 
 [[services.production.rewrites]]
+from = "/availableunits"
+to = "/availableunits/index.html"
+
+[[services.production.rewrites]]
+from = "/availableunits/"
+to = "/availableunits/index.html"
+
+[[services.production.rewrites]]
 from = "/availableunits.aspx"
 to = "/availableunits.aspx/index.html"
 
