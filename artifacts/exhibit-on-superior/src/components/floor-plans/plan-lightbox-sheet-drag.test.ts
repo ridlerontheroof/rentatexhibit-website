@@ -333,6 +333,26 @@ describe('drag release does not re-toggle via the synthetic click', () => {
     expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
   });
 
+  it('a keyboard toggle right after a drag with no synthetic click is not swallowed', () => {
+    // Real drag ends (flag set) but no synthetic click follows. A keyboard
+    // user then presses Enter on the grabber: that fires a click WITHOUT a
+    // preceding pointerdown, so the stale flag must be cleared on keydown
+    // instead — the first keyboard toggle must not be silently swallowed.
+    firePointer('pointerdown', 800, 0);
+    firePointer('pointermove', 760, 20);
+    firePointer('pointerup', 760, 30);
+    expect(sheetHeight()).toBe(`${SHEET_EXPANDED}dvh`);
+
+    act(() => {
+      grabber().dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }),
+      );
+      // Browsers fire the activation click after keydown/keyup on a button.
+      grabber().dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    });
+    expect(sheetHeight()).toBe(`${SHEET_COLLAPSED}dvh`);
+  });
+
   it('movement within the 5px tap slop does not suppress the click', () => {
     firePointer('pointerdown', 800, 0);
     firePointer('pointermove', 797, 30); // 3px — jitter, not a drag

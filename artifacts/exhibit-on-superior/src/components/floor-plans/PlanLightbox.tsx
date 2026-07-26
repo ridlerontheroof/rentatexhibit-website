@@ -872,6 +872,13 @@ export function PlanLightbox({
               <button
                 type="button"
                 aria-label={sheetSnap === SHEET_EXPANDED ? 'Collapse details' : 'Expand details'}
+                onKeyDown={() => {
+                  // A keyboard activation (Enter/Space) fires a click with no
+                  // preceding pointerdown, so a stale suppress flag from a
+                  // drag that produced no synthetic click would swallow it.
+                  // Clear the flag here as well.
+                  suppressSheetClick.current = false;
+                }}
                 onClick={() => {
                   if (suppressSheetClick.current) {
                     suppressSheetClick.current = false;
