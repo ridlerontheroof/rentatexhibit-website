@@ -15,6 +15,7 @@
 // pages can never drift between the config and the server.
 
 import express from 'express';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -57,6 +58,49 @@ const notFoundPage = fs.existsSync(path.join(publicDir, '404.html'))
   : path.join(publicDir, 'index.html'); // pre-regeneration fallback, still status 404
 
 // ---------------------------------------------------------------------------
+// Inline-script hashes (CSP without 'unsafe-inline').
+// The prerendered pages carry a small, fixed set of inline scripts (host
+// redirect, GTM bootstrap, availability prefetch, legacy-redirect stubs).
+// Walk the build output once at startup, hash every executing inline script,
+// and allow exactly those hashes in script-src. Non-executing scripts
+// (application/ld+json) are ignored by script-src and skipped here.
+// ---------------------------------------------------------------------------
+function collectInlineScriptHashes(rootDir) {
+  const hashes = new Set();
+  const scriptRe = /<script(\s[^>]*)?>([\s\S]*?)<\/script>/gi;
+  const stack = [rootDir];
+  while (stack.length) {
+    const dir = stack.pop();
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(p);
+      } else if (entry.isFile() && entry.name.endsWith('.html')) {
+        const html = fs.readFileSync(p, 'utf8');
+        let m;
+        while ((m = scriptRe.exec(html)) !== null) {
+          const attrs = m[1] ?? '';
+          const body = m[2];
+          if (/\bsrc\s*=/i.test(attrs)) continue; // external — covered by host allowlist
+          const type = /\btype\s*=\s*["']?([^"'\s>]+)/i.exec(attrs)?.[1]?.toLowerCase();
+          if (type && type !== 'module' && type !== 'text/javascript' && type !== 'application/javascript')
+            continue; // e.g. application/ld+json — not executed, not hashed
+          if (!body) continue;
+          hashes.add(`'sha256-${crypto.createHash('sha256').update(body, 'utf8').digest('base64')}'`);
+        }
+      }
+    }
+  }
+  return [...hashes].sort();
+}
+const inlineScriptHashes = collectInlineScriptHashes(publicDir);
+if (inlineScriptHashes.length === 0) {
+  console.error('Fatal: no inline-script hashes found — CSP would block the GTM bootstrap.');
+  process.exit(1);
+}
+console.log(`Allowing ${inlineScriptHashes.length} inline-script hashes in script-src`);
+
+// ---------------------------------------------------------------------------
 // Headers
 // ---------------------------------------------------------------------------
 const CSP = [
@@ -65,9 +109,10 @@ const CSP = [
   "object-src 'none'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  // 'unsafe-inline' is required by the GTM bootstrap + availability-prefetch
-  // inline scripts in the prerendered head.
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com",
+  // Inline scripts (GTM bootstrap, availability prefetch, host redirect,
+  // legacy-redirect stubs) are allowed by hash — collected from the build
+  // output at startup — so 'unsafe-inline' is not needed.
+  `script-src 'self' ${inlineScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com`,
   // Google Maps JS injects its own stylesheet + font loads at runtime.
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
