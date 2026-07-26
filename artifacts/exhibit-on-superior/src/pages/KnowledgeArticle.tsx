@@ -6,6 +6,8 @@ import {
   buildKnowledgeSeoModel,
   knowledgeArticle,
   knowledgePath,
+  knowledgeUpdatedDisplay,
+  knowledgeUpdated,
 } from '../data/knowledge';
 
 /**
@@ -54,6 +56,13 @@ export function KnowledgeArticle() {
             <h1 className="text-3xl md:text-4xl uppercase tracking-wider text-white">
               {article.question}
             </h1>
+            {/* Byline mirrors author/dateModified in the article JSON-LD
+                (data/knowledge.ts) so the visible attribution and the
+                structured data can never disagree. */}
+            <p className="mt-4 text-sm text-white/60">
+              Reviewed by the Exhibit On Superior leasing team &middot; Updated{' '}
+              <time dateTime={knowledgeUpdated(article)}>{knowledgeUpdatedDisplay(article)}</time>
+            </p>
           </div>
         </section>
 

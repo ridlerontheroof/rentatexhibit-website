@@ -123,6 +123,14 @@ export function Reviews() {
                 drawn from the same source, the star rating you see always reflects real reviews.
               </p>
               <p>
+                Want to add your own experience? Post it on the Exhibit On Superior Google
+                Business Profile — the same listing this page reads from — and it will appear
+                alongside the aggregate rating shown above. Reviews from residents of the
+                298-residence tower cover everything from the 24-hour front desk and the
+                full-floor amenity deck to the leasing process itself, which is exactly the kind
+                of first-hand detail a website can&rsquo;t tell you.
+              </p>
+              <p>
                 Deciding whether Exhibit On Superior is right for you? Preview homes and amenities with
                 the video and Matterport tours on the{' '}
                 <Link href="/virtual-tour" className="text-primary hover:underline">

@@ -11,8 +11,8 @@ export function PrivacyPolicy() {
         <div className="space-y-8 text-base leading-relaxed text-foreground/90">
           <section className="space-y-3">
             <p>
-              Exhibit On Superior is a residential apartment community managed by Highland
-              Management LLC ("we," "us," or "our"). This Privacy Policy explains how we collect,
+              Exhibit On Superior is a residential apartment community managed by its property
+              management company ("we," "us," or "our"). This Privacy Policy explains how we collect,
               use, and protect the information you provide when you use our website.
             </p>
           </section>

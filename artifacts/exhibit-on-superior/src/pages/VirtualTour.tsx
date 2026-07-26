@@ -30,7 +30,14 @@ export function VirtualTour() {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-12">
               <p className="text-lg leading-relaxed mb-6">
-                Take a virtual tour of Exhibit On Superior in Chicago, Illinois. Our virtual tour is the next best thing to seeing it in person. See more of our amenities and in-home features by visiting us in person, or by heading to our Photo Gallery page for a more detailed look at our community. Reach out to our friendly leasing staff to schedule your tour today.
+                Take a virtual tour of Exhibit On Superior in Chicago, Illinois. Below you&rsquo;ll
+                find the community video tour plus {matterportTours.length} interactive 3D
+                Matterport walkthroughs covering apartment homes and amenity spaces in the
+                34-story, 298-residence tower — move room to room at your own pace and see the
+                driftwood plank floors, quartz countertops, and floor-to-ceiling skyline views
+                exactly as they are. See more of our amenities and in-home features by visiting us
+                in person, or by heading to our Photo Gallery page for a more detailed look at our
+                community. Reach out to our friendly leasing staff to schedule your tour today.
               </p>
               <div className="flex justify-center gap-4">
                 <Link href="/photo-gallery" className="btn-gold-outline inline-block">

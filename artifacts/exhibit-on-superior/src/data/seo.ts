@@ -96,11 +96,15 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       "View apartment, amenity, skyline, and community photos of Exhibit On Superior, a luxury high-rise at 165 W Superior St in Chicago's River North neighborhood.",
     quickAnswer:
-      'The Exhibit On Superior photo gallery shows apartment interiors, amenity spaces, skyline views, and community areas for the River North Chicago property.',
+      'The Exhibit On Superior photo gallery shows real photography of the 34-story River North tower \u2014 apartment interiors with floor-to-ceiling windows, the full amenity floor including the 75-foot lap pool and fitness center, skyline views, and shared community spaces \u2014 organized so you can jump straight to the spaces you care about.',
     faqs: [
       {
         q: 'What can I see in the Exhibit On Superior photo gallery?',
         a: 'The gallery includes apartment interiors, amenity spaces, city views, pool and fitness areas, lounges, and shared community spaces.',
+      },
+      {
+        q: 'Are these photos of the actual building?',
+        a: 'Yes. The gallery shows real photography of Exhibit On Superior\u2019s apartments, amenity floor, and views \u2014 and each available residence on the Available Units page carries its own current unit photos synced from the leasing system.',
       },
       {
         q: 'Can I tour the community virtually?',
@@ -116,11 +120,15 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Take a virtual tour of Exhibit On Superior apartments and amenities in River North Chicago with video and Matterport tour embeds.',
     quickAnswer:
-      'The virtual tour page lets renters preview Exhibit On Superior remotely through video and Matterport tours of apartment homes and amenity spaces.',
+      'Renters can tour Exhibit On Superior remotely through the video tour and interactive 3D Matterport walkthroughs on this page \u2014 covering apartment homes and the full amenity floor of the 34-story River North tower \u2014 before scheduling an in-person visit with the leasing team.',
     faqs: [
       {
         q: 'Does Exhibit On Superior offer virtual tours?',
         a: 'Yes. The virtual tour page includes video and Matterport tour embeds for apartment and amenity previews.',
+      },
+      {
+        q: 'What do the Matterport tours show?',
+        a: 'The interactive 3D walkthroughs let you move room to room through apartment homes and amenity spaces at your own pace \u2014 including layouts, finishes, and the floor-to-ceiling window views.',
       },
       {
         q: 'Can I still schedule an in-person tour?',
@@ -450,11 +458,19 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       "Contact Exhibit On Superior in Chicago's River North neighborhood — email exhibit@highlandptrs.com, call 312-450-0635, or send a message with the online form.",
     quickAnswer:
-      'To contact Exhibit On Superior, email exhibit@highlandptrs.com, call 312-450-0635, or visit 165 W Superior St, Chicago, IL 60654.',
+      'To contact Exhibit On Superior, email exhibit@highlandptrs.com, call 312-450-0635, or visit the leasing office at 165 W Superior St, Chicago, IL 60654 \u2014 open Monday\u2013Friday 9 AM\u20136 PM, Saturday 10 AM\u20135 PM, and Sunday 12\u20135 PM, with the front desk staffed 24 hours a day.',
     faqs: [
       { q: 'What is the email for Exhibit On Superior?', a: 'The contact email is exhibit@highlandptrs.com.' },
       { q: 'What is the phone number for Exhibit On Superior?', a: 'The phone number is 312-450-0635.' },
       { q: 'What is the address?', a: 'The address is 165 W Superior St, Chicago, IL 60654.' },
+      {
+        q: 'What are the leasing office hours?',
+        a: 'Monday\u2013Friday 9:00 AM\u20136:00 PM, Saturday 10:00 AM\u20135:00 PM, and Sunday 12:00 PM\u20135:00 PM. The front desk is staffed 24 hours a day.',
+      },
+      {
+        q: 'How do I reach maintenance for an urgent issue?',
+        a: 'Current residents should call (312) 883-5503 for urgent maintenance issues; routine requests go through the resident portal.',
+      },
     ],
   },
   '/map-directions': {
@@ -485,11 +501,19 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Resident resource page for Exhibit On Superior in River North Chicago with online portal access, rent payments, maintenance requests, and contact information.',
     quickAnswer:
-      'The residents page helps current residents find portal, payment, maintenance, and contact resources for Exhibit On Superior.',
+      'Current Exhibit On Superior residents pay rent, submit maintenance requests, and follow building announcements through the online resident portal. For urgent maintenance call (312) 883-5503; for everything else reach the office at exhibit@highlandptrs.com or 312-450-0635 during office hours, seven days a week.',
     faqs: [
       {
         q: 'Who should residents contact?',
         a: 'Residents can contact Exhibit On Superior at exhibit@highlandptrs.com or 312-450-0635.',
+      },
+      {
+        q: 'How do residents pay rent?',
+        a: 'Rent is paid securely online through the resident portal \u2014 no checks or office visits required.',
+      },
+      {
+        q: 'How do residents request maintenance?',
+        a: 'Submit routine maintenance requests through the resident portal. For urgent issues, call (312) 883-5503 directly.',
       },
     ],
   },
@@ -513,6 +537,30 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
     ],
   },
+  '/about': {
+    path: '/about',
+    label: 'About',
+    title: 'About Exhibit On Superior | River North Chicago Apartments',
+    description:
+      'The story of Exhibit On Superior — a 34-story, 298-residence luxury tower at 165 W Superior St in River North Chicago with a full-time on-site management team.',
+    quickAnswer:
+      'Exhibit On Superior is a 34-story luxury apartment tower with 298 residences at 165 W Superior St in Chicago\u2019s River North neighborhood, professionally managed by a full-time on-site team. The building offers studio through three-bedroom homes from about 448 to 1,528 square feet, a full floor of amenities, a 24-hour staffed front desk, and on-site retail.',
+    faqs: [
+      {
+        q: 'How many apartments are in Exhibit On Superior?',
+        a: 'The tower holds 298 residences across 34 stories, with homes on floors 2\u201334 ranging from studios of about 448 square feet to three-bedroom, three-bath penthouses of 1,528 square feet.',
+      },
+      {
+        q: 'Where is Exhibit On Superior located?',
+        knowledgeSlug: 'building-address',
+        a: 'Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654 in the River North area.',
+      },
+      {
+        q: 'What are the leasing office hours?',
+        a: 'The leasing office is open Monday\u2013Friday 9:00 AM\u20136:00 PM, Saturday 10:00 AM\u20135:00 PM, and Sunday 12:00 PM\u20135:00 PM. The front desk is staffed 24 hours a day.',
+      },
+    ],
+  },
   '/reviews': {
     path: '/reviews',
     ogImage: `${SITE_URL}/images/og/reviews.jpg`,
@@ -521,11 +569,19 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       "Read reviews for Exhibit On Superior and connect with verified review sources for this River North Chicago apartment community.",
     quickAnswer:
-      'This page connects renters to current, verifiable review sources for Exhibit On Superior in River North Chicago.',
+      'Reviews of Exhibit On Superior come directly from the property\u2019s Google Business Profile, so the star rating and quotes shown on this page reflect what residents and visitors have actually posted about the 298-residence River North tower \u2014 refreshed automatically rather than hand-picked marketing testimonials.',
     faqs: [
       {
         q: 'Where do reviews come from?',
         a: 'Reviews come from current, verifiable sources such as the Google Business Profile.',
+      },
+      {
+        q: 'How do I leave a review of Exhibit On Superior?',
+        a: 'Post your review on the Exhibit On Superior Google Business Profile \u2014 the same listing this page reads from, so your feedback appears alongside the aggregate rating shown here.',
+      },
+      {
+        q: 'How can I verify these reviews myself?',
+        a: 'Open the Exhibit On Superior listing on Google Maps and read the reviews at the source. This page displays the same live rating and quotes rather than a curated selection.',
       },
     ],
   },
@@ -833,6 +889,19 @@ export const ORGANIZATION_NODE = {
   email: 'exhibit@highlandptrs.com',
   telephone: '312-450-0635',
   logo: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '165 W Superior St',
+    addressLocality: 'Chicago',
+    addressRegion: 'IL',
+    postalCode: '60654',
+    addressCountry: 'US',
+  },
+  sameAs: [
+    'https://www.facebook.com/exhibitonsuperior',
+    'https://www.instagram.com/exhibitonsuperior',
+    'https://www.youtube.com/@ExhibitonSuperior',
+  ],
 };
 
 export const APARTMENT_COMPLEX_NODE = {
@@ -940,14 +1009,17 @@ export function buildJsonLd(path: string): Record<string, unknown> {
   const canonical = canonicalFor(path);
   const idBase = path === '/' ? `${SITE_URL}/` : `${SITE_URL}${path}`;
 
+  // /about is typed AboutPage with the Organization as its main entity —
+  // the E-E-A-T signal search engines look for on an about page.
   const webPage = {
-    '@type': 'WebPage',
+    '@type': path === '/about' ? 'AboutPage' : 'WebPage',
     '@id': `${idBase}#webpage`,
     url: canonical,
     name: page?.title,
     description: page?.description,
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
+    ...(path === '/about' ? { mainEntity: { '@id': `${SITE_URL}#organization` } } : {}),
     breadcrumb: { '@id': `${idBase}#breadcrumb` },
   };
 

@@ -111,6 +111,25 @@ Performance 40→~75, Security 46→~90, Crawlability 48→~90, Links 80→~95.
 
 ## Phase 3 — Content & E-E-A-T (Content 41 → 85+, E-E-A-T 77 → 100)
 
+> **Status (2026-07-26): implemented, awaiting publish.** `/about` is live in
+> the build (property story, on-site management section, building
+> facts, NAP + hours) with `AboutPage` JSON-LD (`mainEntity` → Organization),
+> a footer link, sitemap/prerender/rewrite entries. The Organization node now
+> carries address/sameAs. **Note:** all mentions of the management company by
+> name were removed site-wide on 2026-07-26 pending legal clearance — do not
+> reintroduce them (incl. `parentOrganization` JSON-LD) until the owner
+> confirms. Every knowledge
+> article shows a "Reviewed by the … leasing team · Updated <date>" byline
+> wired into its JSON-LD (`author`/`publisher`/`dateModified`/`lastReviewed`,
+> date from `KNOWLEDGE_REVIEWED_DATE` in `src/data/knowledge.ts` — bump on
+> bulk re-review, override per article via `updated`). The five thin pages
+> (/contact-us, /photo-gallery, /residents, /reviews, /virtual-tour) now open
+> with stat-rich quick answers, carry concrete numbers per section, and all
+> clear the 300-word floor (448–712 words measured on prerendered HTML;
+> /about 712). JSON-LD validator passes with zero recommended-property
+> warnings. Re-run the full squirrel audit after the next publish and record
+> Content / E-E-A-T scores here.
+
 1. **About page** (`/about`): the property's story, management company
    (Highland Real Estate Partners), team, address/NAP, building facts and
    dates. Add `AboutPage` + `Organization` JSON-LD, link site-wide footer.

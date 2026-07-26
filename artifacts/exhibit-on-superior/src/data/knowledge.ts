@@ -66,6 +66,34 @@ export interface KnowledgeArticle {
   externalLinks?: { label: string; href: string }[];
   /** Meta description (defaults to the answer, trimmed). */
   description?: string;
+  /**
+   * ISO date (YYYY-MM-DD) the leasing team last reviewed/updated this
+   * article. Defaults to KNOWLEDGE_REVIEWED_DATE; set per-article when a
+   * single answer is re-verified later. Drives the visible byline and the
+   * dateModified/lastReviewed fields in the article JSON-LD.
+   */
+  updated?: string;
+}
+
+/**
+ * Site-wide default review date for knowledge articles: the last time the
+ * leasing team reviewed the full answer set. Bump when the content is
+ * re-verified in bulk; per-article `updated` overrides for later edits.
+ */
+export const KNOWLEDGE_REVIEWED_DATE = '2026-07-26';
+
+export function knowledgeUpdated(a: KnowledgeArticle): string {
+  return a.updated ?? KNOWLEDGE_REVIEWED_DATE;
+}
+
+/** "July 26, 2026" — human-readable form of the review date for the byline. */
+export function knowledgeUpdatedDisplay(a: KnowledgeArticle): string {
+  const [y, m, d] = knowledgeUpdated(a).split('-').map(Number);
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  return `${months[m - 1]} ${d}, ${y}`;
 }
 
 export function knowledgePath(slug: string): string {
@@ -108,6 +136,14 @@ export function knowledgeDescription(a: KnowledgeArticle): string {
 export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
   const canonical = `${SITE_URL}${knowledgePath(a.slug)}`;
 
+  // Author/publisher attribution + freshness date (E-E-A-T / AEO signals),
+  // mirrored by the visible byline block in pages/KnowledgeArticle.tsx.
+  // The author/reviewer is the Organization node itself (the on-site leasing
+  // team IS the organization's editorial voice) — referencing it by @id keeps
+  // the graph free of duplicate half-filled Organization nodes, which the
+  // recommended-properties validator would flag on every article.
+  const author = { '@id': `${SITE_URL}#organization` };
+
   const webPage = {
     '@type': 'WebPage',
     '@id': `${canonical}#webpage`,
@@ -116,6 +152,11 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
     description: knowledgeDescription(a),
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
+    author,
+    publisher: { '@id': `${SITE_URL}#organization` },
+    dateModified: knowledgeUpdated(a),
+    lastReviewed: knowledgeUpdated(a),
+    reviewedBy: author,
     breadcrumb: { '@id': `${canonical}#breadcrumb` },
   };
 

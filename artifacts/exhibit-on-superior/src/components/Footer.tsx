@@ -82,6 +82,11 @@ export function Footer() {
             <h3 className="uppercase tracking-wider font-semibold mb-4 text-sm">More Info</h3>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link href="/about" className="hover:text-primary transition-colors">
+                  About
+                </Link>
+              </li>
+              <li>
                 <Link href="/pet-friendly" className="hover:text-primary transition-colors">
                   Pet Friendly
                 </Link>

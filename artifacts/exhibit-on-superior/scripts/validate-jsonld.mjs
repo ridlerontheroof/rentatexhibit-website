@@ -140,6 +140,8 @@ export const RECOMMENDED_PROPERTIES = {
   // ApartmentComplex node, so only the review payload is checked here.
   LocalBusiness: ['name', 'url', 'aggregateRating', 'review'],
   WebPage: ['name', 'description', 'url', 'isPartOf', 'breadcrumb'],
+  // /about page — a WebPage subtype; same recommended set applies.
+  AboutPage: ['name', 'description', 'url', 'isPartOf', 'breadcrumb'],
   BreadcrumbList: ['itemListElement'],
   // A ListItem either names its target inline (breadcrumbs: name + item URL)
   // or nests a typed item that carries its own name (carousels) — so `name`

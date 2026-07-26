@@ -54,6 +54,14 @@ from = "/available-units/"
 to = "/available-units/index.html"
 
 [[services.production.rewrites]]
+from = "/about"
+to = "/about/index.html"
+
+[[services.production.rewrites]]
+from = "/about/"
+to = "/about/index.html"
+
+[[services.production.rewrites]]
 from = "/photo-gallery"
 to = "/photo-gallery/index.html"
 
