@@ -5,6 +5,14 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
+import { Bike, Footprints, TrainFront } from 'lucide-react';
+import {
+  WALK_SCORES,
+  WALK_SCORE_SOURCE_URL,
+  WALK_SCORES_CHECKED,
+} from '../data/walkScores';
+
+const SCORE_ICONS = [Footprints, TrainFront, Bike];
 
 export function Neighborhood() {
   return (
@@ -31,6 +39,41 @@ export function Neighborhood() {
             </p>
             <p className="text-lg leading-relaxed">
               This is urban living at its finest. You live in this city for a reason, Exhibit lets you make the most of it.
+            </p>
+          </div>
+        </section>
+
+        {/* Walk / Transit / Bike Scores — data from src/data/walkScores.ts */}
+        <section className="py-12 px-4 bg-dark-section">
+          <div className="container mx-auto max-w-4xl text-center">
+            <SplitHeadline script="By the Numbers" caps="Walk, Transit & Bike Scores" dark className="mb-8" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {WALK_SCORES.map((metric, i) => {
+                const Icon = SCORE_ICONS[i];
+                return (
+                  <div key={metric.name} className="border border-white/20 p-6">
+                    <Icon aria-hidden="true" className="w-8 h-8 text-primary mx-auto mb-3" />
+                    <p className="text-4xl text-white mb-1">
+                      {metric.score}
+                      <span className="text-lg text-white/60">/100</span>
+                    </p>
+                    <p className="text-sm uppercase tracking-wider text-white/80 mb-1">{metric.name}</p>
+                    <p className="text-sm text-primary">{metric.label}</p>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-6 text-xs text-white/50">
+              Source:{' '}
+              <a
+                href={WALK_SCORE_SOURCE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-white/80"
+              >
+                Walk Score
+              </a>{' '}
+              &mdash; checked {WALK_SCORES_CHECKED}
             </p>
           </div>
         </section>

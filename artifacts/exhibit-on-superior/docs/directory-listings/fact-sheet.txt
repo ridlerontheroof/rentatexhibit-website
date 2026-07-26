@@ -76,6 +76,9 @@ AMENITIES (copy-paste list)
 - Quartz countertops
 - Stainless-steel appliances
 - Wired for 1GB internet
+- Walk Score 99 (Walker's Paradise, per Walk Score)
+- Transit Score 100 (Rider's Paradise, per Walk Score)
+- Bike Score 86 (Very Bikeable, per Walk Score)
 
 ================================================================
 PER-PLATFORM CHECKLIST

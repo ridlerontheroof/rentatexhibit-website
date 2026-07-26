@@ -9,6 +9,7 @@ import { HeroSlider, type HeroSlide } from '../components/HeroSlider';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { trackOutboundClick } from '../lib/analytics';
 import { SmartImg } from '../components/SmartImg';
+import { WALK_SCORE, TRANSIT_SCORE } from '../data/walkScores';
 
 // Home hero carousel — same photos and order as the source rentatexhibit.com hero.
 export const HERO_SLIDES: HeroSlide[] = [
@@ -185,7 +186,7 @@ export function Home() {
                   Make the most of the vibrant city with a home base that puts everything at your fingertips. From cozy cafés and trendy restaurants to sprawling parks and convenient shops, you’ll find it all just steps away. Take a quick trip to Target or spend the afternoon along the Chicago River.
                 </p>
                 <p className="text-lg leading-relaxed mb-8 text-white">
-                  Located in River North, our welcoming neighborhood offers the perfect blend of energy and ease with West Loop, Old Town, and Fulton Market just minutes away for even more dining, shopping, and cultural experiences. When it’s time to head out, nearby access to major roadways and public transit makes getting around the city a breeze.
+                  Located in River North, our welcoming neighborhood offers the perfect blend of energy and ease with West Loop, Old Town, and Fulton Market just minutes away for even more dining, shopping, and cultural experiences. When it’s time to head out, nearby access to major roadways and public transit makes getting around the city a breeze — the address rates a {WALK_SCORE.score} Walk Score and a perfect {TRANSIT_SCORE.score} Transit Score, per Walk Score.
                 </p>
                 <p className="text-lg leading-relaxed mb-8 text-white">
                   Exhibit on Superior is your urban hub for fun and convenience in the heart of Chicago.

@@ -3,6 +3,7 @@
 
 import { ADA_COUNTS } from './ada';
 import { startingRentSentence } from './startingRent';
+import { WALK_SCORE, TRANSIT_SCORE, BIKE_SCORE, WALK_SCORES_SENTENCE } from './walkScores';
 
 /**
  * Homepage pricing FAQ answer. The dollar figure comes from the baked
@@ -271,8 +272,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     title: 'River North Neighborhood | Exhibit On Superior Chicago',
     description:
       'Explore the River North location around Exhibit On Superior, close to dining, cafes, shopping, parks, the Chicago River, West Loop, Old Town, and Fulton Market.',
-    quickAnswer:
-      'Exhibit On Superior is in River North, with quick access to downtown Chicago dining, cafes, shopping, the Chicago River, West Loop, Old Town, and Fulton Market.',
+    quickAnswer: `Exhibit On Superior is in River North, with quick access to downtown Chicago dining, cafes, shopping, the Chicago River, West Loop, Old Town, and Fulton Market. Per Walk Score, the address rates a ${WALK_SCORE.score}/100 Walk Score, a ${TRANSIT_SCORE.score}/100 Transit Score, and an ${BIKE_SCORE.score}/100 Bike Score.`,
     faqs: [
       {
         q: 'What neighborhood is Exhibit On Superior in?',
@@ -293,6 +293,10 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       {
         q: 'Is River North a good neighborhood without a car?',
         a: 'Yes. Groceries, gyms, parks, restaurants, and two CTA rail stations are all within about a half-mile walk of Exhibit On Superior, and the Loop is roughly a mile south.',
+      },
+      {
+        q: 'What are the Walk, Transit, and Bike Scores at Exhibit On Superior?',
+        a: WALK_SCORES_SENTENCE,
       },
     ],
   },
@@ -412,7 +416,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Is Exhibit walkable to the Loop?',
-        a: 'Yes. The Loop is roughly a mile south \u2014 about a 20-minute walk, or one short ride on the Brown Line from the Chicago station toward the Loop.',
+        a: `Yes. The Loop is roughly a mile south \u2014 about a 20-minute walk, or one short ride on the Brown Line from the Chicago station toward the Loop. Per Walk Score, the address rates a ${WALK_SCORE.score}/100 Walk Score and a ${TRANSIT_SCORE.score}/100 Transit Score.`,
       },
       {
         q: 'What bus routes serve the area?',
@@ -1056,6 +1060,10 @@ export const APARTMENT_COMPLEX_NODE = {
     'Quartz countertops',
     'Stainless-steel appliances',
     'Wired for 1GB internet',
+    // Third-party Walk Score metrics — must match visible site copy (walkScores.ts).
+    `${WALK_SCORE.name} ${WALK_SCORE.score} (${WALK_SCORE.label}, per Walk Score)`,
+    `${TRANSIT_SCORE.name} ${TRANSIT_SCORE.score} (${TRANSIT_SCORE.label}, per Walk Score)`,
+    `${BIKE_SCORE.name} ${BIKE_SCORE.score} (${BIKE_SCORE.label}, per Walk Score)`,
   ].map((name) => ({ '@type': 'LocationFeatureSpecification', name })),
 };
 

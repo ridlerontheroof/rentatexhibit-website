@@ -46,8 +46,11 @@
     "In-home washer/dryer",
     "Quartz countertops",
     "Stainless-steel appliances",
-    "Wired for 1GB internet"
+    "Wired for 1GB internet",
+    "Walk Score 99 (Walker's Paradise, per Walk Score)",
+    "Transit Score 100 (Rider's Paradise, per Walk Score)",
+    "Bike Score 86 (Very Bikeable, per Walk Score)"
   ],
-  "factsHash": "cd0425dbe3c2a5fa98163f0e2bc50ccf75ef9064c877410d1abd81bcf4941f85",
+  "factsHash": "d995f5855f915719641228b795dcb3078128cd8bc79b5653e3fdbebe41c38f6b",
   "generated": "2026-07-26"
 }

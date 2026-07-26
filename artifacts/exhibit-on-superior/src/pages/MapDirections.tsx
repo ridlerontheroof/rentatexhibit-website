@@ -6,6 +6,12 @@ import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { PropertyMap } from '../components/PropertyMap';
+import {
+  WALK_SCORE,
+  TRANSIT_SCORE,
+  BIKE_SCORE,
+  WALK_SCORE_SOURCE_URL,
+} from '../data/walkScores';
 
 export function MapDirections() {
   return (
@@ -115,6 +121,19 @@ export function MapDirections() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground text-center mt-8">
+              However you arrive, the corner is easy to reach without a car &mdash; per{' '}
+              <a
+                href={WALK_SCORE_SOURCE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline"
+              >
+                Walk Score
+              </a>
+              , the address rates a {WALK_SCORE.score}/100 Walk Score, a {TRANSIT_SCORE.score}/100
+              Transit Score, and an {BIKE_SCORE.score}/100 Bike Score.
+            </p>
+            <p className="text-sm text-muted-foreground text-center mt-4">
               Routes, exits, and schedules can change — use the map above or your preferred navigation app for current turn-by-turn directions, and check transitchicago.com for CTA service details.
             </p>
           </div>

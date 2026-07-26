@@ -14,6 +14,12 @@
 import type { KnowledgeArticle } from './knowledge';
 import { ADA_COUNTS } from './ada';
 import { startingRentSentence } from './startingRent';
+import {
+  TRANSIT_SCORE_PHRASE,
+  WALK_SCORE_PHRASE,
+  WALK_SCORES_CHECKED,
+  WALK_SCORES_CITATION,
+} from './walkScores';
 
 export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   // -------------------------------------------------------------------------
@@ -1633,7 +1639,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         heading: 'Bus routes nearby',
         paragraphs: [
           'The #66 Chicago Avenue bus runs one block north, with the #156 LaSalle and #22 Clark routes within a few blocks. These fill in crosstown and north-south trips not covered by rail.',
-          'Together the rail and bus network makes River North one of Chicago\u2019s most practical neighborhoods for getting around without a car.',
+          `Together the rail and bus network makes River North one of Chicago\u2019s most practical neighborhoods for getting around without a car \u2014 Walk Score rates the address ${TRANSIT_SCORE_PHRASE}.`,
         ],
       },
       {
@@ -1669,7 +1675,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'Everything within a half mile',
         paragraphs: [
-          'Daily needs — groceries, gyms, parks, restaurants, and transit — are within about a half-mile walk, so a car is optional rather than necessary. Whole Foods, Trader Joe\u2019s, and Jewel-Osco all sit within that radius.',
+          `Daily needs — groceries, gyms, parks, restaurants, and transit — are within about a half-mile walk, so a car is optional rather than necessary. Whole Foods, Trader Joe\u2019s, and Jewel-Osco all sit within that radius. Per Walk Score, the address rates ${WALK_SCORE_PHRASE} and ${TRANSIT_SCORE_PHRASE}.`,
           'Washington Square Park and A. Montgomery Ward Park are nearby for green space, and East Bank Club and Equinox are within about a half mile for fitness.',
         ],
       },
@@ -1750,7 +1756,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'Is Exhibit On Superior walkable to the Loop?',
     category: 'Parking & Transportation',
     answer:
-      'Yes. The Loop is roughly a mile south of Exhibit On Superior — about a 20-minute walk, or one short ride on the Brown Line from the Chicago station toward the Loop. The building sits at 165 W Superior St in River North, with two CTA rail stations within about a half mile.',
+      `Yes. The Loop is roughly a mile south of Exhibit On Superior — about a 20-minute walk, or one short ride on the Brown Line from the Chicago station toward the Loop. The building sits at 165 W Superior St in River North, with two CTA rail stations within about a half mile. ${WALK_SCORES_CITATION}`,
     sections: [
       {
         heading: 'A mile from downtown',
@@ -1770,6 +1776,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         heading: 'Is it walkable beyond the Loop?',
         paragraphs: [
           'Yes. River North itself keeps groceries, gyms, parks, and dining within about a half mile of 165 W Superior St, so most daily trips do not require the Loop at all.',
+          `Third-party ratings back this up (checked ${WALK_SCORES_CHECKED}): ${WALK_SCORES_CITATION}`,
           'Complimentary ground-floor bike storage adds a fast option for the mile downtown when you would rather ride than walk.',
         ],
       },
