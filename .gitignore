@@ -48,3 +48,4 @@ Thumbs.db
 .cache/
 .local/
 email-previews/
+\n# Runtime-generated availability snapshot (rebuilt on server start)\nartifacts/api-server/src/data/availabilitySeed.json
