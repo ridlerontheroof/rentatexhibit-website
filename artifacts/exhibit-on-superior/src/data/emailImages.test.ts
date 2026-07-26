@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 
 // Guards the branded-lead-email logo assets that live under
@@ -86,6 +87,127 @@ function readEmbeddedLogoBytes(): Buffer {
   return Buffer.from(base64, 'base64');
 }
 
+// Expected logo geometry — mirrors WIDTH/HEIGHT in
+// artifacts/api-server/scripts/regenerate-email-logo.mjs and the guard
+// tolerances that script enforces at render time. This test re-runs the
+// same sanity checks against the *committed* files so a hand-replaced
+// PNG/JSON (bypassing the script) still fails loudly.
+const LOGO_WIDTH = 440;
+const LOGO_HEIGHT = 111;
+const MIN_OPAQUE_PIXEL_FRACTION = 0.01;
+
+const PNG_SIG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+
+/**
+ * Decodes an 8-bit RGBA non-interlaced PNG just enough to count pixels
+ * with alpha > 0. Returns the count, or null if the PNG is not in the
+ * expected format. Ported from the regenerator's blank-render guard
+ * (artifacts/api-server/scripts/regenerate-email-logo.mjs).
+ */
+function countOpaquePixels(png: Buffer): number | null {
+  const width = png.readUInt32BE(16);
+  const height = png.readUInt32BE(20);
+  const bitDepth = png[24];
+  const colorType = png[25];
+  const interlace = png[28];
+  if (bitDepth !== 8 || colorType !== 6 || interlace !== 0) return null;
+
+  // Concatenate IDAT chunks and inflate.
+  const idats: Buffer[] = [];
+  let off = 8;
+  while (off + 8 <= png.length) {
+    const len = png.readUInt32BE(off);
+    const type = png.toString('ascii', off + 4, off + 8);
+    if (type === 'IDAT') idats.push(png.subarray(off + 8, off + 8 + len));
+    if (type === 'IEND') break;
+    off += 12 + len;
+  }
+  if (idats.length === 0) return null;
+  const raw = inflateSync(Buffer.concat(idats));
+
+  const bpp = 4; // RGBA, 8-bit
+  const stride = width * bpp;
+  if (raw.length !== height * (stride + 1)) return null;
+
+  // Un-filter scanlines (PNG filter types 0-4) and count alpha > 0.
+  const prev = Buffer.alloc(stride);
+  const cur = Buffer.alloc(stride);
+  let opaque = 0;
+  for (let y = 0; y < height; y++) {
+    const rowStart = y * (stride + 1);
+    const filter = raw[rowStart];
+    raw.copy(cur, 0, rowStart + 1, rowStart + 1 + stride);
+    for (let x = 0; x < stride; x++) {
+      const a = x >= bpp ? cur[x - bpp] : 0;
+      const b = prev[x];
+      const c = x >= bpp ? prev[x - bpp] : 0;
+      let add = 0;
+      switch (filter) {
+        case 0:
+          add = 0;
+          break;
+        case 1:
+          add = a;
+          break;
+        case 2:
+          add = b;
+          break;
+        case 3:
+          add = (a + b) >> 1;
+          break;
+        case 4: {
+          const p = a + b - c;
+          const pa = Math.abs(p - a);
+          const pb = Math.abs(p - b);
+          const pc = Math.abs(p - c);
+          add = pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+          break;
+        }
+        default:
+          return null;
+      }
+      cur[x] = (cur[x] + add) & 0xff;
+    }
+    for (let x = bpp - 1; x < stride; x += bpp) {
+      if (cur[x] > 0) opaque++;
+    }
+    cur.copy(prev);
+  }
+  return opaque;
+}
+
+/**
+ * Runs the same sanity checks the regenerator applies at render time:
+ * valid PNG signature, exact 440x111 dimensions, and a meaningful share
+ * of non-transparent pixels (not a blank/transparent image).
+ */
+function assertSaneLogoPng(png: Buffer, label: string): void {
+  expect(
+    PNG_SIG.every((b, i) => png[i] === b),
+    `${label} is not a valid PNG (bad signature)`,
+  ).toBe(true);
+
+  const w = png.readUInt32BE(16);
+  const h = png.readUInt32BE(20);
+  expect(`${w}x${h}`, `${label} has wrong dimensions (expected ${LOGO_WIDTH}x${LOGO_HEIGHT})`).toBe(
+    `${LOGO_WIDTH}x${LOGO_HEIGHT}`,
+  );
+
+  const opaque = countOpaquePixels(png);
+  expect(
+    opaque,
+    `${label}: could not decode pixels (expected 8-bit non-interlaced RGBA PNG); ` +
+      'regenerate it with pnpm --filter @workspace/api-server run regenerate:email-logo',
+  ).not.toBeNull();
+  const fraction = (opaque as number) / (LOGO_WIDTH * LOGO_HEIGHT);
+  expect(
+    fraction,
+    `${label} is effectively blank: only ${(fraction * 100).toFixed(2)}% of pixels are ` +
+      `non-transparent (need >= ${(MIN_OPAQUE_PIXEL_FRACTION * 100).toFixed(0)}%); ` +
+      'regenerate it with pnpm --filter @workspace/api-server run regenerate:email-logo',
+  ).toBeGreaterThanOrEqual(MIN_OPAQUE_PIXEL_FRACTION);
+}
+
 describe('branded lead email images', () => {
   it('the api-server email logo asset exists (path drift guard)', () => {
     // If the api-server moves/renames emailLogo.json, this test must be
@@ -135,6 +257,19 @@ describe('branded lead email images', () => {
       readFileSync(canonical).equals(embedded),
       'public/images/email/exhibit-logo-email.png differs from the api-server EMAIL_LOGO_BASE64 — regenerate one from the other',
     ).toBe(true);
+  });
+
+  it('the committed canonical PNG is a valid, non-blank 440x111 logo', () => {
+    // Byte-identity with the embedded copy is not enough: a hand-replaced
+    // pair of broken/blank files would still match each other. Re-run the
+    // regenerator's render-time sanity checks on the committed artifact.
+    const canonical = join(EMAIL_IMAGES_DIR, 'exhibit-logo-email.png');
+    expect(existsSync(canonical), `canonical email logo missing: ${canonical}`).toBe(true);
+    assertSaneLogoPng(readFileSync(canonical), 'public/images/email/exhibit-logo-email.png');
+  });
+
+  it('the embedded emailLogo.json decodes to a valid, non-blank 440x111 logo', () => {
+    assertSaneLogoPng(readEmbeddedLogoBytes(), 'api-server emailLogo.json base64');
   });
 
   it('no orphan files sit in public/images/email/ that no email code references', () => {
