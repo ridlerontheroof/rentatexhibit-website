@@ -15,7 +15,9 @@ describe('PhotoGallery lightbox', () => {
     expect(seen).toEqual(['Apartment Gallery', 'Community Gallery', 'Views', 'Building', 'Lobby']);
   });
 
-  it('arrows through all photos from the first one, wrapping across albums, without closing', () => {
+  // 41 render passes push past vitest's default 5s timeout when the whole
+  // suite runs in parallel, so give this walk-through extra headroom.
+  it('arrows through all photos from the first one, wrapping across albums, without closing', { timeout: 20_000 }, () => {
     const { unmount, container } = render(<PhotoGallery />);
     try {
       // Open the first grid photo (Lobby — last album in lightbox order).
