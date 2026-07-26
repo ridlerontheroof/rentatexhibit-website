@@ -78,6 +78,10 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
   const reducedMotion = useReducedMotion();
   const count = unit.photos.length;
 
+  // Desktop-only keyboard shortcut legend (toggled by the "?" button or key),
+  // mirroring PlanLightbox.
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
   const prev = useCallback(() => setIndex((i) => (i - 1 + count) % count), [count]);
   const next = useCallback(() => setIndex((i) => (i + 1) % count), [count]);
 
@@ -106,7 +110,12 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
     mouseDragging,
     isGesturing,
   } = usePinchZoom({
+    // Touch gestures never end in a click, so the click-capture dismiss
+    // (dismissLegendOnOutsideClick) can't run — clear the shortcut legend at
+    // gesture start / swipe, matching PlanLightbox.
+    onGestureStart: () => setShowShortcuts(false),
     onSwipe: (dir) => {
+      setShowShortcuts(false);
       if (count > 1) {
         if (dir === 1) next();
         else prev();
@@ -130,7 +139,22 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
     closeButtonRef.current?.focus();
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        // First Escape dismisses the shortcut legend if it is open,
+        // matching PlanLightbox.
+        if (showShortcuts) {
+          e.preventDefault();
+          setShowShortcuts(false);
+          return;
+        }
+        onClose();
+        return;
+      }
+      if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcuts((s) => !s);
+        return;
+      }
       if (e.key === '+' || e.key === '=') {
         e.preventDefault();
         keyboardZoom(1);
@@ -186,7 +210,37 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
       document.body.style.overflow = '';
       previouslyFocused?.focus();
     };
-  }, [onClose, prev, next, keyboardZoom, resetPinch, pinchZoomed, panBy]);
+  }, [onClose, prev, next, keyboardZoom, resetPinch, pinchZoomed, panBy, showShortcuts]);
+
+  /**
+   * Clicking anywhere outside the open legend dismisses it, matching
+   * PlanLightbox. Runs in the capture phase so the dismissing click never
+   * reaches the backdrop's onClick (which would close the whole gallery).
+   * Clicks inside the legend and on the "?" toggle are excluded so their own
+   * handlers keep working; clicks on other interactive controls dismiss the
+   * legend AND perform their action.
+   */
+  const dismissLegendOnOutsideClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!showShortcuts) return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target?.closest('#gallery-shortcuts-legend') ||
+        target?.closest('[aria-controls="gallery-shortcuts-legend"]')
+      ) {
+        return;
+      }
+      if (target?.closest('button, a, [role="button"]')) {
+        // Interactive control: dismiss the legend but let the click through.
+        setShowShortcuts(false);
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      setShowShortcuts(false);
+    },
+    [showShortcuts],
+  );
 
   if (count === 0) return null;
 
@@ -201,6 +255,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
       aria-label={`Photos of apartment ${unit.unit}`}
       className="fixed inset-0 z-50 flex flex-col bg-black/90!"
       onClick={onClose}
+      onClickCapture={dismissLegendOnOutsideClick}
     >
       <div
         className="flex items-center justify-between gap-3 px-4 py-3"
@@ -320,6 +375,61 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
           {pinchZoomed ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
           {pinchZoomed ? 'Fit' : 'Zoom'}
         </button>
+
+        {/* Keyboard shortcuts hint (desktop / fine-pointer only) — mirrors PlanLightbox */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowShortcuts((s) => !s);
+          }}
+          aria-expanded={showShortcuts}
+          aria-controls="gallery-shortcuts-legend"
+          aria-label={showShortcuts ? 'Hide keyboard shortcuts' : 'Show keyboard shortcuts'}
+          className="absolute bottom-4 left-[7.5rem] hidden min-h-11 min-w-11 items-center justify-center bg-black/60! px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-black/80! pointer-fine:lg:flex"
+        >
+          ?
+        </button>
+        {showShortcuts && (
+          <div
+            id="gallery-shortcuts-legend"
+            role="region"
+            aria-label="Keyboard shortcuts"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-16 left-4 z-10 hidden w-60 bg-black/80! p-4 text-white backdrop-blur-sm pointer-fine:lg:block"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-[11px] font-semibold uppercase tracking-[2px] text-white/70">
+                Keyboard shortcuts
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowShortcuts(false)}
+                aria-label="Dismiss keyboard shortcuts"
+                className="-mr-1 -mt-1 px-1 text-white/60 transition-colors hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+            <dl className="space-y-1.5 text-xs">
+              {[
+                ['+ / −', 'Zoom in / out'],
+                ['0', 'Reset zoom'],
+                ['← →', 'Next / previous photo'],
+                ['Arrows', 'Pan while zoomed'],
+                ['Esc', 'Close'],
+                ['?', 'Toggle this panel'],
+              ].map(([key, desc]) => (
+                <div key={key} className="flex items-center justify-between gap-3">
+                  <dt className="whitespace-nowrap border border-white/25 px-1.5 py-0.5 font-mono text-[11px] text-white/90">
+                    {key}
+                  </dt>
+                  <dd className="text-right text-white/70">{desc}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
       </div>
     </div>
   );
