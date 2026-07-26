@@ -754,12 +754,12 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'Does Exhibit On Superior have EV charging?',
     category: 'Parking & Transportation',
     answer:
-      'Yes. The attached indoor garage at Exhibit On Superior has 3 EV charging stations serving 6 designated alternative-fuel/EV parking spaces. For the exact charger locations, pricing, and current availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635. Garage parking is $335 per month per unreserved space.',
+      'Yes. The attached indoor garage at Exhibit On Superior has 3 UVBOX Level 2 charging stations serving 6 designated alternative-fuel/EV parking spaces. Charging costs are set and billed directly by UVBOX, separate from the $335/month garage parking fee. For charger locations and current garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
     sections: [
       {
         paragraphs: [
-          'Three charging stations serve six EV/alternative-fuel spaces in the multi-level garage, so charging is available on-site.',
-          'Charger placement and any usage details are confirmed by the leasing office, since these can change with garage assignments.',
+          'Three UVBOX Level 2 charging stations serve six EV/alternative-fuel spaces in the multi-level garage. Level 2 chargers typically deliver 10–30 miles of range per hour of charging.',
+          'Charging costs are managed by UVBOX and billed through their platform, separate from your monthly garage parking fee.',
         ],
       },
     ],
@@ -774,11 +774,12 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'Does Exhibit On Superior have guest parking?',
     category: 'Parking & Transportation',
     answer:
-      'No. Exhibit On Superior does not offer guest parking. Visitors are advised to use SpotHero or street parking nearby. Residents can rent an unreserved space in the attached indoor garage for $335 per month, subject to availability. For garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+      'The garage does not offer dedicated guest parking. Metered street parking is available on both sides of W Superior St directly in front of the building, providing convenient accessible street-level access. SpotHero lots are also nearby. Residents can rent an unreserved space in the attached indoor garage for $335 per month, subject to availability. For garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
     sections: [
       {
         paragraphs: [
-          'Because the garage serves residents, guests should plan on SpotHero reservations or metered street parking in River North.',
+          'Metered street parking lines both sides of W Superior St in front of the building, making drop-offs and short visits convenient without navigating a garage.',
+          'For longer stays, SpotHero is a reliable option for reserving nearby parking in River North.',
           'The neighborhood is transit-rich, so many guests arrive by CTA rail or bus rather than driving.',
         ],
       },
