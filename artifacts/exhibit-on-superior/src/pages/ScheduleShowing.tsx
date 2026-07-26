@@ -32,6 +32,7 @@ import {
 } from '../hooks/use-showings';
 import { tourUrlForListing } from '../components/floor-plans/UnitGalleryLightbox';
 import { trackLead, trackOutboundClick } from '../lib/analytics';
+import { HoneypotField, useBotGuard } from '../components/BotGuard';
 
 const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -63,6 +64,7 @@ export function ScheduleShowing() {
   const unitInfo = availability?.units.find((u) => u.unit === unit);
   const isOnline = useOnlineStatus();
 
+  const botGuard = useBotGuard();
   const contact = useShowingContact();
   const book = useBookShowing();
   const createLead = useCreateLead();
@@ -77,6 +79,9 @@ export function ScheduleShowing() {
   // the server answers `unit_not_listed`. Not a failure — show a clear
   // "no longer available" message instead of the lead-capture fallback.
   const [unitGone, setUnitGone] = useState(false);
+  // Server rejected the contact submission itself (validation / bot guard).
+  // Terminal for this attempt — no fallback lead is created.
+  const [contactRejected, setContactRejected] = useState(false);
   const leadSubmittedRef = useRef(false);
 
   // Screen-reader focus management: when a failure banner appears mid-flow
@@ -125,6 +130,7 @@ export function ScheduleShowing() {
       leadSubmittedRef.current = true;
       createLead.mutate(
         {
+          ...botGuard.collect(),
           type: 'tour',
           firstName: data.firstName,
           lastName: data.lastName,
@@ -153,9 +159,10 @@ export function ScheduleShowing() {
 
   const onContactSubmit = (data: ContactFormData) => {
     if (contact.isPending) return;
+    setContactRejected(false);
     setContactData(data);
     contact.mutate(
-      { ...data, unit },
+      { ...data, unit, ...botGuard.collect() },
       {
         onSuccess: (res) => {
           setCredentials(res);
@@ -164,6 +171,13 @@ export function ScheduleShowing() {
         onError: (err) => {
           if (isUnitNotListed(err)) {
             setUnitGone(true);
+            return;
+          }
+          // A validation/bot rejection (400) is terminal — routing it into
+          // the lead-capture fallback would let a bot the server just
+          // rejected re-enter the pipeline as a standard tour lead.
+          if (err instanceof ShowingApiError && err.code === 'invalid_submission') {
+            setContactRejected(true);
             return;
           }
           activateFallback(data, err.hostedUrl);
@@ -318,7 +332,21 @@ export function ScheduleShowing() {
                   Booking a showing of Apartment {unit} at 165 W Superior St — your appointment
                   goes straight onto our leasing calendar.
                 </p>
+                {contactRejected && (
+                  <div
+                    className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive"
+                    role="alert"
+                  >
+                    Your submission couldn't be verified. Please review your details and try
+                    again, or call us at{' '}
+                    <a href="tel:312-450-0635" className="underline">
+                      312-450-0635
+                    </a>
+                    .
+                  </div>
+                )}
                 <form onSubmit={handleSubmit(onContactSubmit)} className="space-y-6" noValidate>
+                  <HoneypotField inputRef={botGuard.companyRef} />
                   <div className="grid grid-cols-2 gap-4">
                     {(
                       [

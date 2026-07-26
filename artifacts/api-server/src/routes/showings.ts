@@ -30,6 +30,7 @@ import {
 } from "../lib/showings";
 import { getAvailabilitySnapshot } from "./availability";
 import { createDailyHeartbeat } from "../lib/dailyHeartbeat";
+import { inspectSubmission, withoutBotGuardFields } from "../lib/botGuard";
 import {
   recordLiveShowingFailure,
   recordLiveShowingSuccess,
@@ -115,7 +116,16 @@ const ContactBody = z.object({
 });
 
 router.post("/showings/contact", showingLimiter, async (req, res) => {
-  const parsed = ContactBody.safeParse(req.body);
+  // Invisible bot check (honeypot + fill-time) before anything creates an
+  // AppFolio guest card. A generic 400 here is safe — real visitors never
+  // trip it, and the flow's designed fallback only kicks in on 5xx/409.
+  const verdict = inspectSubmission(req.body);
+  if (verdict.bot) {
+    req.log.warn({ reason: verdict.reason }, "Rejected bot showing-contact submission");
+    res.status(400).json({ error: "invalid_submission" });
+    return;
+  }
+  const parsed = ContactBody.safeParse(withoutBotGuardFields(req.body));
   if (!parsed.success) {
     res.status(400).json({ error: "invalid_submission" });
     return;

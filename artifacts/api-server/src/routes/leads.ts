@@ -6,6 +6,7 @@ import { db, leadsTable } from "@workspace/db";
 import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
 import { createGuestCard, listableUidFromListingUrl } from "../lib/appfolio";
 import { getAvailabilitySnapshot } from "./availability";
+import { inspectSubmission, withoutBotGuardFields } from "../lib/botGuard";
 
 const router: IRouter = Router();
 
@@ -22,7 +23,27 @@ const leadLimiter = rateLimit({
 });
 
 router.post("/leads", leadLimiter, async (req, res) => {
-  const parsed = CreateLeadBody.safeParse(req.body);
+  // Invisible bot check (honeypot + fill-time) before anything else touches
+  // the submission. Detected bots get a fake success so they don't learn to
+  // adapt — but nothing is stored, no email is sent, no guest card is pushed.
+  const verdict = inspectSubmission(req.body);
+  if (verdict.bot) {
+    req.log.warn({ reason: verdict.reason }, "Rejected bot lead submission");
+    res.status(201).json({
+      id: 0,
+      type: "contact",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      message: null,
+      preferredDate: null,
+      createdAt: new Date().toISOString(),
+    });
+    return;
+  }
+
+  const parsed = CreateLeadBody.safeParse(withoutBotGuardFields(req.body));
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid submission" });
     return;

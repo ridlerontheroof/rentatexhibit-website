@@ -16,6 +16,7 @@ import { tourUrlForListing } from '../components/floor-plans/UnitGalleryLightbox
 import { formatRent, groupForUnit } from '../components/floor-plans/AvailableUnits';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { HoneypotField, useBotGuard } from '../components/BotGuard';
 
 const tourSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -41,6 +42,7 @@ export function ScheduleTour() {
   const createLead = useCreateLead();
   const isOnline = useOnlineStatus();
   const [showBackOnline, dismissBackOnline] = useBackOnlineNotice();
+  const botGuard = useBotGuard();
   const { data: availability } = useAvailability();
   const search = useSearch();
   const requestedUnit = new URLSearchParams(search).get('unit') ?? '';
@@ -104,6 +106,7 @@ export function ScheduleTour() {
         preferredDate: data.moveInDate,
         message: details || undefined,
         unit: data.unit || undefined,
+        ...botGuard.collect(),
       },
       {
         onSuccess: () => {
@@ -319,6 +322,7 @@ export function ScheduleTour() {
                     className="space-y-6"
                     noValidate
                   >
+                    <HoneypotField inputRef={botGuard.companyRef} />
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">

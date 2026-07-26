@@ -10,6 +10,10 @@ export interface CreateLeadPayload {
   preferredDate?: string;
   /** Apartment number (e.g. "0807") when the tour is for a specific unit. */
   unit?: string;
+  /** Honeypot field — always empty for real visitors (see BotGuard). */
+  company?: string;
+  /** Milliseconds the form was open before submit (see BotGuard). */
+  elapsedMs?: number;
 }
 
 export interface LeadResponse {

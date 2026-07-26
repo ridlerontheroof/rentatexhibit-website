@@ -169,6 +169,23 @@ describe('ScheduleShowing', () => {
     });
   });
 
+  it('a bot/validation rejection is terminal — no lead fallback is submitted', async () => {
+    routeFetch({
+      'api/showings/contact': () => jsonResponse({ error: 'invalid_submission' }, 400),
+    });
+    const user = userEvent.setup();
+    renderPage();
+    await fillContactForm(user);
+
+    // Terminal rejection message, not the lead-capture fallback screen.
+    await screen.findByText(/couldn't be verified/i);
+    expect(screen.queryByText(/we've got your request/i)).toBeNull();
+    // Crucially: the server just rejected this submission as a bot — it must
+    // NOT re-enter the pipeline through POST /leads.
+    const leadCall = fetchMock.mock.calls.find((c) => String(c[0]).includes('api/leads'));
+    expect(leadCall).toBeUndefined();
+  });
+
   it('falls back when booking fails for a non-slot reason', async () => {
     routeFetch({
       'api/showings/book': () => jsonResponse({ error: 'booking_failed', hostedUrl: HOSTED }, 502),

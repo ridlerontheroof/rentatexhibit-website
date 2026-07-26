@@ -13,6 +13,7 @@ import { Seo } from '../components/Seo';
 import { trackLead } from '../lib/analytics';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { HoneypotField, useBotGuard } from '../components/BotGuard';
 
 const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -35,6 +36,7 @@ export function ContactUs() {
   const createLead = useCreateLead();
   const isOnline = useOnlineStatus();
   const [showBackOnline, dismissBackOnline] = useBackOnlineNotice();
+  const botGuard = useBotGuard();
 
   const {
     register,
@@ -69,6 +71,7 @@ export function ContactUs() {
         email: data.email,
         phone: data.phone,
         message: data.message,
+        ...botGuard.collect(),
       },
       {
         onSuccess: () => {
@@ -244,6 +247,7 @@ export function ContactUs() {
                   className="space-y-6"
                   noValidate
                 >
+                  <HoneypotField inputRef={botGuard.companyRef} />
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">
