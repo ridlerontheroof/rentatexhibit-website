@@ -9,6 +9,27 @@
 
 const BASE = (process.argv[2] || 'https://www.rentatexhibit.com').replace(/\/$/, '');
 
+// One per-unit page (first unit in the committed availability snapshot): its
+// bare clean URL must reach the unit's OWN prerendered HTML — unit number in
+// <title> — not the SPA homepage shell. Production resolves these via explicit
+// per-unit rewrite pairs in artifact.toml (the static host does NOT fall back
+// to directory indexes), kept in sync by the prerender parity guard.
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+const snapshotPath = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'src',
+  'data',
+  'availabilitySnapshot.json',
+);
+const SAMPLE_UNIT = JSON.parse(await readFile(snapshotPath, 'utf8')).units[0]?.unit;
+if (!SAMPLE_UNIT) {
+  console.error('No units in availabilitySnapshot.json — cannot verify a unit page.');
+  process.exit(1);
+}
+
 const CRAWLERS = {
   'OAI-SearchBot':
     'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot',
@@ -38,6 +59,11 @@ const URLS = {
   '/robots.txt': { minBytes: 60, mustInclude: 'Sitemap:' },
   '/sitemap.xml': { minBytes: 500, mustInclude: '<urlset' },
   '/llms.txt': { minBytes: 200, mustInclude: 'Exhibit' },
+  [`/available-units/${SAMPLE_UNIT}`]: {
+    minBytes: 20000,
+    // The unit's own prerendered <title> — the SPA homepage shell would fail this.
+    mustInclude: `<title>Apartment ${SAMPLE_UNIT}`,
+  },
 };
 
 let failures = 0;

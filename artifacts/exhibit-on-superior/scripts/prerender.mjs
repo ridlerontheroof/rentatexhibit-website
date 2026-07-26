@@ -423,6 +423,37 @@ const LEGACY_REDIRECT_STUBS = LEGACY_REDIRECTS;
   }
 }
 
+// Parity guard: per-unit rewrites must EXACTLY match the baked snapshot's
+// unit set. The production static host does not resolve directory indexes for
+// unmatched paths (verified live 2026-07-26: unit URLs fell through to the /*
+// catch-all and served the homepage shell), so every unit page needs an
+// explicit rewrite pair. A MISSING pair ships a unit page that serves homepage
+// HTML; a STALE pair points at a file absent from the new build (hard 404
+// instead of the graceful client-side "has been rented" page). Both fail here.
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const tomlUnits = new Set(
+    [...toml.matchAll(/^from = "\/available-units\/(\d+)\/?"$/gm)].map((m) => m[1]),
+  );
+  const snapshotUnits = unitPaths.map((p) => p.split('/').pop());
+  const missing = snapshotUnits.filter((u) => {
+    return (
+      !toml.includes(`from = "/available-units/${u}"\nto = "/available-units/${u}/index.html"`) ||
+      !toml.includes(`from = "/available-units/${u}/"\nto = "/available-units/${u}/index.html"`)
+    );
+  });
+  const stale = [...tomlUnits].filter((u) => !snapshotUnits.includes(u));
+  if (missing.length || stale.length) {
+    throw new Error(
+      'Prerender aborted: artifact.toml per-unit rewrites are out of sync with the baked availability snapshot.\n' +
+        (missing.length ? `  Units missing rewrite pairs (bare + trailing slash): ${missing.join(', ')}\n` : '') +
+        (stale.length ? `  Stale rewrites for units no longer in the snapshot: ${stale.join(', ')}\n` : '') +
+        'Regenerate the [[services.production.rewrites]] unit block (ahead of the /knowledge/* and /* rules) from src/data/availabilitySnapshot.json.',
+    );
+  }
+}
+
 for (const [from, to] of Object.entries(LEGACY_REDIRECT_STUBS)) {
   const isExternal = /^https?:\/\//i.test(to);
   // /floor-plans deep links carry ?plan=<id>; a meta refresh cannot forward the
