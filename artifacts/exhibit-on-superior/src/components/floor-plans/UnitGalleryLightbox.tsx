@@ -244,6 +244,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
   // pinch state and clampPanTranslation bounds (matches the wheel-zoom math
   // with the cursor at the centre, where tx' = ratio * tx).
   const KEY_ZOOM_STEP = 1.25;
+  const KEY_PAN_STEP = 60;
 
   const keyboardZoom = useCallback(
     (dir: 1 | -1) => {
@@ -446,8 +447,22 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
         resetPinch();
         return;
       }
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
+      if (e.key.startsWith('Arrow')) {
+        // While pinch-zoomed in, arrows pan the photo instead of navigating
+        // (matches PlanLightbox), so keyboard users can inspect finishes
+        // without losing their zoom.
+        if (pinchZoomed) {
+          e.preventDefault();
+          const dx =
+            e.key === 'ArrowLeft' ? KEY_PAN_STEP : e.key === 'ArrowRight' ? -KEY_PAN_STEP : 0;
+          const dy =
+            e.key === 'ArrowUp' ? KEY_PAN_STEP : e.key === 'ArrowDown' ? -KEY_PAN_STEP : 0;
+          setPinch((p) => ({ ...p, ...clampPan(p.tx + dx, p.ty + dy, p.scale, 0) }));
+          return;
+        }
+        if (e.key === 'ArrowLeft') prev();
+        if (e.key === 'ArrowRight') next();
+      }
       if (e.key === 'Tab' && dialogRef.current) {
         const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
           'a[href], button:not([disabled])',
@@ -472,7 +487,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
       document.body.style.overflow = '';
       previouslyFocused?.focus();
     };
-  }, [onClose, prev, next, keyboardZoom, resetPinch]);
+  }, [onClose, prev, next, keyboardZoom, resetPinch, pinchZoomed, clampPan]);
 
   if (count === 0) return null;
 

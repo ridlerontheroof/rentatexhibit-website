@@ -237,6 +237,35 @@ describe('keyboard zoom', () => {
     expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
   });
 
+  it('arrow keys pan while zoomed (all four directions, clamped)', () => {
+    keyDown('+'); // 1.25
+    keyDown('+'); // 1.5625 — overflow (800*1.5625-800)/2 = 225px, (600*1.5625-600)/2 = 168.75px
+    keyDown('ArrowLeft');
+    expect(readTransform()).toMatchObject({ tx: 60, ty: 0 });
+    keyDown('ArrowRight');
+    keyDown('ArrowRight');
+    expect(readTransform()).toMatchObject({ tx: -60, ty: 0 });
+    keyDown('ArrowUp');
+    expect(readTransform()).toMatchObject({ tx: -60, ty: 60 });
+    keyDown('ArrowDown');
+    keyDown('ArrowDown');
+    expect(readTransform()).toMatchObject({ tx: -60, ty: -60 });
+    // Panning far past the bound hard-clamps at the overflow edge.
+    for (let i = 0; i < 10; i++) keyDown('ArrowLeft');
+    expect(readTransform().tx).toBe(225);
+    // Still on the first photo — arrows did not navigate.
+    expect(document.body.textContent).toContain('1 / 2');
+  });
+
+  it('arrow keys keep navigating photos while fully zoomed out', () => {
+    expect(document.body.textContent).toContain('1 / 2');
+    keyDown('ArrowRight');
+    expect(document.body.textContent).toContain('2 / 2');
+    keyDown('ArrowLeft');
+    expect(document.body.textContent).toContain('1 / 2');
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+  });
+
   it('zooming out with - rescales the pan so it stays proportional', () => {
     // Zoom in with wheel off-centre so tx/ty are non-zero.
     wheelAt(CX + 200, CY + 100, -500);
