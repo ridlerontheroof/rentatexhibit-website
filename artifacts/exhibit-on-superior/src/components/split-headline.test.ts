@@ -24,7 +24,7 @@ describe('SplitHeadline branded typography', () => {
     const { container } = renderHeadline({ script: 'Urban Bliss', caps: 'Just Outside Your Door' });
     const script = container.querySelector('.headline-script');
     const caps = container.querySelector('.headline-caps');
-    expect(script?.textContent).toBe('Urban Bliss ');
+    expect(script?.textContent).toBe('Urban Bliss');
     expect(caps?.textContent).toBe('Just Outside Your Door');
     expect(container.querySelector('.headline-rule')).not.toBeNull();
     // Light (default) palette: script uses foreground color, caps stays default.
@@ -32,14 +32,16 @@ describe('SplitHeadline branded typography', () => {
     expect(caps?.className).not.toContain('text-white');
   });
 
-  it('separates the script and caps lines with whitespace in extracted text', () => {
-    // Crawlers/screen readers read the heading's flattened textContent; the
-    // block spans must not run together ("Urban BlissJust Outside…").
+  it('keeps the decorative script line OUTSIDE the heading element', () => {
+    // The script flourish must not pollute the accessible/SEO heading text
+    // ("Urban Bliss Just Outside Your Door" run-ons in the a11y tree/SERPs).
     const { container } = renderHeadline({ script: 'Urban Bliss', caps: 'Just Outside Your Door' });
     const heading = container.querySelector('h2');
-    expect(heading?.textContent).toContain('Urban Bliss Just Outside Your Door');
-    // No lowercase-to-uppercase run-on across the span boundary.
-    expect(heading?.textContent).not.toMatch(/[a-z][A-Z]/);
+    expect(heading?.textContent).toBe('Just Outside Your Door');
+    expect(heading?.querySelector('.headline-script')).toBeNull();
+    // The script line renders as a plain sibling paragraph before the heading.
+    const script = container.querySelector('p.headline-script');
+    expect(script?.textContent).toBe('Urban Bliss');
   });
 
   it('renders a caps-only headline without a script line', () => {
@@ -47,6 +49,12 @@ describe('SplitHeadline branded typography', () => {
     expect(container.querySelector('.headline-script')).toBeNull();
     expect(container.querySelector('.headline-caps')?.textContent).toBe('Floor Plans');
     expect(container.querySelector('.headline-rule')).not.toBeNull();
+  });
+
+  it('renders a script-only flourish without any heading element', () => {
+    const { container } = renderHeadline({ script: 'Just a Flourish', underline: false });
+    expect(container.querySelector('.headline-script')?.textContent).toBe('Just a Flourish');
+    expect(container.querySelector('h1, h2, h3, h4, h5, h6')).toBeNull();
   });
 
   it('omits the gold rule when underline is false', () => {
@@ -69,24 +77,27 @@ describe('SplitHeadline branded typography', () => {
 
   it('renders the requested heading element and centers the rule by default', () => {
     const { container } = renderHeadline({ script: 'S', caps: 'C', as: 'h1' });
-    expect(container.querySelector('h1')).not.toBeNull();
+    const h1 = container.querySelector('h1');
+    expect(h1).not.toBeNull();
+    expect(h1?.textContent).toBe('C');
     expect(container.querySelector('.headline-rule')?.className).toContain('mx-auto');
   });
 });
 
 describe('Home page headline regressions', () => {
-  it('hero renders script + caps as an h1 with no gold rule', () => {
+  it('hero renders a clean caps-only h1 with the script flourish outside it and no gold rule', () => {
     active = render(createElement(Home));
     const { container } = active;
 
     const h1 = container.querySelector('h1');
     expect(h1).not.toBeNull();
-    expect(h1?.querySelector('.headline-script')?.textContent).toBe('River North Chicago ');
-    expect(h1?.querySelector('.headline-caps')?.textContent).toBe('Luxury Apartments');
-    // Flattened text must not run together for crawlers/screen readers.
-    expect(h1?.textContent).toContain('River North Chicago Luxury Apartments');
+    // The accessible/SEO page title is the caps line only.
+    expect(h1?.textContent).toBe('Luxury Apartments');
+    expect(h1?.querySelector('.headline-script')).toBeNull();
+    // The script flourish still renders, as a decorative sibling.
+    expect(container.querySelector('.headline-script')?.textContent).toBe('River North Chicago');
     // The home hero is the one headline that must NOT carry the gold rule.
-    expect(h1?.querySelector('.headline-rule')).toBeNull();
+    expect(h1?.closest('div')?.querySelector('.headline-rule')).toBeNull();
 
     // Every other SplitHeadline on the page keeps its gold rule.
     const rules = container.querySelectorAll('.headline-rule');

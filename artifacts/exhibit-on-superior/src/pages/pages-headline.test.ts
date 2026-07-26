@@ -89,27 +89,24 @@ describe.each(PAGES)('$name page branded headline', ({ Component }) => {
     active = render(createElement(Component), { wrapper: Providers });
     const { container } = active;
 
-    // Hero headline: an h1 carrying the branded caps line (all page heroes
-    // render caps; most also render the handwritten script line).
+    // Hero headline: the h1 IS the branded caps line (all page heroes render
+    // caps; most also render the handwritten script line as a sibling).
     const h1 = container.querySelector('h1');
     expect(h1, 'page must render an h1 hero headline').not.toBeNull();
-    const caps = h1!.querySelector('.headline-caps');
-    expect(caps, 'hero h1 must contain a .headline-caps line').not.toBeNull();
-    expect(caps!.textContent?.trim().length).toBeGreaterThan(0);
+    expect(
+      h1!.classList.contains('headline-caps'),
+      'hero h1 must be the .headline-caps line',
+    ).toBe(true);
+    expect(h1!.textContent?.trim().length).toBeGreaterThan(0);
 
-    // Run-together guard: every heading that combines a script line with a
-    // caps line must yield whitespace between the parts in its flattened
-    // textContent (what crawlers and screen readers extract). A
-    // lowercase-letter immediately followed by an uppercase letter across the
-    // span boundary means the lines merged (e.g. "Urban BlissJust Outside…").
+    // Clean-heading guard: the decorative script flourish must never live
+    // inside a heading element — it would pollute the accessible/SEO heading
+    // text (e.g. "Find Your Fit The Exhibit Apartment Guide").
     for (const heading of Array.from(container.querySelectorAll('h1, h2, h3, h4, h5, h6'))) {
-      const script = heading.querySelector('.headline-script');
-      const capsLine = heading.querySelector('.headline-caps');
-      if (!script || !capsLine) continue;
       expect(
-        script.textContent,
-        `${heading.tagName} script line must end with whitespace so it doesn't merge with the caps line: "${heading.textContent}"`,
-      ).toMatch(/\s$/);
+        heading.querySelector('.headline-script'),
+        `${heading.tagName} must not contain the decorative script line: "${heading.textContent}"`,
+      ).toBeNull();
     }
 
     // Branded typography present on the page overall.

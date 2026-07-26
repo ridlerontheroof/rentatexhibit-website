@@ -21,6 +21,11 @@ interface SplitHeadlineProps {
  * Two-tier headline matching the original rentatexhibit.com typography:
  * a handwritten script intro line above an all-caps letter-spaced sans line,
  * with a short gold rule beneath (except the home hero).
+ *
+ * The script line is decorative flourish, not part of the page title — it
+ * renders as a sibling paragraph OUTSIDE the heading element so the
+ * accessible/SEO heading text is the caps line only (no "Find Your Fit The
+ * Exhibit Apartment Guide" run-ons in the accessibility tree or SERPs).
  */
 export function SplitHeadline({
   script,
@@ -34,21 +39,20 @@ export function SplitHeadline({
 }: SplitHeadlineProps) {
   const centered = align === 'center';
   return (
-    <Tag className={`${centered ? 'text-center' : 'text-left'} ${className}`}>
+    <div className={`${centered ? 'text-center' : 'text-left'} ${className}`}>
       {script && (
-        <span
+        <p
           className={`headline-script block ${scriptClassName ?? (dark ? 'text-white' : 'text-foreground')}`}
         >
           {script}
-          {/* Trailing space keeps extracted text ("script caps") from running together */}{' '}
-        </span>
+        </p>
       )}
       {caps && (
-        <span className={`headline-caps block ${dark ? 'text-white' : ''}`}>{caps}</span>
+        <Tag className={`headline-caps block ${dark ? 'text-white' : ''}`}>{caps}</Tag>
       )}
       {underline && (
         <span className={`headline-rule ${centered ? 'mx-auto' : ''}`} aria-hidden="true" />
       )}
-    </Tag>
+    </div>
   );
 }
