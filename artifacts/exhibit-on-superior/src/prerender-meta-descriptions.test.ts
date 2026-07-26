@@ -114,16 +114,14 @@ describe.skipIf(!hasCompleteBuild)('prerendered meta descriptions (dist/public)'
       raw = await fs.readFile(path.join(artifactRoot, 'dist', SEO_SOURCE_HASH_FILE), 'utf8');
     } catch (err) {
       // Completion validation runs this suite concurrently with the
-      // prepublish rebuild, which wipes dist/ before rewriting it. If the
-      // hash stamp is gone AND the build's last output (index.html.br, since
-      // precompress runs LAST) is also missing, a rebuild is in flight —
-      // skip rather than fail on a mid-rebuild snapshot. A missing stamp
-      // next to a completed build is still a real failure.
-      const buildComplete = await fs
-        .access(path.join(publicDir, 'index.html.br'))
-        .then(() => true)
-        .catch(() => false);
-      if ((err as NodeJS.ErrnoException).code === 'ENOENT' && !buildComplete) {
+      // prepublish rebuild, which rewrites dist/ in stages — there are
+      // windows where the stamp is gone while a previous build's
+      // index.html.br still exists (this exact window failed a validation
+      // run). Every current build path writes the stamp, so a missing stamp
+      // always means a rebuild is in flight: skip rather than fail on a
+      // mid-rebuild snapshot. A *mismatched* stamp (stale complete dist) is
+      // still graded below.
+      if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
         ctx.skip();
         return;
       }

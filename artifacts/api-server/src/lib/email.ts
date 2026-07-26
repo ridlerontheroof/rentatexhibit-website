@@ -3,6 +3,7 @@ import { allowProspectConfirmation } from "./emailThrottle";
 import { sendRawEmail, SENDER_EMAIL, warnIfUnconfigured } from "./mailer";
 import {
   renderApexRedirectAlert,
+  renderBotGuardAlert,
   renderFeeCopyAlert,
   renderKnowledgeCheckAlert,
   renderLeadNotification,
@@ -369,6 +370,35 @@ export async function sendShowingSchedulerAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL, reason: opts.reason },
     "Sent showing-scheduler broken alert email",
+  );
+}
+
+/**
+ * Alert that the lead-form bot guard rejected an unusually high number of
+ * submissions today (spam campaign or false-positive bug). Goes to the
+ * operational recipient because the follow-up is a log investigation, not a
+ * leasing action. Throws when the mailer is unconfigured or the send fails;
+ * deduping lives in the caller (botGuardAlert).
+ */
+export async function sendBotGuardAlert(opts: {
+  rejectedToday: number;
+  threshold: number;
+  breakdown: string[];
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderBotGuardAlert(opts);
+  const { contentType, body } = buildMimeBody("botguard", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL, rejectedToday: opts.rejectedToday },
+    "Sent bot-guard rejection spike alert email",
   );
 }
 

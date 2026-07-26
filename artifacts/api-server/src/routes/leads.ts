@@ -7,6 +7,7 @@ import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
 import { createGuestCard, listableUidFromListingUrl } from "../lib/appfolio";
 import { getAvailabilitySnapshot } from "./availability";
 import { inspectSubmission, withoutBotGuardFields } from "../lib/botGuard";
+import { recordAcceptedSubmission, recordBotRejection } from "../lib/botGuardAlert";
 
 const router: IRouter = Router();
 
@@ -29,6 +30,9 @@ router.post("/leads", leadLimiter, async (req, res) => {
   const verdict = inspectSubmission(req.body);
   if (verdict.bot) {
     req.log.warn({ reason: verdict.reason }, "Rejected bot lead submission");
+    // Count toward the daily heartbeat + spike alert. Fire-and-forget: a DB
+    // or mail outage must never affect the fake-success response below.
+    void recordBotRejection(req.log, Date.now(), "leads", verdict.reason);
     res.status(201).json({
       id: 0,
       type: "contact",
@@ -77,6 +81,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
     });
 
     res.status(201).json(data);
+    recordAcceptedSubmission(req.log, Date.now(), "leads");
 
     // response already sent to the visitor.
     const leadForEmail = {

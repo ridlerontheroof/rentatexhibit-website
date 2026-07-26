@@ -569,6 +569,60 @@ export function renderRentedCheckAlert(opts: {
 }
 
 /**
+ * Operational alert: the lead-form bot guard rejected an unusually high
+ * number of submissions today. Either a smarter/higher-volume bot is
+ * hammering the forms, or a guard bug is rejecting real prospects — both
+ * need a human look at the logs.
+ */
+export function renderBotGuardAlert(opts: {
+  rejectedToday: number;
+  threshold: number;
+  breakdown: string[];
+}): RenderedEmail {
+  const { rejectedToday, threshold, breakdown } = opts;
+  const subject = "Website alert: form spam rejections spiked past the bot guard threshold";
+
+  const intro = `The website's lead-form bot guard has rejected ${rejectedToday} submissions so far today (UTC), past the alert threshold of ${threshold}. This is either a spam campaign hitting the forms harder than usual, or — worse — the guard falsely rejecting real prospects.`;
+  const impact =
+    "Rejected submissions are silently dropped: nothing is stored, no lead email is sent, and no AppFolio guest card is created. If any of these were real people, they got no follow-up.";
+  const remedyText =
+    "check the api-server logs for \"Rejected bot lead submission\" / \"Rejected bot showing-contact submission\" lines and their reasons (honeypot vs too_fast). Bursts of honeypot hits are a bot campaign (usually safe to ignore beyond confirming rate limits hold). A spike in too_fast rejections may mean real visitors are being misjudged — compare against inbox volume for the day. This alert is sent at most once per day.";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    (breakdown.length > 0
+      ? `<p style="${BODY_TEXT}"><strong>Breakdown (this server instance):</strong></p>` +
+        `<ul style="${BODY_TEXT}">${breakdown
+          .map((b) => `<li>${escapeHtml(b)}</li>`)
+          .join("")}</ul>`
+      : "") +
+    `<p style="${BODY_TEXT}">${escapeHtml(impact)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(remedyText)}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...(breakdown.length > 0
+      ? ["Breakdown (this server instance):", ...breakdown.map((b) => `- ${b}`), ""]
+      : []),
+    impact,
+    "",
+    `What to do: ${remedyText}`,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "Bot-guard rejections spiked past the daily alert threshold.",
+    kicker: "Website Alert",
+    heading: "Form Spam Spike Detected",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
  * Operational alert: the automatic probe of AppFolio's unofficial showing
  * scheduler endpoints found a sustained failure (endpoints changed, CSRF or
  * captcha added) or identity verification switched on. Visitors still land

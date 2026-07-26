@@ -31,6 +31,7 @@ import {
 import { getAvailabilitySnapshot } from "./availability";
 import { createDailyHeartbeat } from "../lib/dailyHeartbeat";
 import { inspectSubmission, withoutBotGuardFields } from "../lib/botGuard";
+import { recordAcceptedSubmission, recordBotRejection } from "../lib/botGuardAlert";
 import {
   recordLiveShowingFailure,
   recordLiveShowingSuccess,
@@ -122,6 +123,9 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
   const verdict = inspectSubmission(req.body);
   if (verdict.bot) {
     req.log.warn({ reason: verdict.reason }, "Rejected bot showing-contact submission");
+    // Count toward the daily heartbeat + spike alert. Fire-and-forget: a DB
+    // or mail outage must never affect the response.
+    void recordBotRejection(req.log, Date.now(), "showing_contact", verdict.reason);
     res.status(400).json({ error: "invalid_submission" });
     return;
   }
@@ -156,6 +160,7 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
     }
     const result = await createShowingGuestCard({ ...input, listableUid });
     heartbeat.record(req.log, Date.now(), "contact_ok");
+    recordAcceptedSubmission(req.log, Date.now(), "showing_contact");
     void recordLiveShowingSuccess(req.log);
     req.log.info({ unit: input.unit }, "Created showing guest card in AppFolio");
     res.status(201).json({
