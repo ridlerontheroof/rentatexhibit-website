@@ -116,7 +116,7 @@ const CARDS = {
     tagline: 'Schedule your tour of Exhibit on Superior',
   },
   reviews: {
-    src: 'image-006-lounge-with-fireplace-and-big-screen-tv-wwpwuk.jpg',
+    src: 'image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom.jpg',
     tagline: 'See what residents say about Exhibit',
   },
 };

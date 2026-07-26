@@ -21,6 +21,7 @@ import { PAGE_SEO } from './data/seo';
 const artifactRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ogDir = path.join(artifactRoot, 'public', 'images', 'og');
 const scriptPath = path.join(artifactRoot, 'scripts', 'generate-og-cards.mjs');
+const imagesSrcDir = path.join(artifactRoot, 'images-src');
 
 // Page names referenced by PAGE_SEO ogImages under /images/og/, e.g. "home".
 const referencedPages = new Map<string, string>(); // card name -> PAGE_SEO path
@@ -38,6 +39,16 @@ const cardKeys = new Set(
     (m) => m[1] ?? m[2] ?? m[3],
   ),
 );
+
+// card name -> src photo filename, parsed per-entry from the CARDS block.
+const cardSources = new Map<string, string>();
+for (const entry of cardsBlock.matchAll(
+  /^ {2}(?:'([^']+)'|"([^"]+)"|([\w-]+)):\s*\{([\s\S]*?)^ {2}\}/gm,
+)) {
+  const name = entry[1] ?? entry[2] ?? entry[3];
+  const src = entry[4].match(/src:\s*(?:'([^']+)'|"([^"]+)")/);
+  if (src) cardSources.set(name, src[1] ?? src[2]);
+}
 
 describe('OG share-card coverage', () => {
   it('found PAGE_SEO og references and CARDS entries to compare', () => {
@@ -68,6 +79,28 @@ describe('OG share-card coverage', () => {
       `Pages use a share card with no CARDS entry in scripts/generate-og-cards.mjs (the card cannot be regenerated):\n  ${missing.join(
         '\n  ',
       )}`,
+    ).toEqual([]);
+  });
+
+  it('every CARDS entry has a parseable src photo filename', () => {
+    const missing = [...cardKeys].filter((card) => !cardSources.has(card));
+    expect(
+      missing,
+      `CARDS entries in scripts/generate-og-cards.mjs have no parseable src: filename:\n  ${missing.join(
+        '\n  ',
+      )}`,
+    ).toEqual([]);
+  });
+
+  it("every CARDS src photo exists in images-src/ (regeneration won't break)", () => {
+    const missing = [...cardSources]
+      .filter(([, src]) => !existsSync(path.join(imagesSrcDir, src)))
+      .map(([card, src]) => `${card} -> images-src/${src}`);
+    expect(
+      missing,
+      `CARDS entries in scripts/generate-og-cards.mjs point at source photos missing from images-src/ (regenerating these cards will fail):\n  ${missing.join(
+        '\n  ',
+      )}\nRestore the photo or update the card's src.`,
     ).toEqual([]);
   });
 
