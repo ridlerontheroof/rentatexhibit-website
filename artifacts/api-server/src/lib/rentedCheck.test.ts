@@ -189,6 +189,35 @@ describe("checkRentedNoindexOnce", () => {
     expect(sendAlert).not.toHaveBeenCalled();
   });
 
+  it("a same-day FAIL alert does not swallow the watchdog-blind escalation", async () => {
+    await checkRentedNoindexOnce(log, DAY1, fail);
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+    for (let i = 0; i < 4; i++) {
+      await checkRentedNoindexOnce(log, DAY1_LATER, spawnError);
+    }
+    expect(sendAlert).toHaveBeenCalledTimes(2);
+    expect(sendAlert.mock.calls[1]![0].summary).toContain("consecutive runs");
+  });
+
+  it("a same-day watchdog-blind escalation does not swallow the FAIL alert", async () => {
+    for (let i = 0; i < 4; i++) {
+      await checkRentedNoindexOnce(log, DAY1, spawnError);
+    }
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+    await checkRentedNoindexOnce(log, DAY1_LATER, fail);
+    expect(sendAlert).toHaveBeenCalledTimes(2);
+    expect(sendAlert.mock.calls[1]![0].summary).toContain("exited 1");
+  });
+
+  it("the escalation itself is still deduped once per day", async () => {
+    for (let i = 0; i < 4; i++) {
+      await checkRentedNoindexOnce(log, DAY1, spawnError);
+    }
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+    await checkRentedNoindexOnce(log, DAY1_LATER, spawnError);
+    expect(sendAlert).toHaveBeenCalledTimes(1); // still blind, same day → deduped
+  });
+
   it("falls back to in-memory counting when the database is down", async () => {
     dbDown = true;
     for (let i = 0; i < 4; i++) {

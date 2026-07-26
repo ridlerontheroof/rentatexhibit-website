@@ -252,9 +252,11 @@ export async function checkRentedNoindexOnce(
   }
 
   let failureSummary: string | null = null;
+  let isBlindEscalation = false;
   if (run.exitCode !== null && run.exitCode !== 0) {
     failureSummary = `check-rented-noindex.mjs exited ${run.exitCode} — a rented apartment page may be indexable with stale pricing.`;
   } else if (errored && consecutiveErroredRuns >= ERROR_ESCALATION_RUNS) {
+    isBlindEscalation = true;
     failureSummary = `The rented-unit indexability check has failed to complete for ${consecutiveErroredRuns} consecutive runs (${run.error ?? "unknown error"}) — the watchdog has effectively been blind for ~a day.`;
   }
 
@@ -287,7 +289,12 @@ export async function checkRentedNoindexOnce(
   );
 
   try {
-    if (!(await dailyClaim.claim(log, now))) return;
+    // The definitive-FAIL alert and the watchdog-blind escalation are
+    // different problems with different fixes — give each its own daily
+    // dedupe slot (subKey) so a same-day FAIL alert can't swallow the
+    // escalation email, or vice versa.
+    const claimOptions = isBlindEscalation ? { subKey: "blind" } : undefined;
+    if (!(await dailyClaim.claim(log, now, claimOptions))) return;
     if (!mailerConfigured()) return;
     await sendRentedCheckAlert({
       summary: failureSummary,
