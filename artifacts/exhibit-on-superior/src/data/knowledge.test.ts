@@ -10,6 +10,8 @@ import {
   wordCount,
 } from './knowledge';
 import { PAGE_SEO } from './seo';
+// @ts-expect-error — plain-Node script module without type declarations
+import { loadKnowledgeArticles } from '../../scripts/lib/knowledge-slugs.mjs';
 
 const SITE_ROUTES = new Set(Object.keys(PAGE_SEO));
 
@@ -108,6 +110,12 @@ describe('knowledge center content rules', () => {
         expect(b.test(text), `${a.slug} contains banned phrase ${b}`).toBe(false);
       }
     }
+  });
+
+  it('script slug parser matches the TS article list exactly, in order', async () => {
+    const parsed: Array<{ slug: string; question: string }> = await loadKnowledgeArticles();
+    expect(parsed.map((a) => a.slug)).toEqual(KNOWLEDGE_ARTICLES.map((a) => a.slug));
+    expect(parsed.map((a) => a.question)).toEqual(KNOWLEDGE_ARTICLES.map((a) => a.question));
   });
 
   it('every KnowledgeLinks slug used in page components resolves', () => {
