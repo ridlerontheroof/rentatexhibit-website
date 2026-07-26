@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, type RenderResult } from '@testing-library/react';
 import { createElement } from 'react';
 import { UnitGalleryLightbox } from './UnitGalleryLightbox';
+import { stubTransformAwareRects } from './lightbox-rect-stub';
 import type { AvailableUnit } from '../../hooks/use-availability';
 
 // ---------------------------------------------------------------------------
@@ -21,8 +22,14 @@ import type { AvailableUnit } from '../../hooks/use-availability';
 const MAX_SCALE = 4;
 const PAN_RUBBER_PX = 40;
 
+// getBoundingClientRect uses the shared transform-aware stub, so the viewer
+// centre sits at (CX, CY) = (400, 300) like a real layout. Touch points in
+// these tests are written relative to that centre (touchList converts them
+// to absolute screen coordinates).
 const VIEWER_W = 800;
 const VIEWER_H = 600;
+const CX = VIEWER_W / 2;
+const CY = VIEWER_H / 2;
 
 function makeUnit(): AvailableUnit {
   return {
@@ -63,6 +70,7 @@ function stubClientSize(proto: object, prop: string, value: number) {
 beforeEach(() => {
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
+  stubTransformAwareRects({ viewerWidth: VIEWER_W, viewerHeight: VIEWER_H });
 
   onClose = vi.fn();
   view = render(createElement(UnitGalleryLightbox, { unit: makeUnit(), onClose }));
@@ -111,11 +119,12 @@ function readTransform() {
 
 type Pt = { x: number; y: number };
 
+/** Points are centre-relative; convert to the stubbed layout's screen px. */
 function touchList(points: Pt[]) {
   return points.map((p, i) => ({
     identifier: i,
-    clientX: p.x,
-    clientY: p.y,
+    clientX: CX + p.x,
+    clientY: CY + p.y,
   }));
 }
 
@@ -271,9 +280,9 @@ describe('horizontal swipe navigation', () => {
 
 // ---------------------------------------------------------------------------
 // Double-tap zoom. handleTap uses Date.now for the double-tap window, so
-// fake timers + setSystemTime control the timing. jsdom's
-// getBoundingClientRect is all-zero, so the viewer centre is (0, 0) and the
-// expected translation is simply -(tap) * (scale - 1).
+// fake timers + setSystemTime control the timing. Tap points are
+// centre-relative (see touchList), so the expected translation is simply
+// -(tap) * (scale - 1).
 // ---------------------------------------------------------------------------
 const DOUBLE_TAP_SCALE = 2;
 

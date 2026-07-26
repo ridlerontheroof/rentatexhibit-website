@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, type RenderResult } from '@testing-library/react';
 import { createElement } from 'react';
 import { PlanLightbox } from './PlanLightbox';
+import { stubTransformAwareRects } from './lightbox-rect-stub';
 import type { Plan, PlanGroup } from '../../data/floorPlans';
 
 // ---------------------------------------------------------------------------
@@ -27,11 +28,15 @@ const PAN_RUBBER_PX = 40;
 
 // Layout used by the pan-bounds clamp. jsdom reports 0 for client sizes, so
 // give the viewer and image a deterministic size via prototype getters.
-// getBoundingClientRect stays at all-zero in jsdom, so the viewer "centre"
-// used by the anchor math is (0, 0) and touch coordinates below are simply
-// offsets from that centre.
+// getBoundingClientRect uses the shared transform-aware stub, so the viewer
+// centre sits at (CX, CY) = (400, 300) like a real layout. Touch points in
+// these tests are written relative to that centre (touchList converts them
+// to absolute screen coordinates), so the anchor-math expectations read as
+// offsets from the centre.
 const VIEWER_W = 800;
 const VIEWER_H = 600;
+const CX = VIEWER_W / 2;
+const CY = VIEWER_H / 2;
 
 function makePlan(): Plan {
   return {
@@ -97,6 +102,7 @@ function stubClientSize(proto: object, prop: string, value: number) {
 beforeEach(() => {
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
+  stubTransformAwareRects({ viewerWidth: VIEWER_W, viewerHeight: VIEWER_H });
 
   onNavigate = vi.fn();
   view = render(
@@ -147,11 +153,12 @@ function readTransform() {
 
 type Pt = { x: number; y: number };
 
+/** Points are centre-relative; convert to the stubbed layout's screen px. */
 function touchList(points: Pt[]) {
   return points.map((p, i) => ({
     identifier: i,
-    clientX: p.x,
-    clientY: p.y,
+    clientX: CX + p.x,
+    clientY: CY + p.y,
   }));
 }
 
@@ -217,42 +224,37 @@ describe('two-finger pinch', () => {
     // Regression: with the floor-plan lightbox's padded, flex-centred layout
     // the image's centre can sit away from the viewer's rect centre; the old
     // math used the viewer centre as origin and drifted the image sideways.
-    // Give the image an offset rect (centre at (400, 240), while the viewer's
-    // rect centre stays at jsdom's all-zero (0, 0)).
-    const imgRect = {
-      left: 100,
-      top: 40,
-      width: 600,
-      height: 400,
-      right: 700,
-      bottom: 440,
-      x: 100,
-      y: 40,
-      toJSON: () => ({}),
-    } as DOMRect;
-    vi.spyOn(HTMLImageElement.prototype, 'getBoundingClientRect').mockReturnValue(imgRect);
+    // Re-stub with a padded layout: the image's untransformed centre sits at
+    // (+100, -60) from the viewer centre (all coordinates centre-relative).
+    stubTransformAwareRects({
+      viewerWidth: VIEWER_W,
+      viewerHeight: VIEWER_H,
+      imgOffsetX: 100,
+      imgOffsetY: -60,
+    });
 
     // Pinch symmetrically around the image centre: the image must stay put.
-    fireTouch('touchstart', [{ x: 350, y: 240 }, { x: 450, y: 240 }]);
-    fireTouch('touchmove', [{ x: 300, y: 240 }, { x: 500, y: 240 }]);
+    fireTouch('touchstart', [{ x: 50, y: -60 }, { x: 150, y: -60 }]);
+    fireTouch('touchmove', [{ x: 0, y: -60 }, { x: 200, y: -60 }]);
     let t = readTransform();
     expect(t.scale).toBeCloseTo(2, 5);
-    expect(t.tx).toBeCloseTo(0, 5); // old math produced -400 here
+    expect(t.tx).toBeCloseTo(0, 5); // viewer-centre math would produce -100 here
     expect(t.ty).toBeCloseTo(0, 5);
-    fireTouch('touchend', [], [{ x: 300, y: 240 }, { x: 500, y: 240 }]);
+    fireTouch('touchend', [], [{ x: 0, y: -60 }, { x: 200, y: -60 }]);
 
     // Off-centre pinch: the image point under the start midpoint stays under
     // the fingers: origin + t + s * q === mid, q = (startMid - origin - t0)/s0.
-    fireTouch('touchstart', [{ x: 450, y: 290 }, { x: 550, y: 390 }]);
-    fireTouch('touchmove', [{ x: 425, y: 265 }, { x: 575, y: 415 }]);
+    // (Mid stays at (200, 40); spread grows 1.5x on start scale 2 => scale 3.)
+    fireTouch('touchstart', [{ x: 150, y: -10 }, { x: 250, y: 90 }]);
+    fireTouch('touchmove', [{ x: 125, y: -35 }, { x: 275, y: 115 }]);
     t = readTransform();
-    expect(t.scale).toBeCloseTo(3, 5); // 2 * (150√2 / 100√2)... dist ratio 1.5 on start scale 2
-    const originX = 400;
-    const originY = 240;
-    const qx = (500 - originX - 0) / 2; // startMid 500, t0 = 0 after the hard clamp
-    const qy = (340 - originY - 0) / 2;
-    expect(originX + t.tx + t.scale * qx).toBeCloseTo(500, 5);
-    expect(originY + t.ty + t.scale * qy).toBeCloseTo(340, 5);
+    expect(t.scale).toBeCloseTo(3, 5);
+    const originX = 100; // image centre, relative to the viewer centre
+    const originY = -60;
+    const qx = (200 - originX - 0) / 2; // startMid 200, t0 = 0 after the hard clamp
+    const qy = (40 - originY - 0) / 2;
+    expect(originX + t.tx + t.scale * qx).toBeCloseTo(200, 5);
+    expect(originY + t.ty + t.scale * qy).toBeCloseTo(40, 5);
   });
 
   it('rubber-bands the anchored translation during the gesture, hard-clamps on release', () => {
@@ -353,8 +355,8 @@ describe('horizontal swipe navigation', () => {
 // Double-tap zoom. handleTap uses Date.now for the double-tap window and a
 // setTimeout for the deferred single-tap toggle, so fake timers control both
 // (vi.setSystemTime moves Date.now without firing the single-tap timer).
-// jsdom's getBoundingClientRect is all-zero, so the viewer centre is (0, 0)
-// and the expected translation is simply -(tap) * (scale - 1).
+// Tap points are centre-relative (see touchList), so the expected
+// translation is simply -(tap) * (scale - 1).
 // ---------------------------------------------------------------------------
 const DOUBLE_TAP_SCALE = 2;
 
@@ -381,28 +383,22 @@ describe('double-tap zoom', () => {
 
   it('zooms toward the tapped point relative to the image centre, not the viewer centre', () => {
     // Regression: mirror the pinch "anchors around the image centre" test.
-    // Give the image an offset rect (centre at (400, 240)) while the viewer's
-    // rect centre stays at jsdom's all-zero (0, 0). The double-tap origin must
-    // be the image centre, so t = -(tap - imgCentre) * (scale - 1).
-    const imgRect = {
-      left: 100,
-      top: 40,
-      width: 600,
-      height: 400,
-      right: 700,
-      bottom: 440,
-      x: 100,
-      y: 40,
-      toJSON: () => ({}),
-    } as DOMRect;
-    vi.spyOn(HTMLImageElement.prototype, 'getBoundingClientRect').mockReturnValue(imgRect);
+    // Re-stub with a padded layout: the image's untransformed centre sits at
+    // (+100, -60) from the viewer centre. The double-tap origin must be the
+    // image centre, so t = -(tap - imgCentre) * (scale - 1).
+    stubTransformAwareRects({
+      viewerWidth: VIEWER_W,
+      viewerHeight: VIEWER_H,
+      imgOffsetX: 100,
+      imgOffsetY: -60,
+    });
 
-    tap({ x: 500, y: 340 });
-    tap({ x: 500, y: 340 });
+    tap({ x: 200, y: 40 });
+    tap({ x: 200, y: 40 });
     const t = readTransform();
     expect(t.scale).toBe(DOUBLE_TAP_SCALE);
-    // Old math used the viewer centre (0,0): tx would have been -500 (clamped
-    // to -400). New origin (400, 240) => -(100, 100) * (2 - 1).
+    // Viewer-centre math would give (-200, -40); image-centre origin
+    // (+100, -60) => -(100, 100) * (2 - 1).
     expect(t.tx).toBe(-100 * (DOUBLE_TAP_SCALE - 1));
     expect(t.ty).toBe(-100 * (DOUBLE_TAP_SCALE - 1));
   });

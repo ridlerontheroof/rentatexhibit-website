@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, type RenderResult } from '@testing-library/react';
 import { createElement } from 'react';
 import { UnitGalleryLightbox } from './UnitGalleryLightbox';
+import { stubTransformAwareRects } from './lightbox-rect-stub';
 import type { AvailableUnit } from '../../hooks/use-availability';
 
 // ---------------------------------------------------------------------------
@@ -20,6 +21,8 @@ import type { AvailableUnit } from '../../hooks/use-availability';
 
 const VIEWER_W = 800;
 const VIEWER_H = 600;
+const CX = VIEWER_W / 2;
+const CY = VIEWER_H / 2;
 
 function makeUnit(): AvailableUnit {
   return {
@@ -61,6 +64,7 @@ beforeEach(() => {
 
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
+  stubTransformAwareRects({ viewerWidth: VIEWER_W, viewerHeight: VIEWER_H });
 
   view = render(createElement(UnitGalleryLightbox, { unit: makeUnit(), onClose: vi.fn() }));
 });
@@ -108,11 +112,12 @@ function readTransform() {
 
 type Pt = { x: number; y: number };
 
+/** Points are centre-relative; convert to the stubbed layout's screen px. */
 function touchList(points: Pt[]) {
   return points.map((p, i) => ({
     identifier: i,
-    clientX: p.x,
-    clientY: p.y,
+    clientX: CX + p.x,
+    clientY: CY + p.y,
   }));
 }
 
@@ -134,10 +139,11 @@ function fireTouch(
 }
 
 /**
- * Symmetric two-finger pinch around the viewer centre (jsdom's all-zero
- * getBoundingClientRect puts the centre at (0, 0)): fingers spread from
- * ±50px to ±100px horizontally, so scale doubles and the anchored midpoint
- * stays at the centre (tx = ty = 0). Fingers left on screen.
+ * Symmetric two-finger pinch around the viewer centre (points are
+ * centre-relative; the transform-aware rect stub puts the centre at
+ * (CX, CY)): fingers spread from ±50px to ±100px horizontally, so scale
+ * doubles and the anchored midpoint stays at the centre (tx = ty = 0).
+ * Fingers left on screen.
  */
 const FINGER_A: Pt = { x: -100, y: 0 };
 const FINGER_B: Pt = { x: 100, y: 0 };
