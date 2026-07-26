@@ -309,6 +309,582 @@ to = "/faq/index.html"
 from = "/faq/"
 to = "/faq/index.html"
 
+# Knowledge Center: hub + one prerendered page per article (static content
+# data in src/data/knowledgeArticles.ts; slugs change only with a code change).
+[[services.production.rewrites]]
+from = "/knowledge"
+to = "/knowledge/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/"
+to = "/knowledge/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-much-is-rent"
+to = "/knowledge/how-much-is-rent/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-much-is-rent/"
+to = "/knowledge/how-much-is-rent/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-fees-in-addition-to-rent"
+to = "/knowledge/what-fees-in-addition-to-rent/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-fees-in-addition-to-rent/"
+to = "/knowledge/what-fees-in-addition-to-rent/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-a-security-deposit"
+to = "/knowledge/is-there-a-security-deposit/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-a-security-deposit/"
+to = "/knowledge/is-there-a-security-deposit/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/application-fee"
+to = "/knowledge/application-fee/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/application-fee/"
+to = "/knowledge/application-fee/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/administration-fee"
+to = "/knowledge/administration-fee/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/administration-fee/"
+to = "/knowledge/administration-fee/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/move-in-specials"
+to = "/knowledge/move-in-specials/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/move-in-specials/"
+to = "/knowledge/move-in-specials/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-much-is-storage"
+to = "/knowledge/how-much-is-storage/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-much-is-storage/"
+to = "/knowledge/how-much-is-storage/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/total-move-in-cost"
+to = "/knowledge/total-move-in-cost/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/total-move-in-cost/"
+to = "/knowledge/total-move-in-cost/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-apartment-sizes"
+to = "/knowledge/what-apartment-sizes/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-apartment-sizes/"
+to = "/knowledge/what-apartment-sizes/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/do-studios-exist"
+to = "/knowledge/do-studios-exist/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/do-studios-exist/"
+to = "/knowledge/do-studios-exist/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-is-a-convertible"
+to = "/knowledge/what-is-a-convertible/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-is-a-convertible/"
+to = "/knowledge/what-is-a-convertible/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/largest-apartment"
+to = "/knowledge/largest-apartment/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/largest-apartment/"
+to = "/knowledge/largest-apartment/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/which-units-have-balconies"
+to = "/knowledge/which-units-have-balconies/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/which-units-have-balconies/"
+to = "/knowledge/which-units-have-balconies/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/are-apartments-furnished"
+to = "/knowledge/are-apartments-furnished/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/are-apartments-furnished/"
+to = "/knowledge/are-apartments-furnished/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/in-unit-laundry"
+to = "/knowledge/in-unit-laundry/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/in-unit-laundry/"
+to = "/knowledge/in-unit-laundry/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/apartment-finishes"
+to = "/knowledge/apartment-finishes/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/apartment-finishes/"
+to = "/knowledge/apartment-finishes/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/views-and-windows"
+to = "/knowledge/views-and-windows/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/views-and-windows/"
+to = "/knowledge/views-and-windows/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/ada-accessible-apartments"
+to = "/knowledge/ada-accessible-apartments/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/ada-accessible-apartments/"
+to = "/knowledge/ada-accessible-apartments/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/full-amenity-list"
+to = "/knowledge/full-amenity-list/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/full-amenity-list/"
+to = "/knowledge/full-amenity-list/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-a-pool"
+to = "/knowledge/is-there-a-pool/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-a-pool/"
+to = "/knowledge/is-there-a-pool/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/amenity-hours"
+to = "/knowledge/amenity-hours/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/amenity-hours/"
+to = "/knowledge/amenity-hours/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/fitness-center"
+to = "/knowledge/fitness-center/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/fitness-center/"
+to = "/knowledge/fitness-center/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/work-from-home-spaces"
+to = "/knowledge/work-from-home-spaces/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/work-from-home-spaces/"
+to = "/knowledge/work-from-home-spaces/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/party-room-reservation"
+to = "/knowledge/party-room-reservation/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/party-room-reservation/"
+to = "/knowledge/party-room-reservation/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/grills-and-fire-pits"
+to = "/knowledge/grills-and-fire-pits/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/grills-and-fire-pits/"
+to = "/knowledge/grills-and-fire-pits/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/private-park"
+to = "/knowledge/private-park/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/private-park/"
+to = "/knowledge/private-park/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/on-site-retail"
+to = "/knowledge/on-site-retail/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/on-site-retail/"
+to = "/knowledge/on-site-retail/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/does-exhibit-allow-dogs"
+to = "/knowledge/does-exhibit-allow-dogs/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/does-exhibit-allow-dogs/"
+to = "/knowledge/does-exhibit-allow-dogs/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/does-exhibit-allow-cats"
+to = "/knowledge/does-exhibit-allow-cats/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/does-exhibit-allow-cats/"
+to = "/knowledge/does-exhibit-allow-cats/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-are-pet-fees"
+to = "/knowledge/what-are-pet-fees/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-are-pet-fees/"
+to = "/knowledge/what-are-pet-fees/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/breed-and-weight-rules"
+to = "/knowledge/breed-and-weight-rules/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/breed-and-weight-rules/"
+to = "/knowledge/breed-and-weight-rules/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/pet-amenities"
+to = "/knowledge/pet-amenities/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/pet-amenities/"
+to = "/knowledge/pet-amenities/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-many-pets"
+to = "/knowledge/how-many-pets/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-many-pets/"
+to = "/knowledge/how-many-pets/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-much-does-parking-cost"
+to = "/knowledge/how-much-does-parking-cost/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-much-does-parking-cost/"
+to = "/knowledge/how-much-does-parking-cost/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-ev-charging"
+to = "/knowledge/is-there-ev-charging/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-ev-charging/"
+to = "/knowledge/is-there-ev-charging/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-guest-parking"
+to = "/knowledge/is-there-guest-parking/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-guest-parking/"
+to = "/knowledge/is-there-guest-parking/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-bike-storage"
+to = "/knowledge/is-there-bike-storage/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/is-there-bike-storage/"
+to = "/knowledge/is-there-bike-storage/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/cta-proximity"
+to = "/knowledge/cta-proximity/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/cta-proximity/"
+to = "/knowledge/cta-proximity/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/car-free-living"
+to = "/knowledge/car-free-living/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/car-free-living/"
+to = "/knowledge/car-free-living/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/highway-access"
+to = "/knowledge/highway-access/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/highway-access/"
+to = "/knowledge/highway-access/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/walk-to-the-loop"
+to = "/knowledge/walk-to-the-loop/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/walk-to-the-loop/"
+to = "/knowledge/walk-to-the-loop/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-do-i-apply"
+to = "/knowledge/how-do-i-apply/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-do-i-apply/"
+to = "/knowledge/how-do-i-apply/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/credit-score-required"
+to = "/knowledge/credit-score-required/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/credit-score-required/"
+to = "/knowledge/credit-score-required/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/co-signers-accepted"
+to = "/knowledge/co-signers-accepted/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/co-signers-accepted/"
+to = "/knowledge/co-signers-accepted/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/approval-time"
+to = "/knowledge/approval-time/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/approval-time/"
+to = "/knowledge/approval-time/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/lease-terms"
+to = "/knowledge/lease-terms/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/lease-terms/"
+to = "/knowledge/lease-terms/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/occupancy-limits"
+to = "/knowledge/occupancy-limits/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/occupancy-limits/"
+to = "/knowledge/occupancy-limits/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/documents-needed"
+to = "/knowledge/documents-needed/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/documents-needed/"
+to = "/knowledge/documents-needed/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/renters-insurance-required"
+to = "/knowledge/renters-insurance-required/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/renters-insurance-required/"
+to = "/knowledge/renters-insurance-required/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/schedule-a-tour"
+to = "/knowledge/schedule-a-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/schedule-a-tour/"
+to = "/knowledge/schedule-a-tour/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/virtual-tours"
+to = "/knowledge/virtual-tours/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/virtual-tours/"
+to = "/knowledge/virtual-tours/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-is-electricity-billed"
+to = "/knowledge/how-is-electricity-billed/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-is-electricity-billed/"
+to = "/knowledge/how-is-electricity-billed/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/internet-options"
+to = "/knowledge/internet-options/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/internet-options/"
+to = "/knowledge/internet-options/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-utility-fee-covers"
+to = "/knowledge/what-utility-fee-covers/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-utility-fee-covers/"
+to = "/knowledge/what-utility-fee-covers/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/utility-fee-by-floor-plan"
+to = "/knowledge/utility-fee-by-floor-plan/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/utility-fee-by-floor-plan/"
+to = "/knowledge/utility-fee-by-floor-plan/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-neighborhood"
+to = "/knowledge/what-neighborhood/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/what-neighborhood/"
+to = "/knowledge/what-neighborhood/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-groceries"
+to = "/knowledge/neighborhood-groceries/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-groceries/"
+to = "/knowledge/neighborhood-groceries/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-dog-parks"
+to = "/knowledge/neighborhood-dog-parks/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-dog-parks/"
+to = "/knowledge/neighborhood-dog-parks/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-gyms"
+to = "/knowledge/neighborhood-gyms/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-gyms/"
+to = "/knowledge/neighborhood-gyms/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-parks"
+to = "/knowledge/neighborhood-parks/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-parks/"
+to = "/knowledge/neighborhood-parks/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/whats-near-superior-and-wells"
+to = "/knowledge/whats-near-superior-and-wells/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/whats-near-superior-and-wells/"
+to = "/knowledge/whats-near-superior-and-wells/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-dining"
+to = "/knowledge/neighborhood-dining/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/neighborhood-dining/"
+to = "/knowledge/neighborhood-dining/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-many-apartments"
+to = "/knowledge/how-many-apartments/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/how-many-apartments/"
+to = "/knowledge/how-many-apartments/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/front-desk-hours"
+to = "/knowledge/front-desk-hours/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/front-desk-hours/"
+to = "/knowledge/front-desk-hours/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/who-manages-exhibit"
+to = "/knowledge/who-manages-exhibit/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/who-manages-exhibit/"
+to = "/knowledge/who-manages-exhibit/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/leasing-office-hours"
+to = "/knowledge/leasing-office-hours/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/leasing-office-hours/"
+to = "/knowledge/leasing-office-hours/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/building-address"
+to = "/knowledge/building-address/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/building-address/"
+to = "/knowledge/building-address/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/resident-portal"
+to = "/knowledge/resident-portal/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/resident-portal/"
+to = "/knowledge/resident-portal/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/reviews-sources"
+to = "/knowledge/reviews-sources/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/reviews-sources/"
+to = "/knowledge/reviews-sources/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/accessibility-contact"
+to = "/knowledge/accessibility-contact/index.html"
+
+[[services.production.rewrites]]
+from = "/knowledge/accessibility-contact/"
+to = "/knowledge/accessibility-contact/index.html"
+
+# Unknown /knowledge/<slug> URLs: serve the noindex not-found stub instead of
+# homepage HTML (per-slug rewrites above win for real articles).
+[[services.production.rewrites]]
+from = "/knowledge/*"
+to = "/knowledge/not-found/index.html"
+
 # Legacy Wix-era sitemap URLs: serve the real sitemap instead of the SPA
 # fallback so crawlers do not see soft-404 HTML at .xml paths.
 [[services.production.rewrites]]

@@ -5,6 +5,7 @@ import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { Plus } from 'lucide-react';
 import { FAQ_HUB_TOPICS } from '../data/seo';
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 
 /**
  * FAQ hub: every verified Q&A, grouped by topic, each topic linking to its
@@ -65,6 +66,18 @@ export function FaqHub() {
             </p>
           </div>
         </section>
+
+        <KnowledgeLinks
+          title="Dig Deeper in the Knowledge Center"
+          slugs={[
+            'total-move-in-cost',
+            'credit-score-required',
+            'lease-terms',
+            'what-utility-fee-covers',
+            'breed-and-weight-rules',
+            'amenity-hours',
+          ]}
+        />
 
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">

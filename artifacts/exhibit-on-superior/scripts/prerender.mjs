@@ -31,6 +31,8 @@ const {
   BAKED_UNIT_COUNT,
   UNIT_PATHS,
   BAKED_SNAPSHOT_STATUS,
+  KNOWLEDGE_PATHS,
+  KNOWLEDGE_META,
 } = await import(pathToFileURL(serverEntry).href);
 
 // Snapshot freshness guard: per-unit pages, their sitemap entries, and the
@@ -51,7 +53,11 @@ if (BAKED_SNAPSHOT_STATUS !== 'fresh') {
 // ROUTE_PATHS (their head model comes from buildUnitSeoModel, and the unit set
 // changes with every publish), so the static parity guard below ignores them.
 const unitPaths = UNIT_PATHS ?? [];
-const allPaths = [...Object.keys(PAGE_SEO), ...unitPaths];
+// Knowledge Center articles (/knowledge/<slug>): static content data rendered
+// through a dynamic route — like unit pages they live outside PAGE_SEO, with
+// their head model coming from buildKnowledgeSeoModel.
+const knowledgePaths = KNOWLEDGE_PATHS ?? [];
+const allPaths = [...Object.keys(PAGE_SEO), ...unitPaths, ...knowledgePaths];
 const outPathFor = (routePath) =>
   routePath === '/'
     ? path.join(publicDir, 'index.html')
@@ -467,6 +473,11 @@ const urls = indexable
       (p) =>
         `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`,
     ),
+    // Knowledge Center articles: stable evergreen content.
+    knowledgePaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
+    ),
   )
   .join('\n');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
@@ -474,6 +485,149 @@ await fs.writeFile(path.join(publicDir, 'sitemap.xml'), sitemap, 'utf8');
 
 console.log(
   `Prerendered ${allPaths.length} routes; sitemap.xml written with ${
-    indexable.length + unitPaths.length
+    indexable.length + unitPaths.length + knowledgePaths.length
   } indexable URLs.`,
 );
+
+// Post-build guard: every knowledge article must ship its answer-first
+// structure — question in <title> and H1, self-canonical, the answer text in
+// the body, and a FAQPage node whose Question matches. A refactor that ships
+// article pages with generic meta or drops the FAQ schema fails the build.
+{
+  const problems = [];
+  for (const meta of KNOWLEDGE_META ?? []) {
+    const page = await fs.readFile(outPathFor(meta.path), 'utf8');
+    const text = page.replaceAll('<!-- -->', '');
+    if (!page.includes(`rel="canonical" href="${SITE_URL}${meta.path}"`)) {
+      problems.push(`${meta.path}: missing self-canonical`);
+    }
+    const esc = (s) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    if (!text.includes(`<title>${esc(meta.title)}</title>`)) {
+      problems.push(`${meta.path}: <title> does not match the article question`);
+    }
+    // Scope the question check to the rendered <body> (the <title>/OG tags
+    // would otherwise satisfy it even if the H1 regressed).
+    const body = text.slice(text.indexOf('<body'));
+    if (!body.includes(esc(meta.question))) {
+      problems.push(`${meta.path}: question missing from page body/H1`);
+    }
+    const nodes = extractJsonLdPayloads(page).flatMap((raw) => {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed];
+    });
+    const faq = nodes.find((n) => n['@type'] === 'FAQPage');
+    const question = faq?.mainEntity?.[0];
+    if (!faq || question?.name !== meta.question || !question?.acceptedAnswer?.text) {
+      problems.push(`${meta.path}: FAQPage JSON-LD missing or does not carry the question/answer`);
+    }
+    const crumbs = nodes.find((n) => n['@type'] === 'BreadcrumbList');
+    if (!crumbs || crumbs.itemListElement?.length !== 3) {
+      problems.push(`${meta.path}: BreadcrumbList missing or not 3 levels`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: knowledge article check failed:\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`Knowledge articles verified: ${(KNOWLEDGE_META ?? []).length} article(s).`);
+}
+
+// Knowledge rewrite parity guard: the article slugs live in code
+// (knowledgeArticles.ts) but their clean-URL rewrites are duplicated in
+// artifact.toml. A slug added/renamed without its rewrite pair would serve
+// catch-all homepage HTML to non-JS crawlers; a stale rewrite would point at
+// a deleted page. Both directions fail the build here.
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const expected = ['/knowledge', ...knowledgePaths];
+  const missing = [];
+  for (const p of expected) {
+    for (const form of [p, `${p}/`]) {
+      if (!toml.includes(`from = "${form}"\nto = "${p}/index.html"`)) missing.push(form);
+    }
+  }
+  const expectedSet = new Set(expected);
+  const stale = [...toml.matchAll(/from = "(\/knowledge\/[^"*]+?)\/?"/g)]
+    .map((m) => m[1])
+    .filter((p) => !expectedSet.has(p));
+  if (!toml.includes('from = "/knowledge/*"')) missing.push('/knowledge/* (not-found fallback)');
+  if (missing.length || stale.length) {
+    throw new Error(
+      `Prerender aborted: artifact.toml knowledge rewrites out of sync with knowledgeArticles.ts.\n` +
+        (missing.length ? `  Missing rewrite(s): ${missing.join(', ')}\n` : '') +
+        (stale.length ? `  Stale rewrite(s) for removed slug(s): ${[...new Set(stale)].join(', ')}\n` : '') +
+        'Regenerate the knowledge rewrite block (bare + trailing-slash pair per slug, then the /knowledge/* not-found fallback, all ahead of the /* catch-all).',
+    );
+  }
+}
+
+// Unknown-slug fallback: /knowledge/* (after the per-slug rewrites) serves
+// this noindex stub instead of homepage HTML, so retired or mistyped article
+// URLs are not soft-404 duplicates of the homepage for non-JS crawlers.
+// JS-enabled visitors still hydrate into the SPA's NotFound page.
+{
+  const stubDir = path.join(publicDir, 'knowledge', 'not-found');
+  await fs.mkdir(stubDir, { recursive: true });
+  const stub = template
+    .replace(
+      SEO_BLOCK,
+      `<!-- seo:start -->\n    <title>Page Not Found | Exhibit On Superior</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This Knowledge Center page does not exist. Browse all renter questions at ${SITE_URL}/knowledge." />\n    <!-- seo:end -->`,
+    );
+  await fs.writeFile(path.join(stubDir, 'index.html'), stub, 'utf8');
+  console.log('Knowledge not-found stub written (noindex, served via /knowledge/* rewrite).');
+}
+
+// llms.txt + llms-full.txt: regenerated every build so they can never drift
+// from the deployed page set. llms.txt stays a concise entry point (curated
+// primary pages + the Knowledge Center hub); llms-full.txt is the rich
+// catalog — every indexable page with title, one-line description, and URL,
+// grouped for AI assistants that fetch one file for full site context.
+{
+  // Deterministic: strip any existing Knowledge Center section, then insert
+  // the freshly generated one (self-healing — a stale article count or edited
+  // section can never survive a build).
+  const llmsPath = path.join(publicDir, 'llms.txt');
+  let llms = await fs.readFile(llmsPath, 'utf8');
+  llms = llms.replace(/## Knowledge Center\n[\s\S]*?(?=\n## )/, '');
+  const knowledgeSection = `## Knowledge Center\n\n- [Knowledge Center](${SITE_URL}/knowledge): ${
+    (KNOWLEDGE_META ?? []).length
+  } single-question pages answering renter questions with verified facts — pricing, fees, floor plans, amenities, pets, parking, leasing, utilities, and the neighborhood. Full page catalog: ${SITE_URL}/llms-full.txt\n\n`;
+  if (!llms.includes('\n## Contact')) {
+    throw new Error('Prerender aborted: llms.txt is missing its "## Contact" section anchor.');
+  }
+  llms = llms.replace('## Contact', `${knowledgeSection}## Contact`);
+  await fs.writeFile(llmsPath, llms, 'utf8');
+
+  const lines = [
+    '# Exhibit On Superior — Full Page Catalog',
+    '',
+    '> Every indexable page on rentatexhibit.com with its title and a one-line description.',
+    '> Exhibit On Superior: 298-unit luxury apartment tower at 165 W Superior St, Chicago, IL 60654 (River North). Phone 312-450-0635. Email exhibit@highlandptrs.com.',
+    '',
+    '## Site Pages',
+    '',
+    ...indexable.map((p) => {
+      const seo = PAGE_SEO[p];
+      return `- [${seo.title}](${canonicalFor(p)}): ${seo.description}`;
+    }),
+    '',
+    '## Available Units (live inventory, refreshed each publish)',
+    '',
+    ...unitPaths.map((p) => `- [Apartment ${p.split('/').pop()} at Exhibit On Superior](${SITE_URL}${p}): Current availability, rent, photos, and floor plan details for apartment ${p.split('/').pop()}.`),
+    '',
+    '## Knowledge Center (answer-first Q&A)',
+    '',
+    ...(KNOWLEDGE_META ?? []).map(
+      (m) => `- [${m.question}](${SITE_URL}${m.path}): ${m.description}`,
+    ),
+    '',
+  ];
+  await fs.writeFile(path.join(publicDir, 'llms-full.txt'), lines.join('\n'), 'utf8');
+  console.log(
+    `llms-full.txt written with ${indexable.length + unitPaths.length + (KNOWLEDGE_META ?? []).length} pages; llms.txt Knowledge Center section ensured.`,
+  );
+}

@@ -6,7 +6,7 @@ export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg`;
 
 export const AVAILABILITY_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
 export const APPLY_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
-/** External "Schedule a Tour" destination (Highland Partners property page). */
+/** External "Schedule a Tour" destination (property management page). */
 export const TOUR_URL = 'https://www.highlandptrs.com/exhibit-on-superior';
 
 export interface Faq {
@@ -421,6 +421,17 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     quickAnswer:
       'This FAQ hub collects verified answers to the questions renters ask most about Exhibit On Superior \u2014 covering apartments and floor plans, pricing and fees, amenities, pet policy, the River North neighborhood, and how to tour and apply \u2014 each linking to a detail page with more depth.',
     faqs: [], // populated from FAQ_HUB_TOPICS below
+  },
+  '/knowledge': {
+    path: '/knowledge',
+    ogImage: `${SITE_URL}/images/og/faq.jpg`,
+    label: 'Knowledge Center',
+    title: 'Knowledge Center: Renter Questions Answered | Exhibit On Superior',
+    description:
+      'Direct, fact-first answers to renter questions about Exhibit On Superior in River North Chicago — pricing, fees, floor plans, amenities, pets, parking, leasing, utilities, and the neighborhood.',
+    quickAnswer:
+      'The Exhibit On Superior Knowledge Center answers the questions renters ask most, each on its own page with the direct answer first: pricing and fees, apartments and floor plans, amenities, pets, parking and transportation, leasing and applications, utilities, the River North neighborhood, and building services. Every answer uses verified facts from current listings and the leasing team.',
+    faqs: [],
   },
   '/contact-us': {
     path: '/contact-us',

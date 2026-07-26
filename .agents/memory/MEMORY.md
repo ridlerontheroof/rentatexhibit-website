@@ -24,4 +24,5 @@
 - [Trust proxy on Replit](trust-proxy-replit.md) — edge strips client XFF but there are multiple internal hops; trust private/loopback CIDRs, never a numeric hop count (hop 1 keyed everyone to 127.0.0.1).
 - [Prerender + lazy routes CLS trap](prerender-lazy-cls.md) — boot must preload the current route chunk before first render or the prerendered page collapses to the Suspense fallback (0.31 CLS site-wide).
 - [Per-unit prerendered pages](unit-page-prerender.md) — dynamic /available-units/<unit> routes prerender outside PAGE_SEO via UNIT_PATHS; shared head builder; lazy imgs mandatory.
+- [Knowledge Center article system](knowledge-center.md) — /knowledge Q&A pages are data-driven like unit pages; new slugs need artifact.toml rewrite pairs; llms.txt/llms-full.txt regenerate in prerender.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.

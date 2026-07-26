@@ -1,3 +1,4 @@
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { useEffect, useMemo, useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { Link } from 'wouter';
@@ -382,6 +383,17 @@ export function FloorPlans() {
         </section>
 
         <FaqSection path="/available-units" />
+
+        <KnowledgeLinks
+          slugs={[
+            'what-apartment-sizes',
+            'which-units-have-balconies',
+            'what-is-a-convertible',
+            'largest-apartment',
+            'ada-accessible-apartments',
+            'lease-terms',
+          ]}
+        />
       </div>
 
       <PlanLightbox

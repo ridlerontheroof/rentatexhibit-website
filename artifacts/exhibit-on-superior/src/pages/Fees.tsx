@@ -1,3 +1,4 @@
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
@@ -147,6 +148,17 @@ export function Fees() {
         </section>
       </div>
       <FaqSection path="/fees" />
+
+      <KnowledgeLinks
+        slugs={[
+          'what-fees-in-addition-to-rent',
+          'total-move-in-cost',
+          'is-there-a-security-deposit',
+          'administration-fee',
+          'utility-fee-by-floor-plan',
+          'what-are-pet-fees',
+        ]}
+      />
     </>
   );
 }

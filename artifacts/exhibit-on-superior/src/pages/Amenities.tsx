@@ -1,3 +1,4 @@
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { PageHero } from '../components/PageHero';
 import { SmartImg } from '../components/SmartImg';
 import { Seo } from '../components/Seo';
@@ -231,6 +232,17 @@ export function Amenities() {
         </section>
       </div>
         <FaqSection path="/amenities" />
+
+        <KnowledgeLinks
+          slugs={[
+            'full-amenity-list',
+            'is-there-a-pool',
+            'amenity-hours',
+            'party-room-reservation',
+            'work-from-home-spaces',
+            'pet-amenities',
+          ]}
+        />
     </>
   );
 }

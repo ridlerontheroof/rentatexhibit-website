@@ -8,6 +8,15 @@ import { NotFound } from './pages/not-found';
 import { buildSeoModel, renderHeadTags } from './data/seo';
 import { buildUnitSeoModel, unitPagePath } from './data/unitPageSeo';
 import { UnitDetail } from './pages/UnitDetail';
+import {
+  KNOWLEDGE_ARTICLES,
+  buildKnowledgeSeoModel,
+  knowledgeArticle,
+  knowledgeDescription,
+  knowledgePath,
+  knowledgeTitle,
+} from './data/knowledge';
+import { KnowledgeArticle } from './pages/KnowledgeArticle';
 import { floorPlansItemListJsonLd, planGroups } from './data/floorPlans';
 import { unitAvailabilityJsonLd } from './data/unitJsonLd';
 import { getBakedAvailability, getBakedSnapshotStatus } from './data/availabilitySnapshot';
@@ -36,6 +45,20 @@ export const BAKED_SNAPSHOT_STATUS = getBakedSnapshotStatus();
 export const UNIT_PATHS: string[] = (getBakedAvailability()?.units ?? []).map((u) =>
   unitPagePath(u.unit),
 );
+
+// Knowledge Center articles: one prerendered route per article. Like unit
+// pages they live outside PAGE_SEO/ROUTE_PATHS (dynamic route, shared head
+// builder in data/knowledge.ts). The prerenderer also uses the meta list to
+// generate llms.txt / llms-full.txt entries.
+export const KNOWLEDGE_PATHS: string[] = KNOWLEDGE_ARTICLES.map((a) => knowledgePath(a.slug));
+export const KNOWLEDGE_META: Array<{ path: string; title: string; description: string; question: string; category: string }> =
+  KNOWLEDGE_ARTICLES.map((a) => ({
+    path: knowledgePath(a.slug),
+    title: knowledgeTitle(a),
+    description: knowledgeDescription(a),
+    question: a.question,
+    category: a.category,
+  }));
 
 /** Content-page paths, exported for the prerenderer's route<->PAGE_SEO parity check. */
 export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
@@ -89,6 +112,26 @@ export async function render(pathname: string): Promise<RenderResult> {
       html,
       head: renderHeadTags(buildUnitSeoModel(unit, getBakedAvailability()?.updatedAt ?? null)),
     };
+  }
+
+  // Knowledge article (/knowledge/<slug>): same dynamic-route pattern as
+  // per-unit pages — wouter <Route> so useParams resolves, shared head model.
+  const knowledgeMatch = pathname.match(/^\/knowledge\/([^/]+)$/);
+  if (knowledgeMatch) {
+    const article = knowledgeArticle(knowledgeMatch[1]);
+    if (!article) {
+      throw new Error(`render(${pathname}): no knowledge article with slug ${knowledgeMatch[1]}`);
+    }
+    const html = renderToString(
+      <QueryClientProvider client={new QueryClient()}>
+        <Router ssrPath={pathname}>
+          <Layout>
+            <Route path="/knowledge/:slug" component={KnowledgeArticle} />
+          </Layout>
+        </Router>
+      </QueryClientProvider>,
+    );
+    return { html, head: renderHeadTags(buildKnowledgeSeoModel(article)) };
   }
 
   const match = routes.find((r) => r.path === pathname);

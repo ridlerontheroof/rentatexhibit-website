@@ -3,7 +3,12 @@ import { lazy, Suspense, useEffect, type ComponentType } from 'react';
 import { Layout } from './components/Layout';
 import { initAnalytics, trackPageView, trackOutboundClick } from './lib/analytics';
 import { APPLY_URL, AVAILABILITY_URL } from './data/seo';
-import { routes, getPreloadedComponent, UNIT_DETAIL_ROUTE } from './routes';
+import {
+  routes,
+  getPreloadedComponent,
+  UNIT_DETAIL_ROUTE,
+  KNOWLEDGE_ARTICLE_ROUTE,
+} from './routes';
 import { LEGACY_REDIRECTS as SHARED_LEGACY_REDIRECTS } from './data/legacyRedirects';
 
 // Route-based code splitting: each page ships in its own chunk. The page list is
@@ -35,6 +40,15 @@ const UnitDetailLazy = lazy(
 function UnitDetailRoute(_props: RouteComponentProps) {
   const Preloaded = getPreloadedComponent(UNIT_DETAIL_ROUTE);
   return Preloaded ? <Preloaded /> : <UnitDetailLazy />;
+}
+
+const KnowledgeArticleLazy = lazy(
+  () => import('./pages/KnowledgeArticle').then((m) => ({ default: m.KnowledgeArticle })),
+);
+/** Same boot-preload CLS guard as unit pages, for /knowledge/<slug>. */
+function KnowledgeArticleRoute(_props: RouteComponentProps) {
+  const Preloaded = getPreloadedComponent(KNOWLEDGE_ARTICLE_ROUTE);
+  return Preloaded ? <Preloaded /> : <KnowledgeArticleLazy />;
 }
 
 /**
@@ -138,6 +152,10 @@ function App() {
               unit at build time (scripts/prerender.mjs); hydrates from the live
               feed so prices/dates self-correct between publishes. */}
           <Route path={UNIT_DETAIL_ROUTE} component={UnitDetailRoute} />
+
+          {/* Knowledge Center articles: static content data, prerendered per
+              article at build time (scripts/prerender.mjs). */}
+          <Route path={KNOWLEDGE_ARTICLE_ROUTE} component={KnowledgeArticleRoute} />
 
           {/* /floor-plans is the page's former canonical URL — keep it working,
               preserving deep-link params like ?plan=<id> (and any hash). */}

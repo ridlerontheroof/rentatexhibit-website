@@ -1,3 +1,4 @@
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { Link } from 'wouter';
 
 import { ArrowRight, MapPin, Phone } from 'lucide-react';
@@ -251,6 +252,17 @@ export function Home() {
         </section>
 
         <FaqSection path="/" />
+
+        <KnowledgeLinks
+          slugs={[
+            'how-much-is-rent',
+            'total-move-in-cost',
+            'what-apartment-sizes',
+            'does-exhibit-allow-dogs',
+            'how-much-does-parking-cost',
+            'what-neighborhood',
+          ]}
+        />
       </div>
     </>
   );
