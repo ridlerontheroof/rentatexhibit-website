@@ -230,6 +230,23 @@ describe('horizontal swipe navigation', () => {
     expect(shownIndex()).toBe(0);
   });
 
+  it('swiping works again immediately after pinching back out to fit', () => {
+    // Pinch in to 2x...
+    pinchTo(2);
+    expect(readTransform().scale).toBeCloseTo(2, 5);
+    // ...then pinch back out to ~scale 1 and release: snaps to fit.
+    fireTouch('touchmove', [{ x: -52, y: 0 }, { x: 52, y: 0 }]);
+    expect(readTransform().scale).toBeCloseTo(1.04, 5);
+    fireTouch('touchend', [], [{ x: -52, y: 0 }, { x: 52, y: 0 }]);
+    expect(readTransform()).toEqual({ tx: 0, ty: 0, scale: 1 });
+
+    // A >50px horizontal swipe navigates to the next photo again.
+    expect(shownIndex()).toBe(0);
+    fireTouch('touchstart', [{ x: 200, y: 0 }]);
+    fireTouch('touchend', [], [{ x: 100, y: 0 }]);
+    expect(shownIndex()).toBe(1);
+  });
+
   it('a short (<50px) swipe never navigates', () => {
     fireTouch('touchstart', [{ x: 0, y: 0 }]);
     fireTouch('touchend', [], [{ x: 40, y: 0 }]);
