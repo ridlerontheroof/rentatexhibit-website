@@ -37,14 +37,15 @@ export interface ShowingContactPayload {
 
 export interface ShowingContactResponse {
   guestCardId: string;
-  jwt: string;
+  /** Booking token, when AppFolio issues one (it stopped doing so 2026-07). */
+  jwt: string | null;
   hostedUrl: string;
 }
 
 export interface ShowingBookPayload {
   unit: string;
   guestCardId: string;
-  jwt: string;
+  jwt: string | null;
   slotTime: string;
   agentId: number;
 }

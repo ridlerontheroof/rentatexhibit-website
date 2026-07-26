@@ -161,7 +161,9 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
 const BookBody = z.object({
   unit: z.string().min(1).max(10),
   guestCardId: z.string().min(1).max(100),
-  jwt: z.string().min(1).max(4096),
+  // Optional since 2026-07-26: AppFolio no longer issues X-JWT; bookings
+  // authorize via guest_card_id alone. Forwarded when present.
+  jwt: z.string().min(1).max(4096).nullish(),
   slotTime: z.string().regex(/^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}$/),
   agentId: z.number().int().positive(),
 });

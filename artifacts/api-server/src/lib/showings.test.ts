@@ -144,8 +144,30 @@ describe("createShowingGuestCard", () => {
     listableUid: "uid-1",
   };
 
-  it("sends the hosted form's guest-card payload and captures id + X-JWT", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+  it("sends the hosted form's snake_case guest-card payload and captures the id", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(jsonResponse({ guest_card_id: 12345 }));
+    const out = await createShowingGuestCard(input);
+    expect(out).toEqual({ guestCardId: "12345", jwt: null });
+    const [url, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(String(url)).toContain("/listings/api/guest_cards");
+    // AppFolio's hosted client snake_cases every request body; camelCase keys
+    // get a bare 400 with an empty body (contract change observed 2026-07-26).
+    const body = JSON.parse(String(opts.body));
+    expect(body).toEqual({
+      first_name: "Jane",
+      last_name: "Doe",
+      email_address: "jane@example.com",
+      phone_number: "3125550100",
+      listable_uid: "uid-1",
+      source: "Website (Exhibit)",
+      skip_cta_for_new_inquiries: true,
+    });
+  });
+
+  it("still captures X-JWT when AppFolio issues one", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
       jsonResponse(
         { guest_card_id: 12345 },
         { headers: { "Content-Type": "application/json", "X-JWT": "tok-abc" } },
@@ -153,22 +175,15 @@ describe("createShowingGuestCard", () => {
     );
     const out = await createShowingGuestCard(input);
     expect(out).toEqual({ guestCardId: "12345", jwt: "tok-abc" });
-    const [url, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect(String(url)).toContain("/listings/api/guest_cards");
-    const body = JSON.parse(String(opts.body));
-    expect(body).toMatchObject({
-      firstName: "Jane",
-      emailAddress: "jane@example.com",
-      phoneNumber: "3125550100",
-      listableUid: "uid-1",
-      source: "Website (Exhibit)",
-      skipCtaForNewInquiries: true,
-    });
   });
 
-  it("throws when the X-JWT header is missing — booking would be unauthorized", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(jsonResponse({ guest_card_id: 1 }));
-    await expect(createShowingGuestCard(input)).rejects.toThrow(/X-JWT/);
+  it("includes status, content-type and body marker in failures", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("", { status: 400, headers: { "Content-Type": "application/json" } }),
+    );
+    await expect(createShowingGuestCard(input)).rejects.toThrow(
+      /status 400.*content-type=application\/json.*body=<empty>/,
+    );
   });
 });
 
@@ -191,6 +206,31 @@ describe("bookShowing", () => {
     const [url, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(String(url)).toContain("/listings/api/showings");
     expect((opts.headers as Record<string, string>).Authorization).toBe("Bearer tok-abc");
+    expect(JSON.parse(String(opts.body))).toEqual({
+      start_at: "2026-07-28T18:15:00.000Z",
+      end_at: "2026-07-28T18:30:00.000Z",
+      assigned_user_id: 443,
+      listable_uid: "uid-1",
+      guest_card_id: "77",
+      from_email: false,
+      showing_type: "In Person",
+    });
+  });
+
+  it("books without an Authorization header when no JWT was issued", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(jsonResponse({ start_at: "x", full_address: null }));
+    await bookShowing({
+      listableUid: "uid-1",
+      guestCardId: "77",
+      jwt: null,
+      slotTime: "2026/07/28 13:15",
+      agentId: 443,
+      durationMinutes: 15,
+    });
+    const [, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(opts.headers as Record<string, string>).not.toHaveProperty("Authorization");
     expect(JSON.parse(String(opts.body))).toEqual({
       start_at: "2026-07-28T18:15:00.000Z",
       end_at: "2026-07-28T18:30:00.000Z",

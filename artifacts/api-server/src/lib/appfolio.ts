@@ -481,25 +481,34 @@ export interface GuestCardInput {
  * Returns true when AppFolio accepted the guest card.
  */
 export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
+  // NOTE: the endpoint requires a snake_case body — AppFolio's hosted client
+  // snake_cases every request; camelCase now gets a bare 400 (empty body).
   const res = await fetch(`https://${APPFOLIO_DB}.appfolio.com/listings/api/guest_cards`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+    },
     body: JSON.stringify({
-      firstName: input.firstName,
-      lastName: input.lastName,
-      emailAddress: input.email,
-      phoneNumber: input.phone,
-      listableUid: input.listableUid,
+      first_name: input.firstName,
+      last_name: input.lastName,
+      email_address: input.email,
+      phone_number: input.phone,
+      listable_uid: input.listableUid,
       // Lead attribution shown to the leasing team in AppFolio. Keep in sync
       // with LEAD_SOURCE on the web app (tour/apply link `source` param).
       source: "Website (Exhibit)",
-      skipCtaForNewInquiries: true,
+      skip_cta_for_new_inquiries: true,
     }),
   });
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
     throw new Error(
-      `AppFolio guest card failed: status ${res.status} ${detail.slice(0, 300)}`,
+      `AppFolio guest card failed: status ${res.status}` +
+        ` content-type=${res.headers.get("content-type") ?? "none"}` +
+        ` x-request-id=${res.headers.get("x-request-id") ?? "none"}` +
+        ` body=${detail ? JSON.stringify(detail.slice(0, 300)) : "<empty>"}`,
     );
   }
   return true;

@@ -4,9 +4,11 @@ description: How website tour leads get pushed into AppFolio as guest cards, and
 ---
 
 AppFolio has no public write API, but its hosted listing pages create prospects via
-`POST https://<db>.appfolio.com/listings/api/guest_cards` (JSON: firstName, lastName,
-emailAddress, phoneNumber, listableUid, source). No CSRF/session required — a bare
-server-side POST returns 400 on bad payload, not 403.
+`POST https://<db>.appfolio.com/listings/api/guest_cards` (JSON, **snake_case** keys:
+first_name, last_name, email_address, phone_number, listable_uid, source — camelCase
+started returning a bare 400 with empty body ~2026-07; the hosted client snake_cases
+every request). No CSRF/session required — a bare server-side POST returns 400 on bad
+payload, not 403.
 
 **Why:** the leasing team wanted internal tour-form submissions to land in AppFolio's
 lead queue attached to the exact unit, like AppFolio's own showing scheduler does.

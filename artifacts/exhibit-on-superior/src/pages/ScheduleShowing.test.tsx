@@ -131,6 +131,25 @@ describe('ScheduleShowing', () => {
     expect(urls.every((u) => !u.includes('appfolio.com'))).toBe(true);
   });
 
+  it('books when the contact step returns no booking token (jwt null)', async () => {
+    // Since 2026-07 AppFolio no longer issues X-JWT; bookings authorize via
+    // guest card alone. The page must pass jwt: null through untouched.
+    routeFetch({
+      'api/showings/contact': () => jsonResponse({ guestCardId: '77', jwt: null, hostedUrl: HOSTED }, 201),
+    });
+    const user = userEvent.setup();
+    renderPage();
+    await fillContactForm(user);
+    await user.click(await screen.findByRole('button', { name: '1:15 PM' }));
+    await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+    await screen.findByText(/you're all set/i);
+    const bookCall = fetchMock.mock.calls.find((c) => String(c[0]).includes('api/showings/book'));
+    expect(bookCall).toBeTruthy();
+    const body = JSON.parse(String((bookCall![1] as RequestInit).body));
+    expect(body).toMatchObject({ guestCardId: '77', jwt: null });
+  });
+
   it('falls back to a standard lead + hosted link when contact fails', async () => {
     routeFetch({
       'api/showings/contact': () => jsonResponse({ error: 'contact_failed', hostedUrl: HOSTED }, 502),

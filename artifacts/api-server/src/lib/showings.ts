@@ -6,13 +6,14 @@
  * Exhibit-branded booking flow whose submissions land in AppFolio's showing
  * scheduler exactly as if the prospect used the hosted page:
  *
- *  1. POST /listings/api/guest_cards       — step-1 contact info; the response
- *     carries a guest_card_id plus an X-JWT header that authorizes booking.
+ *  1. POST /listings/api/guest_cards       — step-1 contact info (snake_case
+ *     body — camelCase gets a bare 400); the response carries a guest_card_id.
  *  2. GET  /listings/api/listings/<uid>/availabilities — live time slots
  *     (anonymous; query params MUST be snake_case, camelCase gets a 422).
- *  3. POST /listings/api/showings          — books the appointment, sent with
- *     Authorization: Bearer <X-JWT>. AppFolio then fires its own
- *     confirmation/reminder messaging unchanged.
+ *  3. POST /listings/api/showings          — books the appointment, authorized
+ *     by guest_card_id alone (AppFolio stopped issuing X-JWT tokens 2026-07;
+ *     a Bearer header is attached only if one ever reappears). AppFolio then
+ *     fires its own confirmation/reminder messaging unchanged.
  *
  * Slot times arrive as property-local wall time ("YYYY/MM/DD HH:mm"); this
  * module converts them to instants using the property's timezone
@@ -164,8 +165,7 @@ export async function fetchShowingAvailabilities(
     { headers: { Accept: "application/json" } },
   );
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`AppFolio availabilities failed: status ${res.status} ${detail.slice(0, 300)}`);
+    throw await appfolioResponseError("AppFolio availabilities failed", res);
   }
   const first = normalizeAvailabilities((await res.json()) as Json);
   const hasSlots = first.days.some((d) => d.slots.length > 0);
@@ -200,34 +200,59 @@ export interface ShowingContactInput {
 
 export interface ShowingContactResult {
   guestCardId: string;
-  /** Bearer token (X-JWT response header) that authorizes the booking POST. */
-  jwt: string;
+  /**
+   * Bearer token from the X-JWT response header, when AppFolio issues one.
+   * As of 2026-07-26 the endpoint no longer returns it — bookings authorize
+   * via guest_card_id alone — but keep forwarding it if it ever reappears.
+   */
+  jwt: string | null;
+}
+
+/**
+ * Build a diagnosable error for a failed AppFolio response: status, content
+ * type, request id, and a body snippet (even when empty — say so), so the
+ * next contract drift is identifiable from production logs alone.
+ */
+export async function appfolioResponseError(label: string, res: Response): Promise<Error> {
+  const detail = await res.text().catch(() => "");
+  return new Error(
+    `${label}: status ${res.status}` +
+      ` content-type=${res.headers.get("content-type") ?? "none"}` +
+      ` x-request-id=${res.headers.get("x-request-id") ?? "none"}` +
+      ` body=${detail ? JSON.stringify(detail.slice(0, 300)) : "<empty>"}`,
+  );
 }
 
 /**
  * Create the showing guest card (hosted page step 1). Identical endpoint and
  * source attribution to the existing lead guest-card push, but also captures
- * the guest_card_id and X-JWT the booking POST requires.
+ * the guest_card_id the booking POST requires.
+ *
+ * NOTE: the endpoint requires a snake_case body — AppFolio's hosted client
+ * snake_cases every request; camelCase now gets a bare 400 (empty body).
  */
 export async function createShowingGuestCard(
   input: ShowingContactInput,
 ): Promise<ShowingContactResult> {
   const res = await fetch(`${LISTINGS_BASE}/api/guest_cards`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+    },
     body: JSON.stringify({
-      firstName: input.firstName,
-      lastName: input.lastName,
-      emailAddress: input.email,
-      phoneNumber: input.phone,
-      listableUid: input.listableUid,
+      first_name: input.firstName,
+      last_name: input.lastName,
+      email_address: input.email,
+      phone_number: input.phone,
+      listable_uid: input.listableUid,
       source: SHOWING_SOURCE,
-      skipCtaForNewInquiries: true,
+      skip_cta_for_new_inquiries: true,
     }),
   });
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`AppFolio showing guest card failed: status ${res.status} ${detail.slice(0, 300)}`);
+    throw await appfolioResponseError("AppFolio showing guest card failed", res);
   }
   const data = (await res.json().catch(() => ({}))) as Json;
   const guestCardId = data.guest_card_id ?? data.guestCardId;
@@ -235,16 +260,14 @@ export async function createShowingGuestCard(
   if (typeof guestCardId !== "string" && typeof guestCardId !== "number") {
     throw new Error("AppFolio showing guest card response missing guest_card_id");
   }
-  if (!jwt) {
-    throw new Error("AppFolio showing guest card response missing X-JWT header");
-  }
   return { guestCardId: String(guestCardId), jwt };
 }
 
 export interface BookShowingInput {
   listableUid: string;
   guestCardId: string;
-  jwt: string;
+  /** Optional bearer token — sent only when the guest card issued one. */
+  jwt?: string | null;
   /** Slot wall time exactly as returned by availabilities ("YYYY/MM/DD HH:mm"). */
   slotTime: string;
   agentId: number;
@@ -262,8 +285,10 @@ export interface BookedShowing {
 
 /**
  * Book the showing (hosted page step 2 confirm). Sends exactly what the
- * hosted client sends: snake_case body, Bearer JWT from the guest card,
- * showing_type "In Person" (the hosted page's non-virtual option).
+ * hosted client sends: snake_case body, showing_type "In Person" (the hosted
+ * page's non-virtual option). A Bearer JWT is attached only when the guest
+ * card issued one (AppFolio stopped returning X-JWT on 2026-07-26; bookings
+ * authorize via guest_card_id alone).
  */
 export async function bookShowing(input: BookShowingInput): Promise<BookedShowing> {
   const start = slotTimeToDate(input.slotTime);
@@ -273,7 +298,8 @@ export async function bookShowing(input: BookShowingInput): Promise<BookedShowin
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: `Bearer ${input.jwt}`,
+      "X-Requested-With": "XMLHttpRequest",
+      ...(input.jwt ? { Authorization: `Bearer ${input.jwt}` } : {}),
     },
     body: JSON.stringify({
       start_at: start.toISOString(),
@@ -286,8 +312,7 @@ export async function bookShowing(input: BookShowingInput): Promise<BookedShowin
     }),
   });
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`AppFolio showing booking failed: status ${res.status} ${detail.slice(0, 300)}`);
+    throw await appfolioResponseError("AppFolio showing booking failed", res);
   }
   const data = (await res.json().catch(() => ({}))) as Json;
   return {
