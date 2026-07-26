@@ -12,6 +12,8 @@
 import { describe, expect, it } from 'vitest';
 import { FAQ_HUB_TOPICS, PAGE_SEO } from './seo';
 import { knowledgeArticle, KNOWLEDGE_ARTICLES, type KnowledgeArticle } from './knowledge';
+// @ts-expect-error — untyped build script; imported only for its CARDS tagline map
+import { CARDS as OG_CARDS } from '../../scripts/generate-og-cards.mjs';
 
 const HUB_FAQS = FAQ_HUB_TOPICS.flatMap((t) => t.faqs.map((f) => ({ topic: t.title, ...f })));
 
@@ -153,6 +155,40 @@ describe('FAQ ↔ Knowledge Center alignment', () => {
       .flatMap((p) => [p.title, p.description])
       .flatMap(factTokens).length;
     expect(metaTotal, 'meta fact-token extraction went vacuous').toBeGreaterThanOrEqual(5);
+  });
+
+  it('every concrete fact in a social share-card tagline is backed by a knowledge article', () => {
+    // The OG cards (scripts/generate-og-cards.mjs) bake each tagline into a
+    // 1200x630 image, so a stale dollar amount or distance there survives
+    // every on-page fact fix invisibly. Run the tagline map through the same
+    // factTokens() containment check as titles/descriptions: any dollar
+    // amount / decimal / large number a tagline states must appear in the
+    // verified-facts corpus. Small integers stay excluded via the shared
+    // regex. After fixing a tagline, regenerate the card
+    // (node scripts/generate-og-cards.mjs <page>) so the image matches.
+    const corpus = KNOWLEDGE_ARTICLES.map(articleText).join(' ');
+    const cards = OG_CARDS as Record<string, { tagline: string }>;
+    for (const [page, { tagline }] of Object.entries(cards)) {
+      for (const token of factTokens(tagline)) {
+        expect(
+          corpus.includes(token),
+          `OG card "${page}" tagline states "${token}" but no knowledge article mentions it — ` +
+            'the share card has drifted from the verified-facts corpus; fix whichever is stale, ' +
+            `then regenerate the card image (node scripts/generate-og-cards.mjs ${page}).`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it('the share-card tagline guard actually sees cards and fact tokens (self-check)', () => {
+    // Guard against the import or map shape going vacuous: the map covers
+    // every page-specific OG card today, and at least one tagline states a
+    // concrete fact (the street number 165).
+    const cards = OG_CARDS as Record<string, { tagline: string }>;
+    const taglines = Object.values(cards).map((c) => c.tagline);
+    expect(taglines.length, 'OG card map went empty/unreadable').toBeGreaterThanOrEqual(10);
+    const total = taglines.flatMap(factTokens).length;
+    expect(total, 'tagline fact-token extraction went vacuous').toBeGreaterThanOrEqual(1);
   });
 
   it('a hub question duplicating an article question must declare the overlap', () => {

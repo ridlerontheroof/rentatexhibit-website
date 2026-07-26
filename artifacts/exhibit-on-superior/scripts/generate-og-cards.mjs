@@ -42,7 +42,11 @@ const FONT = 'DejaVu-Sans';
 //   src: source photo in images-src/
 //   tagline: single line drawn under the wordmark
 //   gravity: crop anchor when the photo overflows 1200x630 (default center)
-const CARDS = {
+//
+// Exported so the fact-drift guard (src/data/faq-knowledge-alignment.test.ts)
+// can cross-check every tagline against the Knowledge Center corpus — a stale
+// price/distance baked into a share card must fail the test suite.
+export const CARDS = {
   home: {
     src: 'image-057-dji-20230620092900-0153-d-oaedvz.jpg',
     tagline: 'River North apartments at 165 W Superior St, Chicago',
@@ -182,7 +186,11 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only run as a CLI; importing this module (e.g. from the test suite) must not
+// regenerate cards.
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
