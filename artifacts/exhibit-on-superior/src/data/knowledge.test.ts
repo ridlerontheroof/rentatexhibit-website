@@ -51,6 +51,22 @@ describe('knowledge center content rules', () => {
     }
   });
 
+  it('every article receives at least 2 inbound related links (no orphaned articles)', () => {
+    const inbound = new Map<string, number>(KNOWLEDGE_ARTICLES.map((a) => [a.slug, 0]));
+    for (const a of KNOWLEDGE_ARTICLES) {
+      for (const r of a.related) {
+        if (r !== a.slug) inbound.set(r, (inbound.get(r) ?? 0) + 1);
+      }
+    }
+    const underLinked = [...inbound.entries()]
+      .filter(([, count]) => count < 2)
+      .map(([slug, count]) => `${slug} (${count} inbound)`);
+    expect(
+      underLinked,
+      `Under-linked knowledge articles — each slug must appear in at least 2 other articles' related arrays or Google treats it as buried: ${underLinked.join(', ')}`,
+    ).toEqual([]);
+  });
+
   it('site links point at real routes', () => {
     for (const a of KNOWLEDGE_ARTICLES) {
       expect(a.links.length, `${a.slug} needs site links`).toBeGreaterThanOrEqual(2);

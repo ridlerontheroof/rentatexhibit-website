@@ -55,7 +55,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['is-there-a-security-deposit', 'administration-fee', 'what-utility-fee-covers'],
+    related: ['is-there-a-security-deposit', 'administration-fee', 'what-utility-fee-covers', 'how-much-is-storage'],
     links: [
       { label: 'Fees & Leasing Costs', href: '/fees' },
       { label: 'Application Guide', href: '/application-guide' },
@@ -180,7 +180,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['what-fees-in-addition-to-rent', 'is-there-a-security-deposit', 'move-in-specials'],
+    related: ['what-fees-in-addition-to-rent', 'is-there-a-security-deposit', 'move-in-specials', 'how-much-is-rent'],
     links: [
       { label: 'Fees & Leasing Costs', href: '/fees' },
       { label: 'Application Guide', href: '/application-guide' },
@@ -206,7 +206,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['largest-apartment', 'how-many-apartments', 'do-studios-exist'],
+    related: ['largest-apartment', 'how-many-apartments', 'do-studios-exist', 'ada-accessible-apartments'],
     links: [
       { label: 'Apartment Guide', href: '/apartment-guide' },
       { label: 'Available Units', href: '/available-units' },
@@ -851,7 +851,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['cta-proximity', 'walk-to-the-loop', 'is-there-bike-storage'],
+    related: ['cta-proximity', 'walk-to-the-loop', 'is-there-bike-storage', 'highway-access'],
     links: [
       { label: 'Parking & Transportation', href: '/parking-transportation' },
       { label: 'Neighborhood', href: '/neighborhood' },
@@ -917,7 +917,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['credit-score-required', 'documents-needed', 'approval-time'],
+    related: ['credit-score-required', 'documents-needed', 'approval-time', 'application-fee'],
     links: [
       { label: 'Application Guide', href: '/application-guide' },
       { label: 'Available Units', href: '/available-units' },
@@ -978,7 +978,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['how-do-i-apply', 'credit-score-required', 'documents-needed'],
+    related: ['how-do-i-apply', 'credit-score-required', 'documents-needed', 'co-signers-accepted'],
     links: [
       { label: 'Application Guide', href: '/application-guide' },
       { label: 'Available Units', href: '/available-units' },
@@ -998,7 +998,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['how-do-i-apply', 'approval-time', 'occupancy-limits'],
+    related: ['how-do-i-apply', 'approval-time', 'occupancy-limits', 'renters-insurance-required'],
     links: [
       { label: 'Application Guide', href: '/application-guide' },
       { label: 'Contact Us', href: '/contact-us' },
@@ -1038,7 +1038,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['renters-insurance-required', 'how-do-i-apply', 'credit-score-required'],
+    related: ['renters-insurance-required', 'how-do-i-apply', 'credit-score-required', 'occupancy-limits'],
     links: [
       { label: 'Application Guide', href: '/application-guide' },
       { label: 'Contact Us', href: '/contact-us' },
@@ -1058,7 +1058,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['documents-needed', 'how-do-i-apply', 'total-move-in-cost'],
+    related: ['documents-needed', 'how-do-i-apply', 'total-move-in-cost', 'lease-terms'],
     links: [
       { label: 'Application Guide', href: '/application-guide' },
       { label: 'Fees & Leasing Costs', href: '/fees' },
@@ -1291,7 +1291,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['private-park', 'neighborhood-dog-parks', 'what-neighborhood'],
+    related: ['private-park', 'neighborhood-dog-parks', 'what-neighborhood', 'neighborhood-gyms'],
     links: [
       { label: 'Neighborhood', href: '/neighborhood' },
       { label: 'Amenities', href: '/amenities' },
@@ -1311,7 +1311,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['what-neighborhood', 'neighborhood-dining', 'cta-proximity'],
+    related: ['what-neighborhood', 'neighborhood-dining', 'cta-proximity', 'neighborhood-groceries'],
     links: [
       { label: 'Neighborhood', href: '/neighborhood' },
       { label: 'Map + Directions', href: '/map-directions' },
@@ -1376,7 +1376,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['leasing-office-hours', 'smoking-policy', 'who-manages-exhibit'],
+    related: ['leasing-office-hours', 'smoking-policy', 'who-manages-exhibit', 'resident-portal'],
     links: [
       { label: 'Amenities', href: '/amenities' },
       { label: 'Contact Us', href: '/contact-us' },
@@ -1437,7 +1437,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['what-neighborhood', 'cta-proximity', 'how-many-apartments'],
+    related: ['what-neighborhood', 'cta-proximity', 'how-many-apartments', 'accessibility-contact'],
     links: [
       { label: 'Map + Directions', href: '/map-directions' },
       { label: 'Contact Us', href: '/contact-us' },
