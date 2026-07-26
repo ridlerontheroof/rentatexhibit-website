@@ -8,3 +8,5 @@ The 1200x630 share cards in the web artifact's `public/images/og/` are generated
 **Why:** they were originally ad-hoc ImageMagick output; the recipe (full-height 0→75% black gradient, white wordmark SVG at 270px/44px margin, DejaVu Sans 27px tagline) was reverse-engineered and is now codified.
 
 **How to apply:** to swap a photo or fix a tagline, edit the `CARDS` map and run the script (optionally with page names or `--out` for preview). When a new page gets an `ogImage` in PAGE_SEO, add a matching `CARDS` entry.
+
+A freshness guard (`src/data/og-cards-freshness.test.ts`) regenerates every card into a temp dir and byte-compares against the committed JPGs — generation is byte-deterministic within one environment. Any map/photo/logo change requires rerunning the script and committing the JPGs, or the suite fails naming the stale pages. If the workspace ImageMagick/font versions ever bump, all cards may fail at once; the fix is simply a full regenerate-and-commit.
