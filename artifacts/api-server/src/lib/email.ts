@@ -322,7 +322,7 @@ export async function sendFeeCopyAlert(opts: {
  * fails; deduping lives in the caller (showingSchedulerCheck).
  */
 export async function sendShowingSchedulerAlert(opts: {
-  reason: "idv_enabled" | "sustained_failure";
+  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure";
   detail: string;
   failedRuns: number;
 }): Promise<void> {

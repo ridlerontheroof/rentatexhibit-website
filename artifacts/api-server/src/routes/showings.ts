@@ -30,6 +30,10 @@ import {
 } from "../lib/showings";
 import { getAvailabilitySnapshot } from "./availability";
 import { createDailyHeartbeat } from "../lib/dailyHeartbeat";
+import {
+  recordLiveShowingFailure,
+  recordLiveShowingSuccess,
+} from "../lib/showingLiveFailureAlert";
 
 const router: IRouter = Router();
 
@@ -142,6 +146,7 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
     }
     const result = await createShowingGuestCard({ ...input, listableUid });
     heartbeat.record(req.log, Date.now(), "contact_ok");
+    void recordLiveShowingSuccess(req.log);
     req.log.info({ unit: input.unit }, "Created showing guest card in AppFolio");
     res.status(201).json({
       guestCardId: result.guestCardId,
@@ -150,6 +155,12 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
     });
   } catch (err) {
     heartbeat.record(req.log, Date.now(), "contact_failed");
+    // Real AppFolio call failure (validation 400s and unlisted-unit 404s
+    // never reach here) — count it toward the live-traffic escalation.
+    void recordLiveShowingFailure(req.log, Date.now(), {
+      step: "guest card",
+      message: (err as Error).message,
+    });
     req.log.error(
       { err, unit: input.unit },
       "Showing guest card failed; page will use lead-capture fallback",
@@ -203,6 +214,7 @@ router.post("/showings/book", showingLimiter, async (req, res) => {
       durationMinutes: availabilities.durationMinutes,
     });
     heartbeat.record(req.log, Date.now(), "book_ok");
+    void recordLiveShowingSuccess(req.log);
     req.log.info(
       { unit: input.unit, startAt: booked.startAt },
       "Booked showing in AppFolio scheduler",
@@ -210,6 +222,12 @@ router.post("/showings/book", showingLimiter, async (req, res) => {
     res.status(201).json(booked);
   } catch (err) {
     heartbeat.record(req.log, Date.now(), "book_failed");
+    // Real AppFolio call failure — slot-taken races (409 above) are normal
+    // visitor traffic and deliberately don't count toward the escalation.
+    void recordLiveShowingFailure(req.log, Date.now(), {
+      step: "booking",
+      message: (err as Error).message,
+    });
     req.log.error(
       { err, unit: input.unit, slotTime: input.slotTime },
       "Showing booking failed; page will use lead-capture fallback",

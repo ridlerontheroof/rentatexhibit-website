@@ -528,7 +528,7 @@ export function renderKnowledgeCheckAlert(opts: {
  * booking flow is broken until someone investigates.
  */
 export function renderShowingSchedulerAlert(opts: {
-  reason: "idv_enabled" | "sustained_failure";
+  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure";
   detail: string;
   failedRuns: number;
 }): RenderedEmail {
@@ -536,12 +536,16 @@ export function renderShowingSchedulerAlert(opts: {
   const subject =
     reason === "idv_enabled"
       ? "Website alert: AppFolio identity verification now blocks the showing scheduler"
-      : "Website alert: the online showing scheduler probe keeps failing";
+      : reason === "live_traffic_failure"
+        ? "Website alert: real visitors' showing bookings keep failing"
+        : "Website alert: the online showing scheduler probe keeps failing";
 
   const intro =
     reason === "idv_enabled"
       ? "The automatic probe of AppFolio's showing scheduler found that identity verification (IDV) is now enabled for the listings database. Branded booking on the website requires a Persona ID check the site cannot proxy, so every visitor who tries to book is being handed off to AppFolio's hosted page instead."
-      : `The automatic probe of AppFolio's showing scheduler has now failed ${failedRuns} runs in a row — this is no longer a transient blip. AppFolio has likely changed the unofficial endpoints the website's booking flow replicates (new paths, CSRF tokens, or captcha).`;
+      : reason === "live_traffic_failure"
+        ? `${failedRuns} real visitors' showing requests in a row have failed at the AppFolio guest-card or booking step, with zero successes in between — this is no longer a single blip or one unlucky visitor. AppFolio has likely changed the guest-card or booking endpoints the website's flow replicates (the hourly probe can only cover the anonymous slot-fetch and IDV endpoints, so it may still look green).`
+        : `The automatic probe of AppFolio's showing scheduler has now failed ${failedRuns} runs in a row — this is no longer a transient blip. AppFolio has likely changed the unofficial endpoints the website's booking flow replicates (new paths, CSRF tokens, or captcha).`;
 
   const impact =
     "Visitors are not stranded: the schedule-showing page falls back to standard lead capture plus a link to AppFolio's hosted booking page. But the Exhibit-branded flow is broken until this is investigated.";
@@ -551,16 +555,19 @@ export function renderShowingSchedulerAlert(opts: {
       ? "What to do: confirm with the leasing team whether IDV was enabled intentionally. If it was, the branded scheduler should stay in hosted-page mode; if not, disable IDV in AppFolio's showing settings. This alert is sent at most once per day."
       : "What to do: open AppFolio's hosted \"Schedule a Showing\" page with browser dev tools and compare its requests against the site's showing client (availabilities, guest card, booking). Update the client to match, or leave the page on its fallback until fixed. This alert is sent at most once per day.";
 
+  const detailLabel =
+    reason === "live_traffic_failure" ? "Latest failures" : "Latest probe detail";
+
   const html =
     `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
-    `<p style="${BODY_TEXT}"><strong>Latest probe detail:</strong> ${escapeHtml(detail)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>${detailLabel}:</strong> ${escapeHtml(detail)}</p>` +
     `<p style="${BODY_TEXT}">${escapeHtml(impact)}</p>` +
     `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(remedy.replace(/^What to do: /, ""))}</p>`;
 
   const text = [
     intro,
     "",
-    `Latest probe detail: ${detail}`,
+    `${detailLabel}: ${detail}`,
     "",
     impact,
     "",
@@ -573,12 +580,16 @@ export function renderShowingSchedulerAlert(opts: {
     preheader:
       reason === "idv_enabled"
         ? "AppFolio identity verification now blocks branded showing booking."
-        : "The online showing scheduler's AppFolio probe keeps failing.",
+        : reason === "live_traffic_failure"
+          ? "Real visitors' showing bookings keep failing against AppFolio."
+          : "The online showing scheduler's AppFolio probe keeps failing.",
     kicker: "Website Alert",
     heading:
       reason === "idv_enabled"
         ? "Showing Scheduler Blocked by IDV"
-        : "Showing Scheduler Probe Failing",
+        : reason === "live_traffic_failure"
+          ? "Visitor Showing Bookings Failing"
+          : "Showing Scheduler Probe Failing",
     bodyHtml: html,
   });
 
