@@ -61,7 +61,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const dist = path.join(root, 'dist', 'public');
+// CHECK_LINK_NAMES_DIST lets the unit tests point the audit at a fixture
+// directory; production runs always audit dist/public.
+const dist = process.env.CHECK_LINK_NAMES_DIST || path.join(root, 'dist', 'public');
 
 if (!fs.existsSync(dist)) {
   console.error(`check-link-names: ${dist} not found — run the build first.`);
@@ -123,8 +125,41 @@ function resolveLabelledby(attrs, html) {
   return parts.join(' ').toLowerCase();
 }
 
+/**
+ * Resolve an aria-describedby attribute against the page's HTML, the same way
+ * resolveLabelledby does — but STRICTER: describedby carries hint and
+ * validation-error text, and the common pattern references SEVERAL ids
+ * (hint + error). One broken id means one message is silently dropped, even
+ * when the others resolve. Returns null when no aria-describedby is present,
+ * else the list of referenced ids that are missing or resolve to empty text
+ * (empty array = every reference resolves).
+ */
+function brokenDescribedbyIds(attrs, html) {
+  const ref = attrs.match(/aria-describedby="([^"]*)"/);
+  if (!ref) return null;
+  const ids = decode(ref[1]).split(/\s+/).filter(Boolean);
+  const broken = [];
+  for (const id of ids) {
+    const esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const el = html.match(new RegExp(`<(\\w+)\\b[^>]*\\bid="${esc}"[^>]*>(.*?)</\\1>`, 's'));
+    if (el) {
+      if (!decode(el[2])) broken.push(id);
+      continue;
+    }
+    const voidEl = html.match(new RegExp(`<\\w+\\b[^>]*\\bid="${esc}"[^>]*/?>`, 's'));
+    if (voidEl) {
+      const value = voidEl[0].match(/\bvalue="([^"]*)"/);
+      if (!decode(value ? value[1] : '')) broken.push(id);
+      continue;
+    }
+    broken.push(id); // id missing entirely
+  }
+  return broken;
+}
+
 const failures = [];
 const unnamed = [];
+const brokenDescribedby = [];
 const unnamedButtons = [];
 const unnamedFields = [];
 const pages = walk(dist);
@@ -270,6 +305,23 @@ for (const file of pages) {
       unnamedFields.push({ page, snippet: m[0].slice(0, 100).replace(/\s+/g, ' ') });
     }
   }
+  // aria-describedby audit: hint text and validation errors are tied to a
+  // field via id references. A broken/empty reference silently stops screen
+  // readers from announcing the hint/error — audit EVERY element carrying
+  // aria-describedby, not just form fields.
+  for (const m of html.matchAll(/<\w+\b[^>]*\baria-describedby="[^"]*"[^>]*>/gs)) {
+    const attrs = m[0];
+    if (/aria-hidden="true"/.test(attrs)) continue;
+    if (/style="[^"]*display:\s*none/.test(attrs)) continue;
+    const broken = brokenDescribedbyIds(attrs, html);
+    if (broken && broken.length > 0) {
+      brokenDescribedby.push({
+        page,
+        ids: broken,
+        snippet: m[0].slice(0, 120).replace(/\s+/g, ' '),
+      });
+    }
+  }
   for (const [name, hrefs] of names) {
     if (hrefs.size > 1) {
       failures.push({
@@ -321,9 +373,28 @@ if (unnamedFields.length > 0) {
   for (const u of unnamedFields) console.error(`  ${u.page}  ${u.snippet}`);
 }
 
-if (failures.length > 0 || unnamed.length > 0 || unnamedButtons.length > 0 || unnamedFields.length > 0)
+if (brokenDescribedby.length > 0) {
+  console.error(
+    `check-link-names: ${brokenDescribedby.length} broken aria-describedby reference(s) — ` +
+      `a referenced id is missing or the referenced element is empty, so that ` +
+      `hint/error text is never announced with its field (even one broken id in a ` +
+      `multi-id reference silently drops that message).\n` +
+      `Fix: make sure every aria-describedby id exists on the page and carries text.\n`,
+  );
+  for (const u of brokenDescribedby)
+    console.error(`  ${u.page}  broken id(s): ${u.ids.join(', ')}  ${u.snippet}`);
+}
+
+if (
+  failures.length > 0 ||
+  unnamed.length > 0 ||
+  unnamedButtons.length > 0 ||
+  unnamedFields.length > 0 ||
+  brokenDescribedby.length > 0
+)
   process.exit(1);
 
 console.log(
-  `check-link-names: OK — ${pages.length} prerendered pages, no ambiguous or unnamed links, buttons, or form fields.`,
+  `check-link-names: OK — ${pages.length} prerendered pages, no ambiguous or unnamed links, buttons, or form fields, ` +
+    `and every aria-describedby resolves.`,
 );
