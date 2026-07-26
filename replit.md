@@ -40,6 +40,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 - Pre-publish layout guard: the `fold` validation step (`pnpm --filter @workspace/exhibit-on-superior run check:fold`) runs `scripts/check-units-above-fold.mjs` in headless Chromium and blocks publish if the first unit card falls below the fold or the skeleton geometry drifts. It requires a Chromium binary (CHROME_BIN, PATH, ms-playwright cache, or nix store playwright-browsers) and fails loudly — never silently skips — when none is found.
 
+- Post-publish live-site guard: the `postpublish` workflow runs `scripts/watch-postpublish.mjs`, which polls the production site's `/build-id.json` (stamped by `scripts/write-build-id.mjs` during every build) and automatically runs `check:postpublish` (knowledge pages + rented-unit noindex) as soon as a new publish goes live. On a failure it prints a loud banner and exits non-zero so the workflow shows as failed — restart it after fixing and re-publishing. Manual run: `pnpm --filter @workspace/exhibit-on-superior run check:postpublish` (or `watch:postpublish --once`).
+
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details

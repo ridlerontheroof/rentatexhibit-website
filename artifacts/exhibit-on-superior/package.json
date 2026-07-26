@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
-    "build": "node scripts/fetch-availability-snapshot.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs && tsx scripts/generate-fact-sheet.ts && node scripts/precompress.mjs",
+    "build": "node scripts/fetch-availability-snapshot.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs && tsx scripts/generate-fact-sheet.ts && node scripts/write-build-id.mjs && node scripts/precompress.mjs",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "start": "node server/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -14,6 +14,7 @@
     "check:knowledge": "node scripts/check-knowledge-pages.mjs",
     "check:rented": "node scripts/check-rented-noindex.mjs",
     "check:postpublish": "pnpm run check:knowledge && pnpm run check:rented",
+    "watch:postpublish": "node scripts/watch-postpublish.mjs",
     "check:fold:built": "node scripts/check-units-above-fold.mjs --built",
     "check:link-names": "node scripts/check-link-names.mjs",
     "check:server:built": "vitest run src/server/production-server.test.ts",

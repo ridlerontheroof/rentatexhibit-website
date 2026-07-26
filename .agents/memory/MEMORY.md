@@ -34,4 +34,5 @@
 - [YouTube VideoObject metadata](youtube-video-jsonld.md) — oEmbed lacks uploadDate; parse the watch page's player-response JSON, cache to committed JSON like the Vimeo pattern.
 - [Dist-based test guards must skip on incomplete dist](dist-based-test-guards.md) — gate on index.html.br (precompress runs last); never poll for build output in beforeAll.
 - [Image size cap vs sharpness guard](image-size-vs-sharpness.md) — fit the ~200KB budget with webp:target-size at full width; never shrink rung pixel width (sharpness test fails <~1920px).
+- [Post-publish live-site checks](postpublish-watcher.md) — no deploy hook exists; a build-id stamp + workspace watcher workflow detects a new publish going live and runs check:postpublish, exiting non-zero on failure.
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.

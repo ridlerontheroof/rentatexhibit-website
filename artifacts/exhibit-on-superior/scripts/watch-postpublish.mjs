@@ -1,0 +1,150 @@
+#!/usr/bin/env node
+// Post-publish watcher: runs the live-site checks automatically after every
+// publish.
+//
+// The pre-publish checks (check:prepublish) run inside the deploy build, but
+// nothing used to verify the LIVE site afterwards — check:postpublish
+// (knowledge pages + rented-unit noindex) relied on someone remembering to
+// run it. This watcher closes that gap:
+//
+//   1. Polls <base>/build-id.json (stamped into every build by
+//      scripts/write-build-id.mjs) on the production site.
+//   2. When the build id changes — i.e. a new publish has gone live — it
+//      waits for the deployment to settle (the id must be stable across two
+//      consecutive polls), then runs `pnpm run check:postpublish`.
+//   3. On success it keeps watching for the next publish. On FAILURE it
+//      prints a loud banner and EXITS NON-ZERO so the `postpublish` workflow
+//      shows as failed — the clearest signal in the workspace that the live
+//      site needs attention. Restart the workflow after fixing.
+//
+// Until the first stamped publish goes live, build-id.json 404s (the SPA
+// fallback serves HTML instead). The watcher treats "no stamp yet" as the
+// baseline and runs the checks as soon as the stamp first appears — that IS
+// the first publish it can observe.
+//
+// Usage: node scripts/watch-postpublish.mjs [baseUrl] [--now] [--once] [--interval SECONDS]
+//   default baseUrl : https://www.rentatexhibit.com
+//   --now           : also run the checks immediately on startup
+//   --once          : run the checks once and exit (no watching) — implies --now
+//   --interval      : poll interval in seconds (default 60)
+
+import { spawn } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const args = process.argv.slice(2);
+const RUN_NOW = args.includes('--now') || args.includes('--once');
+const ONCE = args.includes('--once');
+const intervalFlag = args.indexOf('--interval');
+const INTERVAL_MS =
+  (intervalFlag >= 0 ? Number(args[intervalFlag + 1]) || 60 : 60) * 1000;
+const BASE = (
+  args.find((a, i) => !a.startsWith('--') && i !== intervalFlag + 1) ||
+  'https://www.rentatexhibit.com'
+).replace(/\/$/, '');
+
+const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const ts = () => new Date().toISOString().slice(11, 19);
+const log = (msg) => console.log(`[${ts()}] ${msg}`);
+
+/** Current live build id, or null when the stamp is not (yet) served. */
+async function liveBuildId() {
+  try {
+    const res = await fetch(`${BASE}/build-id.json?nocache=${Date.now()}`, {
+      headers: { 'user-agent': 'postpublish-watch', 'cache-control': 'no-cache' },
+    });
+    if (!res.ok) return null;
+    const text = await res.text();
+    if (text.trimStart().startsWith('<')) return null; // SPA fallback — no stamp yet
+    const { buildId } = JSON.parse(text);
+    return typeof buildId === 'string' && buildId ? buildId : null;
+  } catch {
+    return null; // network blip — treat as unknown, retry next poll
+  }
+}
+
+/** Run `pnpm run check:postpublish`, streaming output. Resolves exit code. */
+function runChecks() {
+  return new Promise((resolve) => {
+    const child = spawn('pnpm', ['run', 'check:postpublish'], {
+      cwd: pkgDir,
+      stdio: 'inherit',
+    });
+    child.on('close', (code) => resolve(code ?? 1));
+    child.on('error', (err) => {
+      console.error(`could not spawn pnpm: ${err.message}`);
+      resolve(1);
+    });
+  });
+}
+
+async function checkAndReport(reason) {
+  console.log('\n' + '='.repeat(72));
+  log(`Running post-publish checks against ${BASE} (${reason})`);
+  console.log('='.repeat(72));
+  const code = await runChecks();
+  console.log('='.repeat(72));
+  if (code === 0) {
+    log('POST-PUBLISH CHECKS PASSED — live site looks healthy.');
+    console.log('='.repeat(72) + '\n');
+    return true;
+  }
+  console.error(
+    [
+      '',
+      '!'.repeat(72),
+      `!!  POST-PUBLISH CHECKS FAILED against ${BASE}`,
+      '!!  A live page is broken — see the FAIL lines above for what and why.',
+      '!!  Fix the issue, re-publish, then restart the postpublish workflow.',
+      '!'.repeat(72),
+      '',
+    ].join('\n'),
+  );
+  return false;
+}
+
+async function main() {
+  log(`Post-publish watcher started — polling ${BASE}/build-id.json every ${INTERVAL_MS / 1000}s.`);
+
+  if (RUN_NOW) {
+    const passed = await checkAndReport('requested on startup');
+    if (!passed) process.exit(1);
+    if (ONCE) return;
+  }
+
+  let baseline = await liveBuildId();
+  log(
+    baseline
+      ? `Baseline live build id: ${baseline}. Watching for the next publish…`
+      : 'Live site serves no build-id.json yet (pre-stamp publish). Checks will run as soon as a stamped publish goes live.',
+  );
+
+  for (;;) {
+    await sleep(INTERVAL_MS);
+    const current = await liveBuildId();
+    if (current === null || current === baseline) continue;
+
+    // New id seen — wait until it is stable across one more poll so we do not
+    // test mid-rollout (autoscale can briefly serve both builds).
+    log(`New live build id detected: ${current} (was ${baseline ?? 'none'}). Confirming it settled…`);
+    let settled = current;
+    for (;;) {
+      await sleep(Math.min(INTERVAL_MS, 30_000));
+      const again = await liveBuildId();
+      if (again === settled) break;
+      if (again !== null) settled = again;
+      log(`Live build id still changing (${again ?? 'unreadable'}) — waiting…`);
+    }
+
+    baseline = settled;
+    const passed = await checkAndReport(`new publish went live: build ${settled}`);
+    if (!passed) process.exit(1);
+    log(`Watching for the next publish (current build: ${baseline})…`);
+  }
+}
+
+main().catch((err) => {
+  console.error(`Post-publish watcher errored: ${err.message}`);
+  process.exit(1);
+});
