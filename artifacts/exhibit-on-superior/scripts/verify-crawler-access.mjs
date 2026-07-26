@@ -119,6 +119,52 @@ for (const [pathName, spec] of Object.entries(URLS)) {
   }
 }
 
+// Sitemap ↔ snapshot cross-check: every snapshot unit must have a
+// /available-units/<unit> entry in /sitemap.xml, and the sitemap must not
+// list unit pages that are no longer in the snapshot (stale rented units —
+// Google would keep crawling a page that's about to 404 or go stale).
+try {
+  const res = await fetch(`${BASE}/sitemap.xml`, {
+    headers: { 'User-Agent': CRAWLERS.Googlebot },
+    redirect: 'follow',
+  });
+  const xml = await res.text();
+  if (res.status !== 200) {
+    failures++;
+    rows.push({ path: '/sitemap.xml', bot: 'unit-cross-check', status: res.status, bytes: Buffer.byteLength(xml), ok: 'FAIL', note: 'non-200 fetching sitemap for unit cross-check' });
+  } else {
+    const locs = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map((m) => m[1]);
+    const sitemapUnits = new Set(
+      locs
+        .map((loc) => {
+          try {
+            const m = new URL(loc).pathname.match(/^\/available-units\/([^/]+)\/?$/);
+            return m ? m[1] : null;
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean),
+    );
+    const missing = UNITS.filter((u) => !sitemapUnits.has(u));
+    const stale = [...sitemapUnits].filter((u) => !UNITS.includes(u));
+    const ok = missing.length === 0 && stale.length === 0;
+    if (!ok) failures++;
+    const note = ok
+      ? `${UNITS.length} unit(s) all listed`
+      : [
+          missing.length ? `missing from sitemap: ${missing.join(', ')}` : '',
+          stale.length ? `stale in sitemap (not in snapshot): ${stale.join(', ')}` : '',
+        ]
+          .filter(Boolean)
+          .join('; ');
+    rows.push({ path: '/sitemap.xml', bot: 'unit-cross-check', status: res.status, bytes: Buffer.byteLength(xml), ok: ok ? 'PASS' : 'FAIL', note });
+  }
+} catch (err) {
+  failures++;
+  rows.push({ path: '/sitemap.xml', bot: 'unit-cross-check', status: 'ERR', bytes: 0, ok: 'FAIL', note: String(err.message || err) });
+}
+
 console.table(rows);
 console.log(failures === 0 ? `ALL PASS (${rows.length} checks) against ${BASE}` : `${failures} FAILURES against ${BASE}`);
 process.exit(failures === 0 ? 0 : 1);
