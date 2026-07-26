@@ -22,6 +22,7 @@ import { hashOgCards } from './lib/og-cards-hash.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ogDir = path.join(root, 'public', 'images', 'og');
+const defaultCardPath = path.join(root, 'public', 'images', 'og-card.jpg');
 const seoPath = path.join(root, 'src', 'data', 'seo.ts');
 const stampPath = path.join(root, 'src', 'data', 'og-cards-stamp.json');
 
@@ -34,7 +35,7 @@ export async function readOgCardVersion() {
 }
 
 async function main() {
-  const [version, cardsHash] = await Promise.all([readOgCardVersion(), hashOgCards(ogDir)]);
+  const [version, cardsHash] = await Promise.all([readOgCardVersion(), hashOgCards(ogDir, [defaultCardPath])]);
 
   let previous = null;
   try {

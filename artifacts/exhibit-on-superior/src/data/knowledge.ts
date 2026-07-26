@@ -17,6 +17,7 @@ import {
   APARTMENT_COMPLEX_NODE,
   type SeoModel,
   type SeoMeta,
+  DEFAULT_OG_IMAGE,
 } from './seo';
 import { KNOWLEDGE_ARTICLES } from './knowledgeArticles';
 
@@ -202,7 +203,7 @@ export function buildKnowledgeSeoModel(a: KnowledgeArticle): SeoModel {
   const title = knowledgeTitle(a);
   const description = knowledgeDescription(a);
   const canonical = `${SITE_URL}${knowledgePath(a.slug)}`;
-  const ogImage = `${SITE_URL}/images/og-card.jpg`;
+  const ogImage = DEFAULT_OG_IMAGE;
 
   const metas: SeoMeta[] = [
     { name: 'description', content: description },

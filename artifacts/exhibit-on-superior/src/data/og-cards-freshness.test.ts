@@ -24,6 +24,7 @@ const run = promisify(execFile);
 const root = path.resolve(__dirname, '..', '..');
 const scriptPath = path.join(root, 'scripts', 'generate-og-cards.mjs');
 const committedDir = path.join(root, 'public', 'images', 'og');
+const defaultCardPath = path.join(root, 'public', 'images', 'og-card.jpg');
 
 const pages = Object.keys(CARDS as Record<string, unknown>);
 let tmpDir: string;
@@ -85,10 +86,10 @@ describe('OG_CARD_VERSION cache-buster moves with the card bytes', () => {
   });
 
   it('the committed card bytes match the stamped hash', async () => {
-    const current = await hashOgCards(committedDir);
+    const current = await hashOgCards(committedDir, [defaultCardPath]);
     expect(
       current,
-      `public/images/og/*.jpg bytes changed without a cache-buster bump — ` +
+      `share-card bytes (public/images/og/*.jpg or public/images/og-card.jpg) changed without a cache-buster bump — ` +
         `social networks would keep showing the old artwork.\n` +
         `Fix: bump OG_CARD_VERSION in src/data/seo.ts, run ` +
         `node scripts/stamp-og-cards.mjs, and commit seo.ts + og-cards-stamp.json ` +

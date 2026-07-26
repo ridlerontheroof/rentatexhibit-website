@@ -4,16 +4,19 @@
 import { ADA_COUNTS } from './ada';
 
 export const SITE_URL = 'https://www.rentatexhibit.com';
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg`;
 
 /**
- * Cache-buster for the share cards in public/images/og/. Facebook, LinkedIn,
- * and iMessage cache og:image previews by URL for weeks; bump this whenever
- * the cards are regenerated with new artwork so social scrapers see a new URL
- * and fetch the fresh image. (v2: 2026-07 regeneration of nine stale cards,
- * notably reviews.jpg.)
+ * Cache-buster for the share cards in public/images/og/ and the site-wide
+ * default card public/images/og-card.jpg. Facebook, LinkedIn, and iMessage
+ * cache og:image previews by URL for weeks; bump this whenever any card is
+ * regenerated with new artwork so social scrapers see a new URL and fetch the
+ * fresh image. (v2: 2026-07 regeneration of nine stale cards, notably
+ * reviews.jpg. v3: default og-card.jpg brought under the same guard.)
  */
-export const OG_CARD_VERSION = 2;
+export const OG_CARD_VERSION = 3;
+
+/** Site-wide fallback share card, cache-busted like the per-page cards. */
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg?v=${OG_CARD_VERSION}`;
 
 /** Absolute, cache-busted URL for a share card in public/images/og/. */
 export const ogCardUrl = (name: string): string =>
