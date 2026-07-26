@@ -12,8 +12,17 @@
  * image is smaller than the container along an axis, no panning is allowed
  * on that axis.
  *
+ * The image's untransformed centre can sit away from the container centre
+ * in padded/flex layouts (e.g. the floor-plan lightbox's `p-4 sm:p-8`
+ * viewer). Pass that offset (image centre minus container centre, in
+ * screen px) as `offsetX`/`offsetY` so the bounds line up with the real
+ * container edges — with symmetric bounds an offset of d px let the image
+ * be dragged d px past one edge while stopping d px short of the other.
+ *
  * @param allowance extra slack in px for a rubber-band feel during a drag;
  *                  pass 0 to hard-clamp (e.g. on gesture end).
+ * @param offsetX / offsetY untransformed image centre minus container
+ *                  centre, in screen px (default 0).
  */
 /**
  * Compute the translation that keeps the image point under the pinch
@@ -63,12 +72,24 @@ export function clampPanTranslation(
   containerWidth: number,
   containerHeight: number,
   allowance = 0,
+  offsetX = 0,
+  offsetY = 0,
 ): { tx: number; ty: number } {
+  // The scaled image spans [imgCentre + t ± imgSize*scale/2]; with the image
+  // centre at containerCentre + offset, keeping the container edges covered
+  // requires t in [-max - offset, max - offset] (max as in the centred case).
+  // When the scaled image doesn't overflow an axis, no panning is allowed on
+  // that axis: the image stays where the layout put it (t = 0) — the offset
+  // only shifts the bounds when there is real overflow to pan across.
+  const overflowX = imgWidth * scale - containerWidth > 0;
+  const overflowY = imgHeight * scale - containerHeight > 0;
   const maxTx = Math.max(0, (imgWidth * scale - containerWidth) / 2) + allowance;
   const maxTy = Math.max(0, (imgHeight * scale - containerHeight) / 2) + allowance;
+  const ox = overflowX ? offsetX : 0;
+  const oy = overflowY ? offsetY : 0;
   return {
     // `+ 0` normalises -0 to 0 when the limit is zero.
-    tx: Math.min(maxTx, Math.max(-maxTx, tx)) + 0,
-    ty: Math.min(maxTy, Math.max(-maxTy, ty)) + 0,
+    tx: Math.min(maxTx - ox, Math.max(-maxTx - ox, tx)) + 0,
+    ty: Math.min(maxTy - oy, Math.max(-maxTy - oy, ty)) + 0,
   };
 }

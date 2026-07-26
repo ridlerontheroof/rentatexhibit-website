@@ -57,17 +57,28 @@ function stubClientSize(proto: object, prop: string, value: number) {
 beforeEach(() => {
   stubClientSize(HTMLElement.prototype, 'clientWidth', VIEWER_W);
   stubClientSize(HTMLElement.prototype, 'clientHeight', VIEWER_H);
-  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
-    x: 0,
-    y: 0,
-    left: 0,
-    top: 0,
-    right: VIEWER_W,
-    bottom: VIEWER_H,
-    width: VIEWER_W,
-    height: VIEWER_H,
-    toJSON: () => ({}),
-  } as DOMRect);
+  // Transform-aware rect stub: in a real browser getBoundingClientRect
+  // reflects the element's translate(tx, ty), and clampPan measures the
+  // image-centre offset as (rect centre − live translation). A static rect
+  // would make that measurement report a spurious offset of −tx/−ty.
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+    this: HTMLElement,
+  ) {
+    const m = /translate\((-?[\d.]+)px, (-?[\d.]+)px\)/.exec(this.style?.transform ?? '');
+    const tx = m ? Number(m[1]) : 0;
+    const ty = m ? Number(m[2]) : 0;
+    return {
+      x: tx,
+      y: ty,
+      left: tx,
+      top: ty,
+      right: VIEWER_W + tx,
+      bottom: VIEWER_H + ty,
+      width: VIEWER_W,
+      height: VIEWER_H,
+      toJSON: () => ({}),
+    } as DOMRect;
+  });
 
   view = render(
     createElement(UnitGalleryLightbox, { unit, onClose: vi.fn() }),

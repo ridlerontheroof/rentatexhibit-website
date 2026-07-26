@@ -96,6 +96,10 @@ export function usePinchZoom(options: UsePinchZoomOptions = {}) {
 
   // Pinch-to-zoom state. scale === 1 means "fit".
   const [pinch, setPinch] = useState<PinchState>({ scale: 1, tx: 0, ty: 0 });
+  // Live mirror of the pinch state so stable callbacks (clampPan) can read
+  // the current translation without re-creating on every state change.
+  const pinchRef = useRef(pinch);
+  pinchRef.current = pinch;
   const viewerRef = useRef<HTMLDivElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
@@ -183,6 +187,21 @@ export function usePinchZoom(options: UsePinchZoomOptions = {}) {
       const viewer = viewerRef.current;
       const img = imgRef.current;
       if (!viewer || !img) return { tx, ty };
+      // The image's untransformed centre can be offset from the viewer's
+      // centre in padded/flex layouts (same measurement as the pinch
+      // anchor): current rect centre minus the live translation gives the
+      // untransformed centre — scaling about the centre doesn't move it.
+      let offsetX = 0;
+      let offsetY = 0;
+      const imgRect = img.getBoundingClientRect();
+      if (imgRect.width > 0 && imgRect.height > 0) {
+        const viewerRect = viewer.getBoundingClientRect();
+        const p = pinchRef.current;
+        offsetX =
+          imgRect.left + imgRect.width / 2 - p.tx - (viewerRect.left + viewerRect.width / 2);
+        offsetY =
+          imgRect.top + imgRect.height / 2 - p.ty - (viewerRect.top + viewerRect.height / 2);
+      }
       return clampPanTranslation(
         tx,
         ty,
@@ -192,6 +211,8 @@ export function usePinchZoom(options: UsePinchZoomOptions = {}) {
         viewer.clientWidth,
         viewer.clientHeight,
         allowance,
+        offsetX,
+        offsetY,
       );
     },
     [],

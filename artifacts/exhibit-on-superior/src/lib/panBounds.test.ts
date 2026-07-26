@@ -55,6 +55,48 @@ describe('clampPanTranslation', () => {
     expect(r.tx).toBe(0);
     expect(r.ty).toBe((IMG_H * 2 - 400) / 2);
   });
+
+  it('shifts bounds by the image-centre-to-container-centre offset', () => {
+    // Image centre sits (d, e) away from the container centre (padded/flex
+    // layout). Bounds must be [-max - d, max - d] so the image can reach —
+    // but never pass — every container edge.
+    const scale = 3;
+    const d = 16; // e.g. asymmetric padding pushed the image right/down
+    const e = -24;
+    const maxTx = (IMG_W * scale - CW) / 2;
+    const maxTy = (IMG_H * scale - CH) / 2;
+    expect(clampPanTranslation(5000, 5000, scale, IMG_W, IMG_H, CW, CH, 0, d, e)).toEqual({
+      tx: maxTx - d,
+      ty: maxTy - e,
+    });
+    expect(clampPanTranslation(-5000, -5000, scale, IMG_W, IMG_H, CW, CH, 0, d, e)).toEqual({
+      tx: -maxTx - d,
+      ty: -maxTy - e,
+    });
+  });
+
+  it('with an offset, both edges are exactly reachable and never passable', () => {
+    // Verify against actual screen-space geometry: the image's left edge is
+    // at (containerCentre + offset + t - imgW*scale/2); at the clamp limit
+    // it must equal the container's left edge (0), and similarly right.
+    const scale = 2;
+    const d = 30;
+    const centre = CW / 2;
+    const min = clampPanTranslation(-9999, 0, scale, IMG_W, IMG_H, CW, CH, 0, d, 0);
+    const max = clampPanTranslation(9999, 0, scale, IMG_W, IMG_H, CW, CH, 0, d, 0);
+    const leftEdgeAtMax = centre + d + max.tx - (IMG_W * scale) / 2;
+    const rightEdgeAtMin = centre + d + min.tx + (IMG_W * scale) / 2;
+    expect(leftEdgeAtMax).toBeCloseTo(0); // image flush with left edge
+    expect(rightEdgeAtMin).toBeCloseTo(CW); // image flush with right edge
+  });
+
+  it('ignores the offset on an axis with no overflow (image stays put)', () => {
+    // At fit scale nothing should pan: the layout, not the transform,
+    // positions the image, so the translation stays pinned at 0 even when
+    // the image centre is offset from the container centre.
+    const r = clampPanTranslation(50, 50, 1, IMG_W, IMG_H, CW, CH, 0, 10, -5);
+    expect(r).toEqual({ tx: 0, ty: 0 });
+  });
 });
 
 describe('anchorPinchTranslation', () => {
