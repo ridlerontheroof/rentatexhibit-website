@@ -328,6 +328,46 @@ describe('click outside the shortcut legend', () => {
     expect(planImage().style.width).toBe('160%');
   });
 
+  it('one click on the next arrow dismisses the legend AND navigates', () => {
+    openLegend();
+    const next = document.querySelector<HTMLButtonElement>(
+      'button[aria-label="Next floor plan"]',
+    )!;
+    clickAt(next);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    expect(onNavigate).toHaveBeenCalledWith(1);
+  });
+
+  it('one click on the prev arrow dismisses the legend AND navigates', () => {
+    openLegend();
+    const prev = document.querySelector<HTMLButtonElement>(
+      'button[aria-label="Previous floor plan"]',
+    )!;
+    clickAt(prev);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    expect(onNavigate).toHaveBeenCalledWith(-1);
+  });
+
+  it('one click on the Zoom button dismisses the legend AND enters zoom mode', () => {
+    openLegend();
+    const zoomBtn = document.querySelector<HTMLButtonElement>(
+      'button[aria-label="Zoom in"]',
+    )!;
+    clickAt(zoomBtn);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    expect(planImage().style.width).toBe('160%'); // coarse zoom engaged
+  });
+
+  it('one click on an availability CTA dismisses the legend AND fires the link handler', () => {
+    openLegend();
+    const cta = Array.from(document.querySelectorAll('a')).find((a) =>
+      a.textContent?.includes('Check Availability'),
+    )!;
+    clickAt(cta);
+    expect(document.getElementById('plan-shortcuts-legend')).toBeNull();
+    expect(onClose).toHaveBeenCalledTimes(1); // handleAvailabilityClick ran
+  });
+
   it('a click inside the legend leaves it open', () => {
     openLegend();
     const legend = document.getElementById('plan-shortcuts-legend')!;

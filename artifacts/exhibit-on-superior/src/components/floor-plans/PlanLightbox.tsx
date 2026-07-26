@@ -128,6 +128,12 @@ export function PlanLightbox({
    * reaches the plan image's onClick (which would toggle zoom mode). Clicks
    * inside the legend and on the "?" toggle are excluded so their own click
    * handlers keep working (the toggle would otherwise close-then-reopen).
+   *
+   * Clicks on clearly interactive controls (prev/next arrows, the Zoom/Fit
+   * button, CTA links, etc.) both dismiss the legend AND perform their action:
+   * the swallow (preventDefault + stopPropagation) applies only to
+   * non-interactive targets like the plan image, where a stray click would
+   * otherwise toggle zoom mode.
    */
   const dismissLegendOnOutsideClick = useCallback(
     (e: React.MouseEvent) => {
@@ -137,6 +143,11 @@ export function PlanLightbox({
         target?.closest('#plan-shortcuts-legend') ||
         target?.closest('[aria-controls="plan-shortcuts-legend"]')
       ) {
+        return;
+      }
+      if (target?.closest('button, a, [role="button"]')) {
+        // Interactive control: dismiss the legend but let the click through.
+        setShowShortcuts(false);
         return;
       }
       e.preventDefault();
