@@ -181,10 +181,15 @@ export function ScheduleTour() {
                       <div className="flex items-center gap-3">
                         <Link
                           href={`/available-units/${u.unit}`}
-                          aria-label={`View details for apartment ${u.unit}`}
+                          // Accessible name starts with the visible text ("Apt
+                          // NNNN details") so voice-control users can speak what
+                          // they see (WCAG 2.5.3 label-in-name). Unique visible
+                          // text also satisfies scanners that key on link text
+                          // rather than accessible name.
+                          aria-label={`Apt ${u.unit} details`}
                           className="border border-border px-4 py-2 text-xs uppercase tracking-wider transition-colors hover:border-primary hover:text-primary"
                         >
-                          View details
+                          Apt {u.unit} details
                         </Link>
                         {tourUrl ? (
                           <Link
