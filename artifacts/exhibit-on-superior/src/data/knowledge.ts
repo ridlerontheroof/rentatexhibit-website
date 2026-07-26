@@ -60,7 +60,8 @@ export interface KnowledgeArticle {
   links: { label: string; href: string }[];
   /**
    * External resources (full https:// URLs), rendered after the internal
-   * links with rel="noopener" in a new tab. Not route-validated by tests.
+   * links with rel="noopener" in a new tab. Tests enforce https:// URLs
+   * that parse, with non-empty labels (offline format check only).
    */
   externalLinks?: { label: string; href: string }[];
   /** Meta description (defaults to the answer, trimmed). */

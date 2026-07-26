@@ -61,6 +61,28 @@ describe('knowledge center content rules', () => {
     }
   });
 
+  it('external links are valid https URLs with non-empty labels', () => {
+    for (const a of KNOWLEDGE_ARTICLES) {
+      for (const l of a.externalLinks ?? []) {
+        expect(l.label.trim().length, `${a.slug} external link needs a label`).toBeGreaterThan(0);
+        expect(l.href.startsWith('https://'), `${a.slug} -> non-https external link ${l.href}`).toBe(
+          true,
+        );
+        const parsed = (() => {
+          try {
+            return new URL(l.href);
+          } catch {
+            return undefined;
+          }
+        })();
+        expect(parsed, `${a.slug} -> unparseable external link ${l.href}`).toBeDefined();
+        expect(parsed?.hostname.includes('.'), `${a.slug} -> suspicious host in ${l.href}`).toBe(
+          true,
+        );
+      }
+    }
+  });
+
   it('descriptions fit meta-description length', () => {
     for (const a of KNOWLEDGE_ARTICLES) {
       expect(knowledgeDescription(a).length, a.slug).toBeLessThanOrEqual(160);
