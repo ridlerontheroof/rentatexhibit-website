@@ -185,6 +185,38 @@ describe('ScheduleShowing', () => {
     );
   });
 
+  it('shows "no longer available" when the contact step reports unit_not_listed', async () => {
+    routeFetch({
+      'api/showings/contact': () => jsonResponse({ error: 'unit_not_listed' }, 404),
+    });
+    const user = userEvent.setup();
+    renderPage();
+    await fillContactForm(user);
+
+    await screen.findByText(/no longer available to tour/i);
+    const link = screen.getByRole('link', { name: /view other open apartments/i });
+    expect(link.getAttribute('href')).toBe('/available-units');
+    // No lead-capture fallback and no dead-end generic message.
+    expect(fetchMock.mock.calls.some((c) => String(c[0]).includes('api/leads'))).toBe(false);
+    expect(screen.queryByText(/we've got your request/i)).toBeNull();
+  });
+
+  it('shows "no longer available" when the slots fetch reports unit_not_listed', async () => {
+    routeFetch({
+      'api/showings/slots': () => jsonResponse({ error: 'unit_not_listed' }, 404),
+    });
+    const user = userEvent.setup();
+    renderPage();
+    await fillContactForm(user);
+
+    // The slots query retries once before surfacing the error.
+    await screen.findByText(/no longer available to tour/i, undefined, { timeout: 4000 });
+    expect(
+      screen.getByRole('link', { name: /view other open apartments/i }).getAttribute('href'),
+    ).toBe('/available-units');
+    expect(fetchMock.mock.calls.some((c) => String(c[0]).includes('api/leads'))).toBe(false);
+  });
+
   it('lets the visitor re-pick when the slot was just taken', async () => {
     routeFetch({
       'api/showings/book': () => jsonResponse({ error: 'slot_taken', hostedUrl: HOSTED }, 409),

@@ -26,6 +26,7 @@ import {
   useBookShowing,
   useShowingContact,
   useShowingSlots,
+  ShowingApiError,
   type ShowingContactResponse,
   type ShowingSlot,
 } from '../hooks/use-showings';
@@ -72,9 +73,13 @@ export function ScheduleShowing() {
   const [booked, setBooked] = useState<BookedInfo | null>(null);
   const [slotTakenNotice, setSlotTakenNotice] = useState(false);
   const [fallback, setFallback] = useState<{ hostedUrl: string | null } | null>(null);
+  // The unit dropped out of the availability feed mid-visit (rented / pulled):
+  // the server answers `unit_not_listed`. Not a failure — show a clear
+  // "no longer available" message instead of the lead-capture fallback.
+  const [unitGone, setUnitGone] = useState(false);
   const leadSubmittedRef = useRef(false);
 
-  const slots = useShowingSlots(unit || null, !!credentials && !fallback && !booked);
+  const slots = useShowingSlots(unit || null, !!credentials && !fallback && !booked && !unitGone);
 
   const {
     register,
@@ -82,7 +87,10 @@ export function ScheduleShowing() {
     formState: { errors, isDirty },
   } = useForm<ContactFormData>({ resolver: zodResolver(contactSchema) });
 
-  useUnsavedChangesWarning(isDirty && !booked && !fallback && !credentials);
+  useUnsavedChangesWarning(isDirty && !booked && !fallback && !credentials && !unitGone);
+
+  const isUnitNotListed = (err: unknown): boolean =>
+    err instanceof ShowingApiError && err.code === 'unit_not_listed';
 
   const hostedUrlFallback =
     credentials?.hostedUrl ??
@@ -116,7 +124,11 @@ export function ScheduleShowing() {
   // Slot fetch failed after contact succeeded → fallback (prospect is typed
   // in already; never make them re-enter anything).
   useEffect(() => {
-    if (slots.isError && credentials && !fallback && !booked) {
+    if (slots.isError && credentials && !fallback && !booked && !unitGone) {
+      if (isUnitNotListed(slots.error)) {
+        setUnitGone(true);
+        return;
+      }
       activateFallback(contactData, credentials.hostedUrl);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,7 +144,13 @@ export function ScheduleShowing() {
           setCredentials(res);
           trackLead('tour', { floorPlanPreference: 'showing_step1' });
         },
-        onError: (err) => activateFallback(data, err.hostedUrl),
+        onError: (err) => {
+          if (isUnitNotListed(err)) {
+            setUnitGone(true);
+            return;
+          }
+          activateFallback(data, err.hostedUrl);
+        },
       },
     );
   };
@@ -161,13 +179,17 @@ export function ScheduleShowing() {
             void slots.refetch();
             return;
           }
+          if (isUnitNotListed(err)) {
+            setUnitGone(true);
+            return;
+          }
           activateFallback(contactData, err.hostedUrl);
         },
       },
     );
   };
 
-  const step = booked ? 3 : fallback ? -1 : credentials ? 2 : 1;
+  const step = booked ? 3 : fallback || unitGone ? -1 : credentials ? 2 : 1;
 
   return (
     <>
@@ -183,8 +205,29 @@ export function ScheduleShowing() {
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-3xl">
+            {/* The unit dropped out of the availability feed mid-visit —
+                say so plainly instead of showing an empty calendar. */}
+            {unitGone && (
+              <div
+                className="border border-border bg-muted p-12 text-center"
+                role="status"
+                aria-live="polite"
+              >
+                <h2 className="mb-4 text-3xl uppercase tracking-wider">
+                  This Apartment Is No Longer Available
+                </h2>
+                <p className="mb-8 text-lg leading-relaxed">
+                  {unit ? `Apartment ${unit}` : 'This apartment'} is no longer available to tour —
+                  it may have just been rented. Take a look at our other open apartments.
+                </p>
+                <Link href="/available-units" className="btn-gold-outline inline-block">
+                  View other open apartments
+                </Link>
+              </div>
+            )}
+
             {/* Unit context / guard */}
-            {!unitInfo && availability && (
+            {!unitGone && !unitInfo && availability && (
               <div className="mb-10 border border-border bg-muted p-8 text-center">
                 <p className="mb-6 text-lg leading-relaxed">
                   {unit
@@ -202,7 +245,7 @@ export function ScheduleShowing() {
               </div>
             )}
 
-            {unitInfo && !booked && !fallback && (
+            {!unitGone && unitInfo && !booked && !fallback && (
               <>
                 {/* Step indicator */}
                 <ol className="mb-10 flex justify-center gap-8 text-xs uppercase tracking-wider">
@@ -235,7 +278,7 @@ export function ScheduleShowing() {
             )}
 
             {/* Step 1 — contact info */}
-            {unitInfo && step === 1 && (
+            {!unitGone && unitInfo && step === 1 && (
               <div className="border border-border bg-muted p-8">
                 <h2 className="mb-2 text-2xl uppercase tracking-wider">Tell Us About You</h2>
                 <p className="mb-6 text-sm text-muted-foreground">
@@ -353,7 +396,7 @@ export function ScheduleShowing() {
             )}
 
             {/* Step 2 — pick a time */}
-            {unitInfo && step === 2 && (
+            {!unitGone && unitInfo && step === 2 && (
               <div className="border border-border bg-muted p-8">
                 <h2 className="mb-2 text-2xl uppercase tracking-wider">
                   Select a Time to View Apartment {unit}
