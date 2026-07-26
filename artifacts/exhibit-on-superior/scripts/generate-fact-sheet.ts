@@ -80,7 +80,9 @@ const coreFacts = {
   propertyName: complex.name as string,
   address: fullAddress,
   phone: complex.telephone as string,
-  email: complex.email as string,
+  // Email lives on the Organization node (ApartmentComplex can't carry
+  // `email` in core schema.org vocabulary — see data/seo.ts).
+  email: org.email as string,
   officeHours: hours,
   bedroomRange,
   bedroomSummary: 'Studio, Convertible, 1, 2 & 3 Bedroom Apartments',

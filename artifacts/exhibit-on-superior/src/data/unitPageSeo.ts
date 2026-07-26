@@ -18,6 +18,7 @@ import {
   floorPlanNode,
   offerPriceValidUntil,
   planGroupForUnitNumber,
+  unitOfferNode,
 } from './unitJsonLd';
 import { floorDisplayLabel, parseUnitNumber } from './floorPlans';
 import { resolveUnitSqft } from './unitSqft';
@@ -222,12 +223,18 @@ export function unitPageJsonLd(u: AvailableUnit, updatedAt?: string | null): Rec
     apartmentNode(u, {
       id: `${canonical}#apartment`,
       url: canonical,
-      // Bound the quoted rent to the availability data's own age: prerendered
-      // prices can outlive a publish, and priceValidUntil tells engines how
-      // long the offer may be trusted before recrawling.
-      priceValidUntil: updatedAt ? offerPriceValidUntil(updatedAt) : null,
     }),
   ];
+  // The lease Offer as a standalone node (itemOffered → Apartment): schema.org
+  // core has no `offers` property on Apartment, so validator.schema.org stays
+  // clean. priceValidUntil bounds the quoted rent to the availability data's
+  // own age: prerendered prices can outlive a publish, and it tells engines
+  // how long the offer may be trusted before recrawling.
+  const offer = unitOfferNode(u, {
+    apartmentId: `${canonical}#apartment`,
+    priceValidUntil: updatedAt ? offerPriceValidUntil(updatedAt) : null,
+  });
+  if (offer) graph.push(offer);
   // YouTube tour, when the unit has one and its metadata (uploadDate,
   // thumbnail) is in the committed cache — see unitVideoJsonLd.
   const video = unitVideoJsonLd(u);

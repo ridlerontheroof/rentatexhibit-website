@@ -134,21 +134,36 @@ export function apartmentNode(
       : {}),
     ...(image ? { image } : {}),
     ...(ada ? { amenityFeature: adaAmenityFeatures(ada) } : {}),
-    ...(u.rent !== null
-      ? {
-          offers: {
-            '@type': 'Offer',
-            price: u.rent,
-            priceCurrency: 'USD',
-            availability: 'https://schema.org/InStock',
-            businessFunction: 'http://purl.org/goodrelations/v1#LeaseOut',
-            ...(opts.priceValidUntil ? { priceValidUntil: opts.priceValidUntil } : {}),
-            ...(u.availableOn ? { availabilityStarts: u.availableOn } : {}),
-            ...(u.listingUrl ? { url: u.listingUrl } : {}),
-            offeredBy: { '@id': COMPLEX_ID },
-          },
-        }
-      : {}),
+  };
+}
+
+/**
+ * The unit's lease Offer as a standalone @graph node linked back to its
+ * Apartment via `itemOffered`. schema.org's core vocabulary has no `offers`
+ * property on Apartment (Accommodation) — validator.schema.org flags it as
+ * UNKNOWN_FIELD — so the Offer/Apartment link is expressed from the Offer
+ * side, which crawlers resolve identically. Returns null when the feed
+ * carries no rent for the unit.
+ */
+export function unitOfferNode(
+  u: AvailableUnit,
+  opts: { apartmentId?: string; priceValidUntil?: string | null } = {},
+): Record<string, unknown> | null {
+  if (u.rent === null) return null;
+  const apartmentId = opts.apartmentId ?? `${PAGE_URL}#unit-${u.unit}`;
+  return {
+    '@type': 'Offer',
+    '@id': `${apartmentId}-offer`,
+    name: `Lease Apartment ${u.unit} at Exhibit On Superior`,
+    itemOffered: { '@id': apartmentId },
+    price: u.rent,
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+    businessFunction: 'http://purl.org/goodrelations/v1#LeaseOut',
+    ...(opts.priceValidUntil ? { priceValidUntil: opts.priceValidUntil } : {}),
+    ...(u.availableOn ? { availabilityStarts: u.availableOn } : {}),
+    ...(u.listingUrl ? { url: u.listingUrl } : {}),
+    offeredBy: { '@id': COMPLEX_ID },
   };
 }
 
@@ -173,6 +188,11 @@ export function unitAvailabilityJsonLd(
     ...planGroups.map(floorPlanNode),
     // Explicit lambda: Array#map's index argument must not leak into `opts`.
     ...(units ?? []).map((u) => apartmentNode(u, { priceValidUntil })),
+    // Standalone lease Offers, linked back to their Apartments via itemOffered.
+    ...(units ?? []).flatMap((u) => {
+      const offer = unitOfferNode(u, { priceValidUntil });
+      return offer ? [offer] : [];
+    }),
   ];
   return { '@context': 'https://schema.org', '@graph': graph };
 }

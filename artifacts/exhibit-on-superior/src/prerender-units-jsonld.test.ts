@@ -59,16 +59,20 @@ describe('/available-units unit-level structured data', () => {
     const { head } = await render('/available-units');
     const nodes = allNodes(extractJsonLd(head));
 
-    const apartments = nodes.filter(
-      (n) => n['@type'] === 'Apartment' && n['offers'] !== undefined,
-    );
+    // Offers are standalone nodes linked back to their Apartment via
+    // itemOffered (schema.org core has no `offers` property on Apartment).
+    const apartments = nodes.filter((n) => n['@type'] === 'Apartment' && n['@id']);
     expect(apartments).toHaveLength(baked?.units.length ?? 0);
+    const offers = nodes.filter((n) => n['@type'] === 'Offer');
 
     for (const unit of baked?.units ?? []) {
       const apt = apartments.find((a) => (a['@id'] as string).endsWith(`#unit-${unit.unit}`));
       expect(apt, `missing Apartment node for unit ${unit.unit}`).toBeDefined();
-      const offer = apt!['offers'] as Record<string, unknown>;
-      expect(offer['@type']).toBe('Offer');
+      expect(apt!['offers'], 'Apartment must not carry offers directly').toBeUndefined();
+      const offer = offers.find(
+        (o) => (o['itemOffered'] as Record<string, unknown>)?.['@id'] === apt!['@id'],
+      ) as Record<string, unknown>;
+      expect(offer, `missing linked Offer for unit ${unit.unit}`).toBeDefined();
       expect(offer['price']).toBe(unit.rent);
       expect(offer['priceCurrency']).toBe('USD');
       if (unit.availableOn) expect(offer['availabilityStarts']).toBe(unit.availableOn);

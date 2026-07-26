@@ -60,8 +60,14 @@ describe('per-unit prerendered pages', () => {
     const apt = nodes.find((n) => n['@type'] === 'Apartment');
     expect(apt).toBeDefined();
     expect(apt['@id']).toBe(`${SITE_URL}${p}#apartment`);
-    expect(apt.offers?.['@type']).toBe('Offer');
-    expect(apt.offers?.businessFunction).toContain('LeaseOut');
+    // Offer is a standalone node linked via itemOffered (schema.org core has
+    // no `offers` property on Apartment).
+    expect(apt.offers).toBeUndefined();
+    const offer = nodes.find(
+      (n) => n['@type'] === 'Offer' && n.itemOffered?.['@id'] === apt['@id'],
+    );
+    expect(offer).toBeDefined();
+    expect(offer.businessFunction).toContain('LeaseOut');
     expect(nodes.some((n) => n['@type'] === 'FloorPlan')).toBe(true);
     expect(nodes.some((n) => n['@type'] === 'BreadcrumbList')).toBe(true);
   });

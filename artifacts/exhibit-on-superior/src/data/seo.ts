@@ -930,6 +930,16 @@ export const ORGANIZATION_NODE = {
   url: SITE_URL,
   email: 'exhibit@highlandptrs.com',
   telephone: '312-450-0635',
+  // The leasing team's email/phone as a ContactPoint: `email` is not core
+  // schema.org vocabulary on ApartmentComplex (a Place subtype), so the
+  // property entity references this node instead of carrying email directly —
+  // keeps validator.schema.org fully clean while the address stays in the graph.
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'leasing office',
+    email: 'exhibit@highlandptrs.com',
+    telephone: '312-450-0635',
+  },
   logo: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
   // Building photo (distinct from the logo) — Google's Organization guidance
   // recommends `image`; same shipped asset the ApartmentComplex node uses.
@@ -991,7 +1001,9 @@ export const APARTMENT_COMPLEX_NODE = {
   description:
     'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
   telephone: '312-450-0635',
-  email: 'exhibit@highlandptrs.com',
+  // No `email` here: validator.schema.org flags it as UNKNOWN_FIELD on
+  // ApartmentComplex (Place subtype). The address lives on the Organization
+  // node's ContactPoint in the same @graph.
   address: {
     '@type': 'PostalAddress',
     streetAddress: '165 W Superior St',

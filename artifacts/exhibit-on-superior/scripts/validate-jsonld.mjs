@@ -122,6 +122,8 @@ export function validateJsonLdPayloads(payloads, siteUrl) {
 export const RECOMMENDED_PROPERTIES = {
   WebSite: ['name', 'url', 'publisher'],
   Organization: ['name', 'url', 'logo', ['telephone', 'contactPoint'], 'email'],
+  // The leasing team's contact node on the Organization: at least one channel.
+  ContactPoint: [['email', 'telephone']],
   ApartmentComplex: [
     'name',
     'url',

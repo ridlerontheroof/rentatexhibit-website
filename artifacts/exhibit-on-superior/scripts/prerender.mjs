@@ -425,13 +425,18 @@ const LCP_NO_HERO_ROUTES = [
   if (count('FloorPlan') !== FLOOR_PLAN_COUNT) {
     problems.push(`expected ${FLOOR_PLAN_COUNT} FloorPlan nodes, found ${count('FloorPlan')}`);
   }
-  const apartmentsWithOffers = nodes.filter(
-    (n) => n['@type'] === 'Apartment' && n.offers,
+  // Offers are standalone nodes linked to their Apartment via itemOffered
+  // (schema.org core has no `offers` property on Apartment).
+  const apartmentIds = new Set(
+    nodes.filter((n) => n['@type'] === 'Apartment').map((n) => n['@id']),
+  );
+  const linkedOffers = nodes.filter(
+    (n) => n['@type'] === 'Offer' && apartmentIds.has(n.itemOffered?.['@id']),
   ).length;
-  if (apartmentsWithOffers < BAKED_UNIT_COUNT || count('Offer') < BAKED_UNIT_COUNT) {
+  if (apartmentIds.size < BAKED_UNIT_COUNT || linkedOffers < BAKED_UNIT_COUNT) {
     problems.push(
-      `expected >= ${BAKED_UNIT_COUNT} Apartment nodes with Offers (snapshot units), ` +
-        `found ${apartmentsWithOffers} apartments / ${count('Offer')} offers`,
+      `expected >= ${BAKED_UNIT_COUNT} Apartment nodes with linked Offers (snapshot units), ` +
+        `found ${apartmentIds.size} apartments / ${linkedOffers} linked offers`,
     );
   }
   if (!nodes.some((n) => n['@type'] === 'ApartmentComplex' && n.numberOfAccommodationUnits === 298)) {
@@ -474,8 +479,10 @@ const LCP_NO_HERO_ROUTES = [
       return Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed];
     });
     const apt = nodes.find((n) => n['@type'] === 'Apartment');
-    if (!apt || !apt.offers) {
-      problems.push(`${routePath}: missing Apartment node with Offer`);
+    const offer =
+      apt && nodes.find((n) => n['@type'] === 'Offer' && n.itemOffered?.['@id'] === apt['@id']);
+    if (!apt || !offer) {
+      problems.push(`${routePath}: missing Apartment node with linked Offer`);
     }
   }
   if (problems.length) {
