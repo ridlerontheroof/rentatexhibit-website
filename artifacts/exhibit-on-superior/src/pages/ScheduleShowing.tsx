@@ -210,7 +210,18 @@ export function ScheduleShowing() {
 
   return (
     <>
-      <Seo path="/schedule-showing" />
+      <Seo
+        path="/schedule-showing"
+        // `?unit=` deep links get a distinct title/description so crawlers
+        // don't flag the parameterized variants as duplicates of each other
+        // (canonical still points at /schedule-showing).
+        title={unit ? `Book a Showing for Apt ${unit} | Exhibit On Superior` : undefined}
+        description={
+          unit
+            ? `Pick a time to see apartment ${unit} in person at Exhibit On Superior in River North, Chicago. Real-time showing slots from our leasing calendar.`
+            : undefined
+        }
+      />
       <div>
         <PageHero
           image="/images/image-087-012417-5548-ocwsdh.jpg"
@@ -222,6 +233,9 @@ export function ScheduleShowing() {
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-3xl">
+            {/* Keeps the H1 → H2 → footer-H3 heading order intact even in the
+                prerendered/loading state, where no step heading is rendered yet. */}
+            <h2 className="sr-only">Book your in-person showing</h2>
             {/* The unit dropped out of the availability feed mid-visit —
                 say so plainly instead of showing an empty calendar. */}
             {unitGone && (

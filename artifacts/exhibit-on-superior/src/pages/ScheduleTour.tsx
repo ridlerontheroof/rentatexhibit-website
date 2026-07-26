@@ -117,7 +117,22 @@ export function ScheduleTour() {
 
   return (
     <>
-      <Seo path="/schedule-a-tour" />
+      <Seo
+        path="/schedule-a-tour"
+        // `?unit=` deep links get a distinct title so crawlers don't flag the
+        // parameterized variant as a duplicate of the base page (canonical
+        // still points at /schedule-a-tour).
+        title={
+          requestedUnit
+            ? `Schedule a Tour for Apt ${requestedUnit} | Exhibit On Superior`
+            : undefined
+        }
+        description={
+          requestedUnit
+            ? `Request a tour of apartment ${requestedUnit} at Exhibit On Superior in River North, Chicago — pick a date and our leasing team will confirm your visit.`
+            : undefined
+        }
+      />
       <div>
         <PageHero
           image="/images/image-087-012417-5548-ocwsdh.jpg"

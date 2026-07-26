@@ -178,6 +178,24 @@ Performance 40→~75, Security 46→~90, Crawlability 48→~90, Links 80→~95.
 
 ## Phase 5 — Remaining structured data & duplicates
 
+> **Status (2026-07-26): implemented, awaiting publish.** Post-phases-1–4
+> full audit of production came in at **72/C** (details in
+> `seo-audit-2026-07-26.md`). This phase's fixes, in repo: muted-foreground
+> token darkened 45%→40% lightness (≥4.5:1 on white *and* the muted 96%
+> background — visually verified on home/available-units, no regression);
+> distinct client-side titles+descriptions for the parameterized variants
+> (`/available-units?ada=1`, `/schedule-a-tour?unit=`, `/schedule-showing?unit=`
+> — canonicals untouched; verified in a headless browser); an always-present
+> `sr-only` H2 on /schedule-showing so the prerendered state no longer skips
+> H1→footer-H3; and a root `AGENTS.md` (ax/agents-md). Video hit 100 already
+> (VideoObject shipped via #337; the residual schema/video warnings measured
+> the pre-publish build — YouTube metadata cache covers all current units).
+> Remaining ceilings after the next publish are structural, not Phase-5-sized:
+> `ax/token-weight` (SPA markup ratio, 105 pages), `perf/total-byte-weight`
+> (~10.8 MB tracked, photography-heavy), thin knowledge articles (<300 words
+> on ~70 pages) and the scanner not crediting the AVIF `imagesrcset` LCP
+> preloads. Re-audit after the next publish and record the score below.
+
 1. **VideoObject** on unit tours — ticketed (#337).
 2. **Param-variant duplicate titles** (`?ada=1`, `?unit=`): canonicals already
    point to base pages; optionally add `robots: noindex,follow` on

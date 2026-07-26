@@ -311,7 +311,23 @@ export function FloorPlans() {
 
   return (
     <>
-      <Seo path="/available-units" extraJsonLd={[structuredData, unitStructuredData]} />
+      <Seo
+        path="/available-units"
+        // `?ada=1` deep links get a distinct title so crawlers don't flag the
+        // parameterized variant as a duplicate of the base page (canonical
+        // still points at /available-units).
+        title={
+          filters.ada
+            ? 'ADA-Accessible Units & Floor Plans | Exhibit On Superior'
+            : undefined
+        }
+        description={
+          filters.ada
+            ? 'Browse ADA-accessible apartments at Exhibit On Superior in River North, Chicago — accessible floor plans, real-time pricing, and availability.'
+            : undefined
+        }
+        extraJsonLd={[structuredData, unitStructuredData]}
+      />
 
       <div>
         <PageHero
