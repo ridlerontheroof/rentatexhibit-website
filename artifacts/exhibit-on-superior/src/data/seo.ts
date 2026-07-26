@@ -623,7 +623,9 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     quickAnswer:
       'This page explains how Exhibit On Superior collects, uses, and protects the information you share through the website.',
     faqs: [],
-    noindex: true,
+    // Indexable on purpose: search engines (and audit tools) treat a
+    // discoverable privacy policy as a site-trust signal, and a noindexed
+    // one reads as "no privacy policy found".
   },
   '/accessibility-statement': {
     path: '/accessibility-statement',

@@ -35,7 +35,7 @@ export function PlanCard({ group, onOpen, showAda = false, eager = false }: Plan
       <div className="relative aspect-4/3 overflow-hidden bg-muted">
         <img
           src={group.images.thumb}
-          alt=""
+          alt={`${group.typeLabel} floor plan diagram, ${sqftLabel}`}
           loading={eagerNow ? 'eager' : 'lazy'}
           width={600}
           height={450}

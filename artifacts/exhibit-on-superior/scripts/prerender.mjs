@@ -146,6 +146,23 @@ for (const routePath of allPaths) {
     .replace(SEO_BLOCK, `<!-- seo:start -->\n    ${head}\n    <!-- seo:end -->`)
     .replace(ROOT_DIV, `<div id="root">${html}</div>`);
 
+  // Normalize React's camelCase attribute serialization to canonical
+  // lowercase HTML. Browsers parse attribute names case-insensitively so
+  // this is behavior-neutral, but auditing tools (and some crawlers) match
+  // `fetchpriority`/`srcset` case-sensitively and report eager hero images
+  // as "missing fetchpriority" when the attribute ships as `fetchPriority`.
+  page = page.replace(/ srcSet="/g, ' srcset="').replace(/ fetchPriority="/g, ' fetchpriority="');
+
+  // Radix Slider renders hidden form-bridge <input>s during SSR (it can't
+  // know it's outside a <form> until it can call closest('form') in the
+  // browser; it removes them after hydration). They are display:none and
+  // inert, but static a11y scanners flag them as unlabeled form inputs —
+  // mark them explicitly hidden from the accessibility tree.
+  page = page.replace(
+    /<input style="display:none"\/>/g,
+    '<input style="display:none" aria-hidden="true" tabindex="-1"/>',
+  );
+
   // Rewrite the LCP block with this page's own preload, extracted from the
   // eager high-priority <picture> SmartImg just rendered (exact-match srcset,
   // so the browser reuses the preloaded response — never a double download).
