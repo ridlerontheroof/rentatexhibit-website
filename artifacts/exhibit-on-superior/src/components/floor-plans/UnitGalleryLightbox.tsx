@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { AvailableUnit } from '../../hooks/use-availability';
 import { trackOutboundClick } from '../../lib/analytics';
+import { anchorPinchTranslation, clampPanTranslation } from '../../lib/panBounds';
+import { useReducedMotion } from '../../hooks/use-reduced-motion';
 
 interface UnitGalleryLightboxProps {
   unit: AvailableUnit;
@@ -73,10 +75,246 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
   const [index, setIndex] = useState(0);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const reducedMotion = useReducedMotion();
   const count = unit.photos.length;
 
   const prev = useCallback(() => setIndex((i) => (i - 1 + count) % count), [count]);
   const next = useCallback(() => setIndex((i) => (i + 1) % count), [count]);
+
+  // ---------------------------------------------------------------------
+  // Pinch-to-zoom / pan / double-tap gestures — same behavior as the
+  // floor-plan lightbox (PlanLightbox), minus its scroll-zoom mode:
+  //   - two-finger pinch, scale clamped to [1, 4], anchored under fingers,
+  //   - one-finger pan while pinch-zoomed, 40px rubber-band during the
+  //     gesture, hard-clamped on release,
+  //   - double-tap toggles between fit and 2x toward the tapped point,
+  //   - swipe navigation only while fully zoomed out.
+  // ---------------------------------------------------------------------
+  const [pinch, setPinch] = useState({ scale: 1, tx: 0, ty: 0 });
+  const viewerRef = useRef<HTMLDivElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const lastTap = useRef<{ time: number; x: number; y: number } | null>(null);
+  const gesture = useRef<{
+    mode: 'pinch' | 'pan' | null;
+    startDist: number;
+    startScale: number;
+    startTx: number;
+    startTy: number;
+    startMidX: number;
+    startMidY: number;
+    panStartX: number;
+    panStartY: number;
+  }>({
+    mode: null,
+    startDist: 0,
+    startScale: 1,
+    startTx: 0,
+    startTy: 0,
+    startMidX: 0,
+    startMidY: 0,
+    panStartX: 0,
+    panStartY: 0,
+  });
+
+  const resetPinch = useCallback(() => {
+    gesture.current.mode = null;
+    setPinch({ scale: 1, tx: 0, ty: 0 });
+  }, []);
+
+  // Reset zoom whenever the shown photo changes.
+  useEffect(() => {
+    resetPinch();
+    lastTap.current = null;
+  }, [index, resetPinch]);
+
+  const PAN_RUBBER_PX = 40;
+  const DOUBLE_TAP_MS = 300;
+  const DOUBLE_TAP_SLOP = 40;
+  const TAP_MOVE_SLOP = 12;
+  const DOUBLE_TAP_SCALE = 2;
+
+  const clampPan = useCallback((tx: number, ty: number, scale: number, allowance: number) => {
+    const viewer = viewerRef.current;
+    const img = imgRef.current;
+    if (!viewer || !img) return { tx, ty };
+    return clampPanTranslation(
+      tx,
+      ty,
+      scale,
+      img.clientWidth,
+      img.clientHeight,
+      viewer.clientWidth,
+      viewer.clientHeight,
+      allowance,
+    );
+  }, []);
+
+  const pinchZoomed = pinch.scale > 1.01;
+
+  const touchDist = (e: React.TouchEvent) => {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.hypot(dx, dy);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    const g = gesture.current;
+    if (e.touches.length === 2) {
+      g.mode = 'pinch';
+      g.startDist = touchDist(e);
+      g.startScale = pinch.scale;
+      g.startTx = pinch.tx;
+      g.startTy = pinch.ty;
+      g.startMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      g.startMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      touchStartX.current = null;
+      return;
+    }
+    if (pinchZoomed && e.touches.length === 1) {
+      g.mode = 'pan';
+      g.panStartX = e.touches[0].clientX;
+      g.panStartY = e.touches[0].clientY;
+      g.startTx = pinch.tx;
+      g.startTy = pinch.ty;
+      touchStartX.current = null;
+      return;
+    }
+    g.mode = null;
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  /** Handle a completed tap; returns true when it consumed a double-tap. */
+  const handleTap = (x: number, y: number, container: HTMLElement): boolean => {
+    const now = Date.now();
+    const prevTap = lastTap.current;
+    lastTap.current = { time: now, x, y };
+    if (
+      prevTap &&
+      now - prevTap.time < DOUBLE_TAP_MS &&
+      Math.hypot(x - prevTap.x, y - prevTap.y) < DOUBLE_TAP_SLOP
+    ) {
+      lastTap.current = null;
+      if (pinchZoomed) {
+        resetPinch();
+      } else {
+        const rect = container.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        setPinch({
+          scale: DOUBLE_TAP_SCALE,
+          ...clampPan(
+            -(x - cx) * (DOUBLE_TAP_SCALE - 1),
+            -(y - cy) * (DOUBLE_TAP_SCALE - 1),
+            DOUBLE_TAP_SCALE,
+            0,
+          ),
+        });
+      }
+      return true;
+    }
+    return false;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    const g = gesture.current;
+    if (g.mode === 'pinch' && e.touches.length === 2) {
+      const scale = Math.min(4, Math.max(1, (g.startScale * touchDist(e)) / g.startDist));
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      const viewer = viewerRef.current;
+      const rect = viewer?.getBoundingClientRect();
+      const cx = rect ? rect.left + rect.width / 2 : 0;
+      const cy = rect ? rect.top + rect.height / 2 : 0;
+      const anchored = anchorPinchTranslation(
+        midX,
+        midY,
+        g.startMidX,
+        g.startMidY,
+        cx,
+        cy,
+        scale,
+        g.startScale,
+        g.startTx,
+        g.startTy,
+      );
+      const clamped = clampPan(anchored.tx, anchored.ty, scale, PAN_RUBBER_PX);
+      setPinch({ scale, ...clamped });
+    } else if (g.mode === 'pan' && e.touches.length === 1) {
+      const touch = e.touches[0];
+      setPinch((p) => ({
+        ...p,
+        ...clampPan(
+          g.startTx + (touch.clientX - g.panStartX),
+          g.startTy + (touch.clientY - g.panStartY),
+          p.scale,
+          PAN_RUBBER_PX,
+        ),
+      }));
+    }
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const g = gesture.current;
+    if (g.mode) {
+      if (e.touches.length === 0) {
+        const wasPan = g.mode === 'pan';
+        const t = e.changedTouches[0];
+        g.mode = null;
+        // A "pan" that barely moved is a tap — allow double-tap-to-fit while pinch-zoomed.
+        if (
+          wasPan &&
+          t &&
+          Math.hypot(t.clientX - g.panStartX, t.clientY - g.panStartY) < TAP_MOVE_SLOP
+        ) {
+          if (handleTap(t.clientX, t.clientY, e.currentTarget as HTMLElement)) {
+            if (e.cancelable) e.preventDefault();
+            return;
+          }
+          if (e.cancelable) e.preventDefault();
+        }
+        // Snap back to fit when nearly zoomed out; otherwise settle any
+        // rubber-band overshoot back inside the hard pan bounds.
+        setPinch((p) =>
+          p.scale <= 1.05
+            ? { scale: 1, tx: 0, ty: 0 }
+            : { ...p, ...clampPan(p.tx, p.ty, p.scale, 0) },
+        );
+      } else if (g.mode === 'pinch' && e.touches.length === 1) {
+        // Hand off from pinch to one-finger pan
+        g.mode = 'pan';
+        g.panStartX = e.touches[0].clientX;
+        g.panStartY = e.touches[0].clientY;
+        setPinch((p) => {
+          g.startTx = p.tx;
+          g.startTy = p.ty;
+          return p;
+        });
+      }
+      return;
+    }
+    if (touchStartX.current === null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX.current;
+    const dy = touchStartY.current === null ? 0 : t.clientY - touchStartY.current;
+    touchStartX.current = null;
+    touchStartY.current = null;
+    // Tap (little movement): check for a double-tap and suppress the synthetic click.
+    if (Math.hypot(dx, dy) < TAP_MOVE_SLOP) {
+      if (handleTap(t.clientX, t.clientY, e.currentTarget as HTMLElement)) {
+        if (e.cancelable) e.preventDefault();
+      }
+      return;
+    }
+    // Swipe navigation only while fully zoomed out
+    if (pinchZoomed) return;
+    if (count > 1 && Math.abs(dx) > 50) {
+      if (dx < 0) next();
+      else prev();
+    }
+  };
 
   useEffect(() => {
     // Focus management: move focus into the dialog on open, trap Tab within
@@ -172,12 +410,29 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
       </div>
 
       <div className="relative flex flex-1 items-center justify-center px-4 pb-6">
-        <img
-          src={unit.photos[index]}
-          alt={`Apartment ${unit.unit}, photo ${index + 1} of ${count}`}
-          className="max-h-full max-w-full object-contain"
-          onClick={(e) => e.stopPropagation()}
-        />
+        <div
+          ref={viewerRef}
+          className="flex h-full w-full items-center justify-center overflow-hidden"
+          style={{ touchAction: pinchZoomed ? 'none' : 'pan-y' }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          <img
+            ref={imgRef}
+            src={unit.photos[index]}
+            alt={`Apartment ${unit.unit}, photo ${index + 1} of ${count}`}
+            className="max-h-full max-w-full object-contain"
+            draggable={false}
+            style={{
+              transform: `translate(${pinch.tx}px, ${pinch.ty}px) scale(${pinch.scale})`,
+              transformOrigin: 'center center',
+              transition:
+                reducedMotion || gesture.current.mode ? 'none' : 'transform 200ms ease',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
         {count > 1 && (
           <>
             <button
