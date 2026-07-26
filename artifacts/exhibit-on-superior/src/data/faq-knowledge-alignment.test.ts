@@ -109,6 +109,35 @@ describe('FAQ ↔ Knowledge Center alignment', () => {
     }
   });
 
+  it('every concrete fact in an indexable page title/description is backed by a knowledge article', () => {
+    // Same guard as above, but for the meta surfaces Google actually shows in
+    // search results: PAGE_SEO title and description. A stale price or
+    // distance there is arguably worse than in on-page copy — it's the first
+    // thing a searcher reads. Uses the same shared factTokens() regex, so
+    // small integers stay excluded and noise-prone tokens (zip codes, street
+    // numbers, phone segments) are held to the same standard: they must
+    // appear somewhere in the verified-facts corpus, which already carries
+    // the address and phone number.
+    const corpus = KNOWLEDGE_ARTICLES.map(articleText).join(' ');
+    for (const page of Object.values(PAGE_SEO)) {
+      if (page.noindex) continue; // not shown in search results
+      const surfaces: Array<[string, string]> = [
+        ['title', page.title],
+        ['description', page.description],
+      ];
+      for (const [where, text] of surfaces) {
+        for (const token of factTokens(text)) {
+          expect(
+            corpus.includes(token),
+            `${page.path} ${where} states "${token}" but no knowledge article mentions it — ` +
+              'the meta shown in Google has drifted from the verified-facts corpus; fix whichever ' +
+              'is stale (or add/update the knowledge article that verifies this fact).',
+          ).toBe(true);
+        }
+      }
+    }
+  });
+
   it('the site-wide fact guard actually sees fact tokens (self-check)', () => {
     // If the factTokens regex or PAGE_SEO shape changes so nothing matches,
     // the guard above would pass vacuously. Anchor on a floor: today the
@@ -117,6 +146,13 @@ describe('FAQ ↔ Knowledge Center alignment', () => {
       .flatMap((p) => [p.quickAnswer, ...p.faqs.map((f) => f.a)])
       .flatMap(factTokens).length;
     expect(total, 'fact-token extraction went vacuous').toBeGreaterThanOrEqual(50);
+    // The meta guard needs its own floor: titles/descriptions state street
+    // numbers, phone digits, and prices today (e.g. 165 W Superior St).
+    const metaTotal = Object.values(PAGE_SEO)
+      .filter((p) => !p.noindex)
+      .flatMap((p) => [p.title, p.description])
+      .flatMap(factTokens).length;
+    expect(metaTotal, 'meta fact-token extraction went vacuous').toBeGreaterThanOrEqual(5);
   });
 
   it('a hub question duplicating an article question must declare the overlap', () => {
