@@ -21,10 +21,6 @@ import { parseUnitNumber, plans, type Plan } from './floorPlans';
  * record in AppFolio. The floor-plan value is still what renders.
  */
 export const KNOWN_BAD_APPFOLIO_SQFT: Record<string, number> = {
-  // Line 05, floors 6–29 = 450 SF per the approved unit map; AppFolio said 478.
-  // Corrected in AppFolio by the leasing team on 2026-07-26 — remove once a
-  // corrected snapshot has been committed.
-  '2705': 478,
   // Line 10, floors 6–29 = 478 SF per the approved unit map; AppFolio began
   // reporting 450 on 2026-07-26 (possibly the 2705 correction applied to the
   // wrong unit). Flagged to the leasing team for correction in AppFolio.
