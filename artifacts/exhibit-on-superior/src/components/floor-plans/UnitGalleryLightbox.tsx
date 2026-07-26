@@ -4,6 +4,7 @@ import { LightboxShortcutControls } from '../LightboxShortcutControls';
 import type { AvailableUnit } from '../../hooks/use-availability';
 import { trackOutboundClick } from '../../lib/analytics';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../../hooks/use-pinch-zoom';
+import { clearLegendOnTouchGestures } from '../../hooks/clear-legend-on-touch-gestures';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
 import { useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
 import { useDismissLegendOnOutsideClick } from '../../hooks/use-dismiss-legend-on-outside-click';
@@ -112,19 +113,19 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
     onMouseDown,
     mouseDragging,
     isGesturing,
-  } = usePinchZoom({
+  } = usePinchZoom(
     // Touch gestures never end in a click, so the click-capture dismiss
-    // (dismissLegendOnOutsideClick) can't run — clear the shortcut legend at
-    // gesture start / swipe, matching PlanLightbox.
-    onGestureStart: () => setShowShortcuts(false),
-    onSwipe: (dir) => {
-      setShowShortcuts(false);
-      if (count > 1) {
-        if (dir === 1) next();
-        else prev();
-      }
-    },
-  });
+    // (dismissLegendOnOutsideClick) can't run — the shared wrapper clears the
+    // shortcut legend at gesture start / on swipe, matching PlanLightbox.
+    clearLegendOnTouchGestures(setShowShortcuts, {
+      onSwipe: (dir) => {
+        if (count > 1) {
+          if (dir === 1) next();
+          else prev();
+        }
+      },
+    }),
+  );
 
   // Reset zoom whenever the shown photo changes.
   useEffect(() => {

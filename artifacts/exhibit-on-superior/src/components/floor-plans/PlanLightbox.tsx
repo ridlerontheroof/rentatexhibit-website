@@ -5,6 +5,7 @@ import { LightboxShortcutControls } from '../LightboxShortcutControls';
 import { Link, useLocation } from 'wouter';
 import { unitNumbersForPlan, planSqftLabel, type PlanGroup } from '../../data/floorPlans';
 import { usePinchZoom } from '../../hooks/use-pinch-zoom';
+import { clearLegendOnTouchGestures } from '../../hooks/clear-legend-on-touch-gestures';
 import { useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
 import { useDismissLegendOnOutsideClick } from '../../hooks/use-dismiss-legend-on-outside-click';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
@@ -64,6 +65,11 @@ export function PlanLightbox({
   const [zoomPhase, setZoomPhase] = useState<'idle' | 'enter' | 'exit'>('idle');
   const zoomExitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Desktop-only keyboard shortcut legend (toggled by the "?" button or key).
+  // Declared before usePinchZoom so its setter can be passed to the
+  // clearLegendOnTouchGestures wrapper below.
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
   const clearZoomExitTimer = useCallback(() => {
     if (zoomExitTimer.current !== null) {
       clearTimeout(zoomExitTimer.current);
@@ -92,39 +98,31 @@ export function PlanLightbox({
     mouseDragging,
     suppressClick,
     isGesturing,
-  } = usePinchZoom({
-    disabled: zoomed,
-    active: group,
-    beforeZoomChange: () => {
-      clearZoomExitTimer();
-      setZoomed(false);
-      setZoomPhase('idle');
-    },
-    onDoubleTap: () => {
-      // Double-tap while in scroll-zoom mode animates back out instead of
-      // starting a pinch-style zoom.
-      if (zoomedRef.current) {
-        animateZoomToggle();
-        return true;
-      }
-      return false;
-    },
-    onSingleTap: () => animateZoomToggle(),
-    onSwipe: (dir) => {
-      // A swipe never produces a click, so it bypasses the click-capture
-      // dismiss (dismissLegendOnOutsideClick). Clear the shortcut legend here
-      // like onGestureStart does — otherwise the plan would change underneath
-      // while the legend stays stranded on top. (Arrow-key navigation
-      // deliberately keeps it open for keyboard users; a swipe is a touch
-      // gesture, so no keyboard user is served by leaving it up.)
-      setShowShortcuts(false);
-      onNavigate(dir);
-    },
-    // Touch pinch/pan gestures never end in a click, so the click-capture
-    // dismiss (dismissLegendOnOutsideClick) can't run — clear the shortcut
-    // legend at gesture start too, matching sheet drags.
-    onGestureStart: () => setShowShortcuts(false),
-  });
+  } = usePinchZoom(
+    // Touch gestures never end in a click, so the click-capture dismiss
+    // (dismissLegendOnOutsideClick) can't run — the shared wrapper clears the
+    // shortcut legend at gesture start / on swipe, matching sheet drags.
+    clearLegendOnTouchGestures(setShowShortcuts, {
+      disabled: zoomed,
+      active: group,
+      beforeZoomChange: () => {
+        clearZoomExitTimer();
+        setZoomed(false);
+        setZoomPhase('idle');
+      },
+      onDoubleTap: () => {
+        // Double-tap while in scroll-zoom mode animates back out instead of
+        // starting a pinch-style zoom.
+        if (zoomedRef.current) {
+          animateZoomToggle();
+          return true;
+        }
+        return false;
+      },
+      onSingleTap: () => animateZoomToggle(),
+      onSwipe: (dir) => onNavigate(dir),
+    }),
+  );
 
   // Mobile bottom-sheet drag state. Snap points are expressed in dvh.
   const SHEET_COLLAPSED = 40;
@@ -148,9 +146,6 @@ export function PlanLightbox({
   const SHEET_TAP_SLOP_PX = 5;
 
   // Flick threshold & snap decision live in lib/sheetSnap.ts (pure, unit-tested).
-
-  // Desktop-only keyboard shortcut legend (toggled by the "?" button or key).
-  const [showShortcuts, setShowShortcuts] = useState(false);
 
   // Clicking outside the open legend dismisses it — shared capture-phase
   // handler (see use-dismiss-legend-on-outside-click.ts for the rules). The

@@ -11,6 +11,7 @@ import { SplitHeadline } from '../components/SplitHeadline';
 import { galleryImages, galleryCategories as categories, photoGalleryJsonLd } from '../data/gallery';
 import { useModalHistory } from '../hooks/use-modal-history';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../hooks/use-pinch-zoom';
+import { clearLegendOnTouchGestures } from '../hooks/clear-legend-on-touch-gestures';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
 import { useLightboxShortcutKeys } from '../hooks/use-lightbox-shortcut-keys';
 import { useDismissLegendOnOutsideClick } from '../hooks/use-dismiss-legend-on-outside-click';
@@ -69,20 +70,20 @@ export function PhotoGallery() {
     onMouseDown,
     mouseDragging,
     isGesturing,
-  } = usePinchZoom({
-    // Re-attach the native wheel listener when the lightbox (re)mounts —
-    // the viewer element only exists while a photo is selected.
-    active: selectedImage !== null,
+  } = usePinchZoom(
     // Touch gestures never end in a click, so the click-capture dismiss
-    // (dismissLegendOnOutsideClick) can't run — clear the shortcut legend
-    // at gesture start / swipe, matching UnitGalleryLightbox.
-    onGestureStart: () => setShowShortcuts(false),
-    onSwipe: (dir) => {
-      setShowShortcuts(false);
-      if (dir === 1) showNext();
-      else showPrev();
-    },
-  });
+    // (dismissLegendOnOutsideClick) can't run — the shared wrapper clears the
+    // shortcut legend at gesture start / on swipe, matching UnitGalleryLightbox.
+    clearLegendOnTouchGestures(setShowShortcuts, {
+      // Re-attach the native wheel listener when the lightbox (re)mounts —
+      // the viewer element only exists while a photo is selected.
+      active: selectedImage !== null,
+      onSwipe: (dir) => {
+        if (dir === 1) showNext();
+        else showPrev();
+      },
+    }),
+  );
 
   // Reset zoom whenever the shown photo changes (or the lightbox closes).
   useEffect(() => {
