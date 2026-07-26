@@ -6,7 +6,7 @@
 // lease Offer (rent, availability date) sourced from the SAME baked
 // availability snapshot the page renders from.
 import { SITE_URL } from './seo';
-import { parseUnitNumber, planGroups, type PlanGroup } from './floorPlans';
+import { floorDisplayLabel, parseUnitNumber, planGroups, type PlanGroup } from './floorPlans';
 import { getBakedAvailability } from './availabilitySnapshot';
 import type { AvailableUnit } from '../hooks/use-availability';
 import { adaDesignation, ADA_DISCLAIMER, type AdaDesignation } from './ada';
@@ -108,12 +108,17 @@ export function apartmentNode(
   const sqft = resolveUnitSqft(u);
   const image = u.photoUrl ?? (group ? `${SITE_URL}${group.images.detail}` : null);
   const ada = adaDesignation(u.unit);
+  // Floor parsed from the apartment number (pad2(floor)+pad2(line), e.g.
+  // "0208" -> "2"; mezzanine "04M02" -> "4M") — same fact the page displays.
+  const parsed = parseUnitNumber(u.unit);
+  const floorLevel = parsed && parsed.floor > 0 ? floorDisplayLabel(parsed.floor) : null;
   return {
     '@type': 'Apartment',
     '@id': opts.id ?? `${PAGE_URL}#unit-${u.unit}`,
     name: `Apartment ${u.unit} at Exhibit On Superior`,
     url: opts.url ?? PAGE_URL,
     containedInPlace: { '@id': COMPLEX_ID },
+    ...(floorLevel ? { floorLevel } : {}),
     ...(group ? { accommodationFloorPlan: { '@id': floorPlanId(group) } } : {}),
     ...(u.bedrooms !== null ? { numberOfBedrooms: u.bedrooms } : {}),
     ...(u.bathrooms !== null ? { numberOfBathroomsTotal: u.bathrooms } : {}),

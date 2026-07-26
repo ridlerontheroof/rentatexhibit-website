@@ -931,6 +931,9 @@ export const ORGANIZATION_NODE = {
   email: 'exhibit@highlandptrs.com',
   telephone: '312-450-0635',
   logo: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
+  // Building photo (distinct from the logo) — Google's Organization guidance
+  // recommends `image`; same shipped asset the ApartmentComplex node uses.
+  image: `${SITE_URL}/images/image-002-gettyimages-1286580777-nvdupq-2000w.webp`,
   address: {
     '@type': 'PostalAddress',
     streetAddress: '165 W Superior St',

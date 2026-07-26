@@ -189,6 +189,9 @@ export function unitPageJsonLd(u: AvailableUnit, updatedAt?: string | null): Rec
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
     breadcrumb: { '@id': `${canonical}#breadcrumb` },
+    // The availability snapshot's own timestamp — the same data the page
+    // renders — NOT build time, so the claim stays truthful.
+    ...(updatedAt ? { dateModified: updatedAt } : {}),
   };
 
   const breadcrumb = {
