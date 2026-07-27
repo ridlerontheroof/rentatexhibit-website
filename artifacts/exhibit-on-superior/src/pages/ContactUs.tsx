@@ -14,6 +14,7 @@ import { trackLead } from '../lib/analytics';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { HoneypotField, useBotGuard } from '../components/BotGuard';
+import { WEEKDAY_HOURS_SHORT, SATURDAY_HOURS_SHORT } from '../data/propertyFacts';
 
 const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -106,7 +107,7 @@ export function ContactUs() {
                 <p className="text-lg leading-relaxed mb-8">
                   Schedule a tour and explore the unmatched style, comfort, and convenience at
                   Exhibit on Superior. The leasing office at 165 W Superior St is open six days
-                  a week — Monday through Friday 9 AM–6 PM and Saturday 10 AM–5 PM (closed
+                  a week — Monday through Friday {WEEKDAY_HOURS_SHORT} and Saturday {SATURDAY_HOURS_SHORT} (closed
                   Sunday) — and the front desk is staffed 24 hours a day. Getting here is easy:
                   the CTA Chicago Brown/Purple Line station is about two blocks west, the Red
                   Line station roughly 0.3 miles east, and visitors driving in can use nearby

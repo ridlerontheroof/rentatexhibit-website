@@ -5,6 +5,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { EmbedFacade } from '../components/EmbedFacade';
+import { UNIT_TOTAL } from '../data/propertyFacts';
 import {
   lifeAtExhibitVideo,
   matterportTours,
@@ -34,7 +35,7 @@ export function VirtualTour() {
                 Take a virtual tour of Exhibit On Superior in Chicago, Illinois. Below you&rsquo;ll
                 find the community video tour plus {matterportTours.length} interactive 3D
                 Matterport walkthroughs covering apartment homes and amenity spaces in the
-                34-story, 298-residence tower — move room to room at your own pace and see the
+                34-story, {UNIT_TOTAL}-residence tower — move room to room at your own pace and see the
                 driftwood plank floors, quartz countertops, and floor-to-ceiling skyline views
                 exactly as they are. See more of our amenities and in-home features by visiting us
                 in person, or by heading to our Photo Gallery page for a more detailed look at our

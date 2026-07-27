@@ -4,6 +4,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
+import { CREDIT_SCORE_MIN, CREDIT_SCORE_COSIGNER_MIN } from '../data/propertyFacts';
 
 const STEPS = [
   {
@@ -66,7 +67,7 @@ export function ApplicationGuide() {
             <div className="bg-white border border-border p-8">
               <h2 className="text-xl uppercase tracking-wider mb-4">Qualification & Screening</h2>
               <ul className="space-y-3 mb-4">
-                <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Credit score</strong> &mdash; minimum 700 without a co-signer, or 600+ with a qualified co-signer</span></li>
+                <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Credit score</strong> &mdash; minimum {CREDIT_SCORE_MIN} without a co-signer, or {CREDIT_SCORE_COSIGNER_MIN}+ with a qualified co-signer</span></li>
                 <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Co-signers</strong> &mdash; qualified co-signers are accepted</span></li>
                 <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Approval timeline</strong> &mdash; typically 1&ndash;3 business days</span></li>
                 <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span><strong>Lease terms</strong> &mdash; 12+ month terms available; short-term leases based on availability (see a leasing consultant)</span></li>

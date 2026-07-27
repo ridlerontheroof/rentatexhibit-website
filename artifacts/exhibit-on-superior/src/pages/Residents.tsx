@@ -5,6 +5,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
+import { OFFICE_HOURS_LINES } from '../data/propertyFacts';
 
 export function Residents() {
   return (
@@ -94,9 +95,9 @@ export function Residents() {
           <div className="container mx-auto max-w-3xl text-center">
             <h2 className="text-3xl uppercase tracking-wider mb-6">Office Hours</h2>
             <ul className="space-y-2 text-lg">
-              <li>Monday – Friday: 9:00 AM – 6:00 PM</li>
-              <li>Saturday: 10:00 AM – 5:00 PM</li>
-              <li>Sunday: Closed</li>
+              {OFFICE_HOURS_LINES.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
             </ul>
           </div>
         </section>

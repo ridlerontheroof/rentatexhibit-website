@@ -6,6 +6,7 @@ import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { CATEGORIES, planGroups } from '../data/floorPlans';
+import { SQFT_MAX_DISPLAY } from '../data/propertyFacts';
 
 /** Sourced from the owned floor-plan sheets (floorPlans.ts): sq ft range + plan count per category. */
 function categorySummaries() {
@@ -23,7 +24,7 @@ const CATEGORY_BLURBS: Record<string, string> = {
     'Convertible and Jr. Convertible plans add a defined sleeping alcove without the footprint of a full one-bedroom.',
   '1br': 'One-bedroom homes across the podium, mid-rise, high-rise, and penthouse floors.',
   '2br': 'Two-bedroom plans in one- and two-bath layouts, including a 2 Bed + Den option.',
-  '3br': 'Three-bedroom, three-bath residences on the penthouse-level floors 30\u201334 \u2014 the largest homes in the building at up to 1,528 sq ft.',
+  '3br': `Three-bedroom, three-bath residences on the penthouse-level floors 30\u201334 \u2014 the largest homes in the building at up to ${SQFT_MAX_DISPLAY} sq ft.`,
 };
 
 export function ApartmentGuide() {

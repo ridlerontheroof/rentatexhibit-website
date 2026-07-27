@@ -7,6 +7,7 @@ import { Star, Quote } from 'lucide-react';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { useGoogleReviews } from '../hooks/use-google-reviews';
 import { buildReviewsPageModel, reviewsJsonLd } from '../data/reviews';
+import { UNIT_TOTAL } from '../data/propertyFacts';
 
 const GOOGLE_REVIEWS_URL =
   'https://www.google.com/maps/place/Exhibit+on+Superior/@41.8953899,-87.6361029,1557m/data=!3m2!1e3!4b1!4m6!3m5!1s0x880fd34b54f928af:0xdb1555e020a513c9!8m2!3d41.8953859!4d-87.633528!16s%2Fg%2F11z14j3shz?entry=ttu&g_ep=EgoyMDI2MDcxMy4wIKXMDSoASAFQAw%3D%3D';
@@ -125,8 +126,8 @@ export function Reviews() {
               <p>
                 Want to add your own experience? Post it on the Exhibit On Superior Google
                 Business Profile — the same listing this page reads from — and it will appear
-                alongside the aggregate rating shown above. Reviews from residents of the
-                298-residence tower cover everything from the 24-hour front desk and the
+                alongside the aggregate rating shown above. Reviews from residents of the{' '}
+                {UNIT_TOTAL}-residence tower cover everything from the 24-hour front desk and the
                 full-floor amenity deck to the leasing process itself, which is exactly the kind
                 of first-hand detail a website can&rsquo;t tell you.
               </p>

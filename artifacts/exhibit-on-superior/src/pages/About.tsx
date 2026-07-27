@@ -6,6 +6,13 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { ADA_COUNTS } from '../data/ada';
+import {
+  OFFICE_HOURS_LINES,
+  SQFT_MIN_DISPLAY,
+  SQFT_MAX_DISPLAY,
+  SQFT_RANGE_DISPLAY,
+  UNIT_TOTAL,
+} from '../data/propertyFacts';
 
 /**
  * About page (/about): the property's story, management company, building
@@ -37,8 +44,8 @@ export function About() {
               <p>
                 Exhibit On Superior rises 34 stories above the corner of Superior and Wells in the
                 heart of River North — Chicago&rsquo;s gallery district, where the city&rsquo;s art
-                scene, its restaurant row, and the downtown business core meet. The tower holds 298
-                residences, from 448-square-foot studios to 1,528-square-foot three-bedroom,
+                scene, its restaurant row, and the downtown business core meet. The tower holds {UNIT_TOTAL}
+                residences, from {SQFT_MIN_DISPLAY}-square-foot studios to {SQFT_MAX_DISPLAY}-square-foot three-bedroom,
                 three-bath penthouses on floors 30&ndash;34, each finished with driftwood plank
                 floors, quartz countertops, stainless-steel appliances, in-home washers and dryers,
                 and floor-to-ceiling windows framing the skyline.
@@ -52,7 +59,7 @@ export function About() {
                 options, and the front desk is staffed 24 hours a day.
               </p>
               <p>
-                Accessibility is built in, not bolted on: {ADA_COUNTS.total} of the 298 apartments
+                Accessibility is built in, not bolted on: {ADA_COUNTS.total} of the {UNIT_TOTAL} apartments
                 — more than 20% of the homes — carry an ADA designation per the as-built
                 accessibility matrix.
               </p>
@@ -70,11 +77,11 @@ export function About() {
                 <p className="text-sm uppercase tracking-wider">Stories</p>
               </div>
               <div>
-                <p className="text-4xl text-primary mb-2">298</p>
+                <p className="text-4xl text-primary mb-2">{UNIT_TOTAL}</p>
                 <p className="text-sm uppercase tracking-wider">Residences</p>
               </div>
               <div>
-                <p className="text-4xl text-primary mb-2">448&ndash;1,528</p>
+                <p className="text-4xl text-primary mb-2">{SQFT_RANGE_DISPLAY}</p>
                 <p className="text-sm uppercase tracking-wider">Square Feet</p>
               </div>
               <div>
@@ -200,9 +207,9 @@ export function About() {
                   <Clock className="w-4 h-4 text-primary" /> Office Hours
                 </h3>
                 <ul className="space-y-2 text-sm">
-                  <li>Monday &ndash; Friday: 9:00 AM &ndash; 6:00 PM</li>
-                  <li>Saturday: 10:00 AM &ndash; 5:00 PM</li>
-                  <li>Sunday: Closed</li>
+                  {OFFICE_HOURS_LINES.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
                   <li className="pt-2 text-muted-foreground">
                     Front desk staffed 24 hours a day, every day.
                   </li>

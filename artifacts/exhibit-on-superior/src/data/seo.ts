@@ -6,6 +6,19 @@ import { SQFT_MIN, SQFT_MAX } from './floorPlans';
 import { getBakedAvailability } from './availabilitySnapshot';
 import { getStartingRent, startingRentSentence } from './startingRent';
 import { WALK_SCORE, TRANSIT_SCORE, BIKE_SCORE, WALK_SCORES_SENTENCE } from './walkScores';
+import {
+  CREDIT_SCORE_COSIGNER_MIN,
+  CREDIT_SCORE_MIN,
+  OFFICE_HOURS_SATURDAY,
+  OFFICE_HOURS_WEEKDAY,
+  SATURDAY_HOURS_CLOCK,
+  SATURDAY_HOURS_SHORT,
+  SQFT_MAX_DISPLAY,
+  SQFT_MIN_DISPLAY,
+  UNIT_TOTAL,
+  WEEKDAY_HOURS_CLOCK,
+  WEEKDAY_HOURS_SHORT,
+} from './propertyFacts';
 
 /**
  * Homepage pricing FAQ answer. The dollar figure comes from the baked
@@ -138,8 +151,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     title: 'Floor Plan Layouts, Studio to 3 Bedroom | Exhibit On Superior',
     description:
       'Every distinct floor-plan layout at Exhibit On Superior in River North Chicago — plan sheets, square footage, floor ranges, balconies, and live availability.',
-    quickAnswer:
-      'Exhibit On Superior offers 34 distinct floor-plan layouts across 27 residence lines — studios, convertibles, and one, two, and three-bedroom homes from about 448 to 1,528 square feet over 34 floors. Each layout below has its own page with the plan sheet, floor range, balcony and accessibility details, and any apartments of that plan available now.',
+    quickAnswer: `Exhibit On Superior offers 34 distinct floor-plan layouts across 27 residence lines — studios, convertibles, and one, two, and three-bedroom homes from about ${SQFT_MIN_DISPLAY} to ${SQFT_MAX_DISPLAY} square feet over 34 floors. Each layout below has its own page with the plan sheet, floor range, balcony and accessibility details, and any apartments of that plan available now.`,
     faqs: [
       {
         q: 'How many floor plans does Exhibit On Superior have?',
@@ -147,7 +159,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What sizes do the floor plans come in?',
-        a: 'Layouts range from roughly 448 square feet for the smallest studio to 1,528 square feet for the largest three-bedroom penthouse-level plan.',
+        a: `Layouts range from roughly ${SQFT_MIN_DISPLAY} square feet for the smallest studio to ${SQFT_MAX_DISPLAY} square feet for the largest three-bedroom penthouse-level plan.`,
       },
       {
         q: 'Do all floor plans have a balcony?',
@@ -334,8 +346,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     title: 'Apartment Guide: Layouts, Finishes & Views | Exhibit On Superior',
     description:
       'A complete guide to Exhibit On Superior apartments — studio, convertible, 1, 2 & 3 bedroom layouts, finishes, in-home laundry, and skyline views.',
-    quickAnswer:
-      'Exhibit On Superior offers studio, convertible, one, two, and three-bedroom apartments from about 448 to 1,528 square feet across floors 2\u201334, finished with driftwood plank floors, quartz countertops, stainless-steel appliances, in-home washers and dryers, floor-to-ceiling windows, and private balconies in nearly every home.',
+    quickAnswer: `Exhibit On Superior offers studio, convertible, one, two, and three-bedroom apartments from about ${SQFT_MIN_DISPLAY} to ${SQFT_MAX_DISPLAY} square feet across floors 2\u201334, finished with driftwood plank floors, quartz countertops, stainless-steel appliances, in-home washers and dryers, floor-to-ceiling windows, and private balconies in nearly every home.`,
     faqs: [
       {
         q: 'Does Exhibit On Superior have convertible apartments?',
@@ -355,7 +366,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What is the largest apartment available?',
-        a: 'The largest floor plan is a three-bedroom, three-bath residence of 1,528 square feet, offered on the penthouse-level floors 30\u201334.',
+        a: `The largest floor plan is a three-bedroom, three-bath residence of ${SQFT_MAX_DISPLAY} square feet, offered on the penthouse-level floors 30\u201334.`,
       },
       {
         q: 'Are furnished apartments available?',
@@ -466,8 +477,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     title: 'Application & Qualification Guide | Exhibit On Superior',
     description:
       'How to apply for an apartment at Exhibit On Superior — the online application process, what to have ready, plus screening, guarantor, and lease-term details.',
-    quickAnswer:
-      'To apply for an apartment at Exhibit On Superior, open any residence on the Available Units page and use its Apply Now button \u2014 each unit links to its own secure online application through the AppFolio leasing system. A minimum credit score of 700 is required (600+ with a qualified co-signer), approval typically takes 1\u20133 business days, and 12+ month lease terms are available.',
+    quickAnswer: `To apply for an apartment at Exhibit On Superior, open any residence on the Available Units page and use its Apply Now button \u2014 each unit links to its own secure online application through the AppFolio leasing system. A minimum credit score of ${CREDIT_SCORE_MIN} is required (${CREDIT_SCORE_COSIGNER_MIN}+ with a qualified co-signer), approval typically takes 1\u20133 business days, and 12+ month lease terms are available.`,
     faqs: [
       {
         q: 'How do I apply for an apartment at Exhibit On Superior?',
@@ -475,11 +485,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What credit score is required to qualify?',
-        a: 'A minimum credit score of 700 is required without a co-signer, or 600+ with a qualified co-signer.',
+        a: `A minimum credit score of ${CREDIT_SCORE_MIN} is required without a co-signer, or ${CREDIT_SCORE_COSIGNER_MIN}+ with a qualified co-signer.`,
       },
       {
         q: 'Are guarantors accepted?',
-        a: 'Yes. Qualified co-signers are accepted \u2014 applicants with a 600+ credit score can qualify with one.',
+        a: `Yes. Qualified co-signers are accepted \u2014 applicants with a ${CREDIT_SCORE_COSIGNER_MIN}+ credit score can qualify with one.`,
       },
       {
         q: 'How long does approval take?',
@@ -528,15 +538,14 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     title: 'Contact Exhibit On Superior | River North Chicago Apartments',
     description:
       "Contact Exhibit On Superior in Chicago's River North neighborhood — email exhibit@highlandptrs.com, call 312-450-0635, or send a message with the online form.",
-    quickAnswer:
-      'To contact Exhibit On Superior, email exhibit@highlandptrs.com, call 312-450-0635, or visit the leasing office at 165 W Superior St, Chicago, IL 60654 \u2014 open Monday\u2013Friday 9 AM\u20136 PM and Saturday 10 AM\u20135 PM (closed Sunday), with the front desk staffed 24 hours a day.',
+    quickAnswer: `To contact Exhibit On Superior, email exhibit@highlandptrs.com, call 312-450-0635, or visit the leasing office at 165 W Superior St, Chicago, IL 60654 \u2014 open Monday\u2013Friday ${WEEKDAY_HOURS_SHORT} and Saturday ${SATURDAY_HOURS_SHORT} (closed Sunday), with the front desk staffed 24 hours a day.`,
     faqs: [
       { q: 'What is the email for Exhibit On Superior?', a: 'The contact email is exhibit@highlandptrs.com.' },
       { q: 'What is the phone number for Exhibit On Superior?', a: 'The phone number is 312-450-0635.' },
       { q: 'What is the address?', a: 'The address is 165 W Superior St, Chicago, IL 60654.' },
       {
         q: 'What are the leasing office hours?',
-        a: 'Monday\u2013Friday 9:00 AM\u20136:00 PM and Saturday 10:00 AM\u20135:00 PM; closed Sunday. The front desk is staffed 24 hours a day.',
+        a: `Monday\u2013Friday ${WEEKDAY_HOURS_CLOCK} and Saturday ${SATURDAY_HOURS_CLOCK}; closed Sunday. The front desk is staffed 24 hours a day.`,
       },
       {
         q: 'How do I reach maintenance for an urgent issue?',
@@ -613,13 +622,12 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'About',
     title: 'About Exhibit On Superior | River North Chicago Apartments',
     description:
-      'The story of Exhibit On Superior — a 34-story, 298-residence luxury tower at 165 W Superior St in River North Chicago with a full-time on-site management team.',
-    quickAnswer:
-      'Exhibit On Superior is a 34-story luxury apartment tower with 298 residences at 165 W Superior St in Chicago\u2019s River North neighborhood, professionally managed by a full-time on-site team. The building offers studio through three-bedroom homes from about 448 to 1,528 square feet, a full floor of amenities, a 24-hour staffed front desk, and on-site retail.',
+      `The story of Exhibit On Superior — a 34-story, ${UNIT_TOTAL}-residence luxury tower at 165 W Superior St in River North Chicago with a full-time on-site management team.`,
+    quickAnswer: `Exhibit On Superior is a 34-story luxury apartment tower with ${UNIT_TOTAL} residences at 165 W Superior St in Chicago\u2019s River North neighborhood, professionally managed by a full-time on-site team. The building offers studio through three-bedroom homes from about ${SQFT_MIN_DISPLAY} to ${SQFT_MAX_DISPLAY} square feet, a full floor of amenities, a 24-hour staffed front desk, and on-site retail.`,
     faqs: [
       {
         q: 'How many apartments are in Exhibit On Superior?',
-        a: 'The tower holds 298 residences across 34 stories, with homes on floors 2\u201334 ranging from studios of about 448 square feet to three-bedroom, three-bath penthouses of 1,528 square feet.',
+        a: `The tower holds ${UNIT_TOTAL} residences across 34 stories, with homes on floors 2\u201334 ranging from studios of about ${SQFT_MIN_DISPLAY} square feet to three-bedroom, three-bath penthouses of ${SQFT_MAX_DISPLAY} square feet.`,
       },
       {
         q: 'Where is Exhibit On Superior located?',
@@ -628,7 +636,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What are the leasing office hours?',
-        a: 'The leasing office is open Monday\u2013Friday 9:00 AM\u20136:00 PM and Saturday 10:00 AM\u20135:00 PM; it is closed on Sunday. The front desk is staffed 24 hours a day.',
+        a: `The leasing office is open Monday\u2013Friday ${WEEKDAY_HOURS_CLOCK} and Saturday ${SATURDAY_HOURS_CLOCK}; it is closed on Sunday. The front desk is staffed 24 hours a day.`,
       },
     ],
   },
@@ -640,7 +648,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       "Read reviews for Exhibit On Superior and connect with verified review sources for this River North Chicago apartment community.",
     quickAnswer:
-      'Reviews of Exhibit On Superior come directly from the property\u2019s Google Business Profile, so the star rating and quotes shown on this page reflect what residents and visitors have actually posted about the 298-residence River North tower \u2014 refreshed automatically rather than hand-picked marketing testimonials.',
+      `Reviews of Exhibit On Superior come directly from the property\u2019s Google Business Profile, so the star rating and quotes shown on this page reflect what residents and visitors have actually posted about the ${UNIT_TOTAL}-residence River North tower \u2014 refreshed automatically rather than hand-picked marketing testimonials.`,
     faqs: [
       {
         q: 'Where do reviews come from?',
@@ -743,7 +751,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       {
         q: 'What apartment sizes are available?',
         knowledgeSlug: 'what-apartment-sizes',
-        a: 'The community offers studio, convertible, one, two, and three-bedroom apartment homes from about 448 to 1,528 square feet across floors 2\u201334.',
+        a: `The community offers studio, convertible, one, two, and three-bedroom apartment homes from about ${SQFT_MIN_DISPLAY} to ${SQFT_MAX_DISPLAY} square feet across floors 2\u201334.`,
       },
       {
         q: 'Do apartments have in-unit laundry?',
@@ -758,7 +766,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       {
         q: 'What is the largest apartment?',
         knowledgeSlug: 'largest-apartment',
-        a: 'A three-bedroom, three-bath residence of 1,528 square feet on the penthouse-level floors 30\u201334.',
+        a: `A three-bedroom, three-bath residence of ${SQFT_MAX_DISPLAY} square feet on the penthouse-level floors 30\u201334.`,
       },
       {
         q: 'Are furnished apartments available?',
@@ -908,7 +916,7 @@ export const FAQ_HUB_TOPICS: FaqHubTopic[] = [
       {
         q: 'What credit score is required and are guarantors accepted?',
         knowledgeSlug: 'credit-score-required',
-        a: 'A minimum credit score of 700 is required, or 600+ with a qualified co-signer. Qualified co-signers are accepted.',
+        a: `A minimum credit score of ${CREDIT_SCORE_MIN} is required, or ${CREDIT_SCORE_COSIGNER_MIN}+ with a qualified co-signer. Qualified co-signers are accepted.`,
       },
       {
         q: 'What lease terms are available?',
@@ -1048,7 +1056,7 @@ export const APARTMENT_COMPLEX_NODE = {
     },
   },
   // Total residences in the tower — a hard fact AI answer engines look for.
-  numberOfAccommodationUnits: 298,
+  numberOfAccommodationUnits: UNIT_TOTAL,
   // Building-wide square-footage range from the floor-plan DB extremes.
   floorSize: FLOOR_SIZE_RANGE_NODE,
   // Live availability count + real "From $X,XXX/month" price range from the
@@ -1086,13 +1094,8 @@ export const APARTMENT_COMPLEX_NODE = {
   },
   geo: { '@type': 'GeoCoordinates', latitude: '41.8953945', longitude: '-87.6335254' },
   openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '09:00',
-      closes: '18:00',
-    },
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday'], opens: '10:00', closes: '17:00' },
+    { '@type': 'OpeningHoursSpecification', ...OFFICE_HOURS_WEEKDAY },
+    { '@type': 'OpeningHoursSpecification', ...OFFICE_HOURS_SATURDAY },
   ],
   hasMap: 'https://www.google.com/maps?cid=15240815771270963454',
   tourBookingPage: TOUR_URL,

@@ -6,6 +6,7 @@ import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { PropertyMap } from '../components/PropertyMap';
+import { OFFICE_HOURS_LINES } from '../data/propertyFacts';
 import {
   WALK_SCORE,
   TRANSIT_SCORE,
@@ -173,9 +174,9 @@ export function MapDirections() {
               <h3 className="text-3xl uppercase tracking-wider">Leasing Office Hours</h3>
             </div>
             <ul className="space-y-2 text-lg mb-8">
-              <li>Monday – Friday: 9:00 AM – 6:00 PM</li>
-              <li>Saturday: 10:00 AM – 5:00 PM</li>
-              <li>Sunday: Closed</li>
+              {OFFICE_HOURS_LINES.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
             </ul>
             <p className="text-sm text-muted-foreground">
               Planning a visit? <Link href="/available-units" className="text-primary underline">Schedule a tour</Link> ahead of time so our team is ready to show you around.
