@@ -322,7 +322,7 @@ export async function checkFloorPlanPagesOnce(
   );
 
   if (failures.length === 0) {
-    log.debug(
+    log.info(
       { checkedCount: result.checkedCount },
       "Floor-plan-page check passed",
     );
