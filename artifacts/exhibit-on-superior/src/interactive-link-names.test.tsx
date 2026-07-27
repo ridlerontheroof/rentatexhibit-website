@@ -41,11 +41,7 @@ vi.mock('./hooks/use-availability', () => ({
 import { Header } from './components/Header';
 import { PhotoGallery } from './pages/PhotoGallery';
 import { UnitDetail } from './pages/UnitDetail';
-import FloorPlansDefault, * as FloorPlansModule from './pages/FloorPlans';
-
-// FloorPlans may export default or named — resolve whichever exists.
-const FloorPlans =
-  (FloorPlansModule as Record<string, unknown>).FloorPlans ?? FloorPlansDefault;
+import { FloorPlans } from './pages/FloorPlans';
 
 beforeEach(() => {
   vi.stubGlobal(
