@@ -1,0 +1,89 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://www.rentatexhibit.com/faq#faqpage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Where is Exhibit On Superior located?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654 in the River North area."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What apartment sizes are available at Exhibit On Superior?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The community offers studio, convertible, one-, two-, and three-bedroom apartment homes from about 448 to 1,528 square feet across floors 2–34."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does it cost to live at Exhibit On Superior?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Apartments currently start at $2,271 per month for a studio/convertible residence. Pricing updates automatically from the leasing system and varies by residence, lease term, and move-in date. See the Available Units page for live rent on every available apartment."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Exhibit On Superior pet-friendly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Cats and dogs are welcome with a maximum of 2 pets per apartment. One-time non-refundable pet fee: $650 for one dog or $750 for two dogs, $325 for cats. No monthly pet rent and no weight limits. Breed restrictions apply."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What amenities does Exhibit On Superior offer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Amenities include a full-floor amenity deck, fitness center with private training rooms, 75-foot lap pool, outdoor hot tub, sauna, lounges, work and meeting rooms, music studio, dog spa, grilling stations, fire pits, and outdoor areas. The front desk is staffed 24 hours a day."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I schedule a tour of Exhibit On Superior?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Choose the residence you’re interested in on the Available Units page and use its Schedule a Tour button, email exhibit@highlandptrs.com, or call 312-450-0635. Virtual tours are also available."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the phone number for Exhibit On Superior?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The leasing office phone number is 312-450-0635."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Exhibit On Superior have in-unit laundry?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. In-home washer and dryers are a standard feature in every apartment."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does parking cost at Exhibit On Superior?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Garage parking in the attached indoor garage is $335 per month per unreserved space, subject to availability."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What credit score is required to rent at Exhibit On Superior?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A minimum credit score of 700 is required, or 600+ with a qualified co-signer. Qualified co-signers are accepted."
+      }
+    }
+  ]
+}
+</script>
