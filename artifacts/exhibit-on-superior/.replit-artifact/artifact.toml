@@ -282,6 +282,9 @@ to = "/apartments/il/chicago/magellan-rewards/index.html"
 from = "/apartments/il/chicago/magellan-rewards/"
 to = "/apartments/il/chicago/magellan-rewards/index.html"
 
+# Floor-plan landing pages: hub + one page per distinct plan layout. Slugs are
+# code-derived (src/data/floorPlanPages.ts); the parity guard in
+# scripts/prerender.mjs fails the build if this block drifts.
 [[services.production.rewrites]]
 from = "/floor-plans"
 to = "/floor-plans/index.html"
@@ -289,6 +292,278 @@ to = "/floor-plans/index.html"
 [[services.production.rewrites]]
 from = "/floor-plans/"
 to = "/floor-plans/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-821-sf"
+to = "/floor-plans/two-bedroom-one-bath-821-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-821-sf/"
+to = "/floor-plans/two-bedroom-one-bath-821-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-619-sf"
+to = "/floor-plans/one-bedroom-one-bath-619-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-619-sf/"
+to = "/floor-plans/one-bedroom-one-bath-619-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-630-sf"
+to = "/floor-plans/one-bedroom-one-bath-630-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-630-sf/"
+to = "/floor-plans/one-bedroom-one-bath-630-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1003-sf"
+to = "/floor-plans/two-bedroom-two-bath-1003-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1003-sf/"
+to = "/floor-plans/two-bedroom-two-bath-1003-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-929-sf"
+to = "/floor-plans/two-bedroom-two-bath-929-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-929-sf/"
+to = "/floor-plans/two-bedroom-two-bath-929-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-935-sf"
+to = "/floor-plans/two-bedroom-two-bath-935-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-935-sf/"
+to = "/floor-plans/two-bedroom-two-bath-935-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1135-sf"
+to = "/floor-plans/two-bedroom-two-bath-1135-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1135-sf/"
+to = "/floor-plans/two-bedroom-two-bath-1135-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/studio-448-sf"
+to = "/floor-plans/studio-448-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/studio-448-sf/"
+to = "/floor-plans/studio-448-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-656-sf"
+to = "/floor-plans/one-bedroom-one-bath-656-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-656-sf/"
+to = "/floor-plans/one-bedroom-one-bath-656-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1079-sf"
+to = "/floor-plans/two-bedroom-two-bath-1079-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1079-sf/"
+to = "/floor-plans/two-bedroom-two-bath-1079-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-768-sf"
+to = "/floor-plans/one-bedroom-one-bath-768-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-768-sf/"
+to = "/floor-plans/one-bedroom-one-bath-768-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-628-sf"
+to = "/floor-plans/one-bedroom-one-bath-628-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-628-sf/"
+to = "/floor-plans/one-bedroom-one-bath-628-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1026-sf"
+to = "/floor-plans/two-bedroom-two-bath-1026-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1026-sf/"
+to = "/floor-plans/two-bedroom-two-bath-1026-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1052-sf"
+to = "/floor-plans/two-bedroom-two-bath-1052-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-1052-sf/"
+to = "/floor-plans/two-bedroom-two-bath-1052-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-899-sf"
+to = "/floor-plans/two-bedroom-two-bath-899-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-two-bath-899-sf/"
+to = "/floor-plans/two-bedroom-two-bath-899-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/convertible-554-sf"
+to = "/floor-plans/convertible-554-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/convertible-554-sf/"
+to = "/floor-plans/convertible-554-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/studio-484-sf"
+to = "/floor-plans/studio-484-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/studio-484-sf/"
+to = "/floor-plans/studio-484-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-den-two-bath-983-sf"
+to = "/floor-plans/two-bedroom-den-two-bath-983-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-den-two-bath-983-sf/"
+to = "/floor-plans/two-bedroom-den-two-bath-983-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/jr-convertible-450-sf"
+to = "/floor-plans/jr-convertible-450-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/jr-convertible-450-sf/"
+to = "/floor-plans/jr-convertible-450-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-769-776-sf"
+to = "/floor-plans/two-bedroom-one-bath-769-776-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-769-776-sf/"
+to = "/floor-plans/two-bedroom-one-bath-769-776-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-665-sf"
+to = "/floor-plans/one-bedroom-one-bath-665-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-665-sf/"
+to = "/floor-plans/one-bedroom-one-bath-665-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-645-sf"
+to = "/floor-plans/one-bedroom-one-bath-645-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-645-sf/"
+to = "/floor-plans/one-bedroom-one-bath-645-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-779-sf-floors-6-29"
+to = "/floor-plans/two-bedroom-one-bath-779-sf-floors-6-29/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-779-sf-floors-6-29/"
+to = "/floor-plans/two-bedroom-one-bath-779-sf-floors-6-29/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/jr-convertible-478-sf-floors-6-29"
+to = "/floor-plans/jr-convertible-478-sf-floors-6-29/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/jr-convertible-478-sf-floors-6-29/"
+to = "/floor-plans/jr-convertible-478-sf-floors-6-29/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/three-bedroom-three-bath-1455-sf"
+to = "/floor-plans/three-bedroom-three-bath-1455-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/three-bedroom-three-bath-1455-sf/"
+to = "/floor-plans/three-bedroom-three-bath-1455-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/three-bedroom-three-bath-1528-sf"
+to = "/floor-plans/three-bedroom-three-bath-1528-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/three-bedroom-three-bath-1528-sf/"
+to = "/floor-plans/three-bedroom-three-bath-1528-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/jr-convertible-456-sf"
+to = "/floor-plans/jr-convertible-456-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/jr-convertible-456-sf/"
+to = "/floor-plans/jr-convertible-456-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-767-sf"
+to = "/floor-plans/two-bedroom-one-bath-767-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-767-sf/"
+to = "/floor-plans/two-bedroom-one-bath-767-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-669-sf-floors-30-34"
+to = "/floor-plans/one-bedroom-one-bath-669-sf-floors-30-34/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-669-sf-floors-30-34/"
+to = "/floor-plans/one-bedroom-one-bath-669-sf-floors-30-34/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-651-sf"
+to = "/floor-plans/one-bedroom-one-bath-651-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-651-sf/"
+to = "/floor-plans/one-bedroom-one-bath-651-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-779-sf-floors-30-34"
+to = "/floor-plans/two-bedroom-one-bath-779-sf-floors-30-34/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/two-bedroom-one-bath-779-sf-floors-30-34/"
+to = "/floor-plans/two-bedroom-one-bath-779-sf-floors-30-34/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/jr-convertible-478-sf-floors-30-34"
+to = "/floor-plans/jr-convertible-478-sf-floors-30-34/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/jr-convertible-478-sf-floors-30-34/"
+to = "/floor-plans/jr-convertible-478-sf-floors-30-34/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-672-sf"
+to = "/floor-plans/one-bedroom-one-bath-672-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-672-sf/"
+to = "/floor-plans/one-bedroom-one-bath-672-sf/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-669-sf-floors-17-21"
+to = "/floor-plans/one-bedroom-one-bath-669-sf-floors-17-21/index.html"
+
+[[services.production.rewrites]]
+from = "/floor-plans/one-bedroom-one-bath-669-sf-floors-17-21/"
+to = "/floor-plans/one-bedroom-one-bath-669-sf-floors-17-21/index.html"
 
 [[services.production.rewrites]]
 from = "/apartments/il/chicago/apply"
@@ -1051,6 +1326,12 @@ to = "/available-units/2801/index.html"
 [[services.production.rewrites]]
 from = "/knowledge/*"
 to = "/knowledge/not-found/index.html"
+
+# Unknown /floor-plans/<slug> URLs: serve the noindex not-found stub instead of
+# homepage HTML (soft 404) for non-JS crawlers.
+[[services.production.rewrites]]
+from = "/floor-plans/*"
+to = "/floor-plans/not-found/index.html"
 
 # Legacy Wix-era sitemap URLs: serve the real sitemap instead of the SPA
 # fallback so crawlers do not see soft-404 HTML at .xml paths.

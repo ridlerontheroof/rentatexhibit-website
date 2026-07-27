@@ -223,7 +223,8 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     ['/apartments/il/chicago/schedule-a-tour', '/schedule-a-tour'],
     ['/apartments/il/chicago/reviews', '/reviews'],
     ['/apartments/il/chicago/magellan-rewards', '/'],
-    ['/floor-plans', '/available-units'],
+    // NOTE: '/floor-plans' is no longer a legacy redirect — it is a real
+    // indexable hub page (see the floor-plan pages suite below).
     ['/availableunits', '/available-units'],
     ['/floorplans.aspx', '/available-units'],
     ['/availableunits.aspx', '/available-units'],
@@ -256,10 +257,34 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     expect(res.headers.get('location')).toMatch(/^https:\/\//);
   });
 
-  it('preserves query strings on legacy 301s (e.g. /floor-plans?plan=…)', async () => {
-    const res = await get('/floor-plans?plan=a1');
+  it('preserves query strings on legacy 301s (e.g. /floorplans.aspx?plan=…)', async () => {
+    const res = await get('/floorplans.aspx?plan=a1');
     expect(res.status).toBe(301);
     expect(res.headers.get('location')).toBe('/available-units?plan=a1');
+  });
+
+  // -------------------------------------------------------------------------
+  // Floor-plan landing pages (/floor-plans + /floor-plans/<slug>)
+  // -------------------------------------------------------------------------
+  it('serves the floor-plan hub and a plan page with their own prerendered HTML', async () => {
+    for (const [p, marker] of [
+      ['/floor-plans', `rel="canonical" href="https://www.rentatexhibit.com/floor-plans"`],
+      [
+        '/floor-plans/two-bedroom-two-bath-1003-sf',
+        `rel="canonical" href="https://www.rentatexhibit.com/floor-plans/two-bedroom-two-bath-1003-sf"`,
+      ],
+    ] as const) {
+      const res = await get(p);
+      expect(res.status, p).toBe(200);
+      expect(await res.text(), p).toContain(marker);
+    }
+  });
+
+  it('404s unknown /floor-plans/<slug> URLs with the noindex stub', async () => {
+    const res = await get('/floor-plans/not-a-real-plan');
+    expect(res.status).toBe(404);
+    const html = await res.text();
+    expect(html).toContain('noindex');
   });
 
   it('404s unknown /apartments/il/chicago/* suffixes instead of serving the shell (soft-404 guard)', async () => {

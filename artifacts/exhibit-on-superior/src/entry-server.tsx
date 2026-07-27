@@ -17,6 +17,17 @@ import {
   knowledgeTitle,
 } from './data/knowledge';
 import { KnowledgeArticle } from './pages/KnowledgeArticle';
+import {
+  FLOOR_PLAN_PAGES,
+  FLOOR_PLAN_PAGE_PATHS as FLOOR_PLAN_PATHS_INTERNAL,
+  buildFloorPlanSeoModel,
+  floorPlanH1,
+  floorPlanDescription,
+  floorPlanHubItemListJsonLd,
+  floorPlanPage,
+  floorPlanPagePath,
+} from './data/floorPlanPages';
+import { FloorPlanDetail } from './pages/FloorPlanDetail';
 import { floorPlansItemListJsonLd, planGroups } from './data/floorPlans';
 import { unitAvailabilityJsonLd } from './data/unitJsonLd';
 import { getBakedAvailability, getBakedSnapshotStatus } from './data/availabilitySnapshot';
@@ -51,6 +62,19 @@ export const UNIT_PATHS: string[] = (getBakedAvailability()?.units ?? []).map((u
 // builder in data/knowledge.ts). The prerenderer also uses the meta list to
 // generate llms.txt / llms-full.txt entries.
 export const KNOWLEDGE_PATHS: string[] = KNOWLEDGE_ARTICLES.map((a) => knowledgePath(a.slug));
+
+// Floor-plan landing pages (/floor-plans/<slug>): one prerendered route per
+// distinct plan layout. Like unit/knowledge pages they live outside
+// PAGE_SEO/ROUTE_PATHS (dynamic route, shared head builder in
+// data/floorPlanPages.ts). Slugs are code-derived, so the artifact.toml
+// rewrite parity guard in scripts/prerender.mjs pins them.
+export const FLOOR_PLAN_PAGE_PATHS: string[] = FLOOR_PLAN_PATHS_INTERNAL;
+export const FLOOR_PLAN_PAGE_META: Array<{ path: string; title: string; description: string }> =
+  FLOOR_PLAN_PAGES.map((fp) => ({
+    path: floorPlanPagePath(fp.slug),
+    title: `${floorPlanH1(fp)} Floor Plan`,
+    description: floorPlanDescription(fp),
+  }));
 export const KNOWLEDGE_META: Array<{ path: string; title: string; description: string; question: string; category: string }> =
   KNOWLEDGE_ARTICLES.map((a) => ({
     path: knowledgePath(a.slug),
@@ -67,6 +91,7 @@ export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
 // page component passes to <Seo extraJsonLd>; keep in sync with that page.
 const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
   '/available-units': () => [floorPlansItemListJsonLd(), unitAvailabilityJsonLd()],
+  '/floor-plans': () => [floorPlanHubItemListJsonLd()],
   // At prerender time there is no live Google feed, so the model resolves to
   // the curated fallback — exactly what the SSR'd page body displays. The
   // client re-emits the schema from the live-merged model after hydration.
@@ -111,6 +136,36 @@ export async function render(pathname: string): Promise<RenderResult> {
     return {
       html,
       head: renderHeadTags(buildUnitSeoModel(unit, getBakedAvailability()?.updatedAt ?? null)),
+    };
+  }
+
+  // Floor-plan landing page (/floor-plans/<slug>): same dynamic-route pattern
+  // as per-unit pages — wouter <Route> so useParams resolves, shared head
+  // model built from the SAME baked availability snapshot the body renders.
+  const planMatch = pathname.match(/^\/floor-plans\/([^/]+)$/);
+  if (planMatch) {
+    const page = floorPlanPage(planMatch[1]);
+    if (!page) {
+      throw new Error(`render(${pathname}): no floor-plan page with slug ${planMatch[1]}`);
+    }
+    const html = renderToString(
+      <QueryClientProvider client={new QueryClient()}>
+        <Router ssrPath={pathname}>
+          <Layout>
+            <Route path="/floor-plans/:slug" component={FloorPlanDetail} />
+          </Layout>
+        </Router>
+      </QueryClientProvider>,
+    );
+    return {
+      html,
+      head: renderHeadTags(
+        buildFloorPlanSeoModel(
+          page,
+          getBakedAvailability()?.units ?? [],
+          getBakedAvailability()?.updatedAt ?? null,
+        ),
+      ),
     };
   }
 

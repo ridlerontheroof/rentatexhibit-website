@@ -35,6 +35,8 @@ const {
   BAKED_SNAPSHOT_STATUS,
   KNOWLEDGE_PATHS,
   KNOWLEDGE_META,
+  FLOOR_PLAN_PAGE_PATHS,
+  FLOOR_PLAN_PAGE_META,
 } = await import(pathToFileURL(serverEntry).href);
 
 // Snapshot freshness guard: per-unit pages, their sitemap entries, and the
@@ -59,7 +61,16 @@ const unitPaths = UNIT_PATHS ?? [];
 // through a dynamic route — like unit pages they live outside PAGE_SEO, with
 // their head model coming from buildKnowledgeSeoModel.
 const knowledgePaths = KNOWLEDGE_PATHS ?? [];
-const allPaths = [...Object.keys(PAGE_SEO), ...unitPaths, ...knowledgePaths];
+// Floor-plan landing pages (/floor-plans/<slug>): one per distinct plan
+// layout — code-derived slugs rendered through a dynamic route, with their
+// head model coming from buildFloorPlanSeoModel.
+const floorPlanPagePaths = FLOOR_PLAN_PAGE_PATHS ?? [];
+const allPaths = [
+  ...Object.keys(PAGE_SEO),
+  ...unitPaths,
+  ...knowledgePaths,
+  ...floorPlanPagePaths,
+];
 const outPathFor = (routePath) =>
   routePath === '/'
     ? path.join(publicDir, 'index.html')
@@ -237,6 +248,8 @@ const LCP_REQUIRED_ROUTES = [
 const LCP_NO_HERO_ROUTES = [
   // Knowledge Center hub: a text-first Q&A index with no hero image by design.
   '/knowledge',
+  // Floor-plan hub: a directory of lazy plan-diagram cards, no hero by design.
+  '/floor-plans',
 ];
 
 // Post-build guard: re-read every written page from disk and cross-check its
@@ -588,10 +601,6 @@ const LEGACY_REDIRECT_STUBS = LEGACY_REDIRECTS;
 
 for (const [from, to] of Object.entries(LEGACY_REDIRECT_STUBS)) {
   const isExternal = /^https?:\/\//i.test(to);
-  // /floor-plans deep links carry ?plan=<id>; a meta refresh cannot forward the
-  // query string, so that stub also ships a tiny inline script that preserves
-  // search + hash for JS-enabled agents (the meta refresh stays as fallback).
-  const preserveQuery = from === '/floor-plans';
   const stub = `<!doctype html>
 <html lang="en">
   <head>
@@ -600,11 +609,7 @@ for (const [from, to] of Object.entries(LEGACY_REDIRECT_STUBS)) {
     <meta name="robots" content="noindex" />${
       isExternal ? '' : `\n    <link rel="canonical" href="${canonicalFor(to)}" />`
     }
-    <meta http-equiv="refresh" content="0;url=${to}" />${
-      preserveQuery
-        ? `\n    <script>location.replace(${JSON.stringify(to)} + location.search + location.hash);</script>`
-        : ''
-    }
+    <meta http-equiv="refresh" content="0;url=${to}" />
   </head>
   <body>
     <p>This page has moved. <a href="${to}">Continue to Exhibit On Superior</a>.</p>
@@ -703,6 +708,49 @@ console.log(`Prerendered ${allPaths.length} routes.`);
         'Regenerate the knowledge rewrite block (bare + trailing-slash pair per slug, then the /knowledge/* not-found fallback, all ahead of the /* catch-all).',
     );
   }
+}
+
+// Floor-plan rewrite parity guard: same failure mode as knowledge articles —
+// the slugs live in code (floorPlanPages.ts) but their clean-URL rewrites are
+// duplicated in artifact.toml. Missing pair => homepage HTML for crawlers;
+// stale pair => rewrite to a deleted page. Both directions fail the build.
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const expected = ['/floor-plans', ...floorPlanPagePaths];
+  const missing = [];
+  for (const p of expected) {
+    for (const form of [p, `${p}/`]) {
+      if (!toml.includes(`from = "${form}"\nto = "${p}/index.html"`)) missing.push(form);
+    }
+  }
+  const expectedSet = new Set(expected);
+  const stale = [...toml.matchAll(/from = "(\/floor-plans\/[^"*]+?)\/?"/g)]
+    .map((m) => m[1])
+    .filter((p) => !expectedSet.has(p));
+  if (!toml.includes('from = "/floor-plans/*"')) missing.push('/floor-plans/* (not-found fallback)');
+  if (missing.length || stale.length) {
+    throw new Error(
+      `Prerender aborted: artifact.toml floor-plan rewrites out of sync with floorPlanPages.ts.\n` +
+        (missing.length ? `  Missing rewrite(s): ${missing.join(', ')}\n` : '') +
+        (stale.length ? `  Stale rewrite(s) for removed slug(s): ${[...new Set(stale)].join(', ')}\n` : '') +
+        'Regenerate the floor-plan rewrite block (bare + trailing-slash pair per slug, then the /floor-plans/* not-found fallback, all ahead of the /* catch-all).',
+    );
+  }
+}
+
+// Unknown-slug fallback: /floor-plans/* (after the per-slug rewrites) serves
+// this noindex stub instead of homepage HTML, so retired or mistyped plan
+// URLs are not soft-404 duplicates of the homepage for non-JS crawlers.
+{
+  const stubDir = path.join(publicDir, 'floor-plans', 'not-found');
+  await fs.mkdir(stubDir, { recursive: true });
+  const stub = template.replace(
+    SEO_BLOCK,
+    `<!-- seo:start -->\n    <title>Page Not Found | Exhibit On Superior</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This floor plan page does not exist. Browse every layout at ${SITE_URL}/floor-plans." />\n    <!-- seo:end -->`,
+  );
+  await fs.writeFile(path.join(stubDir, 'index.html'), stub, 'utf8');
+  console.log('Floor-plan not-found stub written (noindex, served via /floor-plans/* rewrite).');
 }
 
 // Unknown-slug fallback: /knowledge/* (after the per-slug rewrites) serves
@@ -825,7 +873,7 @@ const contentHashes = new Map();
     // First build with the mechanism: every page starts at today's date.
   }
   const today = new Date().toISOString().slice(0, 10);
-  const sitemapPaths = [...indexable, ...unitPaths, ...knowledgePaths];
+  const sitemapPaths = [...indexable, ...unitPaths, ...knowledgePaths, ...floorPlanPagePaths];
   /** @type {Record<string, {hash: string, lastmod: string}>} */
   const lastmods = {};
   for (const p of sitemapPaths) {
@@ -853,6 +901,11 @@ const contentHashes = new Map();
     ...knowledgePaths.map(
       (p) =>
         `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
+    ),
+    // Floor-plan landing pages: stable plan facts, availability list churns.
+    ...floorPlanPagePaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>`,
     ),
   ].join('\n');
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
@@ -906,10 +959,16 @@ const contentHashes = new Map();
       (m) => `- [${m.question}](${SITE_URL}${m.path}): ${m.description} ([Markdown](${SITE_URL}${m.path}.md))`,
     ),
     '',
+    '## Floor Plan Layouts (one page per distinct plan)',
+    '',
+    ...(FLOOR_PLAN_PAGE_META ?? []).map(
+      (m) => `- [${m.title}](${SITE_URL}${m.path}): ${m.description} ([Markdown](${SITE_URL}${m.path}.md))`,
+    ),
+    '',
   ];
   await fs.writeFile(path.join(publicDir, 'llms-full.txt'), lines.join('\n'), 'utf8');
   console.log(
-    `llms-full.txt written with ${indexable.length + unitPaths.length + (KNOWLEDGE_META ?? []).length} pages; llms.txt Knowledge Center section ensured.`,
+    `llms-full.txt written with ${indexable.length + unitPaths.length + (KNOWLEDGE_META ?? []).length + (FLOOR_PLAN_PAGE_META ?? []).length} pages; llms.txt Knowledge Center section ensured.`,
   );
 }
 

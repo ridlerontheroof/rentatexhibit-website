@@ -8,6 +8,7 @@ import {
   getPreloadedComponent,
   UNIT_DETAIL_ROUTE,
   KNOWLEDGE_ARTICLE_ROUTE,
+  FLOOR_PLAN_DETAIL_ROUTE,
 } from './routes';
 import { LEGACY_REDIRECTS as SHARED_LEGACY_REDIRECTS } from './data/legacyRedirects';
 
@@ -40,6 +41,15 @@ const UnitDetailLazy = lazy(
 function UnitDetailRoute(_props: RouteComponentProps) {
   const Preloaded = getPreloadedComponent(UNIT_DETAIL_ROUTE);
   return Preloaded ? <Preloaded /> : <UnitDetailLazy />;
+}
+
+const FloorPlanDetailLazy = lazy(
+  () => import('./pages/FloorPlanDetail').then((m) => ({ default: m.FloorPlanDetail })),
+);
+/** Same boot-preload CLS guard as unit pages, for /floor-plans/<slug>. */
+function FloorPlanDetailRoute(_props: RouteComponentProps) {
+  const Preloaded = getPreloadedComponent(FLOOR_PLAN_DETAIL_ROUTE);
+  return Preloaded ? <Preloaded /> : <FloorPlanDetailLazy />;
 }
 
 const KnowledgeArticleLazy = lazy(
@@ -157,19 +167,10 @@ function App() {
               article at build time (scripts/prerender.mjs). */}
           <Route path={KNOWLEDGE_ARTICLE_ROUTE} component={KnowledgeArticleRoute} />
 
-          {/* /floor-plans is the page's former canonical URL — keep it working,
-              preserving deep-link params like ?plan=<id> (and any hash). */}
-          <Route path="/floor-plans">
-            {() => (
-              <Redirect
-                to={`/available-units${
-                  typeof window === 'undefined'
-                    ? ''
-                    : window.location.search + window.location.hash
-                }`}
-              />
-            )}
-          </Route>
+          {/* Floor-plan landing pages: one per distinct plan layout, prerendered
+              at build time (scripts/prerender.mjs). The /floor-plans hub itself
+              is a static content route in routes.tsx. */}
+          <Route path={FLOOR_PLAN_DETAIL_ROUTE} component={FloorPlanDetailRoute} />
 
           {/* Clean external CTA URL preserved from the migration information architecture */}
           <Route path="/apply">{() => <Redirect to={APPLY_URL} cta="apply" />}</Route>

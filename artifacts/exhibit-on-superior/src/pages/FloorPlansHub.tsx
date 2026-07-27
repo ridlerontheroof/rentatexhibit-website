@@ -1,0 +1,114 @@
+import { Link } from 'wouter';
+import { Seo } from '../components/Seo';
+import { QuickAnswer } from '../components/QuickAnswer';
+import { CATEGORIES } from '../data/floorPlans';
+import {
+  FLOOR_PLAN_PAGES,
+  floorPlanH1,
+  floorPlanHubItemListJsonLd,
+  floorPlanPagePath,
+  planFloorPhrase,
+  type FloorPlanPage,
+} from '../data/floorPlanPages';
+import { planSqftLabel } from '../data/floorPlans';
+
+/**
+ * Floor-plan hub (/floor-plans): a complete crawlable directory of every
+ * distinct plan layout, grouped by category, each linking to its own landing
+ * page. Live pricing and inventory stay on /available-units — this hub (and
+ * the pages under it) documents the layouts themselves, so it is always full
+ * even when nothing is available.
+ */
+export function FloorPlansHub() {
+  return (
+    <>
+      <Seo path="/floor-plans" extraJsonLd={[floorPlanHubItemListJsonLd()]} />
+      <div>
+        <section className="pt-28 pb-12 px-4 bg-dark-section text-center">
+          <div className="container mx-auto max-w-3xl">
+            <p className="eyebrow mb-3 text-primary">Floor Plans</p>
+            <h1 className="text-3xl md:text-4xl uppercase tracking-wider text-white mb-4">
+              Every Floor Plan Layout in the Tower
+            </h1>
+            <p className="text-white/80 leading-relaxed">
+              All {FLOOR_PLAN_PAGES.length} distinct layouts at Exhibit On Superior &mdash;
+              studios, convertibles, and one-, two-, and three-bedroom homes &mdash; each with its
+              plan sheet, floor range, and current availability.
+            </p>
+          </div>
+        </section>
+
+        <QuickAnswer path="/floor-plans" />
+
+        <section className="px-4 pb-16">
+          <div className="container mx-auto max-w-5xl">
+            {CATEGORIES.map((cat) => {
+              const pages = FLOOR_PLAN_PAGES.filter((fp) => fp.plan.category === cat.id);
+              if (pages.length === 0) return null;
+              return (
+                <div key={cat.id} className="mt-12">
+                  <h2 className="mb-6 border-l-2 border-primary pl-3 text-xl uppercase tracking-wider text-foreground">
+                    {cat.label}
+                  </h2>
+                  <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {pages.map((fp) => (
+                      <HubCard key={fp.slug} page={fp} />
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+
+            <div className="mt-16 border-t border-border pt-8 text-center">
+              <p className="text-muted-foreground">
+                Looking for what you can move into right now?
+              </p>
+              <Link
+                href="/available-units"
+                className="mt-4 inline-block bg-primary px-6 py-3 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+              >
+                See live availability &amp; pricing
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
+    </>
+  );
+}
+
+function HubCard({ page }: { page: FloorPlanPage }) {
+  const p = page.plan;
+  return (
+    <li>
+      <Link
+        href={floorPlanPagePath(page.slug)}
+        className="group flex h-full flex-col border border-border bg-white transition-colors hover:border-primary"
+      >
+        <div className="relative aspect-4/3 overflow-hidden bg-muted">
+          <img
+            src={p.images.thumb}
+            alt={`${p.typeLabel} floor plan diagram, ${planSqftLabel(p)} sq ft`}
+            loading="lazy"
+            width={600}
+            height={450}
+            className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
+          />
+          <span className="absolute left-0 top-3 bg-primary px-3 py-1 text-xs uppercase tracking-wider text-white">
+            Unit {String(p.unit).padStart(2, '0')}
+          </span>
+        </div>
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="text-base uppercase tracking-wider text-foreground">
+            {floorPlanH1(page)}
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {planFloorPhrase(p).replace(/^f/, 'F')}
+            {!page.balcony ? ' \u00b7 No balcony' : ''}
+            {page.adaUnits.length > 0 ? ' \u00b7 ADA-designated apartments' : ''}
+          </p>
+        </div>
+      </Link>
+    </li>
+  );
+}

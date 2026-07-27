@@ -40,6 +40,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/floor-plans" className="hover:text-primary transition-colors">
+                  Floor Plans
+                </Link>
+              </li>
+              <li>
                 <Link href="/photo-gallery" className="hover:text-primary transition-colors">
                   Photo Gallery
                 </Link>

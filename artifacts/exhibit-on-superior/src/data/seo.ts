@@ -129,6 +129,31 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
     ],
   },
+  '/floor-plans': {
+    path: '/floor-plans',
+    ogImage: ogCardUrl('floor-plans'),
+    label: 'Floor Plans',
+    title: 'Floor Plan Layouts, Studio to 3 Bedroom | Exhibit On Superior',
+    description:
+      'Every distinct floor-plan layout at Exhibit On Superior in River North Chicago — plan sheets, square footage, floor ranges, balconies, and live availability.',
+    quickAnswer:
+      'Exhibit On Superior offers 34 distinct floor-plan layouts across 27 residence lines — studios, convertibles, and one, two, and three-bedroom homes from about 448 to 1,528 square feet over 34 floors. Each layout below has its own page with the plan sheet, floor range, balcony and accessibility details, and any apartments of that plan available now.',
+    faqs: [
+      {
+        q: 'How many floor plans does Exhibit On Superior have?',
+        a: 'The tower has 34 distinct floor-plan layouts across 27 residence lines, spanning studios, convertibles, and one, two, and three-bedroom homes.',
+      },
+      {
+        q: 'What sizes do the floor plans come in?',
+        a: 'Layouts range from roughly 448 square feet for the smallest studio to 1,528 square feet for the largest three-bedroom penthouse-level plan.',
+      },
+      {
+        q: 'Do all floor plans have a balcony?',
+        knowledgeSlug: 'which-units-have-balconies',
+        a: 'Nearly all of them. The only homes without a private balcony are the 02 and 03 stacks on floors 6 through 29 — every other plan includes one.',
+      },
+    ],
+  },
   '/photo-gallery': {
     path: '/photo-gallery',
     ogImage: ogCardUrl('photo-gallery'),

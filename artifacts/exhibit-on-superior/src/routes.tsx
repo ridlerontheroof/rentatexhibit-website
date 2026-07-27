@@ -64,6 +64,18 @@ export async function preloadRoute(pathname: string): Promise<void> {
         // Fall back to React.lazy.
       }
     }
+    // Floor-plan landing pages are prerendered too (one per distinct plan
+    // layout), so the same CLS guard applies.
+    if (/^\/floor-plans\/[^/]+$/.test(path)) {
+      try {
+        preloadedComponents.set(
+          FLOOR_PLAN_DETAIL_ROUTE,
+          (await import('./pages/FloorPlanDetail')).FloorPlanDetail,
+        );
+      } catch {
+        // Fall back to React.lazy.
+      }
+    }
     // Knowledge Center articles are prerendered too (one per article), so the
     // same CLS guard applies: cache their chunk before the first render.
     if (/^\/knowledge\/[^/]+$/.test(path)) {
@@ -91,9 +103,16 @@ export const UNIT_DETAIL_ROUTE = '/available-units/:unit';
 /** Preload-map key for the dynamic knowledge-article route (see App.tsx). */
 export const KNOWLEDGE_ARTICLE_ROUTE = '/knowledge/:slug';
 
+/** Preload-map key for the dynamic floor-plan landing-page route (see App.tsx). */
+export const FLOOR_PLAN_DETAIL_ROUTE = '/floor-plans/:slug';
+
 export const routes: RouteDef[] = [
   { path: '/', load: () => import('./pages/Home').then((m) => m.Home) },
   { path: '/available-units', load: () => import('./pages/FloorPlans').then((m) => m.FloorPlans) },
+  {
+    path: '/floor-plans',
+    load: () => import('./pages/FloorPlansHub').then((m) => m.FloorPlansHub),
+  },
   { path: '/photo-gallery', load: () => import('./pages/PhotoGallery').then((m) => m.PhotoGallery) },
   { path: '/virtual-tour', load: () => import('./pages/VirtualTour').then((m) => m.VirtualTour) },
   { path: '/amenities', load: () => import('./pages/Amenities').then((m) => m.Amenities) },

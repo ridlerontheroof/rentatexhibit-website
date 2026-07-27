@@ -85,6 +85,7 @@ const legacyRedirects = collectLegacyRedirects(publicDir);
 console.log(`Loaded ${legacyRedirects.size} legacy 301 redirects from redirect stubs`);
 
 const knowledgeStub = path.join(publicDir, 'knowledge', 'not-found', 'index.html');
+const floorPlanStub = path.join(publicDir, 'floor-plans', 'not-found', 'index.html');
 const notFoundPage = fs.existsSync(path.join(publicDir, '404.html'))
   ? path.join(publicDir, '404.html')
   : path.join(publicDir, 'index.html'); // pre-regeneration fallback, still status 404
@@ -337,6 +338,11 @@ app.use((req, res) => {
   // 6. Unknown /knowledge/* slug → dedicated noindex stub, real 404 status.
   if (urlPath.startsWith('/knowledge/') && fs.existsSync(knowledgeStub)) {
     return serveFile(req, res, knowledgeStub, 404);
+  }
+
+  // 6b. Unknown /floor-plans/* slug → dedicated noindex stub, real 404 status.
+  if (urlPath.startsWith('/floor-plans/') && fs.existsSync(floorPlanStub)) {
+    return serveFile(req, res, floorPlanStub, 404);
   }
 
   // 7. Everything else: real 404.

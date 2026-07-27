@@ -26,7 +26,9 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/apartments/il/chicago/apply': APPLY_URL,
   '/apartments/il/chicago/magellan-rewards': '/',
   '/apartments/il/chicago': '/available-units',
-  '/floor-plans': '/available-units',
+  // NOTE: '/floor-plans' is no longer a legacy redirect — it is a real,
+  // indexable hub page (pages/FloorPlansHub.tsx) with one landing page per
+  // distinct plan layout underneath it (/floor-plans/<slug>).
   // RentCafe-era .aspx URLs (2026-07 SEO audit): 404 live today, but 301s
   // preserve any legacy link equity.
   // Wix-era URL still indexed by Google (2026-07): "Studio, 1, 2 & 3 Bedroom
