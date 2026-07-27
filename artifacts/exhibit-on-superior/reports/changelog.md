@@ -18,7 +18,7 @@ work, what is still open, and what needs owner/business action.
   redirect) with one landing page per distinct plan layout
   (`/floor-plans/<slug>`).
 - **Static content pages** added: fees, apartment guide, parking &
-  transportation, application guide, FAQ, about, reviews, and more — 99 URLs
+  transportation, application guide, FAQ, about, reviews, and more — 134 URLs
   in the sitemap.
 - **Markdown twins (AEO)** — every indexable page has a `.md` variant
   generated from the rendered HTML for AI crawlers.
@@ -63,10 +63,15 @@ work, what is still open, and what needs owner/business action.
 - Temporary square-footage override for unit 0610 (awaiting AppFolio fix).
 - Homepage starting-price accuracy after next publish — verification pending.
 - Lead-volume alert thresholds need tuning once real traffic exists.
-- Legacy-redirect watchdog first live report-in after next publish.
-- Available-unit ↔ floor-plan page cross-linking.
-- Floor-plan pages not yet in the automated post-publish checks.
+- Remaining server watchdogs (beyond floor-plan and legacy-redirect) should
+  confirm their runs in deployment logs.
+- Stale "478 sq ft" search snippet for apartment 2705 — verify it drops out
+  of results.
+- Social share cards to be regenerated to mention convertibles.
+- Floor-plan card floor-range consistency guard (vs plan sheet).
 - Review dates in structured data (rich-result trust improvement).
+- Knowledge Center answers to be re-verified before review dates expire in
+  late November 2026.
 
 ## Items requiring business/owner confirmation (owner-side accounts)
 
