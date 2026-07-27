@@ -15,12 +15,37 @@
         );
       }
     </script>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MDPWH532');</script>
+    <!-- Google Tag Manager (deferred) -->
+    <!-- gtm.js costs ~112KB + ~180ms of mobile main-thread time, none of it
+         needed for first paint. The dataLayer is initialized immediately so
+         every event pushed before the script arrives is queued and delivered;
+         the script itself loads on the first user interaction, on post-load
+         idle, or after a 5s fallback timer (so short bounce visits still
+         record a pageview). -->
+    <script>
+      (function (w, d) {
+        w.dataLayer = w.dataLayer || [];
+        w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var loaded = false;
+        var events = ['pointerdown', 'touchstart', 'keydown', 'scroll'];
+        function load() {
+          if (loaded) return;
+          loaded = true;
+          for (var i = 0; i < events.length; i++) d.removeEventListener(events[i], load, true);
+          var j = d.createElement('script');
+          j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-MDPWH532';
+          d.head.appendChild(j);
+        }
+        for (var i = 0; i < events.length; i++) {
+          d.addEventListener(events[i], load, { capture: true, passive: true, once: true });
+        }
+        w.addEventListener('load', function () {
+          ('requestIdleCallback' in w ? w.requestIdleCallback : w.setTimeout)(load);
+        });
+        w.setTimeout(load, 5000);
+      })(window, document);
+    </script>
     <!-- End Google Tag Manager -->
     <!-- Early availability fetch: on /available-units pages, start the
          availability request from the head so the network round-trip overlaps

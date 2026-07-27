@@ -46,6 +46,12 @@ const AVIF_QUALITY_FLOOR = 30;
 // WebP rungs over the cap are re-encoded at progressively lower quality; the
 // AVIF-must-beat-WebP rule below then keeps the AVIF twin under the cap too.
 const MAX_BYTES = 195 * 1024;
+// Tighter ceiling for the small (≤800w) rungs: these serve mobile viewports,
+// where Lighthouse flagged ~100KB 800w files as the main image-weight cost.
+// Only the byte budget shrinks — rung pixel widths never change (the
+// sharpness guard in smartimg-sizes.test.ts requires the full-width rung).
+const SMALL_RUNG_MAX_WIDTH = 800;
+const SMALL_RUNG_MAX_BYTES = 60 * 1024;
 const WEBP_RETRY_STEP = 6;
 const WEBP_QUALITY_FLOOR = 40;
 // Responsive rungs. The largest rung also caps the "full" WebP — nothing on
@@ -115,33 +121,34 @@ for (const file of files) {
     // Enforce the size ceiling on the WebP rung (checked every run, not just
     // on regeneration, so an existing oversize output gets fixed too).
     let effTarget = target; // actual encoded width if the rung had to shrink
+    const maxBytes = target <= SMALL_RUNG_MAX_WIDTH ? SMALL_RUNG_MAX_BYTES : MAX_BYTES;
     {
       let size = (await fs.stat(webpPath)).size;
       let q = Number(QUALITY_OVERRIDES[stem] ?? QUALITY);
-      while (size > MAX_BYTES && q - WEBP_RETRY_STEP >= WEBP_QUALITY_FLOOR) {
+      while (size > maxBytes && q - WEBP_RETRY_STEP >= WEBP_QUALITY_FLOOR) {
         q -= WEBP_RETRY_STEP;
         await run('magick', [abs, '-auto-orient', '-resize', `${target}x>`, '-quality', String(q), webpPath]);
         size = (await fs.stat(webpPath)).size;
       }
-      if (size > MAX_BYTES) {
+      if (size > maxBytes) {
         // Quality floor wasn't enough: keep the full rung width (the
         // sharpness guard in smartimg-sizes.test.ts needs the large rung) and
         // let libwebp binary-search the quality to hit the size budget.
         await run('magick', [
           abs, '-auto-orient', '-resize', `${target}x>`,
-          '-define', `webp:target-size=${MAX_BYTES - 5 * 1024}`,
+          '-define', `webp:target-size=${maxBytes - 5 * 1024}`,
           webpPath,
         ]);
         size = (await fs.stat(webpPath)).size;
-        if (size > MAX_BYTES) {
+        if (size > maxBytes) {
           console.warn(
-            `WARNING: ${stem} @${target}w WebP still ${size} bytes even with webp:target-size (cap ${MAX_BYTES}).`,
+            `WARNING: ${stem} @${target}w WebP still ${size} bytes even with webp:target-size (cap ${maxBytes}).`,
           );
         } else {
-          console.warn(`Re-encoded ${stem} @${target}w WebP via webp:target-size to fit the ${MAX_BYTES}-byte cap (${size} bytes).`);
+          console.warn(`Re-encoded ${stem} @${target}w WebP via webp:target-size to fit the ${maxBytes}-byte cap (${size} bytes).`);
         }
       } else if (q !== Number(QUALITY_OVERRIDES[stem] ?? QUALITY)) {
-        console.warn(`Re-encoded ${stem} @${target}w WebP at q${q} to fit the ${MAX_BYTES}-byte cap (${size} bytes).`);
+        console.warn(`Re-encoded ${stem} @${target}w WebP at q${q} to fit the ${maxBytes}-byte cap (${size} bytes).`);
       }
     }
 

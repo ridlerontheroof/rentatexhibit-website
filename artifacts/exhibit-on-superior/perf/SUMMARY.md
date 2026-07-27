@@ -1,6 +1,6 @@
 # Page-speed lab report
 
-Generated: 2026-07-27T13:21:35.263Z
+Generated: 2026-07-27T13:56:17.391Z
 
 Target: local production build (dist/public via `vite preview`)
 
@@ -8,23 +8,23 @@ Lab metrics with Lighthouse default throttling (simulated Slow-4G/4x-CPU mobile;
 
 | FF | Page | Score | LCP | CLS | TBT | JS | Images | 3rd-party | Result |
 |---|---|---|---|---|---|---|---|---|---|
-| mobile | / | 41 | 6103 ms | 0.000 | 7571 ms | 271 KB | 575 KB | 112 KB | ❌ lcpMs 6103 > limit 5300; tbtMs 7571 > limit 200 |
-| mobile | /available-units | 67 | 5543 ms | 0.000 | 421 ms | 320 KB | 818 KB | 283 KB | ❌ tbtMs 421 > limit 200 |
-| mobile | /available-units/0208 | 67 | 5573 ms | 0.045 | 448 ms | 276 KB | 1024 KB | 561 KB | ❌ tbtMs 448 > limit 200 |
-| mobile | /available-units/2705 | 86 | 3789 ms | 0.034 | 162 ms | 276 KB | 1323 KB | 860 KB | ✅ |
-| mobile | /amenities | 76 | 4785 ms | 0.000 | 289 ms | 271 KB | 680 KB | 112 KB | ❌ tbtMs 289 > limit 200 |
-| mobile | /photo-gallery | 77 | 5578 ms | 0.000 | 142 ms | 276 KB | 673 KB | 112 KB | ✅ |
-| mobile | /virtual-tour | 88 | 3689 ms | 0.000 | 98 ms | 270 KB | 729 KB | 112 KB | ✅ |
-| mobile | /knowledge | 87 | 3910 ms | 0.000 | 92 ms | 265 KB | 575 KB | 112 KB | ✅ |
-| mobile | /knowledge/application-fee | 78 | 5728 ms | 0.000 | 38 ms | 265 KB | 575 KB | 112 KB | ❌ lcpMs 5728 > limit 5700 |
-| mobile | /contact-us | 87 | 3686 ms | 0.000 | 156 ms | 294 KB | 594 KB | 112 KB | ✅ |
-| desktop | / | 95 | 1506 ms | 0.000 | 0 ms | 271 KB | 1486 KB | 112 KB | ✅ |
-| desktop | /available-units | 89 | 2138 ms | 0.000 | 1 ms | 320 KB | 1785 KB | 283 KB | ✅ |
-| desktop | /available-units/0208 | 90 | 2065 ms | 0.001 | 0 ms | 276 KB | 1934 KB | 561 KB | ✅ |
-| desktop | /available-units/2705 | 92 | 1898 ms | 0.001 | 0 ms | 276 KB | 2243 KB | 870 KB | ✅ |
-| desktop | /amenities | 91 | 1968 ms | 0.000 | 0 ms | 271 KB | 1873 KB | 112 KB | ✅ |
-| desktop | /photo-gallery | 96 | 1357 ms | 0.000 | 0 ms | 276 KB | 1844 KB | 112 KB | ✅ |
-| desktop | /virtual-tour | 98 | 1149 ms | 0.000 | 0 ms | 270 KB | 1769 KB | 112 KB | ✅ |
-| desktop | /knowledge | 97 | 1266 ms | 0.000 | 0 ms | 265 KB | 1486 KB | 112 KB | ✅ |
-| desktop | /knowledge/application-fee | 91 | 1951 ms | 0.000 | 0 ms | 265 KB | 1487 KB | 112 KB | ✅ |
-| desktop | /contact-us | 98 | 1130 ms | 0.000 | 0 ms | 294 KB | 1588 KB | 112 KB | ✅ |
+| mobile | / | 86 | 4084 ms | 0.000 | 58 ms | 271 KB | 461 KB | 112 KB | ✅ |
+| mobile | /available-units | 92 | 3086 ms | 0.000 | 114 ms | 320 KB | 704 KB | 283 KB | ✅ |
+| mobile | /available-units/0208 | 82 | 4819 ms | 0.043 | 44 ms | 276 KB | 910 KB | 561 KB | ✅ |
+| mobile | /available-units/2705 | 91 | 3310 ms | 0.034 | 37 ms | 276 KB | 1209 KB | 860 KB | ✅ |
+| mobile | /amenities | 81 | 4856 ms | 0.000 | 42 ms | 271 KB | 544 KB | 112 KB | ❌ lcpMs 4856 > limit 4200 |
+| mobile | /photo-gallery | 79 | 5121 ms | 0.000 | 97 ms | 276 KB | 559 KB | 112 KB | ✅ |
+| mobile | /virtual-tour | 77 | 5636 ms | 0.000 | 50 ms | 270 KB | 597 KB | 112 KB | ✅ |
+| mobile | /knowledge | 90 | 3460 ms | 0.000 | 17 ms | 265 KB | 461 KB | 112 KB | ✅ |
+| mobile | /knowledge/application-fee | 91 | 3317 ms | 0.000 | 13 ms | 265 KB | 461 KB | 112 KB | ✅ |
+| mobile | /contact-us | 91 | 3313 ms | 0.000 | 32 ms | 294 KB | 480 KB | 112 KB | ✅ |
+| desktop | / | 99 | 850 ms | 0.000 | 0 ms | 271 KB | 1433 KB | 112 KB | ✅ |
+| desktop | /available-units | 96 | 1346 ms | 0.000 | 0 ms | 320 KB | 1733 KB | 283 KB | ✅ |
+| desktop | /available-units/0208 | 91 | 1954 ms | 0.001 | 0 ms | 276 KB | 1882 KB | 561 KB | ✅ |
+| desktop | /available-units/2705 | 90 | 2057 ms | 0.001 | 0 ms | 276 KB | 2191 KB | 870 KB | ✅ |
+| desktop | /amenities | 93 | 1801 ms | 0.000 | 0 ms | 271 KB | 1741 KB | 112 KB | ✅ |
+| desktop | /photo-gallery | 97 | 1226 ms | 0.000 | 0 ms | 276 KB | 1792 KB | 112 KB | ✅ |
+| desktop | /virtual-tour | 91 | 1934 ms | 0.000 | 0 ms | 270 KB | 1717 KB | 112 KB | ✅ |
+| desktop | /knowledge | 98 | 1047 ms | 0.000 | 0 ms | 265 KB | 1433 KB | 112 KB | ✅ |
+| desktop | /knowledge/application-fee | 97 | 1327 ms | 0.000 | 0 ms | 265 KB | 1435 KB | 112 KB | ✅ |
+| desktop | /contact-us | 97 | 1286 ms | 0.000 | 0 ms | 294 KB | 1536 KB | 112 KB | ✅ |
