@@ -5,6 +5,7 @@ import { startAvailabilityCacheWarmer } from "./routes/availability";
 import { submitCoreUrlsOnce } from "./lib/indexnow";
 import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
 import { startKnowledgePageCheck } from "./lib/knowledgeCheck";
+import { startFloorPlanPageCheck } from "./lib/floorPlanCheck";
 import { startShowingSchedulerCheck } from "./lib/showingSchedulerCheck";
 import { startRentedNoindexCheck } from "./lib/rentedCheck";
 import { startLegacyRedirectCheck } from "./lib/redirectCheck";
@@ -53,6 +54,12 @@ app.listen(port, (err) => {
   // prerendered HTML after every publish (server restart = post-publish
   // check), then every 6 hours; alerts at most once per day on failure.
   startKnowledgePageCheck(logger);
+
+  // Watchdog: verify the production /floor-plans hub, sampled slug pages,
+  // and the 404 stub still serve their own prerendered HTML after every
+  // publish, then every 6 hours; alerts at most once per day on failure
+  // (always-on twin of scripts/check-floor-plan-pages.mjs).
+  startFloorPlanPageCheck(logger);
 
   // Watchdog: hourly probe of AppFolio's unofficial showing-scheduler
   // endpoints (slot fetch + IDV status) against a posted unit; alerts

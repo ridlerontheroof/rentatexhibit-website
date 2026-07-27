@@ -7,6 +7,7 @@ import {
   renderApexRedirectAlert,
   renderBotGuardAlert,
   renderFeeCopyAlert,
+  renderFloorPlanCheckAlert,
   renderKnowledgeCheckAlert,
   renderLeadNotification,
   renderRedirectCheckAlert,
@@ -261,6 +262,34 @@ export async function sendKnowledgeCheckAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL },
     "Sent knowledge-page check failure alert email",
+  );
+}
+
+/**
+ * Alert that the always-on floor-plan-page check found pages serving the
+ * wrong prerendered content (or a soft-404). Goes to the operational
+ * recipient because the fix is code + re-publish. Throws when the mailer
+ * is unconfigured or the send fails; deduping lives in the caller
+ * (floorPlanCheck).
+ */
+export async function sendFloorPlanCheckAlert(opts: {
+  failures: string[];
+  checkedCount: number;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderFloorPlanCheckAlert(opts);
+  const { contentType, body } = buildMimeBody("floorplanalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent floor-plan-page check failure alert email",
   );
 }
 

@@ -521,6 +521,51 @@ export function renderKnowledgeCheckAlert(opts: {
 }
 
 /**
+ * Operational alert: the always-on floor-plan-page check found affected
+ * pages serving the SPA homepage shell (or a soft-404) instead of their
+ * own prerendered HTML, so search engines see the wrong content.
+ */
+export function renderFloorPlanCheckAlert(opts: {
+  failures: string[];
+  checkedCount: number;
+}): RenderedEmail {
+  const { failures, checkedCount } = opts;
+  const subject = "Website alert: floor-plan pages are serving the wrong content";
+
+  const intro = `The automatic post-publish check of www.rentatexhibit.com found ${failures.length} problem(s) across ${checkedCount} floor-plan page checks. Affected pages are likely serving the SPA homepage shell instead of their own prerendered plan page (or an unknown slug is soft-404ing), so search engines see the wrong content.`;
+  const remedy =
+    "What to do: inspect the [[services.production.rewrites]] /floor-plans blocks in the website's artifact.toml, run `pnpm --filter @workspace/exhibit-on-superior exec node scripts/check-floor-plan-pages.mjs` locally for detail, and re-publish. This alert is sent at most once per day.";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<ul style="${BODY_TEXT}">${failures
+      .map((f) => `<li>${escapeHtml(f)}</li>`)
+      .join("")}</ul>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+      "inspect the [[services.production.rewrites]] /floor-plans blocks in the website's artifact.toml, run scripts/check-floor-plan-pages.mjs locally for detail, and re-publish. This alert is sent at most once per day.",
+    )}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...failures.map((f) => `- ${f}`),
+    "",
+    remedy,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "Floor-plan pages are serving the wrong prerendered content.",
+    kicker: "Website Alert",
+    heading: "Floor-Plan Page Check Failed",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
  * Operational alert: the always-on rented-unit indexability check (the
  * other half of check:postpublish, run from the api-server) found a
  * definitive failure — a rented apartment page may be indexable with a
