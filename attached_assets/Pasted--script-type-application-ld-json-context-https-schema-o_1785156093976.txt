@@ -1,0 +1,245 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.rentatexhibit.com/#website",
+      "name": "Exhibit On Superior",
+      "url": "https://www.rentatexhibit.com/",
+      "publisher": {
+        "@id": "https://www.rentatexhibit.com/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.rentatexhibit.com/available-units?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.rentatexhibit.com/#organization",
+      "name": "Exhibit On Superior",
+      "url": "https://www.rentatexhibit.com/",
+      "email": "exhibit@highlandptrs.com",
+      "telephone": "+1-312-450-0635",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.rentatexhibit.com/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp"
+      },
+      "image": "https://www.rentatexhibit.com/images/image-002-gettyimages-1286580777-nvdupq-2000w.webp",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "165 W Superior St",
+        "addressLocality": "Chicago",
+        "addressRegion": "IL",
+        "postalCode": "60654",
+        "addressCountry": "US"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "leasing office",
+        "telephone": "+1-312-450-0635",
+        "email": "exhibit@highlandptrs.com",
+        "areaServed": "US",
+        "availableLanguage": "English"
+      },
+      "sameAs": [
+        "https://www.facebook.com/exhibitonsuperior",
+        "https://www.instagram.com/exhibitonsuperior",
+        "https://www.youtube.com/@ExhibitonSuperior"
+      ]
+    },
+    {
+      "@type": "ApartmentComplex",
+      "@id": "https://www.rentatexhibit.com/#apartmentcomplex",
+      "name": "Exhibit On Superior",
+      "alternateName": "Exhibit on Superior Apartments",
+      "url": "https://www.rentatexhibit.com/",
+      "mainEntityOfPage": "https://www.rentatexhibit.com/",
+      "description": "Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago’s River North neighborhood offering studio, convertible, one-, two-, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.",
+      "image": "https://www.rentatexhibit.com/images/image-002-gettyimages-1286580777-nvdupq-2000w.webp",
+      "logo": "https://www.rentatexhibit.com/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp",
+      "telephone": "+1-312-450-0635",
+      "numberOfAccommodationUnits": 298,
+      "petsAllowed": "Yes. Cats and dogs welcome (maximum 2 pets). One-time non-refundable pet fee: $650 for one dog or $750 for two dogs, $325 for cats. No monthly pet rent or weight limits. Breed restrictions apply.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "165 W Superior St",
+        "addressLocality": "Chicago",
+        "addressRegion": "IL",
+        "postalCode": "60654",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 41.8953945,
+        "longitude": -87.6335254
+      },
+      "containedInPlace": {
+        "@type": "Place",
+        "name": "River North",
+        "containedInPlace": {
+          "@type": "City",
+          "name": "Chicago",
+          "containedInPlace": {
+            "@type": "State",
+            "name": "Illinois",
+            "containedInPlace": {
+              "@type": "Country",
+              "name": "United States"
+            }
+          }
+        }
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Saturday",
+          "opens": "10:00",
+          "closes": "17:00"
+        }
+      ],
+      "hasMap": "https://www.google.com/maps?cid=15240815771270963454",
+      "tourBookingPage": "https://www.rentatexhibit.com/schedule-a-tour",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.2",
+        "reviewCount": "136",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "potentialAction": [
+        {
+          "@type": "ScheduleAction",
+          "name": "Schedule a Tour",
+          "target": "https://www.rentatexhibit.com/schedule-a-tour"
+        },
+        {
+          "@type": "ViewAction",
+          "name": "View Available Units",
+          "target": "https://www.rentatexhibit.com/available-units"
+        }
+      ],
+      "amenityFeature": [
+        { "@type": "LocationFeatureSpecification", "name": "Full-floor amenity deck overlooking the city and private park" },
+        { "@type": "LocationFeatureSpecification", "name": "Fitness center with two private training rooms" },
+        { "@type": "LocationFeatureSpecification", "name": "Cardio equipment and spin bikes" },
+        { "@type": "LocationFeatureSpecification", "name": "Boxing simulator" },
+        { "@type": "LocationFeatureSpecification", "name": "75-foot lap pool" },
+        { "@type": "LocationFeatureSpecification", "name": "Sauna and wet lounge" },
+        { "@type": "LocationFeatureSpecification", "name": "Outdoor hot tub" },
+        { "@type": "LocationFeatureSpecification", "name": "Four grilling stations" },
+        { "@type": "LocationFeatureSpecification", "name": "Four fire pits" },
+        { "@type": "LocationFeatureSpecification", "name": "Doggie spa and lounge" },
+        { "@type": "LocationFeatureSpecification", "name": "Gated outdoor dog walk" },
+        { "@type": "LocationFeatureSpecification", "name": "Tech lounge with charging stations and kitchen" },
+        { "@type": "LocationFeatureSpecification", "name": "Lounge with fireplace and big screen TV" },
+        { "@type": "LocationFeatureSpecification", "name": "Game area with arcade games and wall Scrabble" },
+        { "@type": "LocationFeatureSpecification", "name": "Music studio" },
+        { "@type": "LocationFeatureSpecification", "name": "Private work and meeting rooms" },
+        { "@type": "LocationFeatureSpecification", "name": "Private dining room and party suite" },
+        { "@type": "LocationFeatureSpecification", "name": "Library nook" },
+        { "@type": "LocationFeatureSpecification", "name": "Floor-to-ceiling windows" },
+        { "@type": "LocationFeatureSpecification", "name": "Private balconies (nearly every home)" },
+        { "@type": "LocationFeatureSpecification", "name": "In-home washer and dryer" },
+        { "@type": "LocationFeatureSpecification", "name": "Quartz countertops" },
+        { "@type": "LocationFeatureSpecification", "name": "Stainless-steel appliances" },
+        { "@type": "LocationFeatureSpecification", "name": "Wired for 1GB internet" },
+        { "@type": "LocationFeatureSpecification", "name": "Walk Score 99 (Walker's Paradise)" },
+        { "@type": "LocationFeatureSpecification", "name": "Transit Score 100 (Rider's Paradise)" },
+        { "@type": "LocationFeatureSpecification", "name": "Bike Score 86 (Very Bikeable)" }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/exhibitonsuperior",
+        "https://www.instagram.com/exhibitonsuperior",
+        "https://www.youtube.com/@ExhibitonSuperior"
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.rentatexhibit.com/#webpage",
+      "url": "https://www.rentatexhibit.com/",
+      "name": "Luxury Apartments in River North Chicago | Exhibit On Superior",
+      "description": "Luxury apartments in River North Chicago — studio, convertible, one, two & three-bedroom homes with skyline views, amenities, and on-site retail.",
+      "isPartOf": {
+        "@id": "https://www.rentatexhibit.com/#website"
+      },
+      "about": {
+        "@id": "https://www.rentatexhibit.com/#apartmentcomplex"
+      },
+      "breadcrumb": {
+        "@id": "https://www.rentatexhibit.com/#breadcrumb"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://www.rentatexhibit.com/images/og/home.jpg?v=3"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://www.rentatexhibit.com/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Exhibit On Superior",
+          "item": "https://www.rentatexhibit.com/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.rentatexhibit.com/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Where is Exhibit On Superior located?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654 in the River North area."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What apartment sizes are available at Exhibit On Superior?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The community offers studio, convertible, one-, two-, and three-bedroom apartment homes. Current availability is maintained by the on-site leasing team."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I check current availability?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use the Available Units link to view current Exhibit On Superior availability with live pricing and move-in dates."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does it cost to live at Exhibit On Superior?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Apartments currently start at $2,271 per month for a studio/convertible residence. Pricing updates automatically from the leasing system and varies by residence, lease term, and move-in date — see the Available Units page for live rent on every available apartment."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Exhibit On Superior pet-friendly?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes — cats and dogs are welcome, with a maximum of 2 pets per apartment. There is a one-time non-refundable pet fee of $650 for one dog or $750 for two dogs, and $325 for cats, with no monthly pet rent and no weight limits. Breed restrictions apply for dogs."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
