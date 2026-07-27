@@ -21,7 +21,7 @@
 - [Pure availability data module](availability-pure-module.md) — availability types/normalization live in a pure lib module, not the hook file; data modules (seo, snapshot) must import from there or hook-mocking tests break.
 - [Baked availability snapshot](availability-snapshot.md) — build fetches prod /api/availability into a committed JSON (non-fatal on failure); placeholderData + head-inline prefetch; renderToString splits text with `<!-- -->`, grep accordingly.
 - [Above-the-fold guard via raw CDP](fold-check-cdp.md) — real-layout viewport checks drive nix chromium over CDP with Node's built-in WebSocket; no Playwright dep; vite.config needs PORT env even with --port.
-- [Validation races the prepublish rebuild](validation-dist-race.md) — dist-dependent tests must wait for the build's last output (index.html.br) or they fail spuriously mid-rebuild.
+- [Validation races the prepublish rebuild](validation-dist-race.md) — dist-dependent tests must wait for the build's last output (index.html.br) or they fail spuriously mid-rebuild; adding/editing any src/data file shifts the SEO source hash, so rebuild dist before running the suite.
 - [Unit data authority rules](unit-data-authority.md) — floor-plan DB beats AppFolio sqft via a single resolver; feed typos normalized server-side AND web-side (deploy lag).
 - [Availability seed drift](availability-seed-drift.md) — api-server rewrites its committed availability seed at runtime; revert unintended drift before completing a task or review rejects.
 - [Review-snippet JSON-LD for GSC](reviews-jsonld-gsc.md) — reviews node must be LocalBusiness (not ApartmentComplex), and prerendered JSON-LD is stripped pre-hydration to avoid duplicate aggregate ratings.

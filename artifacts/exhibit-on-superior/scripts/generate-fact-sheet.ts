@@ -39,6 +39,8 @@ import { SITE_URL, TOUR_URL, AVAILABILITY_URL } from '../src/data/seo';
 import { buildJsonLd } from '../src/data/seo';
 // @ts-ignore
 import { plans, SQFT_MIN, SQFT_MAX, CATEGORIES } from '../src/data/floorPlans';
+// @ts-ignore
+import { bedroomRangePhrases } from '../src/data/factSheetPhrases';
 
 const graph = (buildJsonLd('/') as any)['@graph'] as any[];
 const complex = graph.find((n) => n['@type'] === 'ApartmentComplex');
@@ -71,21 +73,21 @@ const bedroomRange = CATEGORIES.filter((c: any) => beds.has(c.id))
   .join(', ');
 const amenities: string[] = complex.amenityFeature.map((a: any) => a.name);
 
-// Directory-listing phrasing for each plan category. Derived from the same
-// CATEGORIES list as bedroomRange so a new (or retired) plan category can
-// never leave the printed sheet advertising a stale bedroom mix.
-const SUMMARY_WORD: Record<string, string> = {
-  studio: 'Studio',
-  convertible: 'Convertible',
-  '1br': '1',
-  '2br': '2',
-  '3br': '3',
-};
-const summaryWords = CATEGORIES.filter((c: any) => beds.has(c.id)).map((c: any) => {
-  const word = SUMMARY_WORD[c.id];
-  if (!word) throw new Error(`No fact-sheet summary word for plan category "${c.id}" — add it to SUMMARY_WORD in generate-fact-sheet.ts`);
-  return word;
-});
+// Directory-listing phrasing (summary + every checklist range phrase like
+// "Studio–3 Bedroom", "studio–3 BR", "studios THROUGH THREE bedrooms") is
+// derived from the same CATEGORIES list as bedroomRange — see the tested
+// src/data/factSheetPhrases.ts — so a new (or retired) plan category can
+// never leave the printed sheet or its checklist advertising a stale mix.
+const {
+  summaryWords,
+  rangeTitle,
+  rangeBRTitle,
+  rangeBRLower,
+  rangeLower,
+  throughStart,
+  throughSpoken,
+  throughNoun,
+} = bedroomRangePhrases(beds);
 const bedroomSummary = `${
   summaryWords.length > 1
     ? `${summaryWords.slice(0, -1).join(', ')} & ${summaryWords[summaryWords.length - 1]}`
@@ -158,7 +160,7 @@ ${facts.email}
 OFFICE HOURS
 ${facts.officeHours.join('\n')}
 
-BEDROOM RANGE  (** most common listing error — must say through THREE bedrooms **)
+BEDROOM RANGE  (** most common listing error — must say through ${throughSpoken}${throughNoun ? ` ${throughNoun}` : ''} **)
 ${facts.bedroomSummary}
 
 SQUARE FOOTAGE RANGE
@@ -198,40 +200,40 @@ Verify every field above on each platform. Known defects are flagged.
 
 [!] TOP PRIORITY — KNOWN DEFECTS
 1. BEDROOM RANGE: at least one listing (Apartments.com-style copy) says
-   "studios through two bedrooms". The property offers studios THROUGH THREE
-   bedrooms. Fix everywhere it appears.
+   "studios through two bedrooms". The property offers ${throughStart} THROUGH ${throughSpoken}
+   ${throughNoun ? `${throughNoun}. ` : ''}Fix everywhere it appears.
 2. FACEBOOK PHONE: an older Facebook result shows an outdated phone number.
    The only correct phone is ${facts.phone}.
 
 APARTMENTS.COM
 [ ] Property name, address, phone (${facts.phone})
-[!] Bedroom range — verify it says Studio–3 Bedroom (known "through two bedrooms" error)
+[!] Bedroom range — verify it says ${rangeTitle} (known "through two bedrooms" error)
 [ ] Square footage ${facts.sqftRange}, pet policy, office hours
 [ ] Website + tour + availability links point to ${facts.website}
 
 FACEBOOK (facebook.com/exhibitonsuperior)
 [!] Phone number — replace any old number with ${facts.phone}  (known stale-phone defect)
 [ ] Address, email, office hours, website link
-[ ] "About" text matches the short description above (studio–3 BR)
+[ ] "About" text matches the short description above (${rangeBRLower})
 
 GOOGLE BUSINESS PROFILE
 [ ] Name, address, phone exactly as above (NAP consistency)
 [ ] Office hours match the three ranges above
 [ ] Website ${facts.website}; appointment/tour link ${facts.tourLink}
-[ ] Category: Apartment complex; description mentions studio–3 bedroom
+[ ] Category: Apartment complex; description mentions ${rangeLower}
 
 ZILLOW / TRULIA
-[ ] Bedroom range Studio–3 BR and sqft ${facts.sqftRange}
+[ ] Bedroom range ${rangeBRTitle} and sqft ${facts.sqftRange}
 [ ] Phone, email, pet policy, management company (${facts.managementCompany})
 [ ] Listing links to ${facts.website}
 
 BIRDEYE
 [ ] Business name, address, phone, email, hours
 [ ] Website + review-destination links correct
-[ ] Synced categories/description say studio–3 bedroom
+[ ] Synced categories/description say ${rangeLower}
 
 YOUTUBE (@ExhibitonSuperior)
-[ ] Channel "About" description matches the short description (studio–3 BR)
+[ ] Channel "About" description matches the short description (${rangeBRLower})
 [ ] Channel links: ${facts.website} and ${facts.tourLink}
 [ ] Contact email ${facts.email}
 `;
@@ -243,10 +245,10 @@ const field = (label: string, value: string, mono = true) =>
   `<div class="field"><div class="label">${label}</div><div class="value${mono ? ' mono' : ''}">${esc(value)}</div></div>`;
 
 const platformRows = [
-  ['Apartments.com', 'Bedroom range — listing says \u201cthrough two bedrooms\u201d; must say Studio\u20133 Bedroom', 'defect'],
+  ['Apartments.com', `Bedroom range — listing says \u201cthrough two bedrooms\u201d; must say ${rangeTitle}`, 'defect'],
   ['Facebook', `Outdated phone number — replace with ${facts.phone}`, 'defect'],
-  ['Google Business Profile', 'Verify NAP, hours, tour link, studio\u20133 BR description', 'check'],
-  ['Zillow / Trulia', `Verify Studio\u20133 BR, ${facts.sqftRange}, phone, pet policy`, 'check'],
+  ['Google Business Profile', `Verify NAP, hours, tour link, ${rangeBRLower} description`, 'check'],
+  ['Zillow / Trulia', `Verify ${rangeBRTitle}, ${facts.sqftRange}, phone, pet policy`, 'check'],
   ['Birdeye', 'Verify name/address/phone/hours and synced description', 'check'],
   ['YouTube', 'Verify channel About text, links, and contact email', 'check'],
 ]
