@@ -36,6 +36,7 @@ import {
   recordLiveShowingFailure,
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
+import { detectSlotFormatDrift } from "../lib/showingFormatAlert";
 
 const router: IRouter = Router();
 
@@ -54,7 +55,18 @@ const showingLimiter = rateLimit({
 });
 
 const heartbeat = createDailyHeartbeat({
-  outcomes: ["slots_ok", "slots_failed", "contact_ok", "contact_failed", "book_ok", "book_failed"],
+  outcomes: [
+    "slots_ok",
+    // AppFolio sent timeslots but the parser accepted none — its slot format
+    // drifted again. Distinct from slots_failed so the deploy-log heartbeat
+    // shows silent filtering, not just hard fetch errors.
+    "slots_degraded",
+    "slots_failed",
+    "contact_ok",
+    "contact_failed",
+    "book_ok",
+    "book_failed",
+  ],
   message: "Showing scheduler heartbeat",
 });
 
@@ -88,11 +100,18 @@ router.get("/showings/slots", showingLimiter, async (req, res) => {
       return;
     }
     const availabilities = await fetchShowingAvailabilities(listableUid, propertyTodayMMDDYYYY());
-    heartbeat.record(req.log, Date.now(), "slots_ok");
+    // Loud drop detection: AppFolio sent slots but none parsed → format
+    // drifted again. Error log + slots_degraded heartbeat + once-a-day
+    // leasing alert email; the response still goes out (empty calendar) so
+    // the page's designed lead-capture fallback keeps working.
+    const degraded = detectSlotFormatDrift(req.log, Date.now(), availabilities, { unit });
+    heartbeat.record(req.log, Date.now(), degraded ? "slots_degraded" : "slots_ok");
+    const { rawTimeslotCount: _raw, acceptedSlotCount: _accepted, ...publicAvailabilities } =
+      availabilities;
     res.json({
       unit,
       hostedUrl: hostedShowingsUrl(listableUid),
-      ...availabilities,
+      ...publicAvailabilities,
     });
   } catch (err) {
     heartbeat.record(req.log, Date.now(), "slots_failed");

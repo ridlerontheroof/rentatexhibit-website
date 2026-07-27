@@ -26,6 +26,12 @@ vi.mock("../lib/showingLiveFailureAlert", () => ({
   recordLiveShowingFailure: vi.fn(async () => {}),
   recordLiveShowingSuccess: vi.fn(async () => {}),
 }));
+// The drift alarm's log/email side effects have their own tests; here we
+// assert only the route wiring (when it is consulted, what it changes).
+vi.mock("../lib/showingFormatAlert", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/showingFormatAlert")>();
+  return { ...actual, detectSlotFormatDrift: vi.fn(actual.detectSlotFormatDrift) };
+});
 
 import {
   bookShowing,
@@ -38,6 +44,7 @@ import {
   recordLiveShowingFailure,
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
+import { detectSlotFormatDrift } from "../lib/showingFormatAlert";
 import showingsRouter, { resetShowingHeartbeatForTests } from "./showings";
 
 const LISTING_URL =
@@ -74,6 +81,8 @@ const availabilities = {
   ],
   futureAvailabilitiesExist: true,
   firstAvailableDate: null,
+  rawTimeslotCount: 1,
+  acceptedSlotCount: 1,
 };
 
 beforeEach(() => {
@@ -120,6 +129,33 @@ describe("GET /showings/slots", () => {
   it("400s a missing unit", async () => {
     const res = await request(makeApp()).get("/showings/slots");
     expect(res.status).toBe(400);
+  });
+
+  it("keeps the parser-internal slot counters out of the public response", async () => {
+    const res = await request(makeApp()).get("/showings/slots?unit=2801");
+    expect(res.status).toBe(200);
+    expect(res.body).not.toHaveProperty("rawTimeslotCount");
+    expect(res.body).not.toHaveProperty("acceptedSlotCount");
+  });
+
+  it("flags the all-dropped condition through the drift alarm but still responds 200", async () => {
+    vi.mocked(fetchShowingAvailabilities).mockResolvedValue({
+      ...availabilities,
+      days: [{ date: "2026/07/28", slots: [] }],
+      rawTimeslotCount: 42,
+      acceptedSlotCount: 0,
+    });
+    const res = await request(makeApp()).get("/showings/slots?unit=2801");
+    // The page's designed lead-capture fallback needs the 200 + empty days.
+    expect(res.status).toBe(200);
+    expect(res.body.days).toEqual([{ date: "2026/07/28", slots: [] }]);
+    expect(vi.mocked(detectSlotFormatDrift)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(Number),
+      expect.objectContaining({ rawTimeslotCount: 42, acceptedSlotCount: 0 }),
+      { unit: "2801" },
+    );
+    expect(vi.mocked(detectSlotFormatDrift)).toHaveReturnedWith(true);
   });
 });
 

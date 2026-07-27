@@ -13,6 +13,7 @@ import {
   propertyTodayMMDDYYYY,
 } from "./showings";
 import { getAvailabilitySnapshot } from "../routes/availability";
+import { detectSlotFormatDrift } from "./showingFormatAlert";
 
 /**
  * Watchdog for the Exhibit-branded showing scheduler.
@@ -116,7 +117,29 @@ const defaultDeps: ShowingProbeDeps = {
     // The slot fetch already throws loudly on any non-OK status or a
     // response missing the showing duration — exactly the failures that
     // would break the /showings/slots route.
-    await fetchShowingAvailabilities(listableUid, propertyTodayMMDDYYYY());
+    const availabilities = await fetchShowingAvailabilities(
+      listableUid,
+      propertyTodayMMDDYYYY(),
+    );
+    // Silent-filtering guard (the 2026-07 slot-format drift): a response can
+    // be perfectly well-formed HTTP-wise while the parser drops every slot.
+    // Fire the immediate once-a-day leasing alert AND fail the probe so the
+    // sustained-failure escalation also engages.
+    if (detectSlotFormatDrift(defaultLogger, Date.now(), availabilities)) {
+      throw new Error(
+        `slot format unrecognized — AppFolio sent ${availabilities.rawTimeslotCount} timeslot(s) but none parsed`,
+      );
+    }
+    // AppFolio says future openings exist, yet even after the jump-ahead
+    // re-fetch we surfaced zero slots: some layer is silently filtering.
+    if (
+      availabilities.futureAvailabilitiesExist &&
+      availabilities.days.every((d) => d.slots.length === 0)
+    ) {
+      throw new Error(
+        "AppFolio reports future availabilities exist, but the slots fetch yielded none within the jump-ahead window — silent filtering suspected",
+      );
+    }
   },
   probeIdv: () => isIdentityVerificationEnabled(),
 };

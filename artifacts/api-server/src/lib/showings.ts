@@ -15,10 +15,20 @@
  *     a Bearer header is attached only if one ever reappears). AppFolio then
  *     fires its own confirmation/reminder messaging unchanged.
  *
- * Slot times arrive as property-local wall time ("YYYY/MM/DD HH:mm"); this
- * module converts them to instants using the property's timezone
- * (America/Chicago) so bookings are exact regardless of where the server or
- * visitor sits. Full flow notes: .local/tasks/task-363-notes.md.
+ * Slot times historically arrived as property-local wall time
+ * ("YYYY/MM/DD HH:mm"); since 2026-07 AppFolio sends ISO-8601 with offset
+ * ("2026-07-30T10:30:00-05:00") and dash dates ("2026-07-30"). This module
+ * accepts BOTH formats and normalizes them to the legacy canonical shape
+ * (slash dates + property-local wall times) so every downstream consumer —
+ * the routes' slot revalidation, the web client's grouping/labels, and the
+ * booking POST (which has always sent ISO instants) — is format-agnostic.
+ * Conversion uses the property's timezone (America/Chicago) so bookings are
+ * exact regardless of where the server or visitor sits.
+ *
+ * If AppFolio's format drifts AGAIN, normalizeAvailabilities counts raw vs
+ * accepted timeslots so callers can detect the "every slot silently dropped"
+ * failure mode (see showingFormatAlert.ts) instead of showing an empty
+ * calendar for weeks.
  *
  * This mirrors the proven guest-card pattern in appfolio.ts: unofficial
  * hosted-form replication, so every failure is explicit and loud — callers
@@ -40,7 +50,7 @@ export function hostedShowingsUrl(listableUid: string): string {
 }
 
 export interface ShowingSlot {
-  /** Property-local wall time, "YYYY/MM/DD HH:mm" exactly as AppFolio sends it. */
+  /** Canonical property-local wall time, "YYYY/MM/DD HH:mm" (normalized from either AppFolio format). */
   time: string;
   /** AppFolio agent (assigned_user_id) offering this slot. */
   agentId: number;
@@ -57,11 +67,73 @@ export interface ShowingAvailabilities {
   durationMinutes: number;
   days: ShowingDay[];
   futureAvailabilitiesExist: boolean;
-  /** "YYYY/MM/DD" when AppFolio suggests jumping ahead, else null. */
+  /** "YYYY/MM/DD" when AppFolio suggests jumping ahead, else null (normalized from either format). */
   firstAvailableDate: string | null;
+  /** Raw timeslot entries AppFolio sent, before format validation. */
+  rawTimeslotCount: number;
+  /** Timeslots that parsed into a bookable canonical slot. */
+  acceptedSlotCount: number;
+}
+
+/**
+ * The "every slot silently dropped" failure mode: AppFolio sent timeslots but
+ * none parsed — its format drifted again. Callers must treat this loudly
+ * (error log, slots_degraded heartbeat, alert email), never as "no openings".
+ */
+export function allSlotsDropped(a: Pick<ShowingAvailabilities, "rawTimeslotCount" | "acceptedSlotCount">): boolean {
+  return a.rawTimeslotCount > 0 && a.acceptedSlotCount === 0;
 }
 
 const SLOT_TIME_RE = /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2})$/;
+/** ISO-8601 with explicit offset (or Z), as AppFolio sends since 2026-07. */
+const ISO_SLOT_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/;
+const DATE_RE = /^(\d{4})[/-](\d{2})[/-](\d{2})$/;
+
+/** Normalize a "YYYY/MM/DD" or "YYYY-MM-DD" date to canonical "YYYY/MM/DD", else null. */
+export function normalizeDateKey(date: unknown): string | null {
+  if (typeof date !== "string") return null;
+  const m = date.match(DATE_RE);
+  return m ? `${m[1]}/${m[2]}/${m[3]}` : null;
+}
+
+/**
+ * Convert an ISO-with-offset slot time to the canonical property-local wall
+ * time ("YYYY/MM/DD HH:mm"). The offset makes the instant exact; Intl maps it
+ * into the property timezone, so a slot renders and books identically whether
+ * AppFolio quoted it in CDT, CST, or UTC.
+ */
+export function isoSlotToWallTime(iso: string, timeZone = PROPERTY_TIMEZONE): string {
+  const instant = new Date(iso);
+  if (Number.isNaN(instant.getTime())) {
+    throw new Error(`Malformed ISO showing slot time: ${JSON.stringify(iso)}`);
+  }
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(instant);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  const hour = String(Number(get("hour")) % 24).padStart(2, "0");
+  return `${get("year")}/${get("month")}/${get("day")} ${hour}:${get("minute")}`;
+}
+
+/** Parse a slot time in EITHER AppFolio format to canonical wall time, or null. */
+function toCanonicalSlotTime(time: unknown): string | null {
+  if (typeof time !== "string") return null;
+  if (SLOT_TIME_RE.test(time)) return time;
+  if (ISO_SLOT_RE.test(time)) {
+    try {
+      return isoSlotToWallTime(time);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
 
 /**
  * Convert an AppFolio slot wall time ("YYYY/MM/DD HH:mm", property-local) to
@@ -120,15 +192,21 @@ type Json = Record<string, unknown>;
 export function normalizeAvailabilities(data: Json): ShowingAvailabilities {
   const rawDays = Array.isArray(data.availabilities_by_date) ? data.availabilities_by_date : [];
   const days: ShowingDay[] = [];
+  let rawTimeslotCount = 0;
+  let acceptedSlotCount = 0;
   for (const raw of rawDays as Json[]) {
-    if (typeof raw?.date !== "string") continue;
+    const date = normalizeDateKey(raw?.date);
+    if (!date) continue;
     const slots: ShowingSlot[] = [];
     for (const s of (Array.isArray(raw.timeslots) ? raw.timeslots : []) as Json[]) {
-      if (typeof s?.time === "string" && SLOT_TIME_RE.test(s.time) && typeof s.agent_id === "number") {
-        slots.push({ time: s.time, agentId: s.agent_id });
+      rawTimeslotCount += 1;
+      const time = toCanonicalSlotTime(s?.time);
+      if (time && typeof s?.agent_id === "number") {
+        slots.push({ time, agentId: s.agent_id });
+        acceptedSlotCount += 1;
       }
     }
-    days.push({ date: raw.date, slots });
+    days.push({ date, slots });
   }
   const duration = typeof data.prospect_scheduled_showing_duration === "number"
     ? data.prospect_scheduled_showing_duration
@@ -140,8 +218,9 @@ export function normalizeAvailabilities(data: Json): ShowingAvailabilities {
     durationMinutes: duration,
     days,
     futureAvailabilitiesExist: data.future_availabilities_exist === true,
-    firstAvailableDate:
-      typeof data.first_available_date === "string" ? data.first_available_date : null,
+    firstAvailableDate: normalizeDateKey(data.first_available_date),
+    rawTimeslotCount,
+    acceptedSlotCount,
   };
 }
 

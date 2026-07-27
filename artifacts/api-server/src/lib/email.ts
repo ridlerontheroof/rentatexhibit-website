@@ -413,23 +413,27 @@ export async function sendFeeCopyAlert(opts: {
  * fails; deduping lives in the caller (showingSchedulerCheck).
  */
 export async function sendShowingSchedulerAlert(opts: {
-  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure";
+  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slot_format_drift";
   detail: string;
   failedRuns: number;
 }): Promise<void> {
   warnIfUnconfigured();
   const { subject, html: htmlBody, text: textBody } = renderShowingSchedulerAlert(opts);
   const { contentType, body } = buildMimeBody("showingalert", textBody, htmlBody);
+  // Slot-format drift is a revenue-path outage the leasing team should hear
+  // about (like the fee-copy alert); the other reasons are operational.
+  const recipient =
+    opts.reason === "slot_format_drift" ? LEASING_INBOX_EMAIL : SEED_ALERT_EMAIL;
   const headers = [
     `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
-    `To: ${SEED_ALERT_EMAIL}`,
+    `To: ${recipient}`,
     `Subject: ${encodeHeader(subject)}`,
     "MIME-Version: 1.0",
     `Content-Type: ${contentType}`,
   ].join("\r\n");
-  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, recipient);
   logger.info(
-    { recipient: SEED_ALERT_EMAIL, reason: opts.reason },
+    { recipient, reason: opts.reason },
     "Sent showing-scheduler broken alert email",
   );
 }

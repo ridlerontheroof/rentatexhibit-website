@@ -62,7 +62,7 @@ describe("normalizeAvailabilities", () => {
     first_available_date: "2026/07/28",
   };
 
-  it("normalizes days, slots, duration, and flags", () => {
+  it("normalizes legacy-format days, slots, duration, and flags", () => {
     const out = normalizeAvailabilities(raw);
     expect(out.durationMinutes).toBe(15);
     expect(out.days).toEqual([
@@ -77,6 +77,80 @@ describe("normalizeAvailabilities", () => {
     ]);
     expect(out.futureAvailabilitiesExist).toBe(true);
     expect(out.firstAvailableDate).toBe("2026/07/28");
+    expect(out.rawTimeslotCount).toBe(4);
+    expect(out.acceptedSlotCount).toBe(2);
+  });
+
+  it("normalizes the 2026-07 ISO format (dash dates + offset times) to canonical wall time", () => {
+    // Live-format fixture captured from AppFolio on 2026-07-27 (unit probe).
+    const out = normalizeAvailabilities({
+      prospect_scheduled_showing_duration: 15,
+      availabilities_by_date: [
+        { date: "2026-07-27", timeslots: [] },
+        {
+          date: "2026-07-30",
+          timeslots: [
+            { agent_id: 444, time: "2026-07-30T10:30:00-05:00", showing_attendee_count: 0 },
+            // Same instant quoted in UTC must normalize identically.
+            { agent_id: 443, time: "2026-07-30T15:45:00Z", showing_attendee_count: 0 },
+          ],
+        },
+      ],
+      future_availabilities_exist: true,
+      first_available_date: "2026-07-30",
+      timezone: "America/Chicago",
+    });
+    expect(out.days).toEqual([
+      { date: "2026/07/27", slots: [] },
+      {
+        date: "2026/07/30",
+        slots: [
+          { time: "2026/07/30 10:30", agentId: 444 },
+          { time: "2026/07/30 10:45", agentId: 443 },
+        ],
+      },
+    ]);
+    expect(out.firstAvailableDate).toBe("2026/07/30");
+    expect(out.rawTimeslotCount).toBe(2);
+    expect(out.acceptedSlotCount).toBe(2);
+  });
+
+  it("normalizes winter (CST) ISO slot times exactly", () => {
+    const out = normalizeAvailabilities({
+      prospect_scheduled_showing_duration: 15,
+      availabilities_by_date: [
+        { date: "2026-01-15", timeslots: [{ agent_id: 1, time: "2026-01-15T10:00:00-06:00" }] },
+      ],
+    });
+    expect(out.days[0].slots[0].time).toBe("2026/01/15 10:00");
+  });
+
+  it("counts raw vs accepted so an unknown format is detectable (all-dropped alarm)", () => {
+    const out = normalizeAvailabilities({
+      prospect_scheduled_showing_duration: 15,
+      availabilities_by_date: [
+        {
+          date: "2026-07-30",
+          timeslots: [
+            { agent_id: 443, time: "July 30, 10:30 AM" },
+            { agent_id: 444, time: 1753887000 },
+          ],
+        },
+      ],
+      future_availabilities_exist: true,
+    });
+    expect(out.days).toEqual([{ date: "2026/07/30", slots: [] }]);
+    expect(out.rawTimeslotCount).toBe(2);
+    expect(out.acceptedSlotCount).toBe(0);
+  });
+
+  it("nulls an unrecognized first_available_date instead of propagating it", () => {
+    const out = normalizeAvailabilities({
+      prospect_scheduled_showing_duration: 15,
+      availabilities_by_date: [],
+      first_available_date: "07/30/2026",
+    });
+    expect(out.firstAvailableDate).toBeNull();
   });
 
   it("throws when duration is missing — end time can't be computed", () => {
@@ -105,6 +179,34 @@ describe("fetchShowingAvailabilities", () => {
     expect(url).toContain("/listings/api/listings/uid-1/availabilities?");
     expect(url).toContain("start_date=07%2F27%2F2026");
     expect(url).toContain("find_first_available_date=true");
+  });
+
+  it("follows a dash-format first_available_date (2026-07 format) when the window is empty", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        jsonResponse({
+          prospect_scheduled_showing_duration: 15,
+          availabilities_by_date: [{ date: "2026-07-27", timeslots: [] }],
+          future_availabilities_exist: true,
+          first_available_date: "2026-07-30",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          prospect_scheduled_showing_duration: 15,
+          availabilities_by_date: [
+            { date: "2026-07-30", timeslots: [{ agent_id: 444, time: "2026-07-30T10:30:00-05:00" }] },
+          ],
+        }),
+      );
+    const out = await fetchShowingAvailabilities("uid-1", "07/27/2026");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(String(fetchMock.mock.calls[1][0])).toContain("start_date=07%2F30%2F2026");
+    expect(out.days[0]).toEqual({
+      date: "2026/07/30",
+      slots: [{ time: "2026/07/30 10:30", agentId: 444 }],
+    });
   });
 
   it("follows first_available_date once when the requested window is empty", async () => {
