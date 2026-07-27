@@ -1,0 +1,146 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ApartmentComplex",
+  "@id": "https://www.rentatexhibit.com/#apartmentcomplex",
+  "name": "Exhibit On Superior",
+  "alternateName": "Exhibit on Superior",
+  "url": "https://www.rentatexhibit.com/",
+  "description": "Luxury high-rise apartment community in Chicago’s River North neighborhood offering studio, convertible, one-, two-, and three-bedroom residences with a full floor of amenities, on-site retail, and skyline views.",
+  "image": [
+    "https://www.rentatexhibit.com/path-to-primary-exterior-or-pool-image.jpg",
+    "https://www.rentatexhibit.com/path-to-amenity-or-interior-image.jpg"
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "165 W Superior St",
+    "addressLocality": "Chicago",
+    "addressRegion": "IL",
+    "postalCode": "60654",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 41.8957,
+    "longitude": -87.6326
+  },
+  "telephone": "+1-312-450-0635",
+  "email": "exhibit@highlandptrs.com",
+  "numberOfAccommodationUnits": 298,
+  "numberOfAvailableAccommodationUnits": null,
+  "floorSize": {
+    "@type": "QuantitativeValue",
+    "minValue": 448,
+    "maxValue": 1528,
+    "unitCode": "FTK"
+  },
+  "amenityFeature": [
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "75-foot lap pool",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Outdoor hot tub",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Fitness center with private training rooms",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Sauna",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Dog spa and gated outdoor dog walk",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Full-floor amenity deck",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Resident lounges and work spaces",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Music studio",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Grilling stations and fire pits",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "24-hour staffed front desk",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "In-unit washer and dryer",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Private balconies (most units)",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "On-site retail and wellness",
+      "value": true
+    }
+  ],
+  "petsAllowed": true,
+  "priceRange": "$$",
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "09:00",
+      "closes": "18:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Saturday",
+      "opens": "10:00",
+      "closes": "17:00"
+    }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.2",
+    "reviewCount": "136",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "potentialAction": {
+    "@type": "ReserveAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://www.rentatexhibit.com/schedule-a-tour",
+      "actionPlatform": [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform"
+      ]
+    },
+    "result": {
+      "@type": "Reservation",
+      "name": "Schedule a Tour"
+    }
+  },
+  "sameAs": [
+    "https://www.rentatexhibit.com/"
+  ]
+}
+</script>
