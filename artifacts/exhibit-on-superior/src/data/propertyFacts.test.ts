@@ -36,6 +36,19 @@ const seoSource = readFileSync(join(__dirname, 'seo.ts'), 'utf8');
 const knowledgeSource = readFileSync(join(__dirname, 'knowledgeArticles.ts'), 'utf8');
 const allPageFiles = readdirSync(pagesDir).filter((f) => f.endsWith('.tsx'));
 
+// The printable fact sheet (directory-listing cleanup) states the same facts;
+// its generator source AND its committed outputs are scanned so a stale sheet
+// can never ship after an hours/credit/sqft/unit-total change.
+const artifactRoot = join(__dirname, '..', '..');
+const generatorSource = readFileSync(join(artifactRoot, 'scripts', 'generate-fact-sheet.ts'), 'utf8');
+const listingsDir = join(artifactRoot, 'docs', 'directory-listings');
+const factSheetTxt = readFileSync(join(listingsDir, 'fact-sheet.txt'), 'utf8');
+const factsJsonRaw = readFileSync(join(listingsDir, 'facts.json'), 'utf8');
+const factsJson = JSON.parse(factsJsonRaw) as {
+  officeHours: string[];
+  sqftRange: string;
+};
+
 /** Decode \uXXXX escape sequences so source scans see the rendered characters. */
 const unescapeSource = (s: string): string =>
   s.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
@@ -45,6 +58,9 @@ const surfaces: Array<[string, string]> = [
   ['seo.ts', unescapeSource(seoSource)],
   ['knowledgeArticles.ts', unescapeSource(knowledgeSource)],
   ...allPageFiles.map((f): [string, string] => [`pages/${f}`, unescapeSource(pageSource(f))]),
+  ['scripts/generate-fact-sheet.ts', unescapeSource(generatorSource)],
+  ['docs/directory-listings/fact-sheet.txt', factSheetTxt],
+  ['docs/directory-listings/facts.json', factsJsonRaw],
 ];
 
 /** Rendered Knowledge Center prose (what visitors and crawlers actually read). */
@@ -236,6 +252,46 @@ describe('square-footage range', () => {
     const about = pageSource('About.tsx');
     expect(about).toMatch(/SQFT_RANGE_DISPLAY/);
     expect(about).not.toMatch(/448|1,528/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Printable fact sheet (directory-listing assets) stays locked to the source
+// ---------------------------------------------------------------------------
+
+describe('fact-sheet generator and outputs', () => {
+  it('the generator sources facts from the canonical modules, never hand-typed values', () => {
+    // Hours come from the JSON-LD builder (which renders propertyFacts.ts);
+    // sqft range comes straight from floorPlans.ts.
+    expect(generatorSource).toMatch(/buildJsonLd/);
+    expect(generatorSource).toMatch(/openingHoursSpecification/);
+    expect(generatorSource).toMatch(
+      /import \{[^}]*SQFT_MIN[^}]*SQFT_MAX[^}]*\} from '\.\.\/src\/data\/floorPlans'/,
+    );
+    // No hand-typed hour or sqft-endpoint literals in the generator itself.
+    expect(generatorSource).not.toMatch(/\b(?:09|10|17|18):00\b/);
+    expect(generatorSource).not.toMatch(new RegExp(`\\b(?:${SQFT_MIN}|${SQFT_MAX})\\b`));
+  });
+
+  it('committed facts.json states the canonical hours and sqft range', () => {
+    const allowed = new Set(
+      [
+        WEEKDAY_HOURS_SHORT,
+        SATURDAY_HOURS_SHORT,
+        WEEKDAY_HOURS_CLOCK,
+        SATURDAY_HOURS_CLOCK,
+        WEEKDAY_HOURS_COMPACT,
+        SATURDAY_HOURS_COMPACT,
+      ].map(normalizeRange),
+    );
+    for (const line of factsJson.officeHours) {
+      const range = line.match(HOUR_RANGE_RE)?.[0];
+      expect(range, `facts.json hours line "${line}" must contain an hour range`).toBeTruthy();
+      expect(allowed.has(normalizeRange(range as string)), `stale hours in facts.json: "${line}"`).toBe(
+        true,
+      );
+    }
+    expect(factsJson.sqftRange).toBe(`${SQFT_MIN}\u2013${SQFT_MAX} sq ft`);
   });
 });
 
