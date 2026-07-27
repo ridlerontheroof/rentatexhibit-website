@@ -18,8 +18,16 @@
 // pick the first /available-units/<unit> entry. If none are published
 // (fully rented building), only the homepage is checked.
 //
+// Knowledge-page selection: /knowledge/<slug> pages carry FAQPage JSON-LD.
+// The validator renders each URL (~10-20s), so we submit a small
+// deterministic sample — first, middle, and last slugs from the committed
+// article data (same source of truth check-knowledge-pages.mjs uses) — not
+// every slug.
+//
 // Usage: node scripts/check-schema-validator.mjs [baseUrl]
 //   default baseUrl: https://www.rentatexhibit.com
+
+import { loadKnowledgeSlugs } from './lib/knowledge-slugs.mjs';
 
 const BASE = (process.argv.slice(2).find((a) => !a.startsWith('--')) ||
   'https://www.rentatexhibit.com').replace(/\/$/, '');
@@ -86,10 +94,28 @@ async function pickUnitPage() {
   return m ? m[1].trim() : null;
 }
 
+/**
+ * Deterministic sample of live /knowledge/<slug> URLs: first, middle, last.
+ * The slug list is parsed from the committed article data file — if that
+ * parse fails it's OUR repo drifting, so it's a hard failure, not a skip.
+ */
+async function pickKnowledgePages() {
+  let slugs;
+  try {
+    slugs = await loadKnowledgeSlugs();
+  } catch (err) {
+    console.error(`FAIL: could not load knowledge slugs: ${err.message || err}`);
+    process.exit(1);
+  }
+  const idx = [...new Set([0, Math.floor((slugs.length - 1) / 2), slugs.length - 1])];
+  return idx.map((i) => `${BASE}/knowledge/${slugs[i]}`);
+}
+
 const unitUrl = await pickUnitPage();
 const targets = [`${BASE}/`];
 if (unitUrl) targets.push(unitUrl);
 else console.log('note: no /available-units/<unit> pages in the live sitemap — homepage only.');
+targets.push(...(await pickKnowledgePages()));
 
 let failures = 0;
 for (const url of targets) {
