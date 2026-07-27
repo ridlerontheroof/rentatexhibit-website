@@ -1,0 +1,193 @@
+P0 — 2. amenities.aspx serves a duplicate homepage instead of redirecting
+
+Legacy URL:
+
+```text
+https://www.rentatexhibit.com/amenities.aspx
+```
+
+The page currently serves a duplicate, reduced homepage-style experience rather than the current Amenities page.
+
+Problems include:
+
+• Duplicate homepage content
+• Different H1 and page framing
+• External highlandptrs.com calls to action
+• Older navigation structure
+• Missing newer Knowledge Center pathways
+• Different management/footer treatment
+• Competing page intent for a URL named “amenities”
+
+Required fix
+
+```text
+/amenities.aspx → /amenities
+```
+
+Use a direct 301 or 308.
+
+Acceptance test
+
+• /amenities.aspx no longer serves HTML.
+• It redirects in one hop to /amenities.
+• The current Amenities page is the only indexable amenity page.
+
+────────
+
+P0 — 3. brochure.aspx serves another duplicate homepage
+
+Legacy URL:
+
+```text
+https://www.rentatexhibit.com/brochure.aspx
+```
+
+This URL currently serves another homepage-like version with:
+
+• Duplicate property copy
+• Older navigation
+• External Highland calls to action
+• Artist-in-Residence navigation not present in the primary current architecture
+• A different footer and page structure
+• No actual downloadable brochure function
+
+Required fix
+
+Best option:
+
+```text
+/brochure.aspx → /floor-plans
+```
+
+Alternative:
+
+```text
+/brochure.aspx → /available-units
+```
+
+Use /floor-plans if the intent is to preserve historical “brochure/floor-plan” relevance.
+
+Acceptance test
+
+• /brochure.aspx returns a permanent one-hop redirect.
+• It does not serve a duplicate homepage.
+• It is absent from the sitemap and internal navigation.
+
+────────
+
+P0 — 4. Current search history still exposes stale unit data
+
+Google’s current result for /available-units was crawled today and shows a stale summary line that identifies Apartment 2705 as 478 square feet, while the current live content within the same result correctly lists it as 450 square feet.
+
+This proves that:
+
+• The live page correction has been deployed.
+• Search-result summary history has not fully refreshed.
+• Old data can still appear in snippets or AI retrieval layers.
+
+Required fix
+
+After the live technical cleanup:
+
+1. Use Google Search Console URL Inspection on /available-units.
+2. Test the live URL.
+3. Request indexing.
+4. Use Search Console’s Clear snippet or temporary removal workflow if the stale 478-SF snippet persists.
+5. Request indexing for /available-units/2705.
+6. Resubmit the clean sitemap.
+7. Submit both changed URLs through IndexNow.
+
+Acceptance test
+
+• Search results no longer display 478 SF for Apartment 2705.
+• Search Console’s indexed version matches the live version.
+• Bing and Copilot results no longer show the old figure.
+
+────────
+
+P0 — 5. Two old G5 URL paths still use “page moved” interstitials
+
+Observed examples:
+
+```text
+/apartments/il/chicago/reviews/
+/apartments/il/chicago/residents/
+```
+
+These paths return an interstitial or minimal “page moved” response instead of directly resolving to the current page.
+
+Required redirects
+
+```text
+/apartments/il/chicago/reviews → /reviews
+/apartments/il/chicago/reviews/ → /reviews
+/apartments/il/chicago/residents → /residents
+/apartments/il/chicago/residents/ → /residents
+```
+
+Acceptance test
+
+• All four variations return a server-side 301 or 308.
+• There is no intermediate HTML page.
+• Final destination returns HTTP 200.
+• The redirect is one hop.
+
+────────
+
+P0 — 6. Some historical .aspx pages return 404 instead of preserving authority
+
+The following legacy URLs now return 404:
+
+```text
+/mapsanddirections.aspx
+/video.aspx
+/apartmentphotos.aspx
+```
+
+These had historical content and search visibility. They have direct current equivalents, so 301 redirects are better than 404 responses.
+
+Required redirects
+
+```text
+/mapsanddirections.aspx → /map-directions
+/video.aspx → /virtual-tour
+/apartmentphotos.aspx → /photo-gallery
+```
+
+Acceptance test
+
+• Each URL redirects in one hop.
+• No 404 is returned.
+• The final page is the closest equivalent, not the homepage.
+
+────────
+
+P0 — 7. Confirm every old G5 URL is a true redirect, not an alias
+
+Several old G5 paths now correctly resolve to current pages, including sampled floor-plan, amenity, neighborhood, pet, photo, virtual-tour, and schedule-tour routes.
+
+Some paths did not expose an explicit redirect in the crawl and may be serving the current content under both old and new URLs.
+
+Review these carefully:
+
+```text
+/apartments/il/chicago/contact-us
+/apartments/il/chicago/map-directions
+```
+
+Required fix
+
+Ensure each old path returns a server-side 301 or 308 to:
+
+```text
+/apartments/il/chicago/contact-us → /contact-us
+/apartments/il/chicago/map-directions → /map-directions
+```
+
+Do not serve identical content at both URLs.
+
+Acceptance test
+
+• Header test confirms 301 or 308.
+• Canonical destination is the final current URL.
+• Old paths do not return HTTP 200.
