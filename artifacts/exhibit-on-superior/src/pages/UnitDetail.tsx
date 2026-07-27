@@ -16,6 +16,7 @@ import {
 } from '../components/floor-plans/UnitGalleryLightbox';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { variantIndexForUnit } from '../data/floorPlans';
+import { planPageForUnit, floorPlanPagePath, floorPlanH1 } from '../data/floorPlanPages';
 import { resolveUnitSqft } from '../data/unitSqft';
 import { trackOutboundClick } from '../lib/analytics';
 import { youTubeEmbedUrl, youTubeThumbnailUrl } from '../lib/youtube';
@@ -117,6 +118,9 @@ export function UnitDetail() {
   const videoEmbedUrl = unit.videoUrl ? youTubeEmbedUrl(unit.videoUrl) : null;
   const floor = unitFloor(unit.unit);
   const ada = adaDesignation(unit.unit);
+  // Reverse of matchingUnitsForPlan: the layout's own landing page, so
+  // shoppers can compare every apartment sharing this floor plan.
+  const planPage = planPageForUnit(unit.unit);
 
   return (
     <div className="pb-16 pt-10 md:pt-14">
@@ -348,6 +352,18 @@ export function UnitDetail() {
             >
               View the {group.typeLabel} floor plan
             </button>
+          )}
+          {planPage && (
+            <p className="mt-5 text-sm text-muted-foreground">
+              This apartment uses the{' '}
+              <Link
+                href={floorPlanPagePath(planPage.slug)}
+                className="underline transition-colors hover:text-primary"
+              >
+                {floorPlanH1(planPage)} floor plan
+              </Link>{' '}
+              — see the full layout and every available apartment with it.
+            </p>
           )}
         </div>
 

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { plans } from './floorPlans';
+import { plans, unitNumbersForPlan } from './floorPlans';
+import snapshot from './availabilitySnapshot.json';
 import {
   FLOOR_PLAN_PAGES,
   FLOOR_PLAN_PAGE_PATHS,
@@ -13,6 +14,7 @@ import {
   floorPlanPageJsonLd,
   floorPlanTitle,
   matchingUnitsForPlan,
+  planPageForUnit,
   relatedPagesFor,
   variantPagesFor,
 } from './floorPlanPages';
@@ -117,6 +119,35 @@ describe('availability matching', () => {
   it('ignores unparseable unit numbers', () => {
     const page = floorPlanPage('one-bedroom-one-bath-665-sf')!;
     expect(matchingUnitsForPlan(page.plan, [makeUnit('PH-X')])).toEqual([]);
+  });
+});
+
+describe('planPageForUnit (unit → plan page reverse link)', () => {
+  it('resolves every buildable apartment number to exactly one plan page', () => {
+    // The plan sheets must partition each residence line by floor band — no
+    // apartment can belong to zero or two pages, or the UnitDetail reverse
+    // link would be missing or ambiguous.
+    for (const p of plans) {
+      for (const unitNumber of unitNumbersForPlan(p)) {
+        const matches = FLOOR_PLAN_PAGES.filter(
+          (fp) => matchingUnitsForPlan(fp.plan, [makeUnit(unitNumber)]).length > 0,
+        );
+        expect(matches.length, `unit ${unitNumber} matches ${matches.length} pages`).toBe(1);
+        expect(planPageForUnit(unitNumber)?.slug).toBe(matches[0].slug);
+      }
+    }
+  });
+
+  it('resolves every unit in the baked availability snapshot', () => {
+    const units = (snapshot as { units: { unit: string }[] }).units;
+    expect(units.length).toBeGreaterThan(0);
+    for (const u of units) {
+      expect(planPageForUnit(u.unit), `no plan page for unit ${u.unit}`).not.toBeNull();
+    }
+  });
+
+  it('returns null for unparseable unit numbers', () => {
+    expect(planPageForUnit('PH-X')).toBeNull();
   });
 });
 

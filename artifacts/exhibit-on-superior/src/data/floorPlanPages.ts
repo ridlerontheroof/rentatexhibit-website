@@ -133,6 +133,22 @@ export function matchingUnitsForPlan(p: Plan, units: AvailableUnit[]): Available
   });
 }
 
+/**
+ * The plan landing page for a unit number — matchingUnitsForPlan in reverse.
+ * Every buildable apartment number resolves to exactly ONE page because the
+ * plan sheets partition each residence line by floor band (guarded by the
+ * floorPlanPages test). Returns null for unparseable unit numbers.
+ */
+export function planPageForUnit(unitNumber: string): FloorPlanPage | null {
+  const parsed = parseUnitNumber(unitNumber);
+  if (parsed === null) return null;
+  return (
+    FLOOR_PLAN_PAGES.find(
+      (fp) => fp.plan.unit === parsed.line && fp.plan.floors.includes(parsed.floor),
+    ) ?? null
+  );
+}
+
 /** Other pages in the same residence line (floor-band variants). */
 export function variantPagesFor(page: FloorPlanPage): FloorPlanPage[] {
   return FLOOR_PLAN_PAGES.filter(
