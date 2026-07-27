@@ -1,0 +1,571 @@
+P1 — 12. Confirm the 298-versus-290 apartment-count discrepancy
+
+The Knowledge Center and Virtual Tour page currently state that Exhibit has 298 apartments.
+
+The approved unit-map work previously accounted for 290 residential units.
+
+This may have a valid explanation, but it must be resolved before the count is treated as a schema-grade fact.
+
+Required business confirmation
+
+Determine whether 298 includes:
+
+• Commercial suites
+• Model units
+• Employee units
+• Non-residential spaces
+• Combined or retired unit numbers
+• Units omitted from the operational unit map
+• Another category
+
+Required fix after confirmation
+
+Use one count consistently across:
+
+• Knowledge Center
+• About page
+• Virtual Tour
+• Structured data
+• Google Business Profile
+• Third-party listings
+• Marketing collateral
+
+────────
+
+Strong Areas Confirmed
+
+On-page SEO: 93/100
+
+Strengths
+
+• Strong local title and River North targeting
+• Clear primary H1
+• Direct property address and phone
+• Descriptive image labels
+• Strong internal linking
+• Current availability calls to action
+• Useful neighborhood context
+• Clear conversion routes
+• Good page-specific content depth
+• Improved heading separation on the current homepage
+
+Remaining improvements
+
+• Add convertible language to the homepage unit mix.
+• Clean up floor-plan template concatenation.
+• Continue standardizing heading structure across all pages.
+
+────────
+
+AEO and AI-answer readiness: 96/100
+
+The Knowledge Center is the strongest section of the website.
+
+Confirmed strengths
+
+• 71 individual renter questions
+• Direct answer first
+• One stable URL per question
+• Visible “Reviewed by” and update dates
+• Related questions
+• “Go Deeper” links
+• Property-specific facts
+• Pricing and policy disclaimers
+• Links back to live inventory
+• Clear contact information
+• Strong topic coverage across pricing, floor plans, amenities, pets, parking, utilities, applications, neighborhood, and building services
+
+Remaining improvements
+
+• Connect volatile facts to one structured source.
+• Automatically flag expired review dates.
+• Resolve apartment count before reinforcing it across more pages.
+• Ensure search snippets refresh after important corrections.
+
+────────
+
+Live inventory SEO: 90/100
+
+Strengths
+
+• Current unit list is crawlable.
+• Unit-level URLs exist.
+• Rent and move-in dates are visible.
+• Floor plans and availability are connected.
+• Unit-specific applications are linked.
+• ADA filtering exists.
+• The full floor-plan catalog is accessible.
+• Pricing is described as synchronized from the leasing system.
+
+Deductions
+
+• Studio versus Jr. Convertible classification conflict
+• Stale search snippet for Apartment 2705
+• Broad floor-range errors
+• Parameterized URLs are discoverable
+
+────────
+
+Parameter and Filter URL Controls
+
+Search engines are discovering parameter URLs such as:
+
+```text
+/available-units?plan=5-2br-1-std
+```
+
+The filtered URL returns substantially the same page as the base availability page.
+
+Required fix
+
+• Use /available-units as the canonical URL.
+• Exclude parameter URLs from XML sitemaps.
+• Do not create permanent internal links to temporary filter states unless needed.
+• If query parameters are retained for usability, canonicalize nonunique filtered pages to /available-units.
+• Do not block these URLs in robots.txt before crawlers can process their canonical.
+• Create clean standalone floor-plan URLs only for durable, unique plan pages.
+
+Acceptance test
+
+• Filter URLs have the correct canonical.
+• Search Console does not report large volumes of duplicate parameter URLs.
+• The sitemap contains no ?plan= URLs.
+• Internal navigation favors clean URLs.
+
+────────
+
+Full Cache Disinfection Runbook
+
+Phase 1 — Hosting and CDN purge
+
+Replit or the hosting provider must perform the following:
+
+1. Purge all cached HTML responses.
+2. Purge edge-cache entries for every legacy URL.
+3. Purge cached redirects.
+4. Purge current inventory HTML and API responses.
+5. Purge old service-worker caches.
+6. Bump any service-worker cache version.
+7. Remove or unregister any legacy service worker that still references G5 or RentCafe assets.
+8. Confirm the new redirect table is deployed at the edge before application routing.
+9. Republish the site.
+10. Run a second full purge after the redirect deployment.
+
+Recommended cache policy
+
+Dynamic HTML and inventory pages:
+
+```text
+Cache-Control: no-cache, max-age=0, must-revalidate
+```
+
+A short controlled CDN TTL may be used if availability updates still propagate promptly.
+
+Inventory API responses:
+
+Use no-store or a very short cache period where technically appropriate.
+
+Fingerprint-versioned assets:
+
+```text
+Cache-Control: public, max-age=31536000, immutable
+```
+
+Do not use year-long caching for unversioned HTML, JSON, or inventory responses.
+
+────────
+
+Phase 2 — Add deployment verification markers
+
+Add:
+
+• Build timestamp
+• Build/version ID
+• Optional X-Site-Version response header
+• Optional HTML comment with deployment ID
+
+Example:
+
+```html
+<!-- Exhibit site build: 2026-07-26T22:45:00-05:00 | version: abc123 -->
+```
+
+This makes it possible to confirm that auditors, CDNs, and browsers are seeing the same deployment.
+
+────────
+
+Phase 3 — Browser and local cache clearing
+
+For internal QA:
+
+1. Test in a private/incognito session.
+2. Disable cache in browser developer tools.
+3. Clear site data for rentatexhibit.com.
+4. Unregister service workers.
+5. Clear Cache Storage, IndexedDB, Local Storage, and Session Storage.
+6. Hard-reload each representative page.
+7. Test on a second network or device.
+8. Test both www and non-www.
+9. Test HTTP and HTTPS variations.
+
+────────
+
+Search-Engine History Removal Runbook
+
+Principle
+
+Old URLs must first return the correct permanent redirect, 404, or 410 response. Search-removal tools do not replace correct server behavior.
+
+Do not block old URLs in robots.txt before Google and Bing can crawl the redirect, 404, or 410.
+
+────────
+
+Step 1 — Deploy the complete redirect map
+
+Highest-priority redirects
+
+```text
+/availableunits.aspx → /available-units
+/amenities.aspx → /amenities
+/brochure.aspx → /floor-plans
+/mapsanddirections.aspx → /map-directions
+/video.aspx → /virtual-tour
+/apartmentphotos.aspx → /photo-gallery
+/contactus.aspx → /contact-us
+/floorplans.aspx → /available-units
+```
+
+Old G5 family
+
+```text
+/apartments/il/chicago/floor-plans → /available-units
+/apartments/il/chicago/amenities → /amenities
+/apartments/il/chicago/photo-gallery → /photo-gallery
+/apartments/il/chicago/virtual-tour → /virtual-tour
+/apartments/il/chicago/neighborhood → /neighborhood
+/apartments/il/chicago/map-directions → /map-directions
+/apartments/il/chicago/contact-us → /contact-us
+/apartments/il/chicago/schedule-a-tour → /schedule-a-tour
+/apartments/il/chicago/pet-friendly → /pet-friendly
+/apartments/il/chicago/residents → /residents
+/apartments/il/chicago/reviews → /reviews
+/apartments/il/chicago/apply → /available-units
+```
+
+Apply the same redirect to trailing-slash variants.
+
+Use 410 only when a URL has no useful equivalent.
+
+────────
+
+Step 2 — Remove legacy URLs from the website graph
+
+Remove old URLs from:
+
+• XML sitemap
+• HTML sitemap
+• Navigation
+• Footer
+• Body links
+• Image links
+• Canonical tags
+• Open Graph URLs
+• Structured data
+• JavaScript route maps
+• Old templates
+• Application redirects
+• Third-party widgets
+
+────────
+
+Step 3 — Google Search Console cleanup
+
+After redirects are live:
+
+1. Submit the clean XML sitemap.
+2. Inspect each destination URL.
+3. Select Test Live URL.
+4. Request indexing for the destination.
+5. For urgent stale results, open the Removals report.
+6. Submit temporary removal or Clear snippet requests for the exact stale URLs.
+7. Use prefix removal for /apartments/il/chicago/ only after every URL in that family has a correct permanent destination.
+8. Monitor the Page Indexing report for:
+  • Redirected
+  • Duplicate
+  • Soft 404
+  • Crawled, not indexed
+  • Alternate page with canonical
+9. Confirm that the indexed version matches the live version.
+
+Priority Google requests
+
+```text
+/availableunits.aspx
+/amenities.aspx
+/brochure.aspx
+/contactus.aspx
+/floorplans.aspx
+/mapsanddirections.aspx
+/video.aspx
+/apartmentphotos.aspx
+/apartments/il/chicago/
+```
+
+Google’s Removals tool is temporary. Permanent cleanup still depends on redirects, 404/410 responses, noindex where appropriate, and removal from the sitemap and internal links.
+
+────────
+
+Step 4 — Bing and Copilot cleanup
+
+1. Verify the site in Bing Webmaster Tools.
+2. Submit the corrected sitemap.
+3. Use Bing’s Content Removal or Block URLs tools for urgent stale results.
+4. Submit all changed, redirected, and deleted URLs through IndexNow.
+5. Submit the destination URLs as changed.
+6. Monitor Bing’s indexing and AI Performance reports.
+
+IndexNow supports submission of redirected, updated, 404, and 410 URLs.
+
+────────
+
+Step 5 — Refresh stale public snippets
+
+If a search result continues to show old data after the live page has changed:
+
+• Use Search Console’s snippet-clearing workflow as the verified owner.
+• Use Google’s public Refresh Outdated Content tool when ownership access is unavailable.
+• Submit the exact URL shown in the search result, including relevant parameters or casing.
+• Repeat for each separate indexed URL variation.
+
+────────
+
+Step 6 — Weekly history scan
+
+Run searches for:
+
+```text
+site:rentatexhibit.com "312-625-5402"
+site:rentatexhibit.com "Magellan Property Management"
+site:rentatexhibit.com inurl:aspx
+site:rentatexhibit.com inurl:/apartments/il/chicago/
+site:rentatexhibit.com "478 sq ft" "2705"
+site:rentatexhibit.com "2025" "Available"
+```
+
+Track:
+
+• URL
+• Search engine
+• Search snippet
+• Live response
+• Redirect destination
+• Date first found
+• Date resolved
+
+────────
+
+Robots, Sitemap, Canonicals, Headers and Structured Data
+
+These require direct developer validation.
+
+Replit must verify
+
+• robots.txt
+• sitemap.xml and any sitemap index
+• Canonical tags
+• Meta robots
+• X-Robots-Tag
+• HSTS
+• HTTP-to-HTTPS redirect
+• Non-www to www
+• Trailing-slash handling
+• Redirect hop count
+• Cache headers
+• Compression
+• Structured-data types
+• Duplicate JSON-LD blocks
+• Open Graph URLs
+• Schema @id consistency
+
+Sitemap rules
+
+Include only:
+
+• Canonical HTTPS www URLs
+• HTTP 200 pages
+• Current unit pages
+• Current floor-plan pages
+• Current Knowledge Center pages
+• Current property pages
+
+Exclude:
+
+• .aspx
+• /apartments/il/chicago/
+• Redirects
+• 404s
+• Query parameters
+• Internal search results
+• Application-session URLs
+• Preview routes
+
+────────
+
+Structured Data Requirements
+
+Homepage
+
+Recommended graph:
+
+• Organization
+• WebSite
+• ApartmentComplex
+• PostalAddress
+• GeoCoordinates
+• OpeningHoursSpecification
+• ImageObject
+• sameAs
+• Stable @id
+
+Available Units
+
+Recommended:
+
+• ItemList
+• Apartment
+• Offer
+• BreadcrumbList
+
+Unit pages
+
+Include:
+
+• Unit number
+• Floor
+• Marketing type
+• Bedroom count
+• Bathroom count
+• Square footage
+• Accessibility designation
+• Balcony status
+• Rent
+• Currency
+• Availability date
+• Application URL
+• Tour URL
+• Images
+• dateModified
+• Relationship to the main ApartmentComplex
+
+Floor-plan pages
+
+Recommended:
+
+• FloorPlan
+• QuantitativeValue
+• Exact floor applicability
+• Exact square footage
+• Bed and bath count
+• Balcony status
+• Accessibility information
+• Current matching units
+
+Knowledge Center
+
+Recommended:
+
+• WebPage
+• Question
+• Answer
+• BreadcrumbList
+• dateModified
+• reviewedBy
+• about
+• mainEntity
+
+All structured facts must match visible content.
+
+────────
+
+Accessibility and Semantic Review
+
+Score: 82/100
+
+Strengths
+
+• Descriptive image labels
+• Accessibility Statement
+• ADA filtering
+• Accessibility qualifiers
+• Clear contact routes
+• Visible form labels on sampled current pages
+• Improved heading separation
+
+Required testing
+
+• Keyboard use of inventory filters
+• Focus state visibility
+• ARIA live result counts
+• Carousel pause
+• Modal focus management
+• Matterport and video alternatives
+• Form-error announcements
+• Repeated CTA accessible names
+• 200% zoom
+• VoiceOver and NVDA testing
+
+────────
+
+Performance Review
+
+Provisional score: 65/100
+
+A reliable Lighthouse or field-data score was not available during this audit.
+
+Front-end risk factors
+
+• Homepage carousel
+• Large photo gallery
+• Unit image galleries
+• Matterport
+• YouTube
+• Google Tag Manager
+• Dynamic inventory filters
+• Third-party AppFolio links
+• Multiple content templates
+
+Required test pages
+
+1. Homepage
+2. Available Units
+3. Apartment 0208
+4. Apartment 2705
+5. Floor Plans
+6. Amenities
+7. Photo Gallery
+8. Virtual Tour
+9. Knowledge Center
+10. One Knowledge Center article
+11. Contact
+12. Schedule a Tour
+
+Targets
+
+|Metric                   |Target       |
+|-------------------------|------------:|
+|Largest Contentful Paint |≤ 2.5 seconds|
+|Interaction to Next Paint|≤ 200 ms     |
+|Cumulative Layout Shift  |≤ 0.10       |
+
+Required technical work
+
+• AVIF/WebP
+• Responsive srcset
+• Explicit image dimensions
+• Lazy loading
+• Click-to-load video and Matterport
+• Remove legacy scripts
+• Reduce unused JavaScript and CSS
+• Fingerprinted assets
+• Controlled caching
+• Server-rendered inventory facts
