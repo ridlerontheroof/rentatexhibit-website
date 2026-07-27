@@ -49,3 +49,4 @@
 - [Lead-form bot guard](lead-form-bot-guard.md) — honeypot+fill-time checked server-side before any side effect; showing fallback must never fire on a 400 rejection.
 - [Floor-plan landing pages](floor-plan-landing-pages.md) — /floor-plans is a real hub now (not a 301); slug/collision rules, managed toml region boundary, JSON-LD @id gotcha.
 - [Lightbox focus traps must skip hidden controls](lightbox-focus-trap-hidden.md) — use tabbableIn() from the shortcut-keys hook; display:none "?" button as trap boundary lets Tab escape the dialog.
+- [QA evidence package](qa-evidence-package.md) — evidence reports must be script-derived from source JSONs; concurrent perf runs otherwise make the package inconsistent.
