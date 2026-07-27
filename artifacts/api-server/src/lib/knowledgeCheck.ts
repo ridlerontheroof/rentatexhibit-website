@@ -46,6 +46,20 @@ const USER_AGENT = "exhibit-knowledge-check/1.0";
  * ≈ a full day of unreachability — no longer plausibly a transient blip.
  */
 const UNREACHABLE_ESCALATION_RUNS = 4;
+/**
+ * Review-date freshness (keep in sync with KNOWLEDGE_REVIEW_MAX_AGE_DAYS in
+ * the web artifact's src/data/knowledge.ts). Every article's prerendered
+ * JSON-LD carries dateModified from the review date; the suite test blocks a
+ * REBUILD from shipping an expired date, but only this watchdog notices when
+ * the already-published pages simply age past the threshold with no rebuild.
+ * Stale (or soon-to-be-stale) dates are surfaced as a warn-level log line
+ * each run — a nudge to re-verify content and bump the date, not an outage,
+ * so it never emails. The bump procedure is documented next to
+ * KNOWLEDGE_REVIEW_MAX_AGE_DAYS in the web artifact.
+ */
+const REVIEW_MAX_AGE_DAYS = 120;
+/** Start warning this many days BEFORE the threshold ("approaching"). */
+const REVIEW_WARN_AHEAD_DAYS = 14;
 
 /**
  * Once-per-UTC-day alert dedupe (shared implementation — see dailyClaim.ts):
@@ -99,6 +113,44 @@ export interface KnowledgeCheckResult {
   fetchErrors: string[];
   /** Number of checks attempted (pages + index + llms-full.txt). */
   checkedCount: number;
+  /** Review dates (JSON-LD dateModified) parsed from the sampled pages. */
+  reviewDates: Array<{ slug: string; date: string }>;
+}
+
+/**
+ * Extract the review date (ISO YYYY-MM-DD) from a prerendered article page's
+ * JSON-LD dateModified. Returns null when absent/unparseable.
+ */
+export function parseReviewDate(body: string): string | null {
+  const m = body.match(/"dateModified":\s*"(\d{4}-\d{2}-\d{2})/);
+  return m ? m[1]! : null;
+}
+
+/**
+ * Evaluate parsed review dates against the freshness threshold at `now`.
+ * Pure — exported for tests. Returns human-readable warnings for dates past
+ * the threshold ("EXPIRED") or within REVIEW_WARN_AHEAD_DAYS of it.
+ */
+export function evaluateReviewFreshness(
+  reviewDates: Array<{ slug: string; date: string }>,
+  now: number,
+): string[] {
+  const warnings: string[] = [];
+  for (const { slug, date } of reviewDates) {
+    const parsed = Date.parse(`${date}T00:00:00Z`);
+    if (Number.isNaN(parsed)) continue;
+    const ageDays = Math.floor((now - parsed) / DAY_MS);
+    if (ageDays > REVIEW_MAX_AGE_DAYS) {
+      warnings.push(
+        `/knowledge/${slug}: review date ${date} is ${ageDays} days old — EXPIRED (threshold ${REVIEW_MAX_AGE_DAYS} days). Re-verify the content and bump the review date.`,
+      );
+    } else if (ageDays > REVIEW_MAX_AGE_DAYS - REVIEW_WARN_AHEAD_DAYS) {
+      warnings.push(
+        `/knowledge/${slug}: review date ${date} is ${ageDays} days old — expires in ${REVIEW_MAX_AGE_DAYS - ageDays} day(s) (threshold ${REVIEW_MAX_AGE_DAYS} days). Plan a content re-verification.`,
+      );
+    }
+  }
+  return warnings;
 }
 
 async function fetchText(
@@ -173,6 +225,7 @@ export async function runKnowledgeChecks(
 ): Promise<KnowledgeCheckResult> {
   const failures: string[] = [];
   const fetchErrors: string[] = [];
+  const reviewDates: Array<{ slug: string; date: string }> = [];
   let checkedCount = 0;
 
   // --- Discover slugs from the sitemap ------------------------------------
@@ -182,20 +235,20 @@ export async function runKnowledgeChecks(
     const { status, body } = await fetchText(`${SITE}/sitemap.xml`, fetchImpl);
     if (status !== 200) {
       failures.push(`${SITE}/sitemap.xml: HTTP ${status}`);
-      return { failures, fetchErrors, checkedCount };
+      return { failures, fetchErrors, checkedCount, reviewDates };
     }
     slugs = parseKnowledgeSlugs(body);
     if (slugs.length === 0) {
       failures.push(
         `${SITE}/sitemap.xml: contains no /knowledge/ URLs — Knowledge Center entries dropped from the sitemap.`,
       );
-      return { failures, fetchErrors, checkedCount };
+      return { failures, fetchErrors, checkedCount, reviewDates };
     }
   } catch (err) {
     fetchErrors.push(
       `${SITE}/sitemap.xml: fetch error: ${(err as Error).message}`,
     );
-    return { failures, fetchErrors, checkedCount };
+    return { failures, fetchErrors, checkedCount, reviewDates };
   }
 
   // --- Sampled article pages ----------------------------------------------
@@ -207,6 +260,10 @@ export async function runKnowledgeChecks(
       const { status, body } = await fetchText(url, fetchImpl);
       const problem = evaluateKnowledgePage(slug, status, body);
       if (problem) failures.push(problem);
+      else {
+        const date = parseReviewDate(body);
+        if (date) reviewDates.push({ slug, date });
+      }
     } catch (err) {
       fetchErrors.push(`${url}: fetch error: ${(err as Error).message}`);
     }
@@ -253,7 +310,7 @@ export async function runKnowledgeChecks(
       "Knowledge-page check had transient fetch errors (not alert-worthy)",
     );
   }
-  return { failures, fetchErrors, checkedCount };
+  return { failures, fetchErrors, checkedCount, reviewDates };
 }
 
 /**
@@ -294,6 +351,17 @@ export async function checkKnowledgePagesOnce(
   fetchImpl: typeof fetch = fetch,
 ): Promise<void> {
   const result = await runKnowledgeChecks(log, fetchImpl);
+
+  // Review-date freshness: warn (never email) when the published pages'
+  // review dates approach or pass the staleness threshold — this is the
+  // no-rebuild path; the suite test covers the rebuild path.
+  const freshnessWarnings = evaluateReviewFreshness(result.reviewDates, now);
+  if (freshnessWarnings.length > 0) {
+    log.warn(
+      { staleReviewDates: freshnessWarnings, thresholdDays: REVIEW_MAX_AGE_DAYS },
+      "Knowledge Center review dates are stale or expiring — re-verify content and bump the review date (see KNOWLEDGE_REVIEW_MAX_AGE_DAYS in the web artifact)",
+    );
+  }
 
   // Track total-unreachability: a run where EVERY attempted fetch errored.
   // A single such run is treated as transient, but many in a row means

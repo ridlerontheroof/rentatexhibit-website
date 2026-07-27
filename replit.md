@@ -42,6 +42,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 - Post-publish live-site guard: the `postpublish` workflow runs `scripts/watch-postpublish.mjs`, which polls the production site's `/build-id.json` (stamped by `scripts/write-build-id.mjs` during every build) and automatically runs `check:postpublish` (knowledge pages + rented-unit noindex) as soon as a new publish goes live. On a failure it prints a loud banner and exits non-zero so the workflow shows as failed — restart it after fixing and re-publishing. Manual run: `pnpm --filter @workspace/exhibit-on-superior run check:postpublish` (or `watch:postpublish --once`).
 
+- Knowledge Center review-date freshness: every /knowledge article's "Reviewed by" byline and JSON-LD dateModified come from `KNOWLEDGE_REVIEWED_DATE` in `artifacts/exhibit-on-superior/src/data/knowledge.ts` (per-article `updated` overrides). A suite test fails when any effective review date is older than `KNOWLEDGE_REVIEW_MAX_AGE_DAYS` (120 days), and the production knowledge watchdog (api-server) warn-logs when published pages approach/pass the threshold with no rebuild. To clear it: re-verify the article content with the leasing team, then bump `KNOWLEDGE_REVIEWED_DATE` (bulk) or the article's `updated` field (single) to today's date — full procedure is documented at the constant.
+
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details

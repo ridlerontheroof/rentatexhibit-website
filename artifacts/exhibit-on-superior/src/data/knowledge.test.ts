@@ -4,9 +4,13 @@ import path from 'node:path';
 import {
   KNOWLEDGE_ARTICLES,
   KNOWLEDGE_CATEGORIES,
+  KNOWLEDGE_REVIEW_MAX_AGE_DAYS,
+  KNOWLEDGE_REVIEWED_DATE,
   knowledgeArticle,
   knowledgeDescription,
   knowledgeJsonLd,
+  reviewAgeDays,
+  staleKnowledgeReviewDates,
   wordCount,
 } from './knowledge';
 import { PAGE_SEO } from './seo';
@@ -149,6 +153,47 @@ describe('knowledge center content rules', () => {
     const parsed: Array<{ slug: string; question: string }> = await loadKnowledgeArticles();
     expect(parsed.map((a) => a.slug)).toEqual(KNOWLEDGE_ARTICLES.map((a) => a.slug));
     expect(parsed.map((a) => a.question)).toEqual(KNOWLEDGE_ARTICLES.map((a) => a.question));
+  });
+
+  it('review dates are valid ISO dates, not in the future', () => {
+    const isoRe = /^\d{4}-\d{2}-\d{2}$/;
+    const dates: Array<[string, string]> = [
+      ['KNOWLEDGE_REVIEWED_DATE', KNOWLEDGE_REVIEWED_DATE],
+      ...KNOWLEDGE_ARTICLES.filter((a) => a.updated).map(
+        (a): [string, string] => [a.slug, a.updated!],
+      ),
+    ];
+    for (const [label, date] of dates) {
+      expect(date, `${label} review date must be YYYY-MM-DD`).toMatch(isoRe);
+      expect(Number.isNaN(Date.parse(`${date}T00:00:00Z`)), `${label}: unparseable ${date}`).toBe(false);
+      expect(reviewAgeDays(date, Date.now()), `${label}: review date ${date} is in the future`).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it(`no review date is older than ${KNOWLEDGE_REVIEW_MAX_AGE_DAYS} days (freshness guard)`, () => {
+    // AI answer engines weigh the visible "Reviewed by" byline and the
+    // dateModified JSON-LD as freshness signals. When this fails, the
+    // leasing team re-verifies the flagged content and bumps the date —
+    // the procedure is documented at KNOWLEDGE_REVIEW_MAX_AGE_DAYS in
+    // knowledge.ts.
+    const stale = staleKnowledgeReviewDates(Date.now());
+    expect(
+      stale,
+      `Expired Knowledge Center review dates (> ${KNOWLEDGE_REVIEW_MAX_AGE_DAYS} days old). ` +
+        `Re-verify the content, then bump the date(s) — see the bump procedure at ` +
+        `KNOWLEDGE_REVIEW_MAX_AGE_DAYS in src/data/knowledge.ts. Stale: ` +
+        stale.map((s) => `${s.label} — ${s.date} (${s.ageDays} days old)`).join('; '),
+    ).toEqual([]);
+  });
+
+  it('staleKnowledgeReviewDates flags the site-wide date once it ages out', () => {
+    const past = Date.parse(`${KNOWLEDGE_REVIEWED_DATE}T00:00:00Z`);
+    const dayMs = 86_400_000;
+    expect(staleKnowledgeReviewDates(past + KNOWLEDGE_REVIEW_MAX_AGE_DAYS * dayMs)).toEqual([]);
+    const stale = staleKnowledgeReviewDates(past + (KNOWLEDGE_REVIEW_MAX_AGE_DAYS + 1) * dayMs);
+    expect(stale.length).toBeGreaterThanOrEqual(1);
+    expect(stale[0].label).toContain('site-wide');
+    expect(stale[0].date).toBe(KNOWLEDGE_REVIEWED_DATE);
   });
 
   it('every KnowledgeLinks slug used in page components resolves', () => {

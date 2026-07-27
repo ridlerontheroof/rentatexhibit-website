@@ -43,7 +43,9 @@ vi.mock("@workspace/db", () => ({
 import {
   checkKnowledgePagesOnce,
   evaluateKnowledgePage,
+  evaluateReviewFreshness,
   parseKnowledgeSlugs,
+  parseReviewDate,
   runKnowledgeChecks,
   sampleSlugs,
   __resetKnowledgeCheckForTests,
@@ -68,8 +70,8 @@ function sitemapXml(slugs: string[] = SLUGS): string {
     .join("")}<url><loc>${SITE}/fees</loc></url></urlset>`;
 }
 
-function goodPage(slug: string): string {
-  return `<html><head><title>Q? | Exhibit On Superior Chicago</title><link rel="canonical" href="${SITE}/knowledge/${slug}"/><script type="application/ld+json">{"@type": "FAQPage"}</script></head><body></body></html>`;
+function goodPage(slug: string, reviewDate = "2026-07-26"): string {
+  return `<html><head><title>Q? | Exhibit On Superior Chicago</title><link rel="canonical" href="${SITE}/knowledge/${slug}"/><script type="application/ld+json">{"@type": "FAQPage","dateModified":"${reviewDate}"}</script></head><body></body></html>`;
 }
 
 const HOMEPAGE_SHELL = `<html><head><title>Exhibit On Superior</title><link rel="canonical" href="${SITE}/"/></head><body></body></html>`;
@@ -130,6 +132,80 @@ describe("parseKnowledgeSlugs / sampleSlugs", () => {
 
   it("returns all slugs when there are few", () => {
     expect(sampleSlugs(["a", "b"])).toEqual(["a", "b"]);
+  });
+});
+
+describe("review-date freshness", () => {
+  const DAY_MS = 86_400_000;
+  const REVIEWED = Date.parse("2026-07-26T00:00:00Z");
+
+  it("parses dateModified from prerendered JSON-LD", () => {
+    expect(parseReviewDate(goodPage("a", "2026-07-26"))).toBe("2026-07-26");
+    expect(parseReviewDate(HOMEPAGE_SHELL)).toBeNull();
+  });
+
+  it("stays quiet while dates are comfortably fresh", () => {
+    expect(
+      evaluateReviewFreshness(
+        [{ slug: "a", date: "2026-07-26" }],
+        REVIEWED + 30 * DAY_MS,
+      ),
+    ).toEqual([]);
+  });
+
+  it("warns when a date approaches the threshold", () => {
+    const warnings = evaluateReviewFreshness(
+      [{ slug: "a", date: "2026-07-26" }],
+      REVIEWED + 110 * DAY_MS,
+    );
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain("expires in");
+  });
+
+  it("flags an expired date, naming the article", () => {
+    const warnings = evaluateReviewFreshness(
+      [{ slug: "how-much-is-rent", date: "2026-07-26" }],
+      REVIEWED + 121 * DAY_MS,
+    );
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain("EXPIRED");
+    expect(warnings[0]).toContain("/knowledge/how-much-is-rent");
+    expect(warnings[0]).toContain("2026-07-26");
+  });
+
+  it("runKnowledgeChecks collects review dates from sampled pages", async () => {
+    const result = await runKnowledgeChecks(logger as never, healthyFetch());
+    expect(result.failures).toEqual([]);
+    expect(result.reviewDates.length).toBeGreaterThan(0);
+    expect(result.reviewDates[0]).toEqual({
+      slug: expect.any(String),
+      date: "2026-07-26",
+    });
+  });
+
+  it("checkKnowledgePagesOnce warn-logs stale dates without emailing", async () => {
+    await checkKnowledgePagesOnce(
+      logger as never,
+      REVIEWED + 121 * DAY_MS,
+      healthyFetch(),
+    );
+    const warnCalls = vi.mocked(logger.warn).mock.calls;
+    const staleCall = warnCalls.find(
+      (c) => (c[0] as { staleReviewDates?: string[] })?.staleReviewDates,
+    );
+    expect(staleCall).toBeDefined();
+    expect(
+      (staleCall![0] as { staleReviewDates: string[] }).staleReviewDates[0],
+    ).toContain("EXPIRED");
+    expect(sendAlert).not.toHaveBeenCalled();
+  });
+
+  it("checkKnowledgePagesOnce stays silent on fresh dates", async () => {
+    await checkKnowledgePagesOnce(logger as never, DAY1, healthyFetch());
+    const warnCalls = vi.mocked(logger.warn).mock.calls;
+    expect(
+      warnCalls.find((c) => (c[0] as { staleReviewDates?: string[] })?.staleReviewDates),
+    ).toBeUndefined();
   });
 });
 

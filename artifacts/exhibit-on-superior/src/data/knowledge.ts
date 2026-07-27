@@ -92,6 +92,59 @@ export interface KnowledgeArticle {
 export const KNOWLEDGE_REVIEWED_DATE = '2026-07-26';
 
 /**
+ * Freshness threshold: an article's effective review date (per-article
+ * `updated`, else KNOWLEDGE_REVIEWED_DATE) older than this many days counts
+ * as EXPIRED. The suite test in knowledge.test.ts fails past this threshold
+ * so a publish can't quietly ship stale "Reviewed by" bylines, and the
+ * production knowledge watchdog (api-server knowledgeCheck.ts — keep its
+ * REVIEW_MAX_AGE_DAYS in sync) warns in deployment logs even without a
+ * rebuild.
+ *
+ * HOW THE LEASING TEAM BUMPS THE DATE after re-verifying content:
+ *   1. Re-read the articles (or the subset that changed) against current
+ *      leasing facts — pricing page, fee schedule, policies.
+ *   2. Bulk re-verification: set KNOWLEDGE_REVIEWED_DATE above to today's
+ *      date (YYYY-MM-DD). Single-article fix: set that article's `updated`
+ *      field in knowledgeArticles.ts instead.
+ *   3. Publish. The byline, dateModified/lastReviewed JSON-LD, and this
+ *      freshness guard all read the same value, so nothing else changes.
+ */
+export const KNOWLEDGE_REVIEW_MAX_AGE_DAYS = 120;
+
+/** Age in whole days of an ISO YYYY-MM-DD date at `now` (UTC midnights). */
+export function reviewAgeDays(dateIso: string, now: number): number {
+  return Math.floor((now - Date.parse(`${dateIso}T00:00:00Z`)) / 86_400_000);
+}
+
+/**
+ * All stale review dates at `now`: the site-wide default (when expired, it
+ * covers every article without an override) plus any expired per-article
+ * overrides. Empty array = everything fresh.
+ */
+export function staleKnowledgeReviewDates(
+  now: number,
+): Array<{ label: string; date: string; ageDays: number }> {
+  const stale: Array<{ label: string; date: string; ageDays: number }> = [];
+  const siteAge = reviewAgeDays(KNOWLEDGE_REVIEWED_DATE, now);
+  if (siteAge > KNOWLEDGE_REVIEW_MAX_AGE_DAYS) {
+    const covered = KNOWLEDGE_ARTICLES.filter((a) => !a.updated).length;
+    stale.push({
+      label: `site-wide KNOWLEDGE_REVIEWED_DATE (covers ${covered} articles)`,
+      date: KNOWLEDGE_REVIEWED_DATE,
+      ageDays: siteAge,
+    });
+  }
+  for (const a of KNOWLEDGE_ARTICLES) {
+    if (!a.updated) continue;
+    const age = reviewAgeDays(a.updated, now);
+    if (age > KNOWLEDGE_REVIEW_MAX_AGE_DAYS) {
+      stale.push({ label: a.slug, date: a.updated, ageDays: age });
+    }
+  }
+  return stale;
+}
+
+/**
  * Standard qualifier footer for articles flagged `changeableFacts`. Split so
  * the page can render "Available Units page" as a real link while tests and
  * any structured-data consumer can use the single joined sentence.
