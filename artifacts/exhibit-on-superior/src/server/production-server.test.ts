@@ -211,7 +211,7 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
   // -------------------------------------------------------------------------
   const LEGACY_301S: Array<[string, string]> = [
     ['/apartments/il/chicago', '/available-units'],
-    ['/apartments/il/chicago/floor-plans', '/available-units'],
+    ['/apartments/il/chicago/floor-plans', '/floor-plans'],
     ['/apartments/il/chicago/photo-gallery', '/photo-gallery'],
     ['/apartments/il/chicago/virtual-tour', '/virtual-tour'],
     ['/apartments/il/chicago/amenities', '/amenities'],
@@ -226,7 +226,7 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     // NOTE: '/floor-plans' is no longer a legacy redirect — it is a real
     // indexable hub page (see the floor-plan pages suite below).
     ['/availableunits', '/available-units'],
-    ['/floorplans.aspx', '/available-units'],
+    ['/floorplans.aspx', '/floor-plans'],
     ['/availableunits.aspx', '/available-units'],
     ['/amenities.aspx', '/amenities'],
     ['/contactus.aspx', '/contact-us'],
@@ -260,7 +260,7 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
   it('preserves query strings on legacy 301s (e.g. /floorplans.aspx?plan=…)', async () => {
     const res = await get('/floorplans.aspx?plan=a1');
     expect(res.status).toBe(301);
-    expect(res.headers.get('location')).toBe('/available-units?plan=a1');
+    expect(res.headers.get('location')).toBe('/floor-plans?plan=a1');
   });
 
   // -------------------------------------------------------------------------

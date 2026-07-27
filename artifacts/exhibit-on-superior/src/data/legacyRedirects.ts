@@ -12,7 +12,10 @@ import { APPLY_URL } from './seo';
  * hand-written static stub in public/artist-in-residence/.
  */
 export const LEGACY_REDIRECTS: Record<string, string> = {
-  '/apartments/il/chicago/floor-plans': '/available-units',
+  // Points at the /floor-plans hub (2026-07): Google still ranks this legacy
+  // URL for floor-plan queries, so its 301 must hand that equity to the new
+  // hub — not /available-units — or Google keeps re-learning the wrong page.
+  '/apartments/il/chicago/floor-plans': '/floor-plans',
   '/apartments/il/chicago/photo-gallery': '/photo-gallery',
   '/apartments/il/chicago/virtual-tour': '/virtual-tour',
   '/apartments/il/chicago/amenities': '/amenities',
@@ -34,7 +37,7 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   // Wix-era URL still indexed by Google (2026-07): "Studio, 1, 2 & 3 Bedroom
   // Apartments" listing page.
   '/availableunits': '/available-units',
-  '/floorplans.aspx': '/available-units',
+  '/floorplans.aspx': '/floor-plans',
   '/availableunits.aspx': '/available-units',
   '/amenities.aspx': '/amenities',
   '/contactus.aspx': '/contact-us',
