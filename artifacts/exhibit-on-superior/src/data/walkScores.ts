@@ -40,7 +40,7 @@ export const WALK_SCORE_SOURCE_URL =
   'https://www.walkscore.com/score/165-w-superior-st-chicago-il-60654';
 
 /** When the scores were last verified against walkscore.com. */
-export const WALK_SCORES_CHECKED = 'July 2026';
+export const WALK_SCORES_CHECKED = 'October 2026';
 
 /** Prose apostrophes: the site's renter-facing copy uses curly quotes. */
 const curly = (s: string): string => s.replace(/'/g, '\u2019');
