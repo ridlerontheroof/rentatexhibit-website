@@ -103,9 +103,32 @@ function FallbackEmbed() {
 export function PropertyMap() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(!API_KEY);
+  // Viewport-proximity gate: the Maps JS API (heavy third-party JS) only
+  // loads once the map container scrolls within ~600px of the viewport.
+  // Interaction isn't natural for a map, so this defers instead of a
+  // click-to-load facade. Environments without IntersectionObserver
+  // (old browsers, jsdom tests) load immediately.
+  const [nearViewport, setNearViewport] = useState(
+    typeof IntersectionObserver === 'undefined',
+  );
 
   useEffect(() => {
-    if (!API_KEY || !containerRef.current) return;
+    if (nearViewport || !containerRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setNearViewport(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '600px' },
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [nearViewport]);
+
+  useEffect(() => {
+    if (!API_KEY || !nearViewport || !containerRef.current) return;
 
     let cancelled = false;
 
@@ -165,9 +188,18 @@ export function PropertyMap() {
       cancelled = true;
       window.gm_authFailure = prevAuthFailure;
     };
-  }, []);
+  }, [nearViewport]);
 
-  if (failed) return <FallbackEmbed />;
+  // The keyless fallback iframe is proximity-gated too: nothing map-related
+  // (Maps JS or the embed iframe) is fetched until the container approaches
+  // the viewport.
+  if (failed) {
+    return (
+      <div ref={containerRef} className="w-full h-full">
+        {nearViewport && <FallbackEmbed />}
+      </div>
+    );
+  }
 
   return (
     <div

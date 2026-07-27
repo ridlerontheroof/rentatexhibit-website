@@ -11,7 +11,7 @@ description: How the repeatable Lighthouse suite works, its calibration model, a
 - Threshold model: aspirational CWV targets (LCP 2500 / CLS 0.10 / TBT 200) with per-page calibrated overrides in `perf/thresholds.json` (measured × 1.25). Regenerate with `--calibrate` after intentional perf work; `--baseline` rewrites baseline.json.
 - Baseline reality (2026-07-26): desktop all green; mobile LCP 4.2–5.7s everywhere (throttled Slow-4G lab), TBT/CLS fine. Mobile LCP is the improvement target for the embed-deferral work.
 - **Why calibrated overrides:** hard-failing at 2.5s day one would make the gate permanently red and useless; overrides make only *regressions beyond ~25% noise* fail.
-- TBT is noisy run-to-run in this workspace (observed 324ms vs 73ms on the same page); don't chase single-run TBT deltas.
+- TBT is noisy run-to-run in this workspace (observed 324ms vs 73ms on the same page); don't chase single-run TBT deltas. Never run check:perf concurrently with the vitest suite or another build — CPU contention produced a bogus 1215ms TBT that vanished on a solo re-run.
 
 # Running long checks (ShellExec limits)
 

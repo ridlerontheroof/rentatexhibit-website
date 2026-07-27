@@ -21,6 +21,12 @@ export interface MatterportTour {
    * re-used/mis-shared space id (same URL, different apartment) is caught.
    */
   matterportName?: string;
+  /**
+   * Local optimized poster image for the click-to-load facade, fetched once
+   * from Matterport's player-models API (scripts/optimize-images.mjs makes
+   * the shipped variants).
+   */
+  poster: string;
 }
 
 /**
@@ -37,6 +43,8 @@ export const lifeAtExhibitVideo = {
   uploadDate: vimeoOembed.uploadDate,
   thumbnailUrl: vimeoOembed.thumbnailUrl,
   durationSeconds: vimeoOembed.durationSeconds,
+  /** Local optimized poster for the click-to-load facade (committed copy of the Vimeo thumbnail). */
+  poster: '/images/vimeo-poster-life-at-exhibit.jpg',
 } as const;
 
 /** ISO-8601 duration (e.g. PT1M38S) from the oEmbed duration in seconds. */
@@ -69,13 +77,22 @@ export function virtualTourVideoJsonLd(): Record<string, unknown> {
 }
 
 export const matterportTours: MatterportTour[] = [
-  { name: 'Exhibit 2104', url: 'https://my.matterport.com/show/?m=773kQcHxLnz' },
-  { name: 'Exhibit 605', url: 'https://my.matterport.com/show/?m=kthJKtuPTJ4' },
+  {
+    name: 'Exhibit 2104',
+    url: 'https://my.matterport.com/show/?m=773kQcHxLnz',
+    poster: '/images/matterport-poster-exhibit-2104.jpg',
+  },
+  {
+    name: 'Exhibit 605',
+    url: 'https://my.matterport.com/show/?m=kthJKtuPTJ4',
+    poster: '/images/matterport-poster-exhibit-605.jpg',
+  },
   {
     name: 'Amenities at Exhibit On Superior',
     url: 'https://my.matterport.com/show/?m=CiWCwCJuZ9c',
     // Matterport names this space just "Exhibit"; the heading is friendlier.
     matterportName: 'Exhibit',
+    poster: '/images/matterport-poster-amenities.jpg',
   },
 ];
 

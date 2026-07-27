@@ -4,6 +4,7 @@ import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { SplitHeadline } from '../components/SplitHeadline';
+import { EmbedFacade } from '../components/EmbedFacade';
 import {
   lifeAtExhibitVideo,
   matterportTours,
@@ -55,14 +56,23 @@ export function VirtualTour() {
             <div className="mb-12">
               <h2 className="text-2xl uppercase tracking-wider mb-6 text-center">{lifeAtExhibitVideo.name}</h2>
               <div className="aspect-video bg-black border border-border">
-                <iframe
-                  src={lifeAtExhibitVideo.embedUrl}
-                  width={1280}
-                  height={720}
-                  className="w-full h-full"
-                  allowFullScreen
-                  title={lifeAtExhibitVideo.name}
-                />
+                <EmbedFacade
+                  poster={lifeAtExhibitVideo.poster}
+                  posterAlt={`Preview of the ${lifeAtExhibitVideo.name} video`}
+                  buttonLabel={`Play video: ${lifeAtExhibitVideo.name}`}
+                  actionText="Play video"
+                  embedUrl={lifeAtExhibitVideo.embedUrl}
+                >
+                  <iframe
+                    src={`${lifeAtExhibitVideo.embedUrl}&autoplay=1`}
+                    width={1280}
+                    height={720}
+                    className="w-full h-full"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowFullScreen
+                    title={lifeAtExhibitVideo.name}
+                  />
+                </EmbedFacade>
               </div>
             </div>
 
@@ -72,16 +82,24 @@ export function VirtualTour() {
             {matterportTours.map((tour) => (
               <div key={tour.url} className="mb-12">
                 <h2 className="text-2xl uppercase tracking-wider mb-6 text-center">{tour.name}</h2>
-                <div className="aspect-video bg-black border border-border">
-                  <iframe
-                    src={tour.url}
-                    width={1280}
-                    height={720}
-                    className="w-full h-full"
-                    allowFullScreen
-                    allow="xr-spatial-tracking"
-                    title={`Virtual Tour of ${tour.name}`}
-                  />
+                <div className="aspect-video bg-black border border-border relative">
+                  <EmbedFacade
+                    poster={tour.poster}
+                    posterAlt={`Preview of the ${tour.name} 3D tour`}
+                    buttonLabel={`Explore in 3D: ${tour.name}`}
+                    actionText="Explore in 3D"
+                    embedUrl={tour.url}
+                  >
+                    <iframe
+                      src={`${tour.url}&play=1`}
+                      width={1280}
+                      height={720}
+                      className="w-full h-full"
+                      allowFullScreen
+                      allow="xr-spatial-tracking"
+                      title={`Virtual Tour of ${tour.name}`}
+                    />
+                  </EmbedFacade>
                 </div>
               </div>
             ))}

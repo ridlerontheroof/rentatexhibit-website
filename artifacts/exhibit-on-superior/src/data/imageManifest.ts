@@ -1566,6 +1566,69 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
       }
     ]
   },
+  "/images/matterport-poster-amenities.jpg": {
+    "width": 1920,
+    "height": 1080,
+    "variants": [
+      {
+        "src": "/images/matterport-poster-amenities-800w.webp",
+        "avif": "/images/matterport-poster-amenities-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/matterport-poster-amenities-1280w.webp",
+        "avif": "/images/matterport-poster-amenities-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/matterport-poster-amenities-1920w.webp",
+        "avif": "/images/matterport-poster-amenities-1920w.avif",
+        "w": 1920
+      }
+    ]
+  },
+  "/images/matterport-poster-exhibit-2104.jpg": {
+    "width": 2880,
+    "height": 1620,
+    "variants": [
+      {
+        "src": "/images/matterport-poster-exhibit-2104-800w.webp",
+        "avif": "/images/matterport-poster-exhibit-2104-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/matterport-poster-exhibit-2104-1280w.webp",
+        "avif": "/images/matterport-poster-exhibit-2104-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/matterport-poster-exhibit-2104-2000w.webp",
+        "avif": "/images/matterport-poster-exhibit-2104-2000w.avif",
+        "w": 2000
+      }
+    ]
+  },
+  "/images/matterport-poster-exhibit-605.jpg": {
+    "width": 2880,
+    "height": 1620,
+    "variants": [
+      {
+        "src": "/images/matterport-poster-exhibit-605-800w.webp",
+        "avif": "/images/matterport-poster-exhibit-605-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/matterport-poster-exhibit-605-1280w.webp",
+        "avif": "/images/matterport-poster-exhibit-605-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/matterport-poster-exhibit-605-2000w.webp",
+        "avif": "/images/matterport-poster-exhibit-605-2000w.avif",
+        "w": 2000
+      }
+    ]
+  },
   "/images/og-card.jpg": {
     "width": 1200,
     "height": 630,
@@ -1579,6 +1642,27 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
         "src": "/images/og-card-1200w.webp",
         "avif": "/images/og-card-1200w.avif",
         "w": 1200
+      }
+    ]
+  },
+  "/images/vimeo-poster-life-at-exhibit.jpg": {
+    "width": 1920,
+    "height": 1080,
+    "variants": [
+      {
+        "src": "/images/vimeo-poster-life-at-exhibit-800w.webp",
+        "avif": "/images/vimeo-poster-life-at-exhibit-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/vimeo-poster-life-at-exhibit-1280w.webp",
+        "avif": "/images/vimeo-poster-life-at-exhibit-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/vimeo-poster-life-at-exhibit-1920w.webp",
+        "avif": "/images/vimeo-poster-life-at-exhibit-1920w.avif",
+        "w": 1920
       }
     ]
   }

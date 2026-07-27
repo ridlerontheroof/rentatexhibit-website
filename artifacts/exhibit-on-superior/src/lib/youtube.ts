@@ -36,3 +36,14 @@ export function youTubeEmbedUrl(url: string): string | null {
   const id = youTubeVideoId(url);
   return id ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : null;
 }
+
+/**
+ * Poster thumbnail for the click-to-load facade. Unit videos change with the
+ * AppFolio feed, so these can't be committed locally like the Matterport
+ * posters — YouTube's static thumbnail CDN is a single tiny image request
+ * (no third-party JS), which is what the facade exists to avoid.
+ */
+export function youTubeThumbnailUrl(url: string): string | null {
+  const id = youTubeVideoId(url);
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+}

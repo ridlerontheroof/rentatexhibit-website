@@ -11,6 +11,7 @@ import { resolveSizes } from '../lib/resolveSizes';
 import { IMAGE_MANIFEST } from '../data/imageManifest';
 import { HERO_SLIDES } from '../pages/Home';
 import { galleryImages } from '../data/gallery';
+import { lifeAtExhibitVideo, matterportTours } from '../data/virtualTours';
 
 const SRC_ROOT = join(__dirname, '..');
 const PHONE_VIEWPORT_CSS_PX = 390;
@@ -437,6 +438,26 @@ describe('data-driven PageHero images ship sharp largest rungs', () => {
   });
 });
 
+// --- EmbedFacade posters: local click-to-load posters (Matterport tours and
+// the Vimeo video) render through a dynamic <SmartImg src={poster}> inside
+// EmbedFacade, so the static scan never sees them. Validate every committed
+// poster against the sizes EmbedFacade actually passes.
+
+describe('data-driven EmbedFacade posters ship sharp largest rungs', () => {
+  const facadeSizes = sizesAtDynamicCallSite('components/EmbedFacade.tsx', 'poster');
+  const posters = [
+    ...matterportTours.map((t) => ({ src: t.poster, where: `matterportTours "${t.name}"` })),
+    { src: lifeAtExhibitVideo.poster, where: 'lifeAtExhibitVideo' },
+  ];
+
+  it('every facade poster covers the embed-width render sharply', () => {
+    const violations = posters
+      .map((p) => checkImageRung(p.src, facadeSizes, `${p.where} EmbedFacade poster`))
+      .filter((v): v is string => v !== null);
+    expect(violations, `\n${violations.join('\n\n')}\n`).toEqual([]);
+  });
+});
+
 // --- Completeness: no dynamic-src SmartImg call site may exist outside the
 // data-driven checks above. A new src={expr} call site fed by an unchecked
 // array would re-open the exact gap that let the hero slides ship blurry, so
@@ -455,6 +476,7 @@ describe('every dynamic-src SmartImg call site is covered by a data-driven check
   // validates the actual array/prop feeding the call site. Adding an entry
   // without adding the matching check defeats the guard — don't.
   const COVERED_DYNAMIC_CALL_SITES = new Set([
+    'components/EmbedFacade.tsx :: poster', // EmbedFacade posters check
     'components/HeroSlider.tsx :: slide.src', // HERO_SLIDES check
     'components/PageHero.tsx :: image', // PageHero usages check
     'pages/PhotoGallery.tsx :: image.src', // galleryImages grid check

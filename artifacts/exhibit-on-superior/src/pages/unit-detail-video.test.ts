@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createElement, type ReactNode } from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import { Route, Router } from 'wouter';
@@ -82,13 +82,29 @@ afterEach(() => {
 });
 
 describe('UnitDetail video tour', () => {
-  it('embeds a privacy-enhanced player when the unit has a YouTube link', async () => {
+  it('shows a click-to-load facade, then embeds the privacy-enhanced player on activation', async () => {
     mockAvailability({ ...baseUnit, videoUrl: 'https://youtu.be/dQw4w9WgXcQ' });
     renderUnitDetail();
     await waitForPage();
+
+    // Before activation: no iframe (no third-party JS), just the facade
+    // button with a descriptive accessible name and the poster thumbnail.
+    expect(document.querySelector('iframe')).toBeNull();
+    const facade = document.querySelector(
+      'button[data-embed-url="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0"]',
+    ) as HTMLButtonElement | null;
+    expect(facade).not.toBeNull();
+    expect(facade!.getAttribute('aria-label')).toContain('0807');
+    const poster = facade!.querySelector('img');
+    expect(poster!.src).toBe('https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg');
+
+    // Clicking mounts the real player (autoplay, since the user just asked).
+    fireEvent.click(facade!);
     const iframe = document.querySelector('iframe');
     expect(iframe).not.toBeNull();
-    expect(iframe!.src).toBe('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0');
+    expect(iframe!.src).toBe(
+      'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&autoplay=1',
+    );
     expect(iframe!.title).toContain('0807');
   });
 

@@ -18,7 +18,8 @@ import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { variantIndexForUnit } from '../data/floorPlans';
 import { resolveUnitSqft } from '../data/unitSqft';
 import { trackOutboundClick } from '../lib/analytics';
-import { youTubeEmbedUrl } from '../lib/youtube';
+import { youTubeEmbedUrl, youTubeThumbnailUrl } from '../lib/youtube';
+import { EmbedFacade } from '../components/EmbedFacade';
 import { APPLY_URL } from '../data/seo';
 import { buildUnitSeoModel, unitFactSummary, unitFloor } from '../data/unitPageSeo';
 import { adaDesignation, adaDesignationLabel, ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
@@ -358,17 +359,24 @@ export function UnitDetail() {
               Video Tour
             </h2>
             <div className="relative w-full overflow-hidden border border-border bg-black" style={{ aspectRatio: '16 / 9' }}>
-              <iframe
-                src={videoEmbedUrl}
-                title={`Video tour of apartment ${unit.unit}`}
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
-                width={1280}
-              height={720}
-              className="absolute inset-0 h-full w-full"
-              />
+              <EmbedFacade
+                poster={youTubeThumbnailUrl(unit.videoUrl!) ?? ''}
+                posterAlt={`Preview of the apartment ${unit.unit} video tour`}
+                buttonLabel={`Play video tour of apartment ${unit.unit}`}
+                actionText="Play video"
+                embedUrl={videoEmbedUrl}
+              >
+                <iframe
+                  src={`${videoEmbedUrl}&autoplay=1`}
+                  title={`Video tour of apartment ${unit.unit}`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  width={1280}
+                  height={720}
+                  className="absolute inset-0 h-full w-full"
+                />
+              </EmbedFacade>
             </div>
           </div>
         )}
