@@ -132,3 +132,9 @@ id = "P1Gn7kMMC7QUMYzmvjeGl"
 uri = "file://attached_assets/apple-business/apple-business-photos.zip"
 type = "unspecified"
 title = "Apple Business Connect photos — 28 photos, all within 4864px max"
+
+[[outputs]]
+id = "Ow1mkhrKCrYsEd_l_lYTK"
+uri = "file://exports/exhibit-on-superior-knowledge-file.md"
+type = "text"
+title = "Exhibit On Superior — Custom GPT Knowledge File"
