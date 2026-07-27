@@ -4,7 +4,7 @@
 // booking failure fall back to a standard lead + hosted AppFolio link).
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ScheduleShowing } from './ScheduleShowing';
 
@@ -129,6 +129,46 @@ describe('ScheduleShowing', () => {
     const urls = fetchMock.mock.calls.map((c) => String(c[0]));
     expect(urls.some((u) => u.includes('api/showings/book'))).toBe(true);
     expect(urls.every((u) => !u.includes('appfolio.com'))).toBe(true);
+  });
+
+  it('a browser-autofilled submission passes: empty honeypot, no elapsedMs', async () => {
+    // Regression guard for the 2026-07-27 incident: Safari filled the old
+    // "Company"-named honeypot from the visitor's contact card and the visitor
+    // never typed a keystroke. Simulate pure autofill by setting every visible
+    // input programmatically (input events, no keydowns), then submitting.
+    renderPage();
+    fireEvent.change(screen.getByLabelText(/first name/i), { target: { value: 'Jane' } });
+    fireEvent.change(screen.getByLabelText(/last name/i), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'jane@example.com' } });
+    fireEvent.change(screen.getByLabelText(/phone/i), { target: { value: '3125550100' } });
+    fireEvent.click(screen.getByRole('button', { name: /view available times/i }));
+
+    // The submission goes through to step 2 — no bot rejection.
+    await screen.findByRole('button', { name: '1:15 PM' });
+    const contactCall = fetchMock.mock.calls.find((c) =>
+      String(c[0]).includes('api/showings/contact'),
+    );
+    expect(contactCall).toBeTruthy();
+    const body = JSON.parse(String((contactCall![1] as RequestInit).body));
+    // Honeypot empty (autofill has nothing to map onto the nonsense name),
+    // no legacy company field, and elapsedMs omitted (the visitor never typed).
+    expect(body.xh_note).toBe('');
+    expect(body).not.toHaveProperty('company');
+    expect(body).not.toHaveProperty('elapsedMs');
+  });
+
+  it('a typed submission reports elapsedMs measured from first interaction', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await fillContactForm(user);
+    await screen.findByRole('button', { name: '1:15 PM' });
+    const contactCall = fetchMock.mock.calls.find((c) =>
+      String(c[0]).includes('api/showings/contact'),
+    );
+    const body = JSON.parse(String((contactCall![1] as RequestInit).body));
+    expect(typeof body.elapsedMs).toBe('number');
+    expect(body.elapsedMs).toBeGreaterThanOrEqual(0);
+    expect(body.xh_note).toBe('');
   });
 
   it('books when the contact step returns no booking token (jwt null)', async () => {

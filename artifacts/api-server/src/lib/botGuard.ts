@@ -3,13 +3,19 @@
  *
  * Two invisible signals, both supplied by the real form pages:
  *
- *  - `company` — a honeypot field rendered off-screen. Humans never see it;
+ *  - `xh_note` — a honeypot field rendered off-screen. Humans never see it;
  *    form-filling bots fill every input, so any non-empty value marks a bot.
- *  - `elapsedMs` — how long the visitor had the form open before submitting.
- *    Real people take many seconds to type five fields; scripted submits
- *    arrive near-instantly. Only an implausibly fast *present* value marks a
- *    bot — the field being absent is tolerated so older cached bundles (and
- *    curl-driven leasing-team tests) keep working.
+ *    The name is a deliberate nonsense token: the previous honeypot was named
+ *    `company` with a "Company" label, and Safari's profile autofill filled it
+ *    from real visitors' contact cards — rejecting genuine tour requests
+ *    (production, 2026-07-27). A non-empty legacy `company` value is therefore
+ *    NO LONGER treated as a bot signal (cached bundles may still send it
+ *    autofilled); it is only stripped.
+ *  - `elapsedMs` — milliseconds between the visitor's first typing in the form
+ *    and the submit. Real people take seconds; scripted submits arrive
+ *    near-instantly. Only an implausibly fast *present* value marks a bot —
+ *    the field being absent is tolerated: pure-autofill visitors never type,
+ *    and older cached bundles / curl-driven leasing-team tests don't send it.
  *
  * Both signals are advisory: they stop the dumb, high-volume form spam the
  * audit flagged. Rate limiting (already on every route) handles the rest.
@@ -24,7 +30,7 @@ export function inspectSubmission(body: unknown): BotVerdict {
   if (!body || typeof body !== "object") return { bot: false };
   const b = body as Record<string, unknown>;
 
-  const honeypot = b.company;
+  const honeypot = b.xh_note;
   if (typeof honeypot === "string" && honeypot.trim() !== "") {
     return { bot: true, reason: "honeypot" };
   }
@@ -46,6 +52,11 @@ export function inspectSubmission(body: unknown): BotVerdict {
  */
 export function withoutBotGuardFields(body: unknown): unknown {
   if (!body || typeof body !== "object") return body;
-  const { company: _company, elapsedMs: _elapsedMs, ...rest } = body as Record<string, unknown>;
+  const {
+    company: _company, // legacy honeypot name — stripped but no longer inspected
+    xh_note: _xhNote,
+    elapsedMs: _elapsedMs,
+    ...rest
+  } = body as Record<string, unknown>;
   return rest;
 }

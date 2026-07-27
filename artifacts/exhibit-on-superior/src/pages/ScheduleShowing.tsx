@@ -345,8 +345,13 @@ export function ScheduleShowing() {
                     .
                   </div>
                 )}
-                <form onSubmit={handleSubmit(onContactSubmit)} className="space-y-6" noValidate>
-                  <HoneypotField inputRef={botGuard.companyRef} />
+                <form
+                  onSubmit={handleSubmit(onContactSubmit)}
+                  {...botGuard.formProps}
+                  className="space-y-6"
+                  noValidate
+                >
+                  <HoneypotField inputRef={botGuard.honeypotRef} />
                   <div className="grid grid-cols-2 gap-4">
                     {(
                       [

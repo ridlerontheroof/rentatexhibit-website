@@ -14,15 +14,22 @@ describe("inspectSubmission", () => {
   });
 
   it("passes an empty or whitespace honeypot", () => {
-    expect(inspectSubmission({ ...human, company: "" })).toEqual({ bot: false });
-    expect(inspectSubmission({ ...human, company: "   " })).toEqual({ bot: false });
+    expect(inspectSubmission({ ...human, xh_note: "" })).toEqual({ bot: false });
+    expect(inspectSubmission({ ...human, xh_note: "   " })).toEqual({ bot: false });
   });
 
   it("flags a filled honeypot", () => {
-    expect(inspectSubmission({ ...human, company: "Acme Corp" })).toEqual({
+    expect(inspectSubmission({ ...human, xh_note: "Acme Corp" })).toEqual({
       bot: true,
       reason: "honeypot",
     });
+  });
+
+  it("no longer flags the legacy `company` field — Safari autofilled it for real visitors", () => {
+    // Regression guard for the 2026-07-27 production incident: profile
+    // autofill filled the old "Company"-labelled honeypot from real visitors'
+    // contact cards. Cached bundles may still send it; it must pass.
+    expect(inspectSubmission({ ...human, company: "Lovelace Analytics" })).toEqual({ bot: false });
   });
 
   it("flags an implausibly fast fill", () => {
@@ -30,6 +37,10 @@ describe("inspectSubmission", () => {
       bot: true,
       reason: "too_fast",
     });
+  });
+
+  it("passes when elapsedMs is absent (pure-autofill visitors never type)", () => {
+    expect(inspectSubmission({ ...human, xh_note: "" })).toEqual({ bot: false });
   });
 
   it("passes a plausible fill time", () => {
@@ -41,15 +52,17 @@ describe("inspectSubmission", () => {
     expect(inspectSubmission({ ...human, elapsedMs: "fast" })).toEqual({ bot: false });
     expect(inspectSubmission({ ...human, elapsedMs: -5 })).toEqual({ bot: false });
     expect(inspectSubmission({ ...human, elapsedMs: NaN })).toEqual({ bot: false });
-    expect(inspectSubmission({ ...human, company: 42 })).toEqual({ bot: false });
+    expect(inspectSubmission({ ...human, xh_note: 42 })).toEqual({ bot: false });
     expect(inspectSubmission(null)).toEqual({ bot: false });
     expect(inspectSubmission("string body")).toEqual({ bot: false });
   });
 });
 
 describe("withoutBotGuardFields", () => {
-  it("strips only the guard fields", () => {
-    expect(withoutBotGuardFields({ ...human, company: "", elapsedMs: 9000 })).toEqual(human);
+  it("strips only the guard fields (including the legacy company name)", () => {
+    expect(
+      withoutBotGuardFields({ ...human, xh_note: "", company: "Autofilled Inc", elapsedMs: 9000 }),
+    ).toEqual(human);
   });
 
   it("leaves non-object bodies alone", () => {

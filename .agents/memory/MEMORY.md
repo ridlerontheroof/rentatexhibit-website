@@ -47,7 +47,7 @@
 - [GTM deferred loading](gtm-deferred-loading.md) — gtm.js loads on interaction/idle/5s fallback, never eagerly; ≤800w image rungs cap at ~60KB; solo-run perf before trusting TBT fails.
 - [Perf lab suite (check:perf)](perf-lab-suite.md) — Lighthouse vs dist via vite preview; calibrated per-page thresholds; run long checks as workflows, not nohup (ShellExec /tmp+bg isolated).
 - [Click-to-load embed facades](embed-facades.md) — embeds mount on click behind poster buttons; `data-embed-url` keeps prerender mirror tests green; maps defer on viewport proximity.
-- [Lead-form bot guard](lead-form-bot-guard.md) — honeypot+fill-time checked server-side before any side effect; showing fallback must never fire on a 400 rejection.
+- [Lead-form bot guard](lead-form-bot-guard.md) — honeypot+fill-time checked server-side before any side effect; showing fallback never fires on 400; honeypot must be nonsense-named (Safari autofilled "company") and elapsedMs omitted when the visitor never typed.
 - [Floor-plan landing pages](floor-plan-landing-pages.md) — /floor-plans is a real hub now (not a 301); slug/collision rules, managed toml region boundary, JSON-LD @id gotcha.
 - [Lightbox focus traps must skip hidden controls](lightbox-focus-trap-hidden.md) — use tabbableIn() from the shortcut-keys hook; display:none "?" button as trap boundary lets Tab escape the dialog.
 - [Source-literal fact scans](source-literal-scans.md) — guard tests scanning .ts source must decode \uXXXX escapes first, and exclude phone numbers/Tailwind shades from 3-digit fact regexes.

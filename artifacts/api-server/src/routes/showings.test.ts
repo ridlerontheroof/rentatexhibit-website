@@ -157,7 +157,7 @@ describe("POST /showings/contact", () => {
   it("rejects a honeypot submission without touching AppFolio", async () => {
     const res = await request(makeApp())
       .post("/showings/contact")
-      .send({ ...contact, company: "Acme Corp" });
+      .send({ ...contact, xh_note: "Acme Corp" });
     expect(res.status).toBe(400);
     expect(res.body.error).toBe("invalid_submission");
     expect(vi.mocked(createShowingGuestCard)).not.toHaveBeenCalled();
@@ -167,15 +167,28 @@ describe("POST /showings/contact", () => {
   it("rejects an implausibly fast submission, accepts a human-paced one", async () => {
     const fast = await request(makeApp())
       .post("/showings/contact")
-      .send({ ...contact, company: "", elapsedMs: 200 });
+      .send({ ...contact, xh_note: "", elapsedMs: 200 });
     expect(fast.status).toBe(400);
     expect(vi.mocked(createShowingGuestCard)).not.toHaveBeenCalled();
 
     const human = await request(makeApp())
       .post("/showings/contact")
-      .send({ ...contact, company: "", elapsedMs: 9000 });
+      .send({ ...contact, xh_note: "", elapsedMs: 9000 });
     expect(human.status).toBe(201);
     // Guard fields are stripped before validation/forwarding.
+    expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
+      expect.not.objectContaining({ xh_note: expect.anything() }),
+    );
+  });
+
+  it("accepts a pure-autofill submission (legacy company filled, no elapsedMs)", async () => {
+    // Regression guard for the 2026-07-27 incident: Safari autofilled the old
+    // "Company" honeypot from a real visitor's contact card; the visitor never
+    // typed, so no elapsedMs was sent. Must create the guest card normally.
+    const res = await request(makeApp())
+      .post("/showings/contact")
+      .send({ ...contact, xh_note: "", company: "Lovelace Analytics" });
+    expect(res.status).toBe(201);
     expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
       expect.not.objectContaining({ company: expect.anything() }),
     );

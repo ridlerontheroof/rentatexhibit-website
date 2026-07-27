@@ -320,6 +320,7 @@ export function ScheduleTour() {
 
                   <form
                     onSubmit={handleSubmit(onSubmit)}
+                    {...botGuard.formProps}
                     // The back-online notice stays until the visitor dismisses it
                     // or starts interacting with the form (WCAG 2.2.1 Timing
                     // Adjustable — no disappearing-on-a-timer).
@@ -327,7 +328,7 @@ export function ScheduleTour() {
                     className="space-y-6"
                     noValidate
                   >
-                    <HoneypotField inputRef={botGuard.companyRef} />
+                    <HoneypotField inputRef={botGuard.honeypotRef} />
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">

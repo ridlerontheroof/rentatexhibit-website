@@ -34,8 +34,8 @@ export interface ShowingContactPayload {
   phone: string;
   unit: string;
   /** Honeypot field — always empty for real visitors (see BotGuard). */
-  company?: string;
-  /** Milliseconds the form was open before submit (see BotGuard). */
+  xh_note?: string;
+  /** Milliseconds between first typing and submit; omitted when the visitor never typed (see BotGuard). */
   elapsedMs?: number;
 }
 

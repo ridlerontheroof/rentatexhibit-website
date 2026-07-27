@@ -63,7 +63,7 @@ describe("POST /leads bot guard", () => {
   it("fake-succeeds a honeypot submission without storing or emailing", async () => {
     const res = await request(makeApp())
       .post("/leads")
-      .send({ ...lead, company: "Acme Corp", elapsedMs: 12_000 });
+      .send({ ...lead, xh_note: "Acme Corp", elapsedMs: 12_000 });
     expect(res.status).toBe(201);
     expect(insertMock).not.toHaveBeenCalled();
     expect(vi.mocked(sendLeadNotification)).not.toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe("POST /leads bot guard", () => {
   it("fake-succeeds an implausibly fast submission without storing or emailing", async () => {
     const res = await request(makeApp())
       .post("/leads")
-      .send({ ...lead, company: "", elapsedMs: 150 });
+      .send({ ...lead, xh_note: "", elapsedMs: 150 });
     expect(res.status).toBe(201);
     expect(insertMock).not.toHaveBeenCalled();
     expect(vi.mocked(sendLeadNotification)).not.toHaveBeenCalled();
@@ -98,9 +98,36 @@ describe("POST /leads bot guard", () => {
     });
     const res = await request(makeApp())
       .post("/leads")
-      .send({ ...lead, company: "", elapsedMs: 9_000 });
+      .send({ ...lead, xh_note: "", company: "Autofilled Org", elapsedMs: 9_000 });
     expect(res.status).toBe(201);
     expect(res.body.id).toBe(1);
+    expect(insertMock).toHaveBeenCalled();
+  });
+
+  it("accepts a pure-autofill submission (legacy company filled, no elapsedMs)", async () => {
+    // Regression guard for the 2026-07-27 incident: Safari autofilled the old
+    // "Company" honeypot from a real visitor's contact card and the visitor
+    // never typed, so no elapsedMs was measurable. Must be accepted.
+    const row = {
+      id: 2,
+      type: "contact",
+      firstName: lead.firstName,
+      lastName: lead.lastName,
+      email: lead.email,
+      phone: lead.phone,
+      message: lead.message,
+      preferredDate: null,
+      createdAt: new Date(),
+      notifiedAt: null,
+    };
+    insertMock.mockReturnValue({
+      values: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([row]) }),
+    });
+    const res = await request(makeApp())
+      .post("/leads")
+      .send({ ...lead, xh_note: "", company: "Lovelace Analytics" });
+    expect(res.status).toBe(201);
+    expect(res.body.id).toBe(2);
     expect(insertMock).toHaveBeenCalled();
   });
 });

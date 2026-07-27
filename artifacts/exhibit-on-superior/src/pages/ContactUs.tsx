@@ -238,6 +238,7 @@ export function ContactUs() {
 
                 <form
                   onSubmit={handleSubmit(onSubmit)}
+                  {...botGuard.formProps}
                   // The thank-you and back-online banners stay until the visitor
                   // dismisses them or starts interacting with the form (WCAG
                   // 2.2.1 Timing Adjustable — no disappearing-on-a-timer).
@@ -248,7 +249,7 @@ export function ContactUs() {
                   className="space-y-6"
                   noValidate
                 >
-                  <HoneypotField inputRef={botGuard.companyRef} />
+                  <HoneypotField inputRef={botGuard.honeypotRef} />
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">

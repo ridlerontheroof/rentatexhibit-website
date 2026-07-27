@@ -1306,6 +1306,14 @@ from = "/available-units/0807/"
 to = "/available-units/0807/index.html"
 
 [[services.production.rewrites]]
+from = "/available-units/1001"
+to = "/available-units/1001/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/1001/"
+to = "/available-units/1001/index.html"
+
+[[services.production.rewrites]]
 from = "/available-units/1301"
 to = "/available-units/1301/index.html"
 
