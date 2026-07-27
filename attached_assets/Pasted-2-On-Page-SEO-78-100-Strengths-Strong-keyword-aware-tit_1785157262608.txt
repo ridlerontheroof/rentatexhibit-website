@@ -1,0 +1,60 @@
+2. On-Page SEO — 78/100
+Strengths
+•  Strong, keyword-aware titles (e.g., “Luxury Apartments in River North Chicago | Exhibit On Superior”).
+•  Good use of primary and secondary keywords (River North, luxury apartments, bedroom counts, amenities).
+•  Clear heading hierarchy and “Quick Answer” blocks.
+•  Solid internal linking, especially from Knowledge Center and FAQs.
+•  Descriptive image alt texts in many places.
+Weaknesses
+•  Some pages still show thin or repetitive lifestyle copy.
+•  Meta descriptions exist but can be more differentiated across pages.
+•  Image optimization is good (AVIF/WebP) but alt text consistency can still improve on secondary pages.
+Priority Fixes
+1.  Unique, intent-matched meta descriptions on every major page.
+2.  Tighten H1/H2 structure on the homepage for clearer primary keyword focus.
+3.  Ensure consistent, descriptive alt text site-wide.
+
+3. Content Quality & AEO — 92/100 (Strongest Category)
+This is where the site excels.
+Strengths
+•  “Quick Answer” blocks appear on nearly every important page — excellent for AI Overviews and answer engines.
+•  Large, well-structured Knowledge Center with question-based URLs and direct answers.
+•  Main FAQ page is comprehensive and well-categorized.
+•  Live pricing + availability integration reduces stale information risk.
+•  High factual density (address, scores, fees, policies, hours, ADA counts, etc.).
+Weaknesses
+•  FAQPage schema is currently limited mostly to the homepage.
+•  Some answers could be even more concise for optimal rich-result eligibility.
+Priority Fixes
+1.  Deploy single-question FAQPage schema on the top 15–20 Knowledge pages.
+2.  Expand the main FAQ schema if desired.
+3.  Continue adding unique supporting detail and tables that AI systems like to cite.
+
+4. Local SEO — 79/100
+Strengths
+•  Consistent NAP.
+•  Dedicated reviews page pulling live Google Business Profile data (4.2 stars / 136 reviews).
+•  Strong neighborhood, map, contact, and pet-friendly pages.
+•  Good local signals in schema (address, geo, opening hours).
+Weaknesses
+•  Missing AggregateRating in schema reduces rich-result potential.
+•  Review volume is solid but not dominant for River North luxury.
+Priority Fixes
+1.  Add AggregateRating to the ApartmentComplex schema.
+2.  Continue growing Google reviews and responding to them.
+3.  Strengthen hyper-local content clusters.
+
+5. Off-Page SEO & Authority — 58/100
+Still the weakest area. Brand mentions exist on major aggregators (Apartments.com, Zillow, etc.), but high-quality referring domains remain limited. Aggregators frequently outrank the official site for category queries.
+Priority: Digital PR, local media, and industry backlinks.
+
+6. UX & Conversion — 82/100
+Clear CTAs, live availability, virtual tours (video + Matterport), and good mobile structure. Conversion path is solid; social proof could be more prominent on key pages.
+
+Top Priority Recommendations (Ordered by Impact)
+1.  Server-side render the JSON-LD (or inject it earlier) + add AggregateRating.
+2.  Add FAQPage schema to individual high-value Knowledge Center pages.
+3.  Remove duplicate title/meta tags.
+4.  Continue expanding the Knowledge Center with unique, citable content.
+5.  Build authoritative local and multifamily backlinks.
+6.  Monitor Core Web Vitals and AI search citations regularly.
