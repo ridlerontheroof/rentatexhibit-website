@@ -77,9 +77,9 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Exhibit On Superior',
     title: 'Luxury Apartments in River North Chicago | Exhibit On Superior',
     description:
-      'Luxury apartments in River North Chicago — studio to three-bedroom homes with skyline views, a full floor of amenities, and on-site retail.',
+      'Luxury apartments in River North Chicago — studio, convertible, one, two & three-bedroom homes with skyline views, amenities, and on-site retail.',
     quickAnswer:
-      'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
+      'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, convertible, one-, two-, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
     faqs: [
       {
         q: 'Where is Exhibit On Superior located?',
@@ -87,7 +87,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What apartment sizes are available at Exhibit On Superior?',
-        a: 'The community offers studio, one, two, and three-bedroom apartment homes. Current availability is maintained by the on-site leasing team.',
+        a: 'The community offers studio, convertible, one-, two-, and three-bedroom apartment homes. Current availability is maintained by the on-site leasing team.',
       },
       {
         q: 'How do I check current availability?',
@@ -113,7 +113,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Browse available apartments at Exhibit On Superior in River North Chicago — live pricing, photos, move-in dates, and every studio to 3 bedroom floor plan.',
     quickAnswer:
-      'This page lists every currently available Exhibit On Superior apartment with live rent, photos, and move-in dates, updated automatically from the leasing system. You can also compare every studio, one, two, and three-bedroom floor plan and apply directly from each available listing.',
+      'This page lists every currently available Exhibit On Superior apartment with live rent, photos, and move-in dates, updated automatically from the leasing system. You can also compare every studio, convertible, one-, two-, and three-bedroom floor plan and apply directly from each available listing.',
     faqs: [
       {
         q: 'What apartments are available now at Exhibit On Superior?',
@@ -121,7 +121,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'Does Exhibit On Superior have studio apartments?',
-        a: 'Yes. Exhibit On Superior includes studio floor plan options along with one, two, and three-bedroom homes.',
+        a: 'Yes. Exhibit On Superior includes studio and convertible floor plan options along with one-, two-, and three-bedroom homes.',
       },
       {
         q: 'How do I apply for an apartment?',
@@ -1028,7 +1028,7 @@ export const APARTMENT_COMPLEX_NODE = {
   ],
   image: `${SITE_URL}/images/image-002-gettyimages-1286580777-nvdupq-2000w.webp`,
   description:
-    'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
+    'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, convertible, one-, two-, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
   telephone: '312-450-0635',
   // No `email` here: validator.schema.org flags it as UNKNOWN_FIELD on
   // ApartmentComplex (Place subtype). The address lives on the Organization

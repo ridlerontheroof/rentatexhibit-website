@@ -335,7 +335,7 @@ export function FloorPlans() {
           alt="Available Units | Exhibit On Superior in Chicago, Illinois"
           titleScript="Move-In Ready Residences"
           title="Available Units & Floor Plans"
-          subtitle="Studio, 1, 2 & 3 Bedroom Apartments in River North Chicago"
+          subtitle="Studio, Convertible, 1, 2 & 3 Bedroom Apartments in River North Chicago"
           compact
         />
 
@@ -530,14 +530,14 @@ export function FloorPlans() {
               <div className="lg:order-1">
                 <SplitHeadline
                   script="Live Smart, Live Beautifully"
-                  caps="Studio, 1, 2 & 3 Bedroom Floor Plans"
+                  caps="Studio, Convertible, 1, 2 & 3 Bedroom Floor Plans"
                   align="left"
                   className="mb-6"
                 />
                 <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
                   Choose your perfect floor plan and step up to a trend-forward home that provides
                   the ultimate respite from the hustle and bustle of Chicago. Packed with stylish
-                  features and life-enhancing extras, the studio, one, two, and three bedroom
+                  features and life-enhancing extras, the studio, convertible, one, two, and three bedroom
                   apartments at Exhibit On Superior are designed for ultimate modern living. Enjoy a
                   space that&rsquo;s uniquely yours, perfect for both relaxing and entertaining
                   right here at Exhibit.

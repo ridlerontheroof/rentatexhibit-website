@@ -171,7 +171,11 @@ export function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string 
   const beds = u.bedrooms ?? group?.beds ?? null;
   const baths = u.bathrooms ?? group?.baths ?? null;
   const parts: string[] = [];
-  if (beds !== null) parts.push(beds === 0 ? 'Studio' : `${beds} Bed`);
+  // Zero-bedroom units take the floor-plan catalog's marketing type (Studio /
+  // Convertible / Jr. Convertible) — the feed's numeric 0 stays authoritative
+  // for counts, but the visible label must match the plan sheet everywhere.
+  if (beds !== null)
+    parts.push(beds === 0 ? (group && group.beds === 0 ? group.typeLabel : 'Studio') : `${beds} Bed`);
   if (baths !== null) parts.push(`${baths} Bath`);
   return parts.join(' · ');
 }

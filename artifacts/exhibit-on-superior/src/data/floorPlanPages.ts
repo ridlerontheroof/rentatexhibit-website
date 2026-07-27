@@ -184,6 +184,17 @@ export function floorPlanH1(page: FloorPlanPage): string {
     : `${p.typeLabel} \u2014 ${planSqftLabel(p)} Sq Ft`;
 }
 
+/**
+ * Card/list title WITHOUT the floor range — for surfaces that render a
+ * separate floor-range label right next to the title (e.g. the /floor-plans
+ * hub cards). Keeps extracted text and screen-reader output from reading the
+ * same floor range twice.
+ */
+export function floorPlanCardTitle(page: FloorPlanPage): string {
+  const p = page.plan;
+  return `${p.typeLabel} \u2014 ${planSqftLabel(p)} Sq Ft`;
+}
+
 const CATEGORY_PHRASE: Record<Category, string> = {
   studio: 'studio',
   convertible: 'convertible',

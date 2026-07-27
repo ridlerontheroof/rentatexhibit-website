@@ -4,7 +4,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { CATEGORIES } from '../data/floorPlans';
 import {
   FLOOR_PLAN_PAGES,
-  floorPlanH1,
+  floorPlanCardTitle,
   floorPlanHubItemListJsonLd,
   floorPlanPagePath,
   planFloorPhrase,
@@ -99,8 +99,10 @@ function HubCard({ page }: { page: FloorPlanPage }) {
           </span>
         </div>
         <div className="flex flex-1 flex-col p-5">
+          {/* Title without the floor range — the floor range renders once,
+              in the line below, so extraction/screen readers hear it once. */}
           <h3 className="text-base uppercase tracking-wider text-foreground">
-            {floorPlanH1(page)}
+            {floorPlanCardTitle(page)}
           </h3>
           <p className="mt-2 text-sm text-muted-foreground">
             {planFloorPhrase(p).replace(/^f/, 'F')}

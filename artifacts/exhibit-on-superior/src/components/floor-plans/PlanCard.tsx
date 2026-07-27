@@ -53,13 +53,16 @@ export function PlanCard({ group, onOpen, showAda = false, eager = false }: Plan
         <h3 className="text-lg uppercase tracking-wider text-foreground">{group.typeLabel}</h3>
         <p className="mt-1 text-2xl font-semibold text-primary">{sqftLabel}</p>
 
+        {/* Exact per-sheet floor ranges (one chip per plan variant) — the same
+            precise ranges the /floor-plans directory shows, never the broader
+            consolidated band labels (guarded by floor-range-consistency test). */}
         <div className="mt-4 flex flex-wrap gap-2">
-          {group.bands.map((band) => (
+          {group.variants.map((v) => (
             <span
-              key={band.id}
+              key={v.id}
               className="border border-border px-2.5 py-1 text-xs uppercase tracking-wide text-muted-foreground"
             >
-              Flr {band.label}
+              Flr {v.floorLabel.replace(/-/g, '\u2013')}
             </span>
           ))}
         </div>

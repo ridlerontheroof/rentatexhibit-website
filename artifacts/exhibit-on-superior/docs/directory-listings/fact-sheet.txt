@@ -1,5 +1,5 @@
 EXHIBIT ON SUPERIOR — CANONICAL PROPERTY FACT SHEET
-Generated 2026-07-26 from the website's structured-data source of truth.
+Generated 2026-07-27 from the website's structured-data source of truth.
 Use these EXACT values on every directory listing. If a platform shows anything
 different, correct it to match this sheet.
 
@@ -49,7 +49,7 @@ https://www.instagram.com/exhibitonsuperior
 https://www.youtube.com/@ExhibitonSuperior
 
 SHORT DESCRIPTION (copy-paste for "About" fields)
-Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago’s River North neighborhood with studio, one, two, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.
+Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago’s River North neighborhood with studio, convertible, one-, two-, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.
 
 AMENITIES (copy-paste list)
 - Full-floor amenity deck overlooking the city and private park
