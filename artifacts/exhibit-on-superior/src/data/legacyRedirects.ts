@@ -42,4 +42,9 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/amenities.aspx': '/amenities',
   '/contactus.aspx': '/contact-us',
   '/brochure.aspx': '/apartment-guide',
+  // G5/RentCafe-era .aspx URLs (2026-07 SEO audit, second batch): 404 live
+  // today, but 301s preserve any historical link equity.
+  '/mapsanddirections.aspx': '/map-directions',
+  '/video.aspx': '/virtual-tour',
+  '/apartmentphotos.aspx': '/photo-gallery',
 };

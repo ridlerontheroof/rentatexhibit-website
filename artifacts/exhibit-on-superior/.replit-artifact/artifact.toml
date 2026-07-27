@@ -630,6 +630,30 @@ from = "/brochure.aspx/"
 to = "/brochure.aspx/index.html"
 
 [[services.production.rewrites]]
+from = "/mapsanddirections.aspx"
+to = "/mapsanddirections.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/mapsanddirections.aspx/"
+to = "/mapsanddirections.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/video.aspx"
+to = "/video.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/video.aspx/"
+to = "/video.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/apartmentphotos.aspx"
+to = "/apartmentphotos.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/apartmentphotos.aspx/"
+to = "/apartmentphotos.aspx/index.html"
+
+[[services.production.rewrites]]
 from = "/apartment-guide"
 to = "/apartment-guide/index.html"
 
