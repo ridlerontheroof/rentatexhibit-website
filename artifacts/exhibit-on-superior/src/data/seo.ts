@@ -2,7 +2,9 @@
 // Source of truth: migration bundle seo-aeo-metadata + faq-answer-bank + schema manifest.
 
 import { ADA_COUNTS } from './ada';
-import { startingRentSentence } from './startingRent';
+import { SQFT_MIN, SQFT_MAX } from './floorPlans';
+import { getBakedAvailability } from './availabilitySnapshot';
+import { getStartingRent, startingRentSentence } from './startingRent';
 import { WALK_SCORE, TRANSIT_SCORE, BIKE_SCORE, WALK_SCORES_SENTENCE } from './walkScores';
 
 /**
@@ -988,6 +990,40 @@ export const ORGANIZATION_NODE = {
   ],
 };
 
+/**
+ * Building-wide square-footage range as a schema.org QuantitativeValue,
+ * derived from the floor-plan database extremes (never hardcoded, so a new
+ * or corrected plan sheet updates the structured data automatically).
+ */
+export const FLOOR_SIZE_RANGE_NODE = {
+  '@type': 'QuantitativeValue',
+  minValue: SQFT_MIN,
+  maxValue: SQFT_MAX,
+  unitCode: 'FTK',
+  unitText: 'sq ft',
+};
+
+/**
+ * Availability-derived ApartmentComplex properties, from the same baked
+ * snapshot that powers the Available Units page and per-unit Offer nodes:
+ * - numberOfAvailableAccommodationUnits: count of currently available units
+ * - priceRange: "From $X,XXX/month", from the lowest current asking rent
+ * Both degrade gracefully — when no usable snapshot (or no priced units)
+ * exists the property is omitted entirely, never emitted as 0/null.
+ */
+export function availabilityComplexProps(
+  now: number = Date.now(),
+): { numberOfAvailableAccommodationUnits?: number; priceRange?: string } {
+  const data = getBakedAvailability(now);
+  const props: { numberOfAvailableAccommodationUnits?: number; priceRange?: string } = {};
+  if (data && data.units.length > 0) {
+    props.numberOfAvailableAccommodationUnits = data.units.length;
+  }
+  const starting = getStartingRent(now);
+  if (starting) props.priceRange = `From ${starting.formatted}/month`;
+  return props;
+}
+
 export const APARTMENT_COMPLEX_NODE = {
   '@type': 'ApartmentComplex',
   '@id': `${SITE_URL}#apartmentcomplex`,
@@ -1011,6 +1047,11 @@ export const APARTMENT_COMPLEX_NODE = {
   },
   // Total residences in the tower — a hard fact AI answer engines look for.
   numberOfAccommodationUnits: 298,
+  // Building-wide square-footage range from the floor-plan DB extremes.
+  floorSize: FLOOR_SIZE_RANGE_NODE,
+  // Live availability count + real "From $X,XXX/month" price range from the
+  // baked availability snapshot; omitted entirely when no usable snapshot.
+  ...availabilityComplexProps(),
   // Touring/visiting the leasing office is free; this disambiguates the
   // entity from paid-admission venues for AI answer engines.
   isAccessibleForFree: true,
