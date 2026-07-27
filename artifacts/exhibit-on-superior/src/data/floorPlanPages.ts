@@ -276,6 +276,8 @@ export function floorPlanPageJsonLd(
     description: floorPlanDescription(page),
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
+    // Same share card the og:image meta uses (see buildFloorPlanSeoModel).
+    primaryImageOfPage: ogCardUrl('floor-plans'),
     breadcrumb: { '@id': `${canonical}#breadcrumb` },
     ...(updatedAt ? { dateModified: updatedAt } : {}),
   };

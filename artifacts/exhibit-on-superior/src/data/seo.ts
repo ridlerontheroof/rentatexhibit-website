@@ -970,6 +970,8 @@ export const ORGANIZATION_NODE = {
     contactType: 'leasing office',
     email: 'exhibit@highlandptrs.com',
     telephone: '312-450-0635',
+    areaServed: 'US',
+    availableLanguage: 'English',
   },
   logo: `${SITE_URL}/images/image-001-exhibit-on-superior-logo-color-a7pvg4-1805w.webp`,
   // Building photo (distinct from the logo) — Google's Organization guidance
@@ -1106,7 +1108,7 @@ export const APARTMENT_COMPLEX_NODE = {
     'Fitness center with two private training rooms',
     'Cardio equipment and spin bikes',
     'Boxing simulator',
-    'Lap pool',
+    '75-foot lap pool',
     'Sauna and wet lounge leading to outdoor deck',
     'Outdoor hot tub',
     'Four grilling stations',
@@ -1149,6 +1151,9 @@ export function buildJsonLd(path: string): Record<string, unknown> {
     description: page?.description,
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
+    // Explicit page-image signal, sourced from the same per-page share card
+    // as the og:image meta so the two can never diverge.
+    primaryImageOfPage: page?.ogImage ?? DEFAULT_OG_IMAGE,
     ...(path === '/about' ? { mainEntity: { '@id': `${SITE_URL}#organization` } } : {}),
     breadcrumb: { '@id': `${idBase}#breadcrumb` },
   };

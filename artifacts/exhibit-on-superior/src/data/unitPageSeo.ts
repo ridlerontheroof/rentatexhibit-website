@@ -189,6 +189,9 @@ export function unitPageJsonLd(u: AvailableUnit, updatedAt?: string | null): Rec
     description: unitDescription(u),
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
+    // Same image source as the og:image meta (buildUnitSeoModel) so the
+    // page-image signal and share card can never diverge.
+    primaryImageOfPage: u.photoUrl ?? ogCardUrl('floor-plans'),
     breadcrumb: { '@id': `${canonical}#breadcrumb` },
     // The availability snapshot's own timestamp — the same data the page
     // renders — NOT build time, so the claim stays truthful.

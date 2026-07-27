@@ -228,6 +228,8 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
     description: knowledgeDescription(a),
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
+    // Same site-wide share card the og:image meta uses (buildKnowledgeSeoModel).
+    primaryImageOfPage: DEFAULT_OG_IMAGE,
     author,
     publisher: { '@id': `${SITE_URL}#organization` },
     dateModified: knowledgeUpdated(a),
