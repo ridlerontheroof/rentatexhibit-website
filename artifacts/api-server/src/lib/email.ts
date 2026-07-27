@@ -9,6 +9,7 @@ import {
   renderFeeCopyAlert,
   renderKnowledgeCheckAlert,
   renderLeadNotification,
+  renderRedirectCheckAlert,
   renderRentedCheckAlert,
   renderProspectConfirmation,
   renderSeedStaleAlert,
@@ -288,6 +289,35 @@ export async function sendRentedCheckAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL },
     "Sent rented-unit check failure alert email",
+  );
+}
+
+/**
+ * Alert that the always-on legacy-redirect check (the third half-sibling of
+ * check:postpublish, run from this server) found a legacy URL that no longer
+ * 301s in one hop to its mapped target. Goes to the operational recipient
+ * because the fix is a rewrite/stub repair + re-publish, not a leasing
+ * action. Throws when the mailer is unconfigured or the send fails;
+ * deduping lives in the caller (redirectCheck).
+ */
+export async function sendRedirectCheckAlert(opts: {
+  summary: string;
+  outputTail: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderRedirectCheckAlert(opts);
+  const { contentType, body } = buildMimeBody("redirectalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent legacy-redirect check failure alert email",
   );
 }
 

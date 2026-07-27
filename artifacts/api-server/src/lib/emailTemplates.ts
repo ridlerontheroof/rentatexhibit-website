@@ -569,6 +569,54 @@ export function renderRentedCheckAlert(opts: {
 }
 
 /**
+ * Operational alert: the always-on legacy-redirect check (redirectCheck)
+ * found a legacy URL that no longer answers a single-hop 301 to its mapped
+ * target — Google-indexed legacy URLs are soft-404ing into the SPA shell.
+ */
+export function renderRedirectCheckAlert(opts: {
+  summary: string;
+  outputTail: string;
+}): RenderedEmail {
+  const { summary, outputTail } = opts;
+  const subject =
+    "Website alert: legacy-redirect check failed on the live site";
+
+  const intro = `The automatic legacy-redirect check of www.rentatexhibit.com reported a problem: ${summary}`;
+  const remedy =
+    "What to do: run `node scripts/check-legacy-redirects.mjs` in the web artifact from the workspace for full detail, inspect the prerendered redirect stubs and their [[services.production.rewrites]] pairs in .replit-artifact/artifact.toml, then re-publish. This alert is sent at most once per day.";
+
+  const tail = outputTail.trim();
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    (tail
+      ? `<p style="${BODY_TEXT}"><strong>Check output (tail):</strong></p>` +
+        `<pre style="margin:0 0 16px;font-size:12px;line-height:1.5;white-space:pre-wrap;">${escapeHtml(tail)}</pre>`
+      : "") +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+      "run the check-legacy-redirects script from the workspace for full detail, inspect the redirect stubs and their artifact.toml rewrite pairs, then re-publish. This alert is sent at most once per day.",
+    )}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...(tail ? ["Check output (tail):", tail, ""] : []),
+    remedy,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader:
+      "A Google-indexed legacy URL may be soft-404ing instead of redirecting.",
+    kicker: "Website Alert",
+    heading: "Legacy-Redirect Check Failed",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
  * Operational alert: the lead-form bot guard rejected an unusually high
  * number of submissions today. Either a smarter/higher-volume bot is
  * hammering the forms, or a guard bug is rejecting real prospects — both

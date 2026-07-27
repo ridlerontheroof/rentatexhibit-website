@@ -7,6 +7,7 @@ import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
 import { startKnowledgePageCheck } from "./lib/knowledgeCheck";
 import { startShowingSchedulerCheck } from "./lib/showingSchedulerCheck";
 import { startRentedNoindexCheck } from "./lib/rentedCheck";
+import { startLegacyRedirectCheck } from "./lib/redirectCheck";
 import { startAcceptedVolumeWatch } from "./lib/botGuardAlert";
 
 const rawPort = process.env["PORT"];
@@ -63,6 +64,11 @@ app.listen(port, (err) => {
   // 6 hours, alerting (once/day) on definitive failures. Gracefully logs
   // and skips when the runtime has no headless Chromium.
   startRentedNoindexCheck(logger);
+
+  // Watchdog: run the web artifact's legacy-redirect check (every legacy
+  // URL must 301 in one hop to its mapped target) on startup (= post-publish)
+  // and every 6 hours, alerting (once/day) on definitive failures.
+  startLegacyRedirectCheck(logger);
 
   // Watchdog: hourly check of the shared last-accepted-submission timestamp;
   // alerts (once/day) when no lead has been accepted for an unusually long
