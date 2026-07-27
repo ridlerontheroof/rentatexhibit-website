@@ -59,6 +59,49 @@ export function FloorPlansHub() {
               );
             })}
 
+            {/* Citation-friendly comparison table — generated from FLOOR_PLAN_PAGES */}
+            <div className="mt-16 overflow-x-auto border border-border bg-white p-6">
+              <table className="w-full text-left text-sm">
+                <caption className="mb-4 text-left text-lg uppercase tracking-wider text-foreground">
+                  Floor Plan Comparison at Exhibit On Superior
+                </caption>
+                <thead>
+                  <tr className="border-b border-border uppercase tracking-wider">
+                    <th scope="col" className="py-2 pr-4">Floor Plan</th>
+                    <th scope="col" className="py-2 pr-4">Beds / Baths</th>
+                    <th scope="col" className="py-2 pr-4">Sq Ft</th>
+                    <th scope="col" className="py-2">Floors</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {FLOOR_PLAN_PAGES.map((fp) => {
+                    const p = fp.plan;
+                    return (
+                      <tr key={fp.slug} className="border-b border-border/50">
+                        <th scope="row" className="py-2 pr-4 font-normal">
+                          {/* aria-label carries sq ft + floor range so links to
+                              different variants of the same residence line stay
+                              unique for assistive tech (check:link-names). */}
+                          <Link
+                            href={floorPlanPagePath(fp.slug)}
+                            className="text-primary underline"
+                            aria-label={`${p.typeLabel} \u2014 Unit ${String(p.unit).padStart(2, '0')}, ${planSqftLabel(p)} sq ft, ${planFloorPhrase(p)}`}
+                          >
+                            {p.typeLabel} &mdash; Unit {String(p.unit).padStart(2, '0')}
+                          </Link>
+                        </th>
+                        <td className="py-2 pr-4 text-muted-foreground">
+                          {p.beds > 0 ? p.beds : p.typeLabel.includes('Convertible') ? 'Convertible' : 'Studio'} / {p.baths}
+                        </td>
+                        <td className="py-2 pr-4">{planSqftLabel(p)}</td>
+                        <td className="py-2 text-muted-foreground">{p.floorLabel.replace(/-/g, '\u2013')}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
             <div className="mt-16 border-t border-border pt-8 text-center">
               <p className="text-muted-foreground">
                 Looking for what you can move into right now?

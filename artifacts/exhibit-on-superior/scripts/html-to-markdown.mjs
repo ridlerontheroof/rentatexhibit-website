@@ -203,15 +203,20 @@ export function htmlToMarkdown(html, { siteUrl = '' } = {}) {
     }
     if (tag === 'table') {
       const rows = [];
+      let caption = '';
       const walkRows = (n) => {
         for (const c of n.children) {
           if (c.tag === 'tr') rows.push(c);
-          else if (c.children) walkRows(c);
+          else if (c.tag === 'caption') {
+            caption = collapse(inline({ ...c, tag: 'span' })).trim();
+          } else if (c.children) walkRows(c);
         }
       };
       walkRows(node);
       if (!rows.length) return [];
       const lines = [];
+      // Render the caption as a bold line so the table keeps its title in md.
+      if (caption) lines.push(`**${caption}**\n`);
       rows.forEach((tr, idx) => {
         const cells = tr.children
           .filter((c) => c.tag === 'td' || c.tag === 'th')

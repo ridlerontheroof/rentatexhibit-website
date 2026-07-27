@@ -16,7 +16,9 @@ const read = (rel: string) =>
     (_, hex: string) => String.fromCharCode(parseInt(hex, 16)),
   );
 
-const feesSource = read('../pages/Fees.tsx');
+// The utility-fee table now lives in the fees data module (single source of
+// truth for the Fees page copy AND its fact tables).
+const feesSource = read('./fees.ts');
 const guideSource = read('../pages/ApartmentGuide.tsx');
 
 /** "767\u2013821 sq ft" or "983 sq ft" from a min/max pair, matching site copy formatting. */

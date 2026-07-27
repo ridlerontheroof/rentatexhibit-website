@@ -6,22 +6,26 @@ import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 
+import {
+  ADMIN_FEE,
+  APPLICATION_FEE,
+  FEE_SUMMARY,
+  PARKING_FEE,
+  PET_FEE_CATS,
+  PET_FEE_ONE_DOG,
+  PET_FEE_TWO_DOGS,
+  STORAGE_FEE,
+  UTILITY_BUNDLE,
+} from '../data/fees';
+
 /**
  * Fees & Leasing Costs. Accuracy rule: every figure on this page comes from
  * live AppFolio listing data or the leasing-approved questionnaire
  * (docs/leasing-questionnaire/leasing-questionnaire.md); anything still
- * unconfirmed is explicitly deferred to the leasing team — no guesses.
+ * unconfirmed is explicitly deferred to the leasing team — no guesses. All
+ * figures render from src/data/fees.ts (single source of truth for copy AND
+ * the summary table).
  */
-const UTILITY_BUNDLE = [
-  { type: 'Studio', size: '448\u2013484 sq ft', fee: '$95' },
-  { type: 'Jr. Convertible', size: '450\u2013478 sq ft', fee: '$95' },
-  { type: 'Convertible', size: '554 sq ft', fee: '$105' },
-  { type: '1 Bedroom', size: '619\u2013768 sq ft', fee: '$115' },
-  { type: '2 Bedroom / 1 Bath', size: '767\u2013821 sq ft', fee: '$125' },
-  { type: '2 Bedroom / 2 Bath', size: '899\u20131,135 sq ft', fee: '$150' },
-  { type: '2 Bedroom + Den', size: '983 sq ft', fee: '$165' },
-  { type: '3 Bedroom / 3 Bath', size: '1,455\u20131,528 sq ft', fee: '$195' },
-];
 export function Fees() {
   return (
     <>
@@ -49,6 +53,37 @@ export function Fees() {
           </div>
         </section>
 
+        {/* At-a-glance fee table — rows from src/data/fees.ts (FEE_SUMMARY) */}
+        <section className="pb-12 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <div className="overflow-x-auto border border-border bg-white p-6">
+              <table className="w-full text-left text-sm">
+                <caption className="mb-4 text-left text-lg uppercase tracking-wider text-foreground">
+                  Fees &amp; Costs at Exhibit On Superior at a Glance
+                </caption>
+                <thead>
+                  <tr className="border-b border-border uppercase tracking-wider">
+                    <th scope="col" className="py-2 pr-4">Fee</th>
+                    <th scope="col" className="py-2 pr-4">Amount</th>
+                    <th scope="col" className="py-2 pr-4">Frequency</th>
+                    <th scope="col" className="py-2">Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {FEE_SUMMARY.map((r) => (
+                    <tr key={r.item} className="border-b border-border/50">
+                      <th scope="row" className="py-2 pr-4 font-normal">{r.item}</th>
+                      <td className="py-2 pr-4"><strong>{r.amount}</strong></td>
+                      <td className="py-2 pr-4 text-muted-foreground">{r.frequency}</td>
+                      <td className="py-2 text-muted-foreground">{r.notes}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
         <section className="py-12 px-4 bg-muted">
           <div className="container mx-auto max-w-4xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -56,7 +91,7 @@ export function Fees() {
                 <h2 className="text-xl uppercase tracking-wider mb-4">Application Fee</h2>
                 <p className="leading-relaxed text-muted-foreground">
                   Each unit&rsquo;s listing shows its own application fee &mdash; currently{' '}
-                  <strong className="text-foreground">$60 per application</strong>. The exact fee is
+                  <strong className="text-foreground">{APPLICATION_FEE} per application</strong>. The exact fee is
                   displayed on the unit&rsquo;s secure online application before you pay anything.
                 </p>
               </div>
@@ -64,7 +99,7 @@ export function Fees() {
                 <h2 className="text-xl uppercase tracking-wider mb-4">Administration Fee &amp; Deposit</h2>
                 <p className="leading-relaxed text-muted-foreground mb-4">
                   The non-refundable administration fee is{' '}
-                  <strong className="text-foreground">$500 per apartment</strong>. It is fully
+                  <strong className="text-foreground">{ADMIN_FEE} per apartment</strong>. It is fully
                   refunded if your application is denied, but retained if you choose to cancel.
                 </p>
                 <p className="leading-relaxed text-muted-foreground">
@@ -110,11 +145,11 @@ export function Fees() {
                 <ul className="space-y-2">
                   <li className="flex items-start gap-3">
                     <span className="text-primary mt-1">•</span>
-                    <span>Garage parking: <strong>$335/month</strong> per unreserved space, subject to availability &mdash; see <Link href="/parking-transportation" className="text-primary underline">Parking &amp; Transportation</Link></span>
+                    <span>Garage parking: <strong>{PARKING_FEE}/month</strong> per unreserved space, subject to availability &mdash; see <Link href="/parking-transportation" className="text-primary underline">Parking &amp; Transportation</Link></span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-primary mt-1">•</span>
-                    <span>On-site storage: <strong>$25/month</strong></span>
+                    <span>On-site storage: <strong>{STORAGE_FEE}/month</strong></span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-primary mt-1">•</span>
@@ -125,9 +160,9 @@ export function Fees() {
               <div className="bg-white border border-border p-8">
                 <h2 className="text-xl uppercase tracking-wider mb-4">Pet Fees</h2>
                 <p className="leading-relaxed text-muted-foreground">
-                  One-time non-refundable pet fee: <strong className="text-foreground">$650 for one
-                  dog or $750 for two</strong> (two-dog maximum) and{' '}
-                  <strong className="text-foreground">$325 for cats</strong> (two-cat maximum). No
+                  One-time non-refundable pet fee: <strong className="text-foreground">{PET_FEE_ONE_DOG} for one
+                  dog or {PET_FEE_TWO_DOGS} for two</strong> (two-dog maximum) and{' '}
+                  <strong className="text-foreground">{PET_FEE_CATS} for cats</strong> (two-cat maximum). No
                   pet deposit and no monthly pet rent. Breed restrictions apply &mdash; details on
                   the <Link href="/pet-friendly" className="text-primary underline">Pet Policy</Link>{' '}
                   page. Reviewing qualification? See the{' '}

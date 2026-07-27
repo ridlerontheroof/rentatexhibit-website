@@ -12,6 +12,7 @@ import {
   BIKE_SCORE,
   WALK_SCORE_SOURCE_URL,
 } from '../data/walkScores';
+import { COMMUTE_ROWS } from '../data/commute';
 
 export function MapDirections() {
   return (
@@ -120,6 +121,31 @@ export function MapDirections() {
                 </ul>
               </div>
             </div>
+            {/* Citation-friendly commute table — rows from src/data/commute.ts */}
+            <div className="mt-10 overflow-x-auto border border-border bg-white p-6">
+              <table className="w-full text-left text-sm">
+                <caption className="mb-4 text-left text-lg uppercase tracking-wider text-foreground">
+                  Commute Times from 165 W Superior St, River North
+                </caption>
+                <thead>
+                  <tr className="border-b border-border uppercase tracking-wider">
+                    <th scope="col" className="py-2 pr-4">Destination</th>
+                    <th scope="col" className="py-2 pr-4">How to Get There</th>
+                    <th scope="col" className="py-2">Approx. Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMMUTE_ROWS.map((r) => (
+                    <tr key={r.destination} className="border-b border-border/50">
+                      <th scope="row" className="py-2 pr-4 font-normal">{r.destination}</th>
+                      <td className="py-2 pr-4 text-muted-foreground">{r.transit}</td>
+                      <td className="py-2">{r.time}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
             <p className="text-sm text-muted-foreground text-center mt-8">
               However you arrive, the corner is easy to reach without a car &mdash; per{' '}
               <a

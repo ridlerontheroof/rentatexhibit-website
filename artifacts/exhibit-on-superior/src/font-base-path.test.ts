@@ -19,7 +19,10 @@ import { fileURLToPath } from 'node:url';
 
 const artifactRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = '/font-base-check/';
-const OUT_DIR = path.join(artifactRoot, 'dist', 'font-base-check');
+// NOTE: deliberately OUTSIDE dist/ — validation runs this suite concurrently
+// with the prepublish rebuild, which recreates dist/ and would delete this
+// test's freshly built output mid-assertion (spurious ENOENT failures).
+const OUT_DIR = path.join(artifactRoot, 'node_modules', '.cache', 'font-base-check');
 
 const FONT_FILES = [
   'BarlowSemiCondensed-300-latin.woff2',
