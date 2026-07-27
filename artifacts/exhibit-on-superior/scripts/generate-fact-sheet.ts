@@ -71,6 +71,27 @@ const bedroomRange = CATEGORIES.filter((c: any) => beds.has(c.id))
   .join(', ');
 const amenities: string[] = complex.amenityFeature.map((a: any) => a.name);
 
+// Directory-listing phrasing for each plan category. Derived from the same
+// CATEGORIES list as bedroomRange so a new (or retired) plan category can
+// never leave the printed sheet advertising a stale bedroom mix.
+const SUMMARY_WORD: Record<string, string> = {
+  studio: 'Studio',
+  convertible: 'Convertible',
+  '1br': '1',
+  '2br': '2',
+  '3br': '3',
+};
+const summaryWords = CATEGORIES.filter((c: any) => beds.has(c.id)).map((c: any) => {
+  const word = SUMMARY_WORD[c.id];
+  if (!word) throw new Error(`No fact-sheet summary word for plan category "${c.id}" — add it to SUMMARY_WORD in generate-fact-sheet.ts`);
+  return word;
+});
+const bedroomSummary = `${
+  summaryWords.length > 1
+    ? `${summaryWords.slice(0, -1).join(', ')} & ${summaryWords[summaryWords.length - 1]}`
+    : summaryWords[0]
+} Bedroom Apartments`;
+
 const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'directory-listings');
 mkdirSync(outDir, { recursive: true });
 
@@ -85,7 +106,7 @@ const coreFacts = {
   email: org.email as string,
   officeHours: hours,
   bedroomRange,
-  bedroomSummary: 'Studio, Convertible, 1, 2 & 3 Bedroom Apartments',
+  bedroomSummary,
   sqftRange: `${SQFT_MIN}\u2013${SQFT_MAX} sq ft`,
   petPolicy: complex.petsAllowed as string,
   managementCompany: org.name as string,
