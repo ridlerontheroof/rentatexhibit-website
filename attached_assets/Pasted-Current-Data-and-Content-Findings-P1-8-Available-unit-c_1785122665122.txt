@@ -1,0 +1,148 @@
+Current Data and Content Findings
+
+P1 — 8. Available unit cards misclassify convertibles as studios
+
+The live availability cards identify:
+
+• Apartment 0610 as Studio
+• Apartment 2705 as Studio
+
+The floor-plan catalog identifies:
+
+• Unit line 10 as Jr. Convertible
+• Unit line 05 as Jr. Convertible
+
+This is an internal classification conflict.
+
+Likely cause
+
+The leasing feed probably maps every zero-bedroom unit to Studio, overriding the approved marketing floor-plan type.
+
+Required fix
+
+Add a controlled marketing classification field separate from the AppFolio bedroom count.
+
+Recommended mapping:
+
+|Unit|Bedroom count|Marketing type |
+|----|------------:|---------------|
+|0610|0            |Jr. Convertible|
+|2705|0            |Jr. Convertible|
+
+The numeric bedroom field can remain 0, but visible page text, metadata, filters, and structured data should use the approved floor-plan type.
+
+Acceptance test
+
+The following all match:
+
+• Available-unit card
+• Unit detail page
+• Page title
+• Meta description
+• Open Graph data
+• JSON-LD
+• Floor-plan page
+• Filter classification
+• Application handoff where supported
+
+────────
+
+P1 — 9. Consolidated floor ranges conflict with the detailed floor-plan directory
+
+The /available-units floor-plan catalog uses broad ranges that do not match the more precise /floor-plans directory.
+
+Examples:
+
+|Plan                            |Available Units page|Detailed Floor Plans page|
+|--------------------------------|--------------------|-------------------------|
+|Unit 02 Studio, 448 SF          |Floors 2–4M         |Floor 3                  |
+|Unit 01 1 Bed, 768 SF           |Floors 2–4M         |Floors 4–4M              |
+|Unit 02 1 Bed, 628 SF           |Floors 2–4M         |Floors 4–4M              |
+|Unit 03 1 Bed, 656 SF           |Floors 2–4M         |Floors 3–4M              |
+|Unit 05 2 Bed / 1 Bath, 821 SF  |Floors 2–4M         |Floor 2                  |
+|Unit 08 2 Bed / 2 Bath, 1,003 SF|Floors 2–4M         |Floor 2                  |
+|Unit 09 2 Bed / 2 Bath, 929 SF  |Floors 2–4M         |Floor 2                  |
+|Unit 10 2 Bed / 2 Bath, 935 SF  |Floors 2–4M         |Floor 2                  |
+
+Why this matters
+
+This can cause incorrect answers to questions such as:
+
+• Which floors have a specific plan?
+• Is a plan available on 4M?
+• Which layouts exist on podium floors?
+• What is the exact unit mix by floor?
+
+Required fix
+
+Use the same normalized plan-variant dataset for:
+
+• /available-units
+• /floor-plans
+• Individual floor-plan pages
+• Knowledge Center answers
+• Structured data
+
+Do not infer broad floor ranges from a category label when the plan exists only on specific floors.
+
+Acceptance test
+
+A build-time test compares every plan’s:
+
+• Unit line
+• Floor
+• Square footage
+• Bed/bath type
+• Balcony status
+• Accessibility designation
+
+No mismatch is permitted between the two page systems.
+
+────────
+
+P1 — 10. The floor-plan directory contains concatenated labels
+
+Examples observed:
+
+```text
+478 Sq Ft (Floors 6–29)Floors 6–29
+478 Sq Ft (Floors 30–34)Floors 30–34
+669 Sq Ft (Floors 17–21)Floors 17–21
+779 Sq Ft (Floors 6–29)Floors 6–29
+```
+
+Required fix
+
+Separate the square-footage label and floor-range label in the template.
+
+Example:
+
+```html
+<span class="plan-size">478 Sq Ft</span>
+<span class="plan-floor">Floors 6–29</span>
+```
+
+Acceptance test
+
+• No duplicated floor range appears.
+• Search-engine text extraction reads one clean size and one clean floor range.
+• Screen readers do not announce duplicated content.
+
+────────
+
+P1 — 11. The homepage’s unit-mix answer omits convertibles
+
+The current homepage says the property offers studio, one-, two-, and three-bedroom apartments. The site also has convertible and junior-convertible floor plans.
+
+Recommended language
+
+> Exhibit On Superior offers studio, convertible, one-, two-, and three-bedroom apartments.
+
+Use the same taxonomy on:
+
+• Homepage Quick Answer
+• Homepage FAQ
+• Meta description where space permits
+• Apartment Guide
+• Knowledge Center
+• Organization/property schema
