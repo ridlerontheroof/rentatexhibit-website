@@ -46,3 +46,4 @@
 - [Sitemap lastmod content-hash map](sitemap-lastmod-map.md) — lastmod comes from a committed twin-hash→date map, not build date; map is seo-source-hash-excluded; sitemap gen must stay after twins.
 - [Perf lab suite (check:perf)](perf-lab-suite.md) — Lighthouse vs dist via vite preview; calibrated per-page thresholds; run long checks as workflows, not nohup (ShellExec /tmp+bg isolated).
 - [Lead-form bot guard](lead-form-bot-guard.md) — honeypot+fill-time checked server-side before any side effect; showing fallback must never fire on a 400 rejection.
+- [Lightbox focus traps must skip hidden controls](lightbox-focus-trap-hidden.md) — use tabbableIn() from the shortcut-keys hook; display:none "?" button as trap boundary lets Tab escape the dialog.

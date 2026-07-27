@@ -377,7 +377,7 @@ export function FloorPlans() {
                     <button
                       type="button"
                       onClick={resetAll}
-                      className="flex min-h-11 items-center gap-1.5 text-sm uppercase tracking-wide text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="flex min-h-11 items-center gap-1.5 text-sm uppercase tracking-wide text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       <X className="h-4 w-4" aria-hidden="true" /> Clear all filters
                     </button>
@@ -441,7 +441,7 @@ export function FloorPlans() {
                               <button
                                 type="button"
                                 onClick={resetAll}
-                                className="mt-6 flex min-h-11 items-center gap-1.5 text-sm uppercase tracking-wide text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                className="mt-6 flex min-h-11 items-center gap-1.5 text-sm uppercase tracking-wide text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                               >
                                 <X className="h-4 w-4" aria-hidden="true" /> Clear all filters
                               </button>

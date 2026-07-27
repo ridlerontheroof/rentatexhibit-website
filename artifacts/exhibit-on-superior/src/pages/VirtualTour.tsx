@@ -99,15 +99,15 @@ export function VirtualTour() {
                 </p>
                 <p>
                   For a closer look at interiors and amenity spaces, visit the{' '}
-                  <Link href="/photo-gallery" className="text-primary hover:underline">
+                  <Link href="/photo-gallery" className="text-primary underline underline-offset-4 hover:text-primary/80">
                     Photo Gallery
                   </Link>{' '}
                   page. When you&apos;re ready, browse current homes with live pricing on the{' '}
-                  <Link href="/available-units" className="text-primary hover:underline">
+                  <Link href="/available-units" className="text-primary underline underline-offset-4 hover:text-primary/80">
                     Available Units
                   </Link>{' '}
                   page, then{' '}
-                  <Link href="/schedule-a-tour" className="text-primary hover:underline">
+                  <Link href="/schedule-a-tour" className="text-primary underline underline-offset-4 hover:text-primary/80">
                     schedule a tour
                   </Link>{' '}
                   to see it in person.

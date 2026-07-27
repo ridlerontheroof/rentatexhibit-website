@@ -5,6 +5,25 @@ import type { Dispatch, SetStateAction } from 'react';
 export const KEY_PAN_STEP = 60;
 
 /**
+ * The visible, keyboard-focusable controls inside a lightbox dialog, in DOM
+ * order — used by the Tab focus traps in UnitGalleryLightbox and the Photo
+ * Gallery page. Filtering out `display: none` elements matters: the shared
+ * "?" shortcuts button is hidden on coarse-pointer / small viewports
+ * (`hidden pointer-fine:lg:flex`), and counting it as the trap's "last"
+ * focusable lets a real browser Tab straight past the visually-last control
+ * into the page behind the dialog.
+ */
+export function tabbableIn(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+  ).filter((el) => {
+    // jsdom computes no layout; getComputedStyle().display is still reliable
+    // for inline `display: none`, and defaults keep everything "visible".
+    return getComputedStyle(el).display !== 'none';
+  });
+}
+
+/**
  * Shared keyboard handling for the three photo viewers: the floor-plan
  * lightbox (PlanLightbox), the unit photo gallery (UnitGalleryLightbox), and
  * the Photo Gallery page's lightbox.

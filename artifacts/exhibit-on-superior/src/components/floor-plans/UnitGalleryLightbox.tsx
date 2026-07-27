@@ -6,7 +6,7 @@ import { trackOutboundClick } from '../../lib/analytics';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../../hooks/use-pinch-zoom';
 import { clearLegendOnTouchGestures } from '../../hooks/clear-legend-on-touch-gestures';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
-import { useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
+import { tabbableIn, useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
 import { useDismissLegendOnOutsideClick } from '../../hooks/use-dismiss-legend-on-outside-click';
 
 interface UnitGalleryLightboxProps {
@@ -151,9 +151,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
     onEscape: onClose,
     onOtherKey: (e) => {
       if (e.key === 'Tab' && dialogRef.current) {
-        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled])',
-        );
+        const focusables = tabbableIn(dialogRef.current);
         if (focusables.length === 0) return;
         const first = focusables[0];
         const last = focusables[focusables.length - 1];

@@ -133,15 +133,15 @@ export function Reviews() {
               <p>
                 Deciding whether Exhibit On Superior is right for you? Preview homes and amenities with
                 the video and Matterport tours on the{' '}
-                <Link href="/virtual-tour" className="text-primary hover:underline">
+                <Link href="/virtual-tour" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Virtual Tour
                 </Link>{' '}
                 page, browse current homes with live pricing on the{' '}
-                <Link href="/available-units" className="text-primary hover:underline">
+                <Link href="/available-units" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Available Units
                 </Link>{' '}
                 page, then{' '}
-                <Link href="/schedule-a-tour" className="text-primary hover:underline">
+                <Link href="/schedule-a-tour" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   schedule a tour
                 </Link>{' '}
                 to see it in person.

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Pause, Play } from 'lucide-react';
 import { SmartImg } from './SmartImg';
 
 export interface HeroSlide {
@@ -31,6 +32,9 @@ function prefersReducedMotion() {
 export function HeroSlider({ slides, children, interval = 5000, className = '' }: HeroSliderProps) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
+  // Explicit user pause (WCAG 2.2.2 Pause, Stop, Hide) — persists regardless
+  // of hover/focus, toggled by the visible pause/play button below.
+  const [userPaused, setUserPaused] = useState(false);
   const count = slides.length;
 
   const goTo = useCallback((i: number) => setCurrent(((i % count) + count) % count), [count]);
@@ -41,12 +45,12 @@ export function HeroSlider({ slides, children, interval = 5000, className = '' }
   }, []);
 
   useEffect(() => {
-    if (count <= 1 || paused || reducedMotion.current) return;
+    if (count <= 1 || paused || userPaused || reducedMotion.current) return;
     const id = window.setInterval(() => {
       setCurrent((c) => (c + 1) % count);
     }, interval);
     return () => window.clearInterval(id);
-  }, [count, paused, interval]);
+  }, [count, paused, userPaused, interval]);
 
   return (
     <section
@@ -98,6 +102,20 @@ export function HeroSlider({ slides, children, interval = 5000, className = '' }
 
       {count > 1 && (
         <>
+          {/* Explicit pause/play control (WCAG 2.2.2 Pause, Stop, Hide) */}
+          <button
+            type="button"
+            onClick={() => setUserPaused((p) => !p)}
+            aria-label={userPaused ? 'Play slideshow' : 'Pause slideshow'}
+            aria-pressed={userPaused}
+            className="absolute bottom-5 right-5 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-black/40 text-white transition-colors hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          >
+            {userPaused ? (
+              <Play className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <Pause className="h-4 w-4" aria-hidden="true" />
+            )}
+          </button>
           {/* Slide indicators */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-2">
             {slides.map((slide, i) => (

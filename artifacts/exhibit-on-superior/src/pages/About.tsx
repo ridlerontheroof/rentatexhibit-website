@@ -91,7 +91,7 @@ export function About() {
                 <p className="text-sm leading-relaxed">
                   Studio, convertible, one, two, and three-bedroom apartments on floors 2&ndash;34,
                   nearly all with private balconies. Live pricing is published on the{' '}
-                  <Link href="/available-units" className="text-primary hover:underline">
+                  <Link href="/available-units" className="text-primary underline underline-offset-4 hover:text-primary/80">
                     Available Units
                   </Link>{' '}
                   page.
@@ -106,7 +106,7 @@ export function About() {
                   A full amenity floor: 75-foot lap pool, outdoor hot tub, sauna, fitness center,
                   lounges, work rooms, music studio, four grilling stations, and four fire pits.
                   See the{' '}
-                  <Link href="/amenities" className="text-primary hover:underline">
+                  <Link href="/amenities" className="text-primary underline underline-offset-4 hover:text-primary/80">
                     Amenities
                   </Link>{' '}
                   page.
@@ -120,7 +120,7 @@ export function About() {
                 <p className="text-sm leading-relaxed">
                   Two CTA rail stations, three grocery stores, and the Loop all within about a
                   mile. Explore the{' '}
-                  <Link href="/neighborhood" className="text-primary hover:underline">
+                  <Link href="/neighborhood" className="text-primary underline underline-offset-4 hover:text-primary/80">
                     Neighborhood
                   </Link>{' '}
                   page.
@@ -143,7 +143,7 @@ export function About() {
                 the building runs it day to day — the front desk is staffed around the clock,
                 maintenance requests go through the resident portal, and urgent issues reach a
                 live person at{' '}
-                <a href="tel:312-883-5503" className="text-primary hover:underline">
+                <a href="tel:312-883-5503" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   (312) 883-5503
                 </a>
                 .
@@ -151,11 +151,11 @@ export function About() {
               <p>
                 The on-site team also maintains every fact published on this website: pricing and
                 availability sync automatically from the leasing system, and the answers in the{' '}
-                <Link href="/faq" className="text-primary hover:underline">
+                <Link href="/faq" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   FAQ
                 </Link>{' '}
                 and{' '}
-                <Link href="/knowledge" className="text-primary hover:underline">
+                <Link href="/knowledge" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Knowledge Center
                 </Link>{' '}
                 are reviewed by the leasing team, so what you read here matches what you&rsquo;ll
@@ -183,13 +183,13 @@ export function About() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Phone className="w-4 h-4 flex-shrink-0 text-primary" />
-                    <a href="tel:312-450-0635" className="text-primary hover:underline">
+                    <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                       312-450-0635
                     </a>
                   </li>
                   <li className="flex items-center gap-2">
                     <Mail className="w-4 h-4 flex-shrink-0 text-primary" />
-                    <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+                    <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline underline-offset-4 hover:text-primary/80">
                       exhibit@highlandptrs.com
                     </a>
                   </li>

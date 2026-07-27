@@ -52,7 +52,7 @@ export function Residents() {
                 </div>
                 <h3 className="text-lg uppercase tracking-wider mb-3">Request Maintenance</h3>
                 <p className="text-sm leading-relaxed">
-                  Submit maintenance requests from your phone or computer through the portal. For urgent issues, call us directly at <a href="tel:312-883-5503" className="text-primary hover:underline">(312) 883-5503</a>.
+                  Submit maintenance requests from your phone or computer through the portal. For urgent issues, call us directly at <a href="tel:312-883-5503" className="text-primary underline underline-offset-4 hover:text-primary/80">(312) 883-5503</a>.
                 </p>
               </div>
               <div className="bg-white p-8 border border-border text-center">
@@ -110,15 +110,15 @@ export function Residents() {
                 From your resident portal you can pay rent securely online, submit maintenance
                 requests from your phone or computer, and keep up with building announcements and
                 resident events. For urgent maintenance issues, call us directly at{' '}
-                <a href="tel:312-883-5503" className="text-primary hover:underline">
+                <a href="tel:312-883-5503" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   (312) 883-5503
                 </a>
                 ; for everything else, reach the office at{' '}
-                <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+                <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   exhibit@highlandptrs.com
                 </a>{' '}
                 or{' '}
-                <a href="tel:312-450-0635" className="text-primary hover:underline">
+                <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   312-450-0635
                 </a>{' '}
                 during office hours.
@@ -126,11 +126,11 @@ export function Residents() {
               <p>
                 Make the most of the full-floor amenity deck, the 75&rsquo; lap pool, fitness center,
                 lounges, and work and meeting rooms — see it all on the{' '}
-                <Link href="/amenities" className="text-primary hover:underline">
+                <Link href="/amenities" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Amenities
                 </Link>{' '}
                 page. Pet owners can find the dog spa and gated outdoor dog walk on the{' '}
-                <Link href="/pet-friendly" className="text-primary hover:underline">
+                <Link href="/pet-friendly" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Pet Friendly
                 </Link>{' '}
                 page.

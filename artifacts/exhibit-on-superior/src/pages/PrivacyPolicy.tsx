@@ -80,11 +80,11 @@ export function PrivacyPolicy() {
             <h2 className="text-xl uppercase tracking-wider">Contact Us</h2>
             <p>
               If you have questions about this Privacy Policy, contact us at{' '}
-              <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+              <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline underline-offset-4 hover:text-primary/80">
                 exhibit@highlandptrs.com
               </a>{' '}
               or{' '}
-              <a href="tel:312-450-0635" className="text-primary hover:underline">
+              <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                 312-450-0635
               </a>
               , or write to us at 165 W Superior St, Chicago, IL 60654.

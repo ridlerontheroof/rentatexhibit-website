@@ -120,7 +120,7 @@ export function ContactUs() {
                     </div>
                     <div>
                       <h3 className="text-lg uppercase tracking-wider mb-1">Phone</h3>
-                      <a href="tel:312-450-0635" className="text-primary hover:underline">
+                      <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                         312-450-0635
                       </a>
                     </div>
@@ -132,7 +132,7 @@ export function ContactUs() {
                     </div>
                     <div>
                       <h3 className="text-lg uppercase tracking-wider mb-1">Email</h3>
-                      <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+                      <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline underline-offset-4 hover:text-primary/80">
                         exhibit@highlandptrs.com
                       </a>
                     </div>
@@ -164,7 +164,7 @@ export function ContactUs() {
                     three-bedroom apartments, pricing, pet policies, or parking — or use the form on
                     this page and our leasing team will follow up with you directly. Ready to see a
                     specific home? Browse current homes on the{' '}
-                    <Link href="/available-units" className="text-primary hover:underline">
+                    <Link href="/available-units" className="text-primary underline underline-offset-4 hover:text-primary/80">
                       Available Units
                     </Link>{' '}
                     page and schedule a tour right from the residence you like.
@@ -189,7 +189,7 @@ export function ContactUs() {
                       type="button"
                       onClick={() => setSubmitted(false)}
                       aria-label="Dismiss message"
-                      className="text-primary hover:underline text-sm uppercase tracking-wider flex-shrink-0"
+                      className="text-primary underline underline-offset-4 hover:text-primary/80 text-sm uppercase tracking-wider flex-shrink-0"
                     >
                       Dismiss
                     </button>
@@ -217,7 +217,7 @@ export function ContactUs() {
                       type="button"
                       onClick={dismissBackOnline}
                       aria-label="Dismiss notice"
-                      className="text-primary hover:underline text-sm uppercase tracking-wider flex-shrink-0"
+                      className="text-primary underline underline-offset-4 hover:text-primary/80 text-sm uppercase tracking-wider flex-shrink-0"
                     >
                       Dismiss
                     </button>
@@ -364,11 +364,11 @@ export function ContactUs() {
             <div className="space-y-4 text-muted-foreground leading-relaxed max-w-3xl mx-auto">
               <p>
                 Reach the leasing team by email at{' '}
-                <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+                <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   exhibit@highlandptrs.com
                 </a>
                 , by phone at{' '}
-                <a href="tel:312-450-0635" className="text-primary hover:underline">
+                <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   312-450-0635
                 </a>
                 , or by visiting us at 165 W Superior St, Chicago, IL 60654. However you get in
@@ -378,16 +378,16 @@ export function ContactUs() {
               <p>
                 If you already have a home in mind, browse current homes with live pricing and
                 move-in dates on the{' '}
-                <Link href="/available-units" className="text-primary hover:underline">
+                <Link href="/available-units" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Available Units
                 </Link>{' '}
                 page, then{' '}
-                <Link href="/schedule-a-tour" className="text-primary hover:underline">
+                <Link href="/schedule-a-tour" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   schedule a tour
                 </Link>{' '}
                 right from the residence you like. Prefer to look around first? Preview apartments and
                 amenities remotely with the video and Matterport tours on our{' '}
-                <Link href="/virtual-tour" className="text-primary hover:underline">
+                <Link href="/virtual-tour" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Virtual Tour
                 </Link>{' '}
                 page.

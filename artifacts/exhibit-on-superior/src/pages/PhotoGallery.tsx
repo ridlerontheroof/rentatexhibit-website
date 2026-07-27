@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { LightboxShortcutControls } from '../components/LightboxShortcutControls';
@@ -13,7 +13,7 @@ import { useModalHistory } from '../hooks/use-modal-history';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../hooks/use-pinch-zoom';
 import { clearLegendOnTouchGestures } from '../hooks/clear-legend-on-touch-gestures';
 import { useReducedMotion } from '../hooks/use-reduced-motion';
-import { useLightboxShortcutKeys } from '../hooks/use-lightbox-shortcut-keys';
+import { tabbableIn, useLightboxShortcutKeys } from '../hooks/use-lightbox-shortcut-keys';
 import { useDismissLegendOnOutsideClick } from '../hooks/use-dismiss-legend-on-outside-click';
 
 
@@ -106,7 +106,42 @@ export function PhotoGallery() {
     isArrowPanning: () => pinchZoomed,
     onNavigate: (dir) => (dir === 1 ? showNext() : showPrev()),
     onEscape: closeLightbox,
+    // Tab focus trap — keyboard focus cycles within the lightbox while it is
+    // open (mirrors UnitGalleryLightbox by construction).
+    onOtherKey: (e) => {
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusables = tabbableIn(dialogRef.current);
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || !dialogRef.current.contains(active))) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && (active === last || !dialogRef.current.contains(active))) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
   });
+
+  // Focus management: move focus into the lightbox on open and restore focus
+  // to the grid thumbnail (opener) on close. Keyed on open/closed — not the
+  // selected photo — so navigating photos doesn't yank focus around.
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const lightboxOpen = selectedImage !== null;
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+      previouslyFocused?.focus();
+    };
+  }, [lightboxOpen]);
 
   // Clicking outside the open legend dismisses it — shared capture-phase
   // handler (see use-dismiss-legend-on-outside-click.ts for the rules),
@@ -201,10 +236,15 @@ export function PhotoGallery() {
         {/* Lightbox */}
         {selectedImage !== null && (
           <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Photo viewer: ${lightboxImages[selectedImage].alt}`}
             className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
             onClickCapture={dismissLegendOnOutsideClick}
           >
             <button
+              ref={closeButtonRef}
               onClick={closeLightbox}
               className="absolute top-4 right-4 z-10 text-white/80 hover:text-white transition-colors"
               aria-label="Close"
@@ -298,15 +338,15 @@ export function PhotoGallery() {
               </p>
               <p>
                 When you&apos;re ready to go beyond photos, take an interactive walkthrough on the{' '}
-                <Link href="/virtual-tour" className="text-primary hover:underline">
+                <Link href="/virtual-tour" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Virtual Tour
                 </Link>{' '}
                 page, or browse current homes with live pricing on the{' '}
-                <Link href="/available-units" className="text-primary hover:underline">
+                <Link href="/available-units" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   Available Units
                 </Link>{' '}
                 page and{' '}
-                <Link href="/schedule-a-tour" className="text-primary hover:underline">
+                <Link href="/schedule-a-tour" className="text-primary underline underline-offset-4 hover:text-primary/80">
                   schedule a tour
                 </Link>{' '}
                 to see it all in person.

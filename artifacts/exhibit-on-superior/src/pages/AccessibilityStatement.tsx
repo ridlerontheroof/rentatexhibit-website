@@ -47,7 +47,7 @@ export function AccessibilityStatement() {
               {ADA_COUNTS.a} Type A accessible/adaptable residences (A) and {ADA_COUNTS.ac} Type A
               units with conduit line (AC). You can browse them with the ADA-accessible filter on
               the{' '}
-              <a href="/available-units?ada=1" className="text-primary hover:underline">
+              <a href="/available-units?ada=1" className="text-primary underline underline-offset-4 hover:text-primary/80">
                 Available Units &amp; Floor Plans
               </a>{' '}
               page.
@@ -62,11 +62,11 @@ export function AccessibilityStatement() {
             <p>
               {ADA_DISCLAIMER} To arrange a reasonable accommodation, please contact the leasing
               team at{' '}
-              <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+              <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline underline-offset-4 hover:text-primary/80">
                 exhibit@highlandptrs.com
               </a>{' '}
               or{' '}
-              <a href="tel:312-450-0635" className="text-primary hover:underline">
+              <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                 312-450-0635
               </a>
               .
@@ -87,11 +87,11 @@ export function AccessibilityStatement() {
             <p>
               We welcome your feedback on the accessibility of our website. If you encounter a
               barrier or need assistance with any part of the site, please contact us at{' '}
-              <a href="mailto:exhibit@highlandptrs.com" className="text-primary hover:underline">
+              <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline underline-offset-4 hover:text-primary/80">
                 exhibit@highlandptrs.com
               </a>{' '}
               or{' '}
-              <a href="tel:312-450-0635" className="text-primary hover:underline">
+              <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                 312-450-0635
               </a>
               . We aim to respond to accessibility feedback within five business days.

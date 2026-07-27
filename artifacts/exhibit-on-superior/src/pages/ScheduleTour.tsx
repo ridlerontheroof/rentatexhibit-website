@@ -257,7 +257,7 @@ export function ScheduleTour() {
                     <h3 className="text-lg uppercase tracking-wider mb-3">Leasing Office</h3>
                     <p className="mb-2">165 W Superior St Chicago, IL 60654</p>
                     <p className="mb-4">
-                      <a href="tel:312-450-0635" className="text-primary hover:underline">
+                      <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                         312-450-0635
                       </a>
                     </p>
@@ -300,7 +300,7 @@ export function ScheduleTour() {
                         type="button"
                         onClick={dismissBackOnline}
                         aria-label="Dismiss notice"
-                        className="text-primary hover:underline text-sm uppercase tracking-wider flex-shrink-0"
+                        className="text-primary underline underline-offset-4 hover:text-primary/80 text-sm uppercase tracking-wider flex-shrink-0"
                       >
                         Dismiss
                       </button>
