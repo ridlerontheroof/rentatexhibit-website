@@ -100,12 +100,20 @@ async function fetchVideo(id, watchUrl) {
   if (!uploadDateRaw || !title || !lengthSeconds) {
     throw new Error(`could not parse uploadDate/title/lengthSeconds from watch page`);
   }
-  // Keep only the date part: the microformat timestamp carries YouTube's
-  // studio timezone offset, which we should not assert more precisely than
-  // the day (mirrors the Vimeo cache).
-  const uploadDate = String(uploadDateRaw).slice(0, 10);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(uploadDate)) {
+  // Keep the FULL microformat timestamp: Google Search Console warns on
+  // date-only uploadDate values ("missing a timezone"), so we preserve the
+  // time + timezone offset YouTube itself reports. If YouTube ever returns a
+  // bare date again, keep it as-is (never invent a time) and warn loudly.
+  const uploadDate = String(uploadDateRaw);
+  const FULL_ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+  const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+  if (!FULL_ISO_RE.test(uploadDate) && !DATE_ONLY_RE.test(uploadDate)) {
     throw new Error(`unexpected uploadDate format: ${uploadDateRaw}`);
+  }
+  if (DATE_ONLY_RE.test(uploadDate)) {
+    console.warn(
+      `warning: ${id} uploadDate is date-only (${uploadDate}) — Search Console will warn about a missing timezone.`,
+    );
   }
 
   // Prefer the 1280x720 maxresdefault thumbnail (Google recommends >=1200px

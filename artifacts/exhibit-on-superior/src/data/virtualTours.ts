@@ -58,6 +58,13 @@ function isoDuration(totalSeconds: number): string {
  * VideoObject for the Vimeo video on /virtual-tour. uploadDate and
  * thumbnailUrl are sourced truthfully from Vimeo's oEmbed API (cached in
  * vimeo-oembed.json), which is what qualifies the video for rich results.
+ *
+ * uploadDate stays DATE-ONLY here: Vimeo's oEmbed reports a wall-clock
+ * upload_date with no timezone ("2024-06-25 11:51:21"), so a timezone-aware
+ * timestamp cannot be sourced truthfully — we will not invent an offset.
+ * (The YouTube unit-tour videos DO carry full timestamps; see
+ * scripts/fetch-youtube-metadata.mjs.) Search Console may keep a non-critical
+ * "missing a timezone" note for this one video; that is accepted.
  */
 export function virtualTourVideoJsonLd(): Record<string, unknown> {
   return {

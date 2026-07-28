@@ -23,7 +23,9 @@ describe('youtube-metadata.json cache', () => {
     expect(Object.keys(videos).length).toBeGreaterThan(0);
     for (const meta of Object.values(videos)) {
       expect(meta.title).toBeTruthy();
-      expect(meta.uploadDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      // Full ISO-8601 timestamp WITH timezone offset: Search Console warns on
+      // date-only uploadDate values ("missing a timezone").
+      expect(meta.uploadDate).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/);
       expect(meta.thumbnailUrl).toMatch(/^https:\/\/i\.ytimg\.com\//);
       expect(meta.durationSeconds).toBeGreaterThan(0);
     }
