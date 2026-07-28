@@ -157,7 +157,7 @@ describe('floor-plan JSON-LD', () => {
   it('stays valid and non-empty with zero availability', () => {
     const jsonLd = floorPlanPageJsonLd(page, [], null);
     const graph = jsonLd['@graph'] as Record<string, unknown>[];
-    const types = graph.map((n) => n['@type']);
+    const types = graph.flatMap((n) => n['@type'] as string | string[]);
     expect(types).toContain('FloorPlan');
     expect(types).toContain('WebPage');
     expect(types).toContain('BreadcrumbList');
@@ -180,7 +180,9 @@ describe('floor-plan JSON-LD', () => {
     // No `offers` property directly on the Apartment (schema.org core rule).
     expect(apt.offers).toBeUndefined();
     // ApartmentComplex links this page's FloorPlan node.
-    const complex = graph.find((n) => n['@type'] === 'ApartmentComplex')!;
+    const complex = graph.find((n) =>
+      ([] as string[]).concat(n['@type'] as string[]).includes('ApartmentComplex'),
+    )!;
     expect((complex.accommodationFloorPlan as Record<string, unknown>)['@id']).toBe(
       `${floorPlanCanonical(page.slug)}#floorplan`,
     );

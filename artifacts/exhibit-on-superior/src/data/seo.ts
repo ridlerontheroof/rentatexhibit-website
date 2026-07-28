@@ -2,7 +2,7 @@
 // Source of truth: migration bundle seo-aeo-metadata + faq-answer-bank + schema manifest.
 
 import { ADA_COUNTS } from './ada';
-import { SQFT_MIN, SQFT_MAX } from './floorPlans';
+import { SQFT_MIN, SQFT_MAX, BEDROOMS_MIN, BEDROOMS_MAX } from './floorPlans';
 import { getBakedAvailability } from './availabilitySnapshot';
 import { getStartingRent, startingRentSentence } from './startingRent';
 import { WALK_SCORE, TRANSIT_SCORE, BIKE_SCORE, WALK_SCORES_SENTENCE } from './walkScores';
@@ -1034,8 +1034,31 @@ export function availabilityComplexProps(
   return props;
 }
 
+/**
+ * Building-wide summary FloorPlan node: schema.org defines floorSize on
+ * Accommodation/FloorPlan only (NOT on ApartmentComplex — validator.schema.org
+ * flags it UNKNOWN_FIELD there), so the tower-wide sq-ft range hangs off the
+ * complex via accommodationFloorPlan. numberOfBedrooms is the bedroom-count
+ * range across all plans, derived from the floor-plan DB like the sizes.
+ */
+export const FLOOR_PLAN_SUMMARY_NODE = {
+  '@type': 'FloorPlan',
+  '@id': `${SITE_URL}#floorplan-range`,
+  name: 'Exhibit On Superior floor plans — studio, convertible, one, two & three bedroom layouts',
+  floorSize: FLOOR_SIZE_RANGE_NODE,
+  numberOfBedrooms: {
+    '@type': 'QuantitativeValue',
+    minValue: BEDROOMS_MIN,
+    maxValue: BEDROOMS_MAX,
+  },
+};
+
 export const APARTMENT_COMPLEX_NODE = {
-  '@type': 'ApartmentComplex',
+  // Dual-typed: ApartmentComplex is a Residence/Place subtype, so schema.org
+  // does not define priceRange on it (validator UNKNOWN_FIELD). LocalBusiness
+  // does — and the /reviews enrichment node already re-opens this same @id as
+  // LocalBusiness — so the property entity carries both types.
+  '@type': ['ApartmentComplex', 'LocalBusiness'],
   '@id': `${SITE_URL}#apartmentcomplex`,
   name: 'Exhibit On Superior',
   alternateName: 'Exhibit on Superior Apartments',
@@ -1057,8 +1080,10 @@ export const APARTMENT_COMPLEX_NODE = {
   },
   // Total residences in the tower — a hard fact AI answer engines look for.
   numberOfAccommodationUnits: UNIT_TOTAL,
-  // Building-wide square-footage range from the floor-plan DB extremes.
-  floorSize: FLOOR_SIZE_RANGE_NODE,
+  // Building-wide square-footage range from the floor-plan DB extremes,
+  // carried on an inline summary FloorPlan (floorSize is not a valid
+  // ApartmentComplex property — see FLOOR_PLAN_SUMMARY_NODE).
+  accommodationFloorPlan: FLOOR_PLAN_SUMMARY_NODE,
   // Live availability count + real "From $X,XXX/month" price range from the
   // baked availability snapshot; omitted entirely when no usable snapshot.
   ...availabilityComplexProps(),

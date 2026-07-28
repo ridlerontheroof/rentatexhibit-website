@@ -426,7 +426,7 @@ const LCP_NO_HERO_ROUTES = [
     const collect = (v) => {
       if (Array.isArray(v)) return v.forEach(collect);
       if (v && typeof v === 'object') {
-        if (typeof v['@type'] === 'string') nodes.push(v);
+        if (typeof v['@type'] === 'string' || Array.isArray(v['@type'])) nodes.push(v);
         for (const k of Object.keys(v)) if (!k.startsWith('@')) collect(v[k]);
         if (Array.isArray(v['@graph'])) collect(v['@graph']);
       }
@@ -435,8 +435,13 @@ const LCP_NO_HERO_ROUTES = [
   }
   const count = (type) => nodes.filter((n) => n['@type'] === type).length;
   const problems = [];
-  if (count('FloorPlan') !== FLOOR_PLAN_COUNT) {
-    problems.push(`expected ${FLOOR_PLAN_COUNT} FloorPlan nodes, found ${count('FloorPlan')}`);
+  // Per-plan FloorPlan nodes only — the building-wide summary FloorPlan
+  // (#floorplan-range, carrying the tower's sq-ft range) is not a plan sheet.
+  const perPlanFloorPlans = nodes.filter(
+    (n) => n['@type'] === 'FloorPlan' && n['@id'] !== `${SITE_URL}#floorplan-range`,
+  ).length;
+  if (perPlanFloorPlans !== FLOOR_PLAN_COUNT) {
+    problems.push(`expected ${FLOOR_PLAN_COUNT} FloorPlan nodes, found ${perPlanFloorPlans}`);
   }
   // Offers are standalone nodes linked to their Apartment via itemOffered
   // (schema.org core has no `offers` property on Apartment).
@@ -452,7 +457,13 @@ const LCP_NO_HERO_ROUTES = [
         `found ${apartmentIds.size} apartments / ${linkedOffers} linked offers`,
     );
   }
-  if (!nodes.some((n) => n['@type'] === 'ApartmentComplex' && n.numberOfAccommodationUnits === 298)) {
+  if (
+    !nodes.some(
+      (n) =>
+        [].concat(n['@type'] ?? []).includes('ApartmentComplex') &&
+        n.numberOfAccommodationUnits === 298,
+    )
+  ) {
     problems.push('ApartmentComplex is missing numberOfAccommodationUnits: 298');
   }
   if (problems.length) {

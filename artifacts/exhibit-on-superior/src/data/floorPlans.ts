@@ -264,6 +264,9 @@ export const planGroups: PlanGroup[] = (() => {
 
 export const SQFT_MIN = Math.min(...plans.map((p) => p.sqftMin));
 export const SQFT_MAX = Math.max(...plans.map((p) => p.sqft));
+/** Bedroom-count extremes across all plans (0 = studio/convertible). */
+export const BEDROOMS_MIN = Math.min(...plans.map((p) => p.beds));
+export const BEDROOMS_MAX = Math.max(...plans.map((p) => p.beds));
 
 /** "776" or "769–776" — a plan's printed square footage, formatted. */
 export function planSqftLabel(p: Plan): string {

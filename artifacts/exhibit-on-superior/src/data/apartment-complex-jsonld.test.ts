@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   APARTMENT_COMPLEX_NODE,
+  FLOOR_PLAN_SUMMARY_NODE,
   FLOOR_SIZE_RANGE_NODE,
   availabilityComplexProps,
 } from './seo';
@@ -25,9 +26,28 @@ describe('ApartmentComplex floorSize', () => {
       unitText: 'sq ft',
     });
     expect(FLOOR_SIZE_RANGE_NODE.minValue).toBeLessThan(FLOOR_SIZE_RANGE_NODE.maxValue);
-    expect((APARTMENT_COMPLEX_NODE as Record<string, unknown>).floorSize).toBe(
-      FLOOR_SIZE_RANGE_NODE,
+    // floorSize is not a valid ApartmentComplex property (schema.org defines
+    // it on Accommodation/FloorPlan only — validator.schema.org UNKNOWN_FIELD),
+    // so it rides on the inline summary FloorPlan via accommodationFloorPlan.
+    expect((APARTMENT_COMPLEX_NODE as Record<string, unknown>).floorSize).toBeUndefined();
+    expect((APARTMENT_COMPLEX_NODE as Record<string, unknown>).accommodationFloorPlan).toBe(
+      FLOOR_PLAN_SUMMARY_NODE,
     );
+    expect(FLOOR_PLAN_SUMMARY_NODE.floorSize).toBe(FLOOR_SIZE_RANGE_NODE);
+    const trueBedsMin = Math.min(...plans.map((p) => p.beds));
+    const trueBedsMax = Math.max(...plans.map((p) => p.beds));
+    expect(FLOOR_PLAN_SUMMARY_NODE.numberOfBedrooms).toEqual({
+      '@type': 'QuantitativeValue',
+      minValue: trueBedsMin,
+      maxValue: trueBedsMax,
+    });
+  });
+
+  it('the property entity is dual-typed so priceRange is schema-valid (LocalBusiness)', () => {
+    expect((APARTMENT_COMPLEX_NODE as Record<string, unknown>)['@type']).toEqual([
+      'ApartmentComplex',
+      'LocalBusiness',
+    ]);
   });
 });
 

@@ -119,7 +119,9 @@ describe('ApartmentComplex entity carries the full recommended property set', ()
     const { head } = await render('/');
     const [base] = extractJsonLd(head);
     const graph = base['@graph'] as Record<string, unknown>[];
-    const complex = graph.find((n) => n['@type'] === 'ApartmentComplex')!;
+    const complex = graph.find((n) =>
+      ([] as string[]).concat(n['@type'] as string[]).includes('ApartmentComplex'),
+    )!;
 
     expect(complex.alternateName).toBe('Exhibit on Superior Apartments');
     expect(complex.mainEntityOfPage).toBe(`${SITE_URL}/`);

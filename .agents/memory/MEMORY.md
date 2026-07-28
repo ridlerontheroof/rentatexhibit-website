@@ -52,4 +52,5 @@
 - [Floor-plan landing pages](floor-plan-landing-pages.md) — /floor-plans is a real hub now (not a 301); slug/collision rules, managed toml region boundary, JSON-LD @id gotcha.
 - [Lightbox focus traps must skip hidden controls](lightbox-focus-trap-hidden.md) — use tabbableIn() from the shortcut-keys hook; display:none "?" button as trap boundary lets Tab escape the dialog.
 - [Source-literal fact scans](source-literal-scans.md) — guard tests scanning .ts source must decode \uXXXX escapes first, and exclude phone numbers/Tailwind shades from 3-digit fact regexes.
+- [ApartmentComplex schema typing](apartment-complex-schema-types.md) — property entity is dual-typed +LocalBusiness (priceRange) and floorSize rides a summary FloorPlan; type finders must handle @type arrays.
 - [QA evidence package](qa-evidence-package.md) — evidence reports must be script-derived from source JSONs; concurrent perf runs otherwise make the package inconsistent.

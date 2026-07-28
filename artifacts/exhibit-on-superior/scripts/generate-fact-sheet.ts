@@ -43,7 +43,7 @@ import { plans, SQFT_MIN, SQFT_MAX, CATEGORIES } from '../src/data/floorPlans';
 import { bedroomRangePhrases } from '../src/data/factSheetPhrases';
 
 const graph = (buildJsonLd('/') as any)['@graph'] as any[];
-const complex = graph.find((n) => n['@type'] === 'ApartmentComplex');
+const complex = graph.find((n) => ([] as string[]).concat(n['@type'] ?? []).includes('ApartmentComplex'));
 const org = graph.find((n) => n['@type'] === 'Organization');
 if (!complex || !org) throw new Error('ApartmentComplex/Organization node not found in JSON-LD graph');
 

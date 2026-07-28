@@ -23,7 +23,7 @@ function allNodes(blocks: Record<string, unknown>[]): Record<string, unknown>[] 
     if (Array.isArray(v)) return v.forEach(collect);
     if (v && typeof v === 'object') {
       const o = v as Record<string, unknown>;
-      if (typeof o['@type'] === 'string') nodes.push(o);
+      if (typeof o['@type'] === 'string' || Array.isArray(o['@type'])) nodes.push(o);
       for (const k of Object.keys(o)) if (!k.startsWith('@')) collect(o[k]);
       if (Array.isArray(o['@graph'])) collect(o['@graph']);
     }
@@ -37,7 +37,11 @@ describe('/available-units unit-level structured data', () => {
     const { head } = await render('/available-units');
     const nodes = allNodes(extractJsonLd(head));
 
-    const floorPlans = nodes.filter((n) => n['@type'] === 'FloorPlan');
+    // Exclude the building-wide summary FloorPlan (#floorplan-range) from the
+    // base graph — it carries the tower-wide sq-ft range, not a plan sheet.
+    const floorPlans = nodes.filter(
+      (n) => n['@type'] === 'FloorPlan' && !(n['@id'] as string)?.endsWith('#floorplan-range'),
+    );
     expect(floorPlans).toHaveLength(planGroups.length);
     for (const fp of floorPlans) {
       expect(fp['numberOfBedrooms']).toBeTypeOf('number');
@@ -83,7 +87,9 @@ describe('/available-units unit-level structured data', () => {
     const { head } = await render('/');
     const nodes = allNodes(extractJsonLd(head));
     const complex = nodes.find(
-      (n) => n['@type'] === 'ApartmentComplex' && n['numberOfAccommodationUnits'] !== undefined,
+      (n) =>
+        ([] as string[]).concat(n['@type'] as string[]).includes('ApartmentComplex') &&
+        n['numberOfAccommodationUnits'] !== undefined,
     );
     expect(complex?.['numberOfAccommodationUnits']).toBe(298);
   });

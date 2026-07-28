@@ -53,7 +53,12 @@ export function validateJsonLdPayloads(payloads, siteUrl) {
     }
     // Every non-reference node — nested property values included — must be
     // typed, or Google treats it as an anonymous blob it cannot classify.
-    if (typeof value['@type'] !== 'string' || value['@type'].length === 0) {
+    // @type may be a single string or an array of types (multi-typed nodes,
+    // e.g. ApartmentComplex + LocalBusiness); both are valid JSON-LD.
+    const typeOk = Array.isArray(value['@type'])
+      ? value['@type'].length > 0 && value['@type'].every((t) => typeof t === 'string' && t.length)
+      : typeof value['@type'] === 'string' && value['@type'].length > 0;
+    if (!typeOk) {
       problems.push(`missing @type on node at ${where}${id ? ` (id ${id})` : ''}`);
     }
     for (const k of keys) {
@@ -216,7 +221,16 @@ export const NO_CHECKLIST_TYPES = [
  * this list is missing, and that no entry here is stale).
  * @type {string[]}
  */
-export const SITE_RECOMMENDED_ALLOWLIST = [];
+export const SITE_RECOMMENDED_ALLOWLIST = [
+  // The building-wide summary FloorPlan (#floorplan-range) exists only to
+  // carry the tower's sq-ft + bedroom ranges (floorSize is not valid on
+  // ApartmentComplex). A cross-plan bathroom "total" and a single plan-sheet
+  // image would be meaningless at that granularity; every REAL per-plan
+  // FloorPlan node still carries both (asserted directly in
+  // floorPlanPages.test.ts and prerender-units-jsonld.test.ts).
+  'FloorPlan.numberOfBathroomsTotal',
+  'FloorPlan.image',
+];
 
 /** True when a property value is meaningfully present (not null/''/[]). */
 function hasValue(v) {
@@ -266,7 +280,10 @@ export function checkRecommendedProperties(payloads, opts = {}) {
 
     if (typeof id === 'string') {
       const entry = byId.get(id) ?? { type: '', props: {} };
-      if (typeof node['@type'] === 'string') entry.type = entry.type || node['@type'];
+      // Multi-typed nodes (e.g. ApartmentComplex + LocalBusiness) are checked
+      // against their PRIMARY (first) type's checklist.
+      const t = Array.isArray(node['@type']) ? node['@type'][0] : node['@type'];
+      if (typeof t === 'string') entry.type = entry.type || t;
       for (const k of keys) {
         if (!k.startsWith('@') && hasValue(node[k])) entry.props[k] = node[k];
       }
