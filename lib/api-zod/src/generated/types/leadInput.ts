@@ -29,4 +29,14 @@ export interface LeadInput {
   message?: string;
   /** @maxLength 50 */
   preferredDate?: string;
+  /**
+     * Apartment number (e.g. "0807") when the tour request is for a specific unit; used to attach the prospect to that unit's AppFolio listing.
+     * @pattern ^\d{4}$
+     */
+  unit?: string;
+  /**
+     * Visit-scoped attribution label captured from the landing URL's UTM tags (e.g. "Website (GoogleAds-SpringPromo)"). Sanitized server-side; omitted or invalid values fall back to the default "Website (Exhibit)".
+     * @maxLength 200
+     */
+  source?: string;
 }

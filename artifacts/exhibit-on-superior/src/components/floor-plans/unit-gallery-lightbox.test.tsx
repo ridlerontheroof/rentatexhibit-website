@@ -44,6 +44,18 @@ describe('listing URL derivation', () => {
     );
   });
 
+  it('carries the visit source in Apply/tour links when the visit landed with UTM tags', () => {
+    window.sessionStorage.setItem('exhibit-visit-source', 'Website (GoogleAds-SpringPromo)');
+    try {
+      expect(applyUrlForListing(LISTING)).toBe(
+        'https://highlandrealestatepartners.appfolio.com/listings/rental_applications/new?listable_uid=15ac6d84-747c-4aa6-9b02-ce2be59e4d69&source=Website%20(GoogleAds-SpringPromo)',
+      );
+      expect(tourUrlForListing(LISTING)).toContain('source=Website%20(GoogleAds-SpringPromo)');
+    } finally {
+      window.sessionStorage.removeItem('exhibit-visit-source');
+    }
+  });
+
   it('returns null for non-listing URLs', () => {
     expect(applyUrlForListing('https://evil.example.com/listings/detail/x')).toBeNull();
     expect(contactUrlForListing('https://example.com/other')).toBeNull();

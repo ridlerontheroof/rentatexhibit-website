@@ -28,7 +28,8 @@ vi.mock("./availability", () => ({
 }));
 
 import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
-import { createGuestCard } from "../lib/appfolio";
+import { createGuestCard, listableUidFromListingUrl } from "../lib/appfolio";
+import { getAvailabilitySnapshot } from "./availability";
 import leadsRouter from "./leads";
 
 function makeApp() {
@@ -129,5 +130,93 @@ describe("POST /leads bot guard", () => {
     expect(res.status).toBe(201);
     expect(res.body.id).toBe(2);
     expect(insertMock).toHaveBeenCalled();
+  });
+});
+
+describe("POST /leads visit-source attribution", () => {
+  const LISTING_URL =
+    "https://highlandrealestatepartners.appfolio.com/listings/detail/57dda21c-7fd6-446a-899a-c4776ceb4afa";
+
+  const tourLead = {
+    type: "tour",
+    firstName: "Jane",
+    lastName: "Doe",
+    email: "jane@example.com",
+    phone: "3125550100",
+    unit: "2801",
+    xh_note: "",
+    elapsedMs: 9_000,
+  };
+
+  function mockAcceptedTour(id: number) {
+    const row = {
+      id,
+      type: "tour",
+      firstName: tourLead.firstName,
+      lastName: tourLead.lastName,
+      email: tourLead.email,
+      phone: tourLead.phone,
+      message: null,
+      preferredDate: null,
+      createdAt: new Date(),
+      notifiedAt: null,
+    };
+    insertMock.mockReturnValue({
+      values: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([row]) }),
+    });
+    vi.mocked(getAvailabilitySnapshot).mockResolvedValue({
+      units: [{ unit: "2801", listingUrl: LISTING_URL }],
+      updatedAt: new Date().toISOString(),
+    } as never);
+    vi.mocked(listableUidFromListingUrl).mockReturnValue(
+      "57dda21c-7fd6-446a-899a-c4776ceb4afa",
+    );
+  }
+
+  /** The fire-and-forget guest-card push resolves on the microtask queue. */
+  const flush = () => new Promise((r) => setTimeout(r, 0));
+
+  it("tags the guest card with the default source when no campaign is present", async () => {
+    mockAcceptedTour(10);
+    const res = await request(makeApp()).post("/leads").send(tourLead);
+    expect(res.status).toBe(201);
+    await flush();
+    expect(vi.mocked(createGuestCard)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: "Website (Exhibit)" }),
+    );
+    // Default-source leads keep the notification email unchanged.
+    expect(vi.mocked(sendLeadNotification)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: null }),
+    );
+  });
+
+  it("passes a UTM-captured source through to the guest card and email", async () => {
+    mockAcceptedTour(11);
+    const res = await request(makeApp())
+      .post("/leads")
+      .send({ ...tourLead, source: "Website (GoogleAds-SpringPromo)" });
+    expect(res.status).toBe(201);
+    await flush();
+    expect(vi.mocked(createGuestCard)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: "Website (GoogleAds-SpringPromo)" }),
+    );
+    expect(vi.mocked(sendLeadNotification)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: "Website (GoogleAds-SpringPromo)" }),
+    );
+  });
+
+  it("sanitizes a junk source back to the default", async () => {
+    mockAcceptedTour(12);
+    const res = await request(makeApp())
+      .post("/leads")
+      .send({ ...tourLead, source: "<script>alert(1)</script>" });
+    expect(res.status).toBe(201);
+    await flush();
+    expect(vi.mocked(createGuestCard)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: "Website (Exhibit)" }),
+    );
+    expect(vi.mocked(sendLeadNotification)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: null }),
+    );
   });
 });

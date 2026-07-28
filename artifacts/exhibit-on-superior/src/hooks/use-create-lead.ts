@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { getVisitSource } from '../lib/visitSource';
 
 export interface CreateLeadPayload {
   type: 'contact' | 'tour';
@@ -34,7 +35,9 @@ const createLead = async (data: CreateLeadPayload): Promise<LeadResponse> => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    // Visit-scoped campaign attribution rides along automatically; the
+    // server sanitizes it and falls back to the default source when absent.
+    body: JSON.stringify({ source: getVisitSource() ?? undefined, ...data }),
   });
 
   if (!response.ok) {

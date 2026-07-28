@@ -38,15 +38,19 @@
 const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners";
 const LISTINGS_BASE = `https://${APPFOLIO_DB}.appfolio.com/listings`;
 
+import { DEFAULT_LEAD_SOURCE } from "./leadSource";
+
 /** Attribution shown to the leasing team; keep in sync with the guest-card push. */
-export const SHOWING_SOURCE = "Website (Exhibit)";
+export const SHOWING_SOURCE = DEFAULT_LEAD_SOURCE;
 
 /** Timezone the property's slot wall times are quoted in. */
 export const PROPERTY_TIMEZONE = "America/Chicago";
 
 /** Hosted AppFolio scheduling page for a listing — the visitor-facing fallback. */
-export function hostedShowingsUrl(listableUid: string): string {
-  return `${LISTINGS_BASE}/showings/new?listable_uid=${encodeURIComponent(listableUid)}&source=${encodeURIComponent(SHOWING_SOURCE)}`;
+export function hostedShowingsUrl(listableUid: string, source: string = SHOWING_SOURCE): string {
+  // The hosted fallback keeps the visit's campaign attribution when one was
+  // captured; callers pass a pre-sanitized source or omit it for the default.
+  return `${LISTINGS_BASE}/showings/new?listable_uid=${encodeURIComponent(listableUid)}&source=${encodeURIComponent(source)}`;
 }
 
 export interface ShowingSlot {
@@ -275,6 +279,11 @@ export interface ShowingContactInput {
   email: string;
   phone: string;
   listableUid: string;
+  /**
+   * Pre-sanitized visit source label (see lib/leadSource.ts). Defaults to
+   * SHOWING_SOURCE — routes must sanitize before passing anything else.
+   */
+  source?: string;
 }
 
 export interface ShowingContactResult {
@@ -326,7 +335,7 @@ export async function createShowingGuestCard(
       email_address: input.email,
       phone_number: input.phone,
       listable_uid: input.listableUid,
-      source: SHOWING_SOURCE,
+      source: input.source ?? SHOWING_SOURCE,
       skip_cta_for_new_inquiries: true,
     }),
   });

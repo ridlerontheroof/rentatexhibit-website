@@ -15,6 +15,7 @@
 // sync ("AppFolio Database: highlandrealestatepartners"), overridable via env
 // if the database is ever renamed.
 import { recordFeeCopyCheck, reportStrippedFeeCopy } from "./feeCopyAlert";
+import { DEFAULT_LEAD_SOURCE } from "./leadSource";
 
 const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners";
 const APPFOLIO_BASE = `https://${APPFOLIO_DB}.appfolio.com/api/v2/reports`;
@@ -487,6 +488,11 @@ export interface GuestCardInput {
   phone: string;
   /** The AppFolio listing UID the prospect is asking about. */
   listableUid: string;
+  /**
+   * Pre-sanitized visit source label (see lib/leadSource.ts). Defaults to
+   * DEFAULT_LEAD_SOURCE — routes must sanitize before passing anything else.
+   */
+  source?: string;
 }
 
 /**
@@ -513,9 +519,11 @@ export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
       email_address: input.email,
       phone_number: input.phone,
       listable_uid: input.listableUid,
-      // Lead attribution shown to the leasing team in AppFolio. Keep in sync
-      // with LEAD_SOURCE on the web app (tour/apply link `source` param).
-      source: "Website (Exhibit)",
+      // Lead attribution shown to the leasing team in AppFolio. Defaults to
+      // the site-wide label; visits with campaign tags carry their own
+      // sanitized source (see lib/leadSource.ts and the web app's
+      // lib/visitSource.ts).
+      source: input.source ?? DEFAULT_LEAD_SOURCE,
       skip_cta_for_new_inquiries: true,
     }),
   });

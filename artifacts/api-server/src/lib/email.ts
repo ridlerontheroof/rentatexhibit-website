@@ -46,6 +46,12 @@ export interface LeadNotification {
    * listing). Not persisted on the leads table, so retry re-sends omit it.
    */
   unit?: string | null;
+  /**
+   * Campaign attribution captured from the visit's UTM tags ("Website (GoogleAds-SpringPromo)"), already sanitized server-side. Null/omitted for
+   * default-source leads; not persisted on the leads table, so retry
+   * re-sends omit it.
+   */
+  source?: string | null;
 }
 
 /**

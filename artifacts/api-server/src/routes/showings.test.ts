@@ -180,6 +180,32 @@ describe("POST /showings/contact", () => {
     expect(vi.mocked(recordLiveShowingFailure)).not.toHaveBeenCalled();
   });
 
+  it("defaults the guest-card source when the visit has no campaign tags", async () => {
+    await request(makeApp()).post("/showings/contact").send(contact);
+    expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: "Website (Exhibit)" }),
+    );
+  });
+
+  it("passes a UTM-captured visit source through to the guest card", async () => {
+    await request(makeApp())
+      .post("/showings/contact")
+      .send({ ...contact, source: "Website (GoogleAds-SpringPromo)" });
+    expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: "Website (GoogleAds-SpringPromo)" }),
+    );
+  });
+
+  it("sanitizes a junk source back to the default before AppFolio sees it", async () => {
+    const res = await request(makeApp())
+      .post("/showings/contact")
+      .send({ ...contact, source: "<script>alert(1)</script>" });
+    expect(res.status).toBe(201);
+    expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
+      expect.objectContaining({ source: "Website (Exhibit)" }),
+    );
+  });
+
   it("rejects invalid submissions without touching AppFolio", async () => {
     const res = await request(makeApp())
       .post("/showings/contact")

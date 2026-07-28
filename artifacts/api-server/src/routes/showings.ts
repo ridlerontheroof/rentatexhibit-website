@@ -37,6 +37,7 @@ import {
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
 import { detectSlotFormatDrift } from "../lib/showingFormatAlert";
+import { sanitizeLeadSource } from "../lib/leadSource";
 
 const router: IRouter = Router();
 
@@ -133,6 +134,9 @@ const ContactBody = z.object({
       return digits.length >= 10 && digits.length <= 15;
     }, "invalid phone"),
   unit: z.string().min(1).max(10),
+  // Visit-scoped attribution label from the web app (UTM capture). Loose cap
+  // here; sanitizeLeadSource() is the real gate and falls back to the default.
+  source: z.string().max(200).optional(),
 });
 
 router.post("/showings/contact", showingLimiter, async (req, res) => {
@@ -177,7 +181,11 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
       res.status(409).json({ error: "idv_required", hostedUrl: hostedShowingsUrl(listableUid) });
       return;
     }
-    const result = await createShowingGuestCard({ ...input, listableUid });
+    const result = await createShowingGuestCard({
+      ...input,
+      listableUid,
+      source: sanitizeLeadSource(input.source),
+    });
     heartbeat.record(req.log, Date.now(), "contact_ok");
     void recordAcceptedSubmission(req.log, Date.now(), "showing_contact");
     void recordLiveShowingSuccess(req.log);
@@ -185,7 +193,7 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
     res.status(201).json({
       guestCardId: result.guestCardId,
       jwt: result.jwt,
-      hostedUrl: hostedShowingsUrl(listableUid),
+      hostedUrl: hostedShowingsUrl(listableUid, sanitizeLeadSource(input.source)),
     });
   } catch (err) {
     heartbeat.record(req.log, Date.now(), "contact_failed");

@@ -8,6 +8,7 @@ import { clearLegendOnTouchGestures } from '../../hooks/clear-legend-on-touch-ge
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
 import { tabbableIn, useLightboxShortcutKeys } from '../../hooks/use-lightbox-shortcut-keys';
 import { useDismissLegendOnOutsideClick } from '../../hooks/use-dismiss-legend-on-outside-click';
+import { getVisitSource } from '../../lib/visitSource';
 
 interface UnitGalleryLightboxProps {
   unit: AvailableUnit;
@@ -20,7 +21,15 @@ interface UnitGalleryLightboxProps {
  * the guest-card `source` on the api-server.
  */
 export const LEAD_SOURCE = 'Website (Exhibit)';
-const LEAD_SOURCE_PARAM = encodeURIComponent(LEAD_SOURCE);
+
+/**
+ * The `source` query param for AppFolio-hosted links: the visit's remembered
+ * campaign attribution (e.g. "Google Ads — spring promo") when the visitor
+ * landed with UTM tags, otherwise the long-standing default label.
+ */
+function leadSourceParam(): string {
+  return encodeURIComponent(getVisitSource() ?? LEAD_SOURCE);
+}
 
 /**
  * Derive the AppFolio online rental application URL for a posted listing —
@@ -29,7 +38,7 @@ const LEAD_SOURCE_PARAM = encodeURIComponent(LEAD_SOURCE);
 export function applyUrlForListing(listingUrl: string): string | null {
   const parsed = parseListingUrl(listingUrl);
   if (!parsed) return null;
-  return `${parsed.origin}/listings/rental_applications/new?listable_uid=${parsed.uid}&source=${LEAD_SOURCE_PARAM}`;
+  return `${parsed.origin}/listings/rental_applications/new?listable_uid=${parsed.uid}&source=${leadSourceParam()}`;
 }
 
 /**
@@ -60,7 +69,7 @@ function parseListingUrl(listingUrl: string): { origin: string; uid: string } | 
 export function tourUrlForListing(listingUrl: string): string | null {
   const parsed = parseListingUrl(listingUrl);
   if (!parsed) return null;
-  return `${parsed.origin}/listings/showings/new?listable_uid=${parsed.uid}&source=${LEAD_SOURCE_PARAM}`;
+  return `${parsed.origin}/listings/showings/new?listable_uid=${parsed.uid}&source=${leadSourceParam()}`;
 }
 
 /** The listing's contact form URL — same target as AppFolio's "Contact Us". */

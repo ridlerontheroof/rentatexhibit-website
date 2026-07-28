@@ -906,6 +906,9 @@ export function renderLeadNotification(lead: LeadNotification): RenderedEmail {
     ["Phone", lead.phone, `tel:${lead.phone}`],
     ["Preferred date", lead.preferredDate, null],
     ["Message", lead.message, null],
+    // Campaign attribution (e.g. "Website (GoogleAds-SpringPromo)") — only present
+    // when the visit carried UTM tags, so default-source leads are unchanged.
+    ...(lead.source ? ([["Source", lead.source, null]] as Array<[string, string | null, string | null]>) : []),
     ["Submitted", formatSubmitted(lead.createdAt), null],
   ];
 

@@ -5,6 +5,7 @@
 // machine-readable code so the page can drive the designed fallback
 // (standard lead capture + hosted-page handoff).
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { getVisitSource } from '../lib/visitSource';
 
 export interface ShowingSlot {
   /** Property-local wall time, "YYYY/MM/DD HH:mm". */
@@ -109,7 +110,10 @@ async function postJson<T>(url: string, payload: unknown): Promise<T> {
 
 export const useShowingContact = () =>
   useMutation<ShowingContactResponse, ShowingApiError, ShowingContactPayload>({
-    mutationFn: (payload) => postJson(api('contact'), payload),
+    // Visit-scoped campaign attribution rides along automatically; the
+    // server sanitizes it and falls back to the default source when absent.
+    mutationFn: (payload) =>
+      postJson(api('contact'), { source: getVisitSource() ?? undefined, ...payload }),
   });
 
 export const useBookShowing = () =>

@@ -7,6 +7,7 @@ import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
 import { createGuestCard, listableUidFromListingUrl } from "../lib/appfolio";
 import { getAvailabilitySnapshot } from "./availability";
 import { inspectSubmission, withoutBotGuardFields } from "../lib/botGuard";
+import { DEFAULT_LEAD_SOURCE, sanitizeLeadSource } from "../lib/leadSource";
 import { recordAcceptedSubmission, recordBotRejection } from "../lib/botGuardAlert";
 
 const router: IRouter = Router();
@@ -21,6 +22,10 @@ const leadLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many submissions. Please try again in a minute." },
+  // The limiter's counter is module-level; without this, test requests
+  // accumulate across cases and unrelated tests start seeing 429s. (Same
+  // rationale as the showings limiter.)
+  skip: () => process.env.NODE_ENV === "test",
 });
 
 router.post("/leads", leadLimiter, async (req, res) => {
@@ -54,6 +59,10 @@ router.post("/leads", leadLimiter, async (req, res) => {
   }
 
   const input = parsed.data;
+  // Visit-scoped attribution (UTM capture on the web app). Sanitized here —
+  // the server is the trust boundary for what reaches AppFolio and the
+  // leasing team's screens; anything unexpected falls back to the default.
+  const source = sanitizeLeadSource(input.source);
   try {
     const [row] = await db
       .insert(leadsTable)
@@ -96,6 +105,9 @@ router.post("/leads", leadLimiter, async (req, res) => {
       preferredDate: row.preferredDate,
       createdAt: row.createdAt,
       unit: input.type === "tour" ? (input.unit ?? null) : null,
+      // Shown on the leasing notification only when it's real campaign
+      // attribution — the default label would just be noise on every lead.
+      source: source === DEFAULT_LEAD_SOURCE ? null : source,
     };
 
     // Notify the leasing team out-of-band. This is intentionally not awaited
@@ -151,6 +163,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
             email: row.email,
             phone: row.phone,
             listableUid,
+            source,
           });
           req.log.info(
             { leadId: row.id, unit },

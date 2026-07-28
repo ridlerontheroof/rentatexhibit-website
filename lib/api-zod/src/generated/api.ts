@@ -30,6 +30,9 @@ export const createLeadBodyMessageMax = 2000;
 
 export const createLeadBodyPreferredDateMax = 50;
 
+export const createLeadBodyUnitRegExp = new RegExp('^\\d{4}$');
+export const createLeadBodySourceMax = 200;
+
 
 
 export const CreateLeadBody = zod.object({
@@ -40,7 +43,8 @@ export const CreateLeadBody = zod.object({
   "phone": zod.string().min(1).max(createLeadBodyPhoneMax),
   "message": zod.string().max(createLeadBodyMessageMax).optional(),
   "preferredDate": zod.string().max(createLeadBodyPreferredDateMax).optional(),
-  "unit": zod.string().regex(/^\d{4}$/).optional()
+  "unit": zod.string().regex(createLeadBodyUnitRegExp).optional().describe('Apartment number (e.g. \"0807\") when the tour request is for a specific unit; used to attach the prospect to that unit\'s AppFolio listing.'),
+  "source": zod.string().max(createLeadBodySourceMax).optional().describe('Visit-scoped attribution label captured from the landing URL\'s UTM tags (e.g. \"Website (GoogleAds-SpringPromo)\"). Sanitized server-side; omitted or invalid values fall back to the default \"Website (Exhibit)\".')
 })
 
 export const CreateLeadResponse = zod.object({

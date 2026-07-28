@@ -3,7 +3,13 @@ import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import { preloadRoute } from './routes';
+import { captureVisitSource } from './lib/visitSource';
 import './index.css';
+
+// Remember campaign attribution (UTM tags) from the landing URL for the whole
+// visit — lead forms and Apply links send it to AppFolio so the leasing team
+// can tell a Google Ads click from an organic visit.
+captureVisitSource();
 
 // Remove prerendered JSON-LD before hydration: Helmet re-emits the same
 // structured data (with live values) on mount, and Helmet never removes

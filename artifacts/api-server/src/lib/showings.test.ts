@@ -268,6 +268,15 @@ describe("createShowingGuestCard", () => {
     });
   });
 
+  it("sends a visit-scoped source when one is provided", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(jsonResponse({ guest_card_id: 12345 }));
+    await createShowingGuestCard({ ...input, source: "Website (GoogleAds-SpringPromo)" });
+    const [, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(JSON.parse(String(opts.body)).source).toBe("Website (GoogleAds-SpringPromo)");
+  });
+
   it("still captures X-JWT when AppFolio issues one", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       jsonResponse(
