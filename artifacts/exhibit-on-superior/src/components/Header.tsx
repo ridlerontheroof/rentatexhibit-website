@@ -185,7 +185,11 @@ export function Header() {
             className="lg:hidden py-4 border-t border-border overflow-y-auto max-h-[calc(100vh-80px)]"
           >
             <div className="flex flex-col gap-4" onClick={() => setMobileMenuOpen(false)}>
-              <Link href="/available-units" className="text-sm uppercase tracking-wider py-2">Available Units</Link>
+              <div className="flex flex-col gap-3 pb-4 border-b border-border">
+                <Link href="/available-units" className="btn-gold-outline text-center">
+                  Available Units
+                </Link>
+              </div>
               <Link href="/photo-gallery" className="text-sm uppercase tracking-wider py-2">Photo Gallery</Link>
               <Link href="/virtual-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Virtual Tour</Link>
               <Link href="/amenities" className="text-sm uppercase tracking-wider py-2">Amenities</Link>
@@ -201,12 +205,6 @@ export function Header() {
               <Link href="/faq" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">FAQ</Link>
               <Link href="/fees" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Fees &amp; Leasing Costs</Link>
               <Link href="/application-guide" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Application Guide</Link>
-
-              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
-                <Link href="/available-units" className="btn-gold-outline text-center">
-                  Available Units
-                </Link>
-              </div>
             </div>
           </nav>
         )}
