@@ -677,6 +677,19 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     // /schedule-a-tour.
     noindex: true,
   },
+  '/start-application': {
+    path: '/start-application',
+    label: 'Start Your Application',
+    title: 'Start Your Application | Exhibit On Superior',
+    description:
+      'Start your application for an apartment at Exhibit On Superior in River North Chicago — what to have ready before the secure online application.',
+    quickAnswer:
+      'Share your contact details and review what to have ready — fees, documents, screening, and timeline — then continue to the secure online application for your chosen Exhibit On Superior residence.',
+    faqs: [],
+    // Transactional per-visit application hand-off step; the indexable
+    // application content page is /application-guide.
+    noindex: true,
+  },
   '/privacy-policy': {
     path: '/privacy-policy',
     label: 'Privacy Policy',

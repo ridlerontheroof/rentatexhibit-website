@@ -138,6 +138,7 @@ export const routes: RouteDef[] = [
   { path: '/residents', load: () => import('./pages/Residents').then((m) => m.Residents) },
   { path: '/schedule-a-tour', load: () => import('./pages/ScheduleTour').then((m) => m.ScheduleTour) },
   { path: '/schedule-showing', load: () => import('./pages/ScheduleShowing').then((m) => m.ScheduleShowing) },
+  { path: '/start-application', load: () => import('./pages/StartApplication').then((m) => m.StartApplication) },
   { path: '/about', load: () => import('./pages/About').then((m) => m.About) },
   { path: '/reviews', load: () => import('./pages/Reviews').then((m) => m.Reviews) },
   { path: '/privacy-policy', load: () => import('./pages/PrivacyPolicy').then((m) => m.PrivacyPolicy) },

@@ -12,4 +12,5 @@ export type LeadType = typeof LeadType[keyof typeof LeadType];
 export const LeadType = {
   contact: 'contact',
   tour: 'tour',
+  apply: 'apply',
 } as const;

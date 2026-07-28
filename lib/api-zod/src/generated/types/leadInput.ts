@@ -30,7 +30,7 @@ export interface LeadInput {
   /** @maxLength 50 */
   preferredDate?: string;
   /**
-     * Apartment number (e.g. "0807") when the tour request is for a specific unit; used to attach the prospect to that unit's AppFolio listing.
+     * Apartment number (e.g. "0807") when the tour or application-start request is for a specific unit; used to attach the prospect to that unit's AppFolio listing.
      * @pattern ^\d{4}$
      */
   unit?: string;

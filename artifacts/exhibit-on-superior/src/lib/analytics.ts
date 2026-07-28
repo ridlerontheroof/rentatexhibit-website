@@ -113,7 +113,7 @@ export function trackPageView(path: string): void {
  * - utm_*: campaign parameters captured from the landing URL for this session
  */
 export function trackLead(
-  formType: 'contact' | 'tour',
+  formType: 'contact' | 'tour' | 'apply',
   attribution?: { floorPlanPreference?: string }
 ): void {
   if (!analyticsEnabled() || !window.gtag) return;

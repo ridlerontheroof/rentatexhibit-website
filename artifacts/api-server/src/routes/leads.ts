@@ -104,7 +104,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
       message: row.message,
       preferredDate: row.preferredDate,
       createdAt: row.createdAt,
-      unit: input.type === "tour" ? (input.unit ?? null) : null,
+      unit: input.type === "tour" || input.type === "apply" ? (input.unit ?? null) : null,
       // Shown on the leasing notification only when it's real campaign
       // attribution — the default label would just be noise on every lead.
       source: source === DEFAULT_LEAD_SOURCE ? null : source,
@@ -141,7 +141,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
     // queue already attached to that unit's listing (property + unit + contact
     // info). Fire-and-forget: an AppFolio outage never affects the saved lead,
     // and the email notification above still carries everything.
-    if (input.type === "tour" && input.unit) {
+    if ((input.type === "tour" || input.type === "apply") && input.unit) {
       const unit = input.unit;
       void (async () => {
         try {
@@ -153,7 +153,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
           if (!listableUid) {
             req.log.warn(
               { leadId: row.id, unit },
-              "Tour lead names a unit with no posted AppFolio listing; skipped guest card",
+              "Lead names a unit with no posted AppFolio listing; skipped guest card",
             );
             return;
           }
@@ -167,12 +167,12 @@ router.post("/leads", leadLimiter, async (req, res) => {
           });
           req.log.info(
             { leadId: row.id, unit },
-            "Pushed tour prospect guest card to AppFolio",
+            "Pushed prospect guest card to AppFolio",
           );
         } catch (err) {
           req.log.error(
             { err, leadId: row.id, unit },
-            "Failed to push tour prospect guest card to AppFolio",
+            "Failed to push prospect guest card to AppFolio",
           );
         }
       })();

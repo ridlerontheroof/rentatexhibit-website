@@ -140,7 +140,7 @@ export const getCreateLeadUrl = () => {
 }
 
 /**
- * @summary Submit a contact or tour request
+ * @summary Submit a contact, tour, or application-start request
  */
 export const createLead = async (leadInput: LeadInput, options?: RequestInit): Promise<Lead> => {
 
@@ -189,7 +189,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreateLeadMutationError = ErrorType<ErrorResponse>
 
     /**
- * @summary Submit a contact or tour request
+ * @summary Submit a contact, tour, or application-start request
  */
 export const useCreateLead = <TError = ErrorType<ErrorResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createLead>>, TError,{data: BodyType<LeadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}

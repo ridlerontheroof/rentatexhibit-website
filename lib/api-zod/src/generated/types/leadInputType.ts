@@ -12,4 +12,5 @@ export type LeadInputType = typeof LeadInputType[keyof typeof LeadInputType];
 export const LeadInputType = {
   contact: 'contact',
   tour: 'tour',
+  apply: 'apply',
 } as const;

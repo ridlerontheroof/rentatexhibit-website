@@ -205,6 +205,38 @@ describe("POST /leads visit-source attribution", () => {
     );
   });
 
+  it("pushes a guest card for an application-start (apply) lead with a listed unit", async () => {
+    mockAcceptedTour(13);
+    const res = await request(makeApp())
+      .post("/leads")
+      .send({ ...tourLead, type: "apply" });
+    expect(res.status).toBe(201);
+    await flush();
+    // Abandoned applicants still exist as AppFolio leads attached to the unit.
+    expect(vi.mocked(createGuestCard)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        firstName: "Jane",
+        listableUid: "57dda21c-7fd6-446a-899a-c4776ceb4afa",
+        source: "Website (Exhibit)",
+      }),
+    );
+    expect(vi.mocked(sendLeadNotification)).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "tour", unit: "2801" }),
+    );
+  });
+
+  it("accepts an apply lead without a unit and skips the guest card", async () => {
+    mockAcceptedTour(14);
+    const { unit: _unit, ...noUnit } = tourLead;
+    const res = await request(makeApp())
+      .post("/leads")
+      .send({ ...noUnit, type: "apply" });
+    expect(res.status).toBe(201);
+    await flush();
+    expect(vi.mocked(createGuestCard)).not.toHaveBeenCalled();
+    expect(vi.mocked(sendProspectConfirmation)).toHaveBeenCalled();
+  });
+
   it("sanitizes a junk source back to the default", async () => {
     mockAcceptedTour(12);
     const res = await request(makeApp())

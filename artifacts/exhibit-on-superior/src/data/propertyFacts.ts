@@ -88,6 +88,19 @@ export const CREDIT_SCORE_MIN = 700;
 export const CREDIT_SCORE_COSIGNER_MIN = 600;
 
 // ---------------------------------------------------------------------------
+// Application screening & requirements (leasing questionnaire)
+// ---------------------------------------------------------------------------
+
+/**
+ * Renters insurance minimum liability-to-landlord (LLI) coverage required
+ * before move-in, as displayed ("$300,000").
+ */
+export const RENTERS_INSURANCE_LLI_DISPLAY = '$300,000';
+
+/** Typical application review window, as displayed ("1–3 business days"). */
+export const APPROVAL_WINDOW_DISPLAY = '1\u20133 business days';
+
+// ---------------------------------------------------------------------------
 // Unit total
 // ---------------------------------------------------------------------------
 

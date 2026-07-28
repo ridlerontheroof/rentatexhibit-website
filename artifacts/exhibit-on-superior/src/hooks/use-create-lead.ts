@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { getVisitSource } from '../lib/visitSource';
 
 export interface CreateLeadPayload {
-  type: 'contact' | 'tour';
+  type: 'contact' | 'tour' | 'apply';
   firstName: string;
   lastName: string;
   email: string;

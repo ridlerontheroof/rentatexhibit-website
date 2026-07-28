@@ -26,8 +26,6 @@ import {
 } from '../data/floorPlanPages';
 import { planSqftLabel } from '../data/floorPlans';
 import { ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
-import { APPLY_URL } from '../data/seo';
-import { trackOutboundClick } from '../lib/analytics';
 import { useModalHistory } from '../hooks/use-modal-history';
 
 /**
@@ -278,17 +276,15 @@ export function FloorPlanDetail() {
 
         {/* Primary actions */}
         <div className="mx-auto mt-10 flex max-w-2xl flex-col items-center justify-center gap-4 sm:flex-row">
-          <a
-            href={APPLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() =>
-              trackOutboundClick('apply', APPLY_URL, 'floor_plan_page', { floorPlan: page.slug })
-            }
+          {/* Applications route through the Exhibit-branded application-start
+              step (lead capture + hand-off to the secure AppFolio
+              application). */}
+          <Link
+            href="/start-application"
             className="w-full bg-primary px-8 py-4 text-center text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90 sm:w-auto"
           >
             Apply now
-          </a>
+          </Link>
           <Link
             href="/schedule-a-tour"
             className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"

@@ -11,17 +11,14 @@ import {
 } from '../components/floor-plans/AvailableUnits';
 import {
   UnitGalleryLightbox,
-  applyUrlForListing,
   tourUrlForListing,
 } from '../components/floor-plans/UnitGalleryLightbox';
 import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { variantIndexForUnit } from '../data/floorPlans';
 import { planPageForUnit, floorPlanPagePath, floorPlanH1 } from '../data/floorPlanPages';
 import { resolveUnitSqft } from '../data/unitSqft';
-import { trackOutboundClick } from '../lib/analytics';
 import { youTubeEmbedUrl, youTubeThumbnailUrl } from '../lib/youtube';
 import { EmbedFacade } from '../components/EmbedFacade';
-import { APPLY_URL } from '../data/seo';
 import { buildUnitSeoModel, unitFactSummary, unitFloor } from '../data/unitPageSeo';
 import { adaDesignation, adaDesignationLabel, ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
 import { useModalHistory } from '../hooks/use-modal-history';
@@ -109,7 +106,6 @@ export function UnitDetail() {
   // Floor-plan database is authoritative over the AppFolio feed — see data/unitSqft.ts.
   const sqft = resolveUnitSqft(unit);
   const baths = unit.bathrooms ?? group?.baths ?? null;
-  const applyUrl = (unit.listingUrl && applyUrlForListing(unit.listingUrl)) || APPLY_URL;
   const tourUrl = unit.listingUrl ? tourUrlForListing(unit.listingUrl) : null;
   const heroPhotos = unit.photos.slice(0, 5);
   // The tour's VideoObject JSON-LD is emitted from the shared unit SEO model
@@ -297,17 +293,15 @@ export function UnitDetail() {
       {/* Primary actions — centered, prominent */}
       <div className="container mx-auto px-4">
         <div className="mx-auto mt-10 flex max-w-2xl flex-col items-center justify-center gap-4 sm:flex-row">
-          <a
-            href={applyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() =>
-              trackOutboundClick('apply', applyUrl, 'unit_detail', { floorPlan: unit.unit })
-            }
+          {/* Applications route through the Exhibit-branded application-start
+              step (lead capture + hand-off to the unit's secure AppFolio
+              application). */}
+          <Link
+            href={`/start-application?unit=${unit.unit}`}
             className="w-full bg-primary px-8 py-4 text-center text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90 sm:w-auto"
           >
             Apply now
-          </a>
+          </Link>
           {/* Posted listings book through the Exhibit-branded scheduler
               (real AppFolio showing times, no external hop); unposted units
               fall back to the general tour-request form. */}

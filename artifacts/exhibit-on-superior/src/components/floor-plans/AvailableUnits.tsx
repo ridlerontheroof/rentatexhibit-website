@@ -2,15 +2,12 @@ import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { BedDouble, Bath, Ruler, PawPrint } from 'lucide-react';
 import {
-  applyUrlForListing,
   tourUrlForListing,
 } from './UnitGalleryLightbox';
 import { SplitHeadline } from '../SplitHeadline';
 import { useAvailability, type AvailableUnit } from '../../hooks/use-availability';
 import { planGroups, type PlanGroup } from '../../data/floorPlans';
 import { resolveUnitSqft } from '../../data/unitSqft';
-import { APPLY_URL } from '../../data/seo';
-import { trackOutboundClick } from '../../lib/analytics';
 
 function UnitThumb({ photoUrl, unit, eager = false }: { photoUrl: string; unit: string; eager?: boolean }) {
   // Eager-load only in the browser: React 19 SSR auto-emits a fixed-href
@@ -328,7 +325,6 @@ export function AvailableUnits() {
                       // unit. Units not yet posted fall back to the general
                       // application link / tour page.
                       const tourUrl = u.listingUrl ? tourUrlForListing(u.listingUrl) : null;
-                      const applyUrl = (u.listingUrl && applyUrlForListing(u.listingUrl)) || APPLY_URL;
                       return (
                         <>
                           {/* Posted units book through the on-site scheduler
@@ -344,20 +340,16 @@ export function AvailableUnits() {
                           >
                             Schedule a tour
                           </Link>
-                          <a
-                            href={applyUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() =>
-                              trackOutboundClick('apply', applyUrl, 'floor_plans_available_units', {
-                                floorPlan: u.group?.typeLabel,
-                              })
-                            }
+                          {/* Applications route through the Exhibit-branded
+                              application-start step (lead capture + hand-off
+                              to the unit's secure AppFolio application). */}
+                          <Link
+                            href={`/start-application?unit=${u.unit}`}
                             aria-label={`Apply now for apartment ${u.unit}`}
                             className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                           >
                             Apply now
-                          </a>
+                          </Link>
                         </>
                       );
                     })()}

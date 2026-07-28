@@ -19,6 +19,7 @@ export type LeadType = typeof LeadType[keyof typeof LeadType];
 export const LeadType = {
   contact: 'contact',
   tour: 'tour',
+  apply: 'apply',
 } as const;
 
 export interface Lead {
@@ -41,6 +42,7 @@ export type LeadInputType = typeof LeadInputType[keyof typeof LeadInputType];
 export const LeadInputType = {
   contact: 'contact',
   tour: 'tour',
+  apply: 'apply',
 } as const;
 
 export interface LeadInput {
@@ -66,7 +68,7 @@ export interface LeadInput {
   /** @maxLength 50 */
   preferredDate?: string;
   /**
-     * Apartment number (e.g. "0807") when the tour request is for a specific unit; used to attach the prospect to that unit's AppFolio listing.
+     * Apartment number (e.g. "0807") when the tour or application-start request is for a specific unit; used to attach the prospect to that unit's AppFolio listing.
      * @pattern ^\d{4}$
      */
   unit?: string;

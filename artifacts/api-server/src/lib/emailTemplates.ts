@@ -187,6 +187,46 @@ export function renderProspectConfirmation(lead: LeadNotification): RenderedEmai
   const isTour = lead.type === "tour";
   const when = lead.preferredDate?.trim() || null;
 
+  if (lead.type === "apply") {
+    const unit = lead.unit?.trim() || null;
+    const subject = unit
+      ? `Your application for Apartment ${unit} at Exhibit on Superior`
+      : "Your application at Exhibit on Superior";
+    const preheader =
+      "You're on our radar — finish your secure online application whenever you're ready.";
+
+    const bodyHtml =
+      `<p style="${BODY_TEXT}">${escapeHtml(greeting)}</p>` +
+      `<p style="${BODY_TEXT}">Thanks for starting your application${
+        unit ? ` for <strong style="color:${BRAND.ink};">Apartment ${escapeHtml(unit)}</strong>` : ""
+      } at Exhibit on Superior. The application itself is completed on our secure online leasing system &mdash; if you didn&rsquo;t finish it in one sitting, you can pick it back up from the residence&rsquo;s listing at any time.</p>` +
+      goldButton(LINKS.availability, "Return to Available Residences") +
+      `<p style="margin:16px 0 0;font-family:${BRAND.font};font-size:15px;line-height:1.8;color:${BRAND.inkSoft};">Questions about qualifying, fees, or timing? Our leasing team is happy to help &mdash; just reply to this email or call ${escapeHtml(BRAND.phone)}.</p>`;
+
+    const text = [
+      greeting,
+      "",
+      `Thanks for starting your application${unit ? ` for Apartment ${unit}` : ""} at Exhibit on Superior. The application itself is completed on our secure online leasing system — if you didn't finish it in one sitting, you can pick it back up from the residence's listing at any time.`,
+      "",
+      `Return to available residences: ${LINKS.availability}`,
+      "",
+      `Questions about qualifying, fees, or timing? Reply to this email or call ${BRAND.phone}.`,
+      "",
+      TEXT_FOOTER,
+    ].join("\n");
+
+    return {
+      subject,
+      html: renderEmailShell({
+        preheader,
+        kicker: "Application Started",
+        heading: "You're on your way",
+        bodyHtml,
+      }),
+      text,
+    };
+  }
+
   if (isTour) {
     const unit = lead.unit?.trim() || null;
     const subject = when
@@ -312,6 +352,8 @@ function leadTypeLabel(type: string): string {
       return "Contact form";
     case "tour":
       return "Schedule a tour";
+    case "apply":
+      return "Application started";
     default:
       return type;
   }

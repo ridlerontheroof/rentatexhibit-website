@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'wouter';
 import { LightboxShortcutControls } from '../LightboxShortcutControls';
 import type { AvailableUnit } from '../../hooks/use-availability';
-import { trackOutboundClick } from '../../lib/analytics';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../../hooks/use-pinch-zoom';
 import { clearLegendOnTouchGestures } from '../../hooks/clear-legend-on-touch-gestures';
 import { useReducedMotion } from '../../hooks/use-reduced-motion';
@@ -233,17 +233,15 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
             </a>
           )}
           {applyUrl && (
-            <a
-              href={applyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() =>
-                trackOutboundClick('apply', applyUrl, 'unit_gallery', { floorPlan: unit.unit })
-              }
+            /* Applications route through the Exhibit-branded application-start
+               step (lead capture + hand-off to the unit's secure AppFolio
+               application). */
+            <Link
+              href={`/start-application?unit=${unit.unit}`}
               className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
             >
               Apply now
-            </a>
+            </Link>
           )}
           <button
             ref={closeButtonRef}
