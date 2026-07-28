@@ -22,7 +22,9 @@ logs "Pushed prospect guest card", AppFolio returned `{"guest_card_id":…}`. Go
   return 201 with the SAME guest_card_id — a 201 doesn't always mean a new card.
 - Multi-word FIRST names 422 (empty body) at creation — "TEST UTM" fails, "Testutm" works;
   multi-word LAST names are fine (verified live 2026-07-28). 555 phones and +alias emails
-  on a real domain are accepted.
+  on a real domain are accepted. HANDLED: both guest-card push paths (lead + showing) now
+  normalize by moving extra first-name words to the front of the last name ("Mary Jane"
+  Watson → "Mary" / "Jane Watson"); live-verified accepted 2026-07-28.
 - Sources verified live 2026-07-28: guest_cards Reports API report (POST
   /api/v2/reports/guest_cards.json, Basic auth) exposes each card's `source` — both
   "Website (GoogleAds-Brand)" (UTM path) and default "Website (Exhibit)" landed correctly.

@@ -510,6 +510,27 @@ export interface GuestCardInput {
 }
 
 /**
+ * AppFolio's guest-card endpoint 422s (empty body) whenever the FIRST name
+ * contains whitespace — "Mary Jane" is rejected while multi-word LAST names
+ * are accepted (verified live 2026-07-28). Keep the first word as the first
+ * name and move the remainder to the front of the last name so the prospect's
+ * full name still reads correctly in AppFolio ("Mary Jane" + "Watson" →
+ * "Mary" + "Jane Watson") and the card is accepted.
+ */
+export function normalizeGuestCardName(
+  firstName: string,
+  lastName: string,
+): { firstName: string; lastName: string } {
+  const words = firstName.trim().split(/\s+/).filter((w) => w.length > 0);
+  if (words.length <= 1) return { firstName: firstName.trim(), lastName: lastName.trim() };
+  const [first, ...rest] = words;
+  return {
+    firstName: first,
+    lastName: [rest.join(" "), lastName.trim()].filter((s) => s.length > 0).join(" "),
+  };
+}
+
+/**
  * Create a guest card (prospect record) in AppFolio for a listing — the same
  * endpoint AppFolio's own hosted listing pages use when a prospect submits
  * their contact info. This attaches the prospect, with the property and unit
@@ -520,6 +541,7 @@ export interface GuestCardInput {
 export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
   // NOTE: the endpoint requires a snake_case body — AppFolio's hosted client
   // snake_cases every request; camelCase now gets a bare 400 (empty body).
+  const name = normalizeGuestCardName(input.firstName, input.lastName);
   const res = await fetch(`https://${APPFOLIO_DB}.appfolio.com/listings/api/guest_cards`, {
     method: "POST",
     headers: {
@@ -528,8 +550,8 @@ export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
       "X-Requested-With": "XMLHttpRequest",
     },
     body: JSON.stringify({
-      first_name: input.firstName,
-      last_name: input.lastName,
+      first_name: name.firstName,
+      last_name: name.lastName,
       email_address: input.email,
       phone_number: input.phone,
       listable_uid: input.listableUid,

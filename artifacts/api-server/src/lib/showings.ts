@@ -39,6 +39,7 @@ const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners
 const LISTINGS_BASE = `https://${APPFOLIO_DB}.appfolio.com/listings`;
 
 import { DEFAULT_LEAD_SOURCE } from "./leadSource";
+import { normalizeGuestCardName } from "./appfolio";
 
 /** Attribution shown to the leasing team; keep in sync with the guest-card push. */
 export const SHOWING_SOURCE = DEFAULT_LEAD_SOURCE;
@@ -322,6 +323,9 @@ export async function appfolioResponseError(label: string, res: Response): Promi
 export async function createShowingGuestCard(
   input: ShowingContactInput,
 ): Promise<ShowingContactResult> {
+  // Same 422 trap as the lead guest-card push: a first name containing a
+  // space is rejected outright, so split extra words into the last name.
+  const name = normalizeGuestCardName(input.firstName, input.lastName);
   const res = await fetch(`${LISTINGS_BASE}/api/guest_cards`, {
     method: "POST",
     headers: {
@@ -330,8 +334,8 @@ export async function createShowingGuestCard(
       "X-Requested-With": "XMLHttpRequest",
     },
     body: JSON.stringify({
-      first_name: input.firstName,
-      last_name: input.lastName,
+      first_name: name.firstName,
+      last_name: name.lastName,
       email_address: input.email,
       phone_number: input.phone,
       listable_uid: input.listableUid,

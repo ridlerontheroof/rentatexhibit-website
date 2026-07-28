@@ -1,6 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  createGuestCard,
   fixAmenitySpelling,
+  normalizeGuestCardName,
   isExhibitRow,
   isSafeNextPageUrl,
   normalizeRow,
@@ -456,6 +458,59 @@ describe("listableUidFromListingUrl", () => {
     expect(
       listableUidFromListingUrl("http://highlandrealestatepartners.appfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51"),
     ).toBeNull();
+  });
+});
+
+describe("normalizeGuestCardName", () => {
+  it("keeps single-word first names unchanged", () => {
+    expect(normalizeGuestCardName("Jane", "Doe")).toEqual({ firstName: "Jane", lastName: "Doe" });
+  });
+
+  it("moves extra first-name words to the front of the last name", () => {
+    expect(normalizeGuestCardName("Mary Jane", "Watson")).toEqual({
+      firstName: "Mary",
+      lastName: "Jane Watson",
+    });
+    expect(normalizeGuestCardName("TEST UTM", "Lead")).toEqual({
+      firstName: "TEST",
+      lastName: "UTM Lead",
+    });
+  });
+
+  it("handles extra whitespace and empty last names", () => {
+    expect(normalizeGuestCardName("  Mary   Jane  ", "  Watson ")).toEqual({
+      firstName: "Mary",
+      lastName: "Jane Watson",
+    });
+    expect(normalizeGuestCardName("Mary Jane", "")).toEqual({
+      firstName: "Mary",
+      lastName: "Jane",
+    });
+  });
+});
+
+describe("createGuestCard", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("posts a two-word first name split so AppFolio accepts the card", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ guest_card_id: 1 }), { status: 201 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    await createGuestCard({
+      firstName: "Mary Jane",
+      lastName: "Watson",
+      email: "mj@example.com",
+      phone: "3125550100",
+      listableUid: "b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    // AppFolio 422s any first_name containing a space (verified 2026-07-28).
+    expect(body.first_name).toBe("Mary");
+    expect(body.last_name).toBe("Jane Watson");
   });
 });
 
