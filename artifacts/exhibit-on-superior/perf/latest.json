@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-28T09:42:02.238Z",
+  "generatedAt": "2026-07-28T11:53:51.138Z",
   "target": "local production build (dist/public via `vite preview`)",
   "note": "Lab metrics with Lighthouse default throttling (simulated Slow-4G/4x-CPU mobile; desktop preset). TBT is the lab proxy for INP. Byte figures are transfer sizes.",
   "aspirationalThresholds": {
@@ -12,16 +12,16 @@
       "page": "/",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.86,
-        "lcpMs": 3997.5103499999996,
+        "performanceScore": 0.93,
+        "lcpMs": 2905.24845,
         "cls": 0.00040509499069352753,
-        "tbtMs": 47,
-        "fcpMs": 1849.758625,
-        "speedIndexMs": 1849.758625,
-        "jsBytes": 278749,
+        "tbtMs": 125,
+        "fcpMs": 1626.8323,
+        "speedIndexMs": 1626.8323,
+        "jsBytes": 278737,
         "imageBytes": 471931,
-        "thirdPartyBytes": 114656,
-        "totalBytes": 859352
+        "thirdPartyBytes": 114654,
+        "totalBytes": 859341
       },
       "limits": {
         "lcpMs": 5300,
@@ -35,16 +35,16 @@
       "page": "/available-units",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.79,
-        "lcpMs": 5120.8532,
+        "performanceScore": 0.84,
+        "lcpMs": 4095.2078,
         "cls": 0.00040509499069352753,
-        "tbtMs": 111.50000000000045,
-        "fcpMs": 1712.4266000000002,
-        "speedIndexMs": 2148.6155772819834,
-        "jsBytes": 329393,
-        "imageBytes": 696838,
-        "thirdPartyBytes": 266175,
-        "totalBytes": 1146517
+        "tbtMs": 159.5,
+        "fcpMs": 1747.254875,
+        "speedIndexMs": 2132.3058291409857,
+        "jsBytes": 329396,
+        "imageBytes": 696832,
+        "thirdPartyBytes": 266176,
+        "totalBytes": 1146516
       },
       "limits": {
         "lcpMs": 3600,
@@ -53,46 +53,48 @@
       },
       "pass": false,
       "failures": [
-        "lcpMs 5121 > limit 3600"
+        "lcpMs 4095 > limit 3600"
       ]
     },
     {
       "page": "/available-units/0208",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.91,
-        "lcpMs": 3293.0883,
+        "performanceScore": 0.72,
+        "lcpMs": 5606.272599999998,
         "cls": 0.043343475744467265,
-        "tbtMs": 67,
-        "fcpMs": 1938.5613999999998,
-        "speedIndexMs": 1938.5613999999998,
-        "jsBytes": 283613,
-        "imageBytes": 931615,
-        "thirdPartyBytes": 574100,
-        "totalBytes": 1358263
+        "tbtMs": 249,
+        "fcpMs": 2180.9252,
+        "speedIndexMs": 2180.9252,
+        "jsBytes": 283642,
+        "imageBytes": 931552,
+        "thirdPartyBytes": 574035,
+        "totalBytes": 1358231
       },
       "limits": {
         "lcpMs": 6100,
         "cls": 0.1,
         "tbtMs": 200
       },
-      "pass": true,
-      "failures": []
+      "pass": false,
+      "failures": [
+        "tbtMs 249 > limit 200"
+      ]
     },
     {
       "page": "/available-units/2705",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.84,
-        "lcpMs": 4375.454599999999,
-        "cls": 0.034430613712597286,
-        "tbtMs": 84.49999999999955,
-        "fcpMs": 1558.9696000000001,
-        "speedIndexMs": 1558.9696000000001,
-        "jsBytes": 283602,
-        "imageBytes": 1237818,
-        "thirdPartyBytes": 880292,
-        "totalBytes": 1664455
+        "performanceScore": 0.78,
+        "lcpMs": 4992.5962,
+        "cls": 0.03434223741378668,
+        "tbtMs": 174,
+        "fcpMs": 1761.6224000000002,
+        "speedIndexMs": 1761.6224000000002,
+        "jsBytes": 283642,
+        "imageBytes": 1237749,
+        "thirdPartyBytes": 880232,
+        "totalBytes": 1664428
       },
       "limits": {
         "lcpMs": 6100,
@@ -106,39 +108,42 @@
       "page": "/amenities",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.91,
-        "lcpMs": 3318.6807,
+        "performanceScore": 0.77,
+        "lcpMs": 4532.384999999999,
         "cls": 0.00040509499069352753,
-        "tbtMs": 47.99999999999977,
-        "fcpMs": 1703.4537999999998,
-        "speedIndexMs": 1703.4537999999998,
-        "jsBytes": 279054,
+        "tbtMs": 289.5,
+        "fcpMs": 1812.954,
+        "speedIndexMs": 1812.954,
+        "jsBytes": 279044,
         "imageBytes": 557334,
         "thirdPartyBytes": 114405,
-        "totalBytes": 968625
+        "totalBytes": 968616
       },
       "limits": {
         "lcpMs": 4200,
         "cls": 0.1,
         "tbtMs": 200
       },
-      "pass": true,
-      "failures": []
+      "pass": false,
+      "failures": [
+        "lcpMs 4532 > limit 4200",
+        "tbtMs 290 > limit 200"
+      ]
     },
     {
       "page": "/photo-gallery",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.93,
-        "lcpMs": 3166.5299,
+        "performanceScore": 0.91,
+        "lcpMs": 3319.0099999999998,
         "cls": 0.00040509499069352753,
-        "tbtMs": 56,
-        "fcpMs": 1555.9343000000001,
-        "speedIndexMs": 1555.9343000000001,
-        "jsBytes": 283657,
+        "tbtMs": 66,
+        "fcpMs": 1809.505,
+        "speedIndexMs": 1809.505,
+        "jsBytes": 283653,
         "imageBytes": 572827,
-        "thirdPartyBytes": 114405,
-        "totalBytes": 965156
+        "thirdPartyBytes": 114414,
+        "totalBytes": 965153
       },
       "limits": {
         "lcpMs": 6100,
@@ -152,15 +157,15 @@
       "page": "/virtual-tour",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.91,
-        "lcpMs": 3387.8040250000004,
+        "performanceScore": 0.81,
+        "lcpMs": 4966.2423499999995,
         "cls": 0.00040509499069352753,
-        "tbtMs": 27,
-        "fcpMs": 1836.4258750000004,
-        "speedIndexMs": 1836.4258750000004,
-        "jsBytes": 277371,
+        "tbtMs": 50,
+        "fcpMs": 1808.0560000000005,
+        "speedIndexMs": 1808.0560000000005,
+        "jsBytes": 277370,
         "imageBytes": 611016,
-        "thirdPartyBytes": 114405,
+        "thirdPartyBytes": 114414,
         "totalBytes": 997059
       },
       "limits": {
@@ -176,15 +181,15 @@
       "formFactor": "mobile",
       "metrics": {
         "performanceScore": 0.91,
-        "lcpMs": 3311.03885,
+        "lcpMs": 3392.0726750000003,
         "cls": 0.00040509499069352753,
-        "tbtMs": 34,
-        "fcpMs": 1811.2909,
-        "speedIndexMs": 1811.2909,
-        "jsBytes": 272950,
+        "tbtMs": 31,
+        "fcpMs": 1839.000125,
+        "speedIndexMs": 1839.000125,
+        "jsBytes": 272953,
         "imageBytes": 471931,
-        "thirdPartyBytes": 114405,
-        "totalBytes": 853553
+        "thirdPartyBytes": 114414,
+        "totalBytes": 853557
       },
       "limits": {
         "lcpMs": 5300,
@@ -198,16 +203,16 @@
       "page": "/knowledge/application-fee",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.89,
-        "lcpMs": 3542.9805,
+        "performanceScore": 0.91,
+        "lcpMs": 3387.8396000000002,
         "cls": 0.00040509499069352753,
-        "tbtMs": 27.499999999999545,
-        "fcpMs": 1807.1922,
-        "speedIndexMs": 1807.1922,
-        "jsBytes": 272482,
+        "tbtMs": 38,
+        "fcpMs": 1843.02475,
+        "speedIndexMs": 1843.02475,
+        "jsBytes": 272722,
         "imageBytes": 471931,
-        "thirdPartyBytes": 114405,
-        "totalBytes": 853085
+        "thirdPartyBytes": 114654,
+        "totalBytes": 853326
       },
       "limits": {
         "lcpMs": 4400,
@@ -221,16 +226,16 @@
       "page": "/contact-us",
       "formFactor": "mobile",
       "metrics": {
-        "performanceScore": 0.84,
-        "lcpMs": 4376.87075,
+        "performanceScore": 0.91,
+        "lcpMs": 3310.12515,
         "cls": 0.00040509499069352753,
-        "tbtMs": 75,
-        "fcpMs": 1553.7483,
-        "speedIndexMs": 1553.7483,
+        "tbtMs": 56.5,
+        "fcpMs": 1807.9376249999998,
+        "speedIndexMs": 1807.9376249999998,
         "jsBytes": 302493,
         "imageBytes": 491500,
-        "thirdPartyBytes": 114640,
-        "totalBytes": 902665
+        "thirdPartyBytes": 114654,
+        "totalBytes": 902666
       },
       "limits": {
         "lcpMs": 4700,
@@ -244,16 +249,16 @@
       "page": "/",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.95,
-        "lcpMs": 1474.3712750000004,
-        "cls": 0,
+        "performanceScore": 0.97,
+        "lcpMs": 1269.1346999999998,
+        "cls": 0.0001468161660224504,
         "tbtMs": 0,
-        "fcpMs": 479.3970999999999,
-        "speedIndexMs": 479.3970999999999,
-        "jsBytes": 278504,
+        "fcpMs": 471.628825,
+        "speedIndexMs": 471.628825,
+        "jsBytes": 278497,
         "imageBytes": 1467418,
-        "thirdPartyBytes": 114411,
-        "totalBytes": 1854594
+        "thirdPartyBytes": 114414,
+        "totalBytes": 1854588
       },
       "limits": {
         "lcpMs": 2500,
@@ -267,16 +272,16 @@
       "page": "/available-units",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.92,
-        "lcpMs": 1822.8545000000008,
+        "performanceScore": 0.97,
+        "lcpMs": 1337.10965,
         "cls": 0.0001468161660224504,
         "tbtMs": 0,
-        "fcpMs": 516.4624500000001,
-        "speedIndexMs": 764.2471211609106,
-        "jsBytes": 329384,
-        "imageBytes": 1774317,
-        "thirdPartyBytes": 289842,
-        "totalBytes": 2223987
+        "fcpMs": 529.6739,
+        "speedIndexMs": 560.119620165699,
+        "jsBytes": 329389,
+        "imageBytes": 1774287,
+        "thirdPartyBytes": 289821,
+        "totalBytes": 2223964
       },
       "limits": {
         "lcpMs": 2500,
@@ -290,16 +295,16 @@
       "page": "/available-units/0208",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.92,
-        "lcpMs": 1853.9523500000005,
+        "performanceScore": 0.93,
+        "lcpMs": 1713.5457499999998,
         "cls": 0.0007591364883365074,
         "tbtMs": 0,
-        "fcpMs": 491.60465,
-        "speedIndexMs": 491.60465,
-        "jsBytes": 283602,
-        "imageBytes": 1927083,
-        "thirdPartyBytes": 574070,
-        "totalBytes": 2353720
+        "fcpMs": 500.33174999999994,
+        "speedIndexMs": 500.33174999999994,
+        "jsBytes": 283633,
+        "imageBytes": 1927042,
+        "thirdPartyBytes": 574029,
+        "totalBytes": 2353712
       },
       "limits": {
         "lcpMs": 2500,
@@ -313,16 +318,16 @@
       "page": "/available-units/2705",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.98,
-        "lcpMs": 1155.4764,
+        "performanceScore": 0.92,
+        "lcpMs": 1862.1794,
         "cls": 0.001167801319949394,
         "tbtMs": 0,
-        "fcpMs": 490.88840000000005,
-        "speedIndexMs": 490.88840000000005,
-        "jsBytes": 283602,
-        "imageBytes": 2243527,
-        "thirdPartyBytes": 890514,
-        "totalBytes": 2670164
+        "fcpMs": 408.39079999999996,
+        "speedIndexMs": 408.39079999999996,
+        "jsBytes": 283642,
+        "imageBytes": 2243497,
+        "thirdPartyBytes": 890493,
+        "totalBytes": 2670176
       },
       "limits": {
         "lcpMs": 2500,
@@ -336,16 +341,16 @@
       "page": "/amenities",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.95,
-        "lcpMs": 1570.7196499999998,
+        "performanceScore": 0.98,
+        "lcpMs": 1106.21695,
         "cls": 0.0001468161660224504,
         "tbtMs": 0,
-        "fcpMs": 493.053375,
-        "speedIndexMs": 493.053375,
-        "jsBytes": 279054,
+        "fcpMs": 509.0764999999999,
+        "speedIndexMs": 509.0764999999999,
+        "jsBytes": 279044,
         "imageBytes": 1782673,
         "thirdPartyBytes": 114405,
-        "totalBytes": 2193964
+        "totalBytes": 2193955
       },
       "limits": {
         "lcpMs": 2500,
@@ -359,16 +364,16 @@
       "page": "/photo-gallery",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.93,
-        "lcpMs": 1750.9427500000008,
+        "performanceScore": 0.92,
+        "lcpMs": 1815.2003999999993,
         "cls": 0.0001468161660224504,
         "tbtMs": 0,
-        "fcpMs": 510.5118000000001,
-        "speedIndexMs": 510.5118000000001,
-        "jsBytes": 283657,
+        "fcpMs": 406.59579999999994,
+        "speedIndexMs": 406.59579999999994,
+        "jsBytes": 283669,
         "imageBytes": 1834905,
-        "thirdPartyBytes": 114405,
-        "totalBytes": 2227234
+        "thirdPartyBytes": 114430,
+        "totalBytes": 2227247
       },
       "limits": {
         "lcpMs": 2500,
@@ -382,16 +387,16 @@
       "page": "/virtual-tour",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.9,
-        "lcpMs": 2073.065600000001,
+        "performanceScore": 0.97,
+        "lcpMs": 1311.1464249999997,
         "cls": 0.0001468161660224504,
         "tbtMs": 0,
-        "fcpMs": 493.2555500000001,
-        "speedIndexMs": 493.2555500000001,
+        "fcpMs": 477.5092749999999,
+        "speedIndexMs": 477.5092749999999,
         "jsBytes": 277371,
         "imageBytes": 1757703,
-        "thirdPartyBytes": 114405,
-        "totalBytes": 2143746
+        "thirdPartyBytes": 114415,
+        "totalBytes": 2143747
       },
       "limits": {
         "lcpMs": 2500,
@@ -405,16 +410,16 @@
       "page": "/knowledge",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.99,
-        "lcpMs": 1027.6200750000003,
+        "performanceScore": 0.94,
+        "lcpMs": 1691.8167999999991,
         "cls": 0.0001468161660224504,
         "tbtMs": 0,
-        "fcpMs": 477.56215000000003,
-        "speedIndexMs": 477.56215000000003,
-        "jsBytes": 272950,
+        "fcpMs": 474.60365,
+        "speedIndexMs": 474.60365,
+        "jsBytes": 272963,
         "imageBytes": 1467418,
-        "thirdPartyBytes": 114405,
-        "totalBytes": 1849040
+        "thirdPartyBytes": 114424,
+        "totalBytes": 1849054
       },
       "limits": {
         "lcpMs": 2500,
@@ -428,16 +433,16 @@
       "page": "/knowledge/application-fee",
       "formFactor": "desktop",
       "metrics": {
-        "performanceScore": 0.92,
-        "lcpMs": 1890.4448000000004,
+        "performanceScore": 0.99,
+        "lcpMs": 1025.5651,
         "cls": 0.0001468161660224504,
         "tbtMs": 0,
-        "fcpMs": 472.52799999999996,
-        "speedIndexMs": 472.52799999999996,
+        "fcpMs": 484.6574,
+        "speedIndexMs": 484.6574,
         "jsBytes": 272482,
         "imageBytes": 1469329,
-        "thirdPartyBytes": 114405,
-        "totalBytes": 1850483
+        "thirdPartyBytes": 114414,
+        "totalBytes": 1850484
       },
       "limits": {
         "lcpMs": 2500,
@@ -452,15 +457,15 @@
       "formFactor": "desktop",
       "metrics": {
         "performanceScore": 0.97,
-        "lcpMs": 1310.30375,
+        "lcpMs": 1320.2837,
         "cls": 0.0001468161660224504,
         "tbtMs": 0,
-        "fcpMs": 497.3981,
-        "speedIndexMs": 497.3981,
-        "jsBytes": 302267,
+        "fcpMs": 506.04700000000014,
+        "speedIndexMs": 506.04700000000014,
+        "jsBytes": 302244,
         "imageBytes": 1572369,
-        "thirdPartyBytes": 114414,
-        "totalBytes": 1983308
+        "thirdPartyBytes": 114405,
+        "totalBytes": 1983286
       },
       "limits": {
         "lcpMs": 2500,
