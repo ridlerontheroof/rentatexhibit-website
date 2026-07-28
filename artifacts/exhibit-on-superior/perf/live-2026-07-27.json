@@ -1,0 +1,33 @@
+{
+  "url": "https://www.rentatexhibit.com/",
+  "date": "2026-07-27",
+  "liveBuildId": "ms3vk7ja-415fef47",
+  "formFactor": "mobile",
+  "note": "Live post-publish verification for the GTM-deferral + mobile image-rung work. Run 1 TBT is cold-cache noise; runs 2-3 are representative. gtm.js confirmed loading on the idle fallback; container GTM-MDPWH532 was published empty (no GA4 tag), so no collect hit can fire until one is added in the GTM account.",
+  "runs": [
+    {
+      "score": 84,
+      "lcpMs": 2376,
+      "cls": 0.0004,
+      "tbtMs": 523,
+      "fcpMs": 1626,
+      "siMs": 1626
+    },
+    {
+      "score": 98,
+      "lcpMs": 2202,
+      "cls": 0.0004,
+      "tbtMs": 29,
+      "fcpMs": 1452,
+      "siMs": 1452
+    },
+    {
+      "score": 99,
+      "lcpMs": 2054,
+      "cls": 0.0004,
+      "tbtMs": 27,
+      "fcpMs": 1304,
+      "siMs": 1304
+    }
+  ]
+}
