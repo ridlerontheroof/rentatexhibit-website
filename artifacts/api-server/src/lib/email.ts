@@ -5,6 +5,7 @@ import {
   renderAcceptedSilenceAlert,
   renderAcceptedSpikeAlert,
   renderApexRedirectAlert,
+  renderApplyLinkAlert,
   renderBotGuardAlert,
   renderGuestCardFailureAlert,
   renderFeeCopyAlert,
@@ -386,10 +387,12 @@ export async function sendApexRedirectAlert(opts: {
 }
 
 /**
- * Alert the leasing inbox that the website's fee-policy sanitizer removed
- * copy from an AppFolio listing — the source text in AppFolio contradicts
- * the published fees and should be corrected there. Throws on failure so
- * the caller (feeCopyAlert) can log it; deduping lives in the caller.
+ * Alert that the website's fee-policy sanitizer removed copy from an
+ * AppFolio listing — the source text in AppFolio contradicts the published
+ * fees and should be corrected there. Goes to the operational alert
+ * recipient (all website technical alerts route there per owner request,
+ * 2026-07-28). Throws on failure so the caller (feeCopyAlert) can log it;
+ * deduping lives in the caller.
  */
 export async function sendFeeCopyAlert(opts: {
   unit: string;
@@ -400,15 +403,46 @@ export async function sendFeeCopyAlert(opts: {
   const { contentType, body } = buildMimeBody("feecopy", textBody, htmlBody);
   const headers = [
     `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
-    `To: ${LEASING_INBOX_EMAIL}`,
+    `To: ${SEED_ALERT_EMAIL}`,
     `Subject: ${encodeHeader(subject)}`,
     "MIME-Version: 1.0",
     `Content-Type: ${contentType}`,
   ].join("\r\n");
-  await sendRawEmail(`${headers}\r\n\r\n${body}`, LEASING_INBOX_EMAIL);
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
   logger.info(
-    { recipient: LEASING_INBOX_EMAIL, unit: opts.unit },
+    { recipient: SEED_ALERT_EMAIL, unit: opts.unit },
     "Sent fee-copy contradiction alert email",
+  );
+}
+
+/**
+ * Alert that the derived AppFolio online rental application URL keeps
+ * answering 4xx/5xx — the site's "Apply Now" hand-off may be a dead link.
+ * Goes to the operational alert recipient (all website technical alerts
+ * route there per owner request, 2026-07-28). Throws when the mailer is
+ * unconfigured or the send fails; deduping lives in the caller
+ * (applyLinkCheck).
+ */
+export async function sendApplyLinkAlert(opts: {
+  unit: string;
+  applyUrl: string;
+  detail: string;
+  failedRuns: number;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderApplyLinkAlert(opts);
+  const { contentType, body } = buildMimeBody("applylink", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL, unit: opts.unit },
+    "Sent apply-link broken alert email",
   );
 }
 
@@ -427,10 +461,10 @@ export async function sendShowingSchedulerAlert(opts: {
   warnIfUnconfigured();
   const { subject, html: htmlBody, text: textBody } = renderShowingSchedulerAlert(opts);
   const { contentType, body } = buildMimeBody("showingalert", textBody, htmlBody);
-  // Slot-format drift is a revenue-path outage the leasing team should hear
-  // about (like the fee-copy alert); the other reasons are operational.
-  const recipient =
-    opts.reason === "slot_format_drift" ? LEASING_INBOX_EMAIL : SEED_ALERT_EMAIL;
+  // All website technical alerts route to the operational alert recipient
+  // (owner request, 2026-07-28) — including slot-format drift, which
+  // previously went to the leasing inbox.
+  const recipient = SEED_ALERT_EMAIL;
   const headers = [
     `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
     `To: ${recipient}`,
@@ -470,16 +504,18 @@ export async function sendGuestCardFailureAlert(opts: {
   warnIfUnconfigured();
   const { subject, html: htmlBody, text: textBody } = renderGuestCardFailureAlert(opts);
   const { contentType, body } = buildMimeBody("guestcard", textBody, htmlBody);
+  // All website technical alerts route to the operational alert recipient
+  // (owner request, 2026-07-28).
   const headers = [
     `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
-    `To: ${LEASING_INBOX_EMAIL}`,
+    `To: ${SEED_ALERT_EMAIL}`,
     `Subject: ${encodeHeader(subject)}`,
     "MIME-Version: 1.0",
     `Content-Type: ${contentType}`,
   ].join("\r\n");
-  await sendRawEmail(`${headers}\r\n\r\n${body}`, LEASING_INBOX_EMAIL);
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
   logger.info(
-    { recipient: LEASING_INBOX_EMAIL, unit: opts.unit },
+    { recipient: SEED_ALERT_EMAIL, unit: opts.unit },
     "Sent guest-card rejection alert email",
   );
 }

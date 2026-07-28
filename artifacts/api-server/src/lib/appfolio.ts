@@ -481,6 +481,20 @@ export function listableUidFromListingUrl(listingUrl: string): string | null {
   return m ? m[1].toLowerCase() : null;
 }
 
+/**
+ * Derive the AppFolio online rental application URL for a posted listing —
+ * the same target the web app's "Apply Now" hand-off uses (its client-side
+ * twin lives in the web artifact's UnitGalleryLightbox). The
+ * /listings/rental_applications/new path is an AppFolio convention, not an
+ * API contract, so the apply-link watchdog probes it periodically.
+ */
+export function applyUrlForListing(listingUrl: string): string | null {
+  const uid = listableUidFromListingUrl(listingUrl);
+  if (!uid) return null;
+  const origin = new URL(listingUrl).origin;
+  return `${origin}/listings/rental_applications/new?listable_uid=${uid}&source=${encodeURIComponent(DEFAULT_LEAD_SOURCE)}`;
+}
+
 export interface GuestCardInput {
   firstName: string;
   lastName: string;

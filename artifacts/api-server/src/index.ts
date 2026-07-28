@@ -7,6 +7,7 @@ import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
 import { startKnowledgePageCheck } from "./lib/knowledgeCheck";
 import { startFloorPlanPageCheck } from "./lib/floorPlanCheck";
 import { startShowingSchedulerCheck } from "./lib/showingSchedulerCheck";
+import { startApplyLinkCheck } from "./lib/applyLinkCheck";
 import { startRentedNoindexCheck } from "./lib/rentedCheck";
 import { startLegacyRedirectCheck } from "./lib/redirectCheck";
 import { startAcceptedVolumeWatch } from "./lib/botGuardAlert";
@@ -65,6 +66,12 @@ app.listen(port, (err) => {
   // endpoints (slot fetch + IDV status) against a posted unit; alerts
   // (once/day) on sustained failure or an enabled IDV gate.
   startShowingSchedulerCheck(logger);
+
+  // Watchdog: hourly probe of the derived AppFolio rental-application URL
+  // for a posted unit (the "Apply Now" hand-off target); alerts the leasing
+  // inbox (once/day) when it answers 4xx/5xx for several runs in a row —
+  // the signature of AppFolio changing its application URL structure.
+  startApplyLinkCheck(logger);
 
   // Watchdog: run the web artifact's rented-unit indexability check (the
   // other half of check:postpublish) on startup (= post-publish) and every

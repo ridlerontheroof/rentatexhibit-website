@@ -9,6 +9,7 @@ import {
   parseDetailVideo,
   parseDetailSections,
   parseDetailTitle,
+  applyUrlForListing,
   listableUidFromListingUrl,
   parseListingsHtml,
   sanitizeMarketingTitle,
@@ -455,5 +456,22 @@ describe("listableUidFromListingUrl", () => {
     expect(
       listableUidFromListingUrl("http://highlandrealestatepartners.appfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51"),
     ).toBeNull();
+  });
+});
+
+describe("applyUrlForListing", () => {
+  it("derives the rental application URL from a public listing URL", () => {
+    expect(
+      applyUrlForListing(
+        "https://highlandrealestatepartners.appfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+      ),
+    ).toBe(
+      "https://highlandrealestatepartners.appfolio.com/listings/rental_applications/new?listable_uid=b4a6281b-d2ac-4c79-ac63-ea7dc852df51&source=Website%20(Exhibit)",
+    );
+  });
+
+  it("returns null for non-listing URLs", () => {
+    expect(applyUrlForListing("https://evil.example.com/listings/detail/abc")).toBeNull();
+    expect(applyUrlForListing("not a url")).toBeNull();
   });
 });

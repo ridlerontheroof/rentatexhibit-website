@@ -1006,6 +1006,61 @@ export function renderShowingSchedulerAlert(opts: {
   return { subject, html: htmlShell, text };
 }
 
+/**
+ * Leasing alert: the derived AppFolio online rental application URL for a
+ * posted unit keeps answering 4xx/5xx — AppFolio has likely changed its
+ * application URL structure, so the site's "Start Application" hand-off is
+ * a dead link until the derivation is updated.
+ */
+export function renderApplyLinkAlert(opts: {
+  unit: string;
+  applyUrl: string;
+  detail: string;
+  failedRuns: number;
+}): RenderedEmail {
+  const { unit, applyUrl, detail, failedRuns } = opts;
+  const subject =
+    "Website alert: the online rental application link appears broken";
+
+  const intro = `The automatic check of the online rental application hand-off has now failed ${failedRuns} runs in a row — this is no longer a transient blip. The website derives each posted unit's "Apply Now" link from its AppFolio listing, and that derived link (probed against Apt. ${unit}) is not answering the way a working application page should. AppFolio may have changed its application URL structure.`;
+
+  const impact =
+    "Until this is fixed, applicants who click \"Start Application\" or \"Apply Now\" on the website may land on a dead AppFolio page instead of the application form. Anyone who calls or emails can still be sent AppFolio's hosted listing page, where the Apply button always reflects the current URL structure.";
+
+  const remedy =
+    "What to do: open the unit's AppFolio listing page, click its own Apply button, and compare that URL with the link below. If AppFolio changed the pattern, the website's apply-link derivation needs a matching code update. This alert is sent at most once per day.";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>Probed link:</strong> ${escapeHtml(applyUrl)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>Latest probe detail:</strong> ${escapeHtml(detail)}</p>` +
+    `<p style="${BODY_TEXT}">${escapeHtml(impact)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(remedy.replace(/^What to do: /, ""))}</p>`;
+
+  const text = [
+    intro,
+    "",
+    `Probed link: ${applyUrl}`,
+    `Latest probe detail: ${detail}`,
+    "",
+    impact,
+    "",
+    remedy,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader:
+      "The website's Apply Now hand-off to AppFolio may be a dead link.",
+    kicker: "Website Alert",
+    heading: "Online Application Link Broken",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
 export function renderLeadNotification(lead: LeadNotification): RenderedEmail {
   const fullName = `${lead.firstName} ${lead.lastName}`.trim();
   const typeLabel = leadTypeLabel(lead.type);
