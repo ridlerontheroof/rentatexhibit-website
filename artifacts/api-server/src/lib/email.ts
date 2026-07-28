@@ -6,6 +6,7 @@ import {
   renderAcceptedSpikeAlert,
   renderApexRedirectAlert,
   renderBotGuardAlert,
+  renderGuestCardFailureAlert,
   renderFeeCopyAlert,
   renderFloorPlanCheckAlert,
   renderKnowledgeCheckAlert,
@@ -451,6 +452,38 @@ export async function sendShowingSchedulerAlert(opts: {
  * leasing action. Throws when the mailer is unconfigured or the send fails;
  * deduping lives in the caller (botGuardAlert).
  */
+/**
+ * Alert the leasing inbox that AppFolio rejected the guest-card push for a
+ * real (guard-passing) applicant — the lead is saved and emailed, but never
+ * reached AppFolio's lead queue, so the team should enter the prospect
+ * manually. Throws when the mailer is unconfigured or the send fails;
+ * deduping lives in the caller (guestCardAlert).
+ */
+export async function sendGuestCardFailureAlert(opts: {
+  name: string;
+  email: string;
+  phone: string;
+  unit: string;
+  source: string | null;
+  detail: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderGuestCardFailureAlert(opts);
+  const { contentType, body } = buildMimeBody("guestcard", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${LEASING_INBOX_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, LEASING_INBOX_EMAIL);
+  logger.info(
+    { recipient: LEASING_INBOX_EMAIL, unit: opts.unit },
+    "Sent guest-card rejection alert email",
+  );
+}
+
 export async function sendBotGuardAlert(opts: {
   rejectedToday: number;
   threshold: number;

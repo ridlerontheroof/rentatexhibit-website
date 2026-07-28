@@ -383,7 +383,7 @@ export function StartApplication() {
                       href="https://www.appfolio.com/privacy"
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label="AppFolio Privacy Policy"
+                      aria-label="Privacy Policy (AppFolio)"
                       className="underline hover:text-primary"
                     >
                       Privacy Policy
@@ -400,7 +400,7 @@ export function StartApplication() {
                     , and our{' '}
                     <Link
                       href="/privacy-policy"
-                      aria-label="Exhibit on Superior Privacy Policy"
+                      aria-label="Privacy Policy (Exhibit on Superior)"
                       className="underline hover:text-primary"
                     >
                       Privacy Policy

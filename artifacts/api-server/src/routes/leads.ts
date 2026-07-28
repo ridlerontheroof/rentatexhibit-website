@@ -9,6 +9,7 @@ import { getAvailabilitySnapshot } from "./availability";
 import { inspectSubmission, withoutBotGuardFields } from "../lib/botGuard";
 import { DEFAULT_LEAD_SOURCE, sanitizeLeadSource } from "../lib/leadSource";
 import { recordAcceptedSubmission, recordBotRejection } from "../lib/botGuardAlert";
+import { reportGuestCardFailure } from "../lib/guestCardAlert";
 
 const router: IRouter = Router();
 
@@ -174,6 +175,20 @@ router.post("/leads", leadLimiter, async (req, res) => {
             { err, leadId: row.id, unit },
             "Failed to push prospect guest card to AppFolio",
           );
+          // A rejected guest card means this accepted lead silently never
+          // reached AppFolio's lead queue — tell the leasing team so they
+          // can enter the prospect manually. Fire-and-forget and throttled
+          // (once per lead per UTC day); never affects the visitor.
+          void reportGuestCardFailure(req.log, Date.now(), {
+            leadId: row.id,
+            firstName: row.firstName,
+            lastName: row.lastName,
+            email: row.email,
+            phone: row.phone,
+            unit,
+            source: source === DEFAULT_LEAD_SOURCE ? null : source,
+            errorMessage: err instanceof Error ? err.message : String(err),
+          });
         }
       })();
     }

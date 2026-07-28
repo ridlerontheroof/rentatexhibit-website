@@ -758,6 +758,76 @@ export function renderBotGuardAlert(opts: {
 }
 
 /**
+ * Leasing alert: a real (guard-passing) applicant's guest card was rejected
+ * by AppFolio, so the prospect never reached AppFolio's lead queue. The
+ * lead is saved and emailed as usual — this alert exists so the team can
+ * enter the prospect into AppFolio manually.
+ */
+export function renderGuestCardFailureAlert(opts: {
+  name: string;
+  email: string;
+  phone: string;
+  unit: string;
+  source: string | null;
+  detail: string;
+}): RenderedEmail {
+  const { name, email, phone, unit, source, detail } = opts;
+  const subject = `Website alert: AppFolio rejected the guest card for ${name} (Apt. ${unit})`;
+
+  const intro = `A real prospect submitted the website's tour/application form for Apt. ${unit}, but AppFolio rejected the automatic guest-card push — so they are NOT in AppFolio's lead queue. The lead was saved and the usual lead-notification email was still sent.`;
+  const remedyText =
+    "add this prospect to AppFolio manually (Guest Card / prospect record for the unit below). Rejections are usually creation-time validation — unusual characters in a name, or an email domain AppFolio doesn't accept. This alert is sent at most once per day for the same lead.";
+
+  const rows: [string, string][] = [
+    ["Name", name],
+    ["Email", email],
+    ["Phone", phone],
+    ["Apartment", unit],
+    ...(source ? ([["Source", source]] as [string, string][]) : []),
+  ];
+
+  const detailsHtml =
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">` +
+    rows
+      .map(
+        ([label, value]) =>
+          `<tr><td style="padding:4px 16px 4px 0;font-family:${BRAND.font};font-size:15px;font-weight:600;color:${BRAND.ink};">${escapeHtml(label)}</td>` +
+          `<td style="padding:4px 0;font-family:${BRAND.font};font-size:15px;color:${BRAND.ink};">${escapeHtml(value)}</td></tr>`,
+      )
+      .join("") +
+    `</table>`;
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>Prospect details:</strong></p>` +
+    detailsHtml +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(remedyText)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>Technical detail:</strong> ${escapeHtml(detail)}</p>`;
+
+  const text = [
+    intro,
+    "",
+    "Prospect details:",
+    ...rows.map(([label, value]) => `  ${label}: ${value}`),
+    "",
+    `What to do: ${remedyText}`,
+    "",
+    `Technical detail: ${detail}`,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: `AppFolio rejected the guest card for ${name} — enter them manually.`,
+    kicker: "Website Alert",
+    heading: "Guest Card Rejected by AppFolio",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
  * Operational alert: accepted (guard-passing) form submissions spiked past
  * the daily anomaly threshold — either a genuinely busy leasing day or a
  * smarter bot fully evading the guard and spamming the leasing inbox.

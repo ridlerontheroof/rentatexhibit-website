@@ -26,8 +26,12 @@ vi.mock("../lib/appfolio", () => ({
 vi.mock("./availability", () => ({
   getAvailabilitySnapshot: vi.fn(async () => null),
 }));
+vi.mock("../lib/guestCardAlert", () => ({
+  reportGuestCardFailure: vi.fn(async () => {}),
+}));
 
 import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
+import { reportGuestCardFailure } from "../lib/guestCardAlert";
 import { createGuestCard, listableUidFromListingUrl } from "../lib/appfolio";
 import { getAvailabilitySnapshot } from "./availability";
 import leadsRouter from "./leads";
@@ -235,6 +239,43 @@ describe("POST /leads visit-source attribution", () => {
     await flush();
     expect(vi.mocked(createGuestCard)).not.toHaveBeenCalled();
     expect(vi.mocked(sendProspectConfirmation)).toHaveBeenCalled();
+  });
+
+  it("reports a guest-card push failure to the leasing alert with the lead's details", async () => {
+    mockAcceptedTour(15);
+    vi.mocked(createGuestCard).mockRejectedValueOnce(
+      new Error("AppFolio guest card failed: status 422 body=<empty>"),
+    );
+    const res = await request(makeApp()).post("/leads").send(tourLead);
+    expect(res.status).toBe(201);
+    await flush();
+    expect(vi.mocked(reportGuestCardFailure)).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(reportGuestCardFailure)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(Number),
+      expect.objectContaining({
+        leadId: 15,
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "jane@example.com",
+        phone: "3125550100",
+        unit: "2801",
+        source: null,
+        errorMessage: "AppFolio guest card failed: status 422 body=<empty>",
+      }),
+    );
+    // Visitor-facing behavior unchanged: lead saved + emails still sent.
+    expect(vi.mocked(sendLeadNotification)).toHaveBeenCalled();
+    expect(vi.mocked(sendProspectConfirmation)).toHaveBeenCalled();
+  });
+
+  it("does not report a guest-card alert when the push succeeds", async () => {
+    mockAcceptedTour(16);
+    const res = await request(makeApp()).post("/leads").send(tourLead);
+    expect(res.status).toBe(201);
+    await flush();
+    expect(vi.mocked(createGuestCard)).toHaveBeenCalled();
+    expect(vi.mocked(reportGuestCardFailure)).not.toHaveBeenCalled();
   });
 
   it("sanitizes a junk source back to the default", async () => {
