@@ -37,7 +37,7 @@
 - [YouTube VideoObject metadata](youtube-video-jsonld.md) — oEmbed lacks uploadDate; parse the watch page's player-response JSON, cache to committed JSON like the Vimeo pattern.
 - [Dist-based test guards must skip on incomplete dist](dist-based-test-guards.md) — gate on index.html.br (precompress runs last); never poll for build output in beforeAll.
 - [Image size cap vs sharpness guard](image-size-vs-sharpness.md) — fit the ~200KB budget with webp:target-size at full width; never shrink rung pixel width (sharpness test fails <~1920px).
-- [Deploy runtime — no Chromium, startup logs dropped](deploy-runtime-observability.md) — deployment logs lose the first ~25s of stdout; runtime ships only module closures, so Chromium checks need the HTTP fallback.
+- [Deploy runtime — no Chromium, startup logs dropped](deploy-runtime-observability.md) — first ~25s of stdout dropped, eating fast watchdogs' startup heartbeats too; Chromium checks need the HTTP fallback.
 - [Post-publish live-site checks](postpublish-watcher.md) — no deploy hook exists; a build-id stamp + workspace watcher workflow detects a new publish going live and runs check:postpublish, exiting non-zero on failure.
 - [Adding a static content page](new-static-page.md) — PAGE_SEO+route+toml rewrite pair in lockstep; nested Organization JSON-LD nodes must be @id refs or the recommended-props test fails.
 - [Markdown page twins (AEO)](markdown-twins.md) — .md variants generated from rendered <main> in prerender; Accept negotiation quirks; converter join rule; snapshot must stay in one chunk.

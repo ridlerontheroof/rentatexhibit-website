@@ -1,8 +1,13 @@
 ---
-name: Deploy runtime — no Chromium, and startup logs are dropped
-description: What the deployed autoscale runtime actually ships and why early stdout never reaches deployment logs.
+name: Deploy runtime — no Chromium, startup logs dropped
+description: Observability quirks of the production deploy runtime — dropped startup stdout, no headless Chromium, and how fast watchdogs stay invisible.
 ---
 
-- **Deployment log ingestion drops the first ~25s of a fresh container's stdout.** On the 2026-07-26 publish, every api-server log line before 19:24:25Z was lost ("Server listening", all "watchdog started" lines, fast first-check heartbeats). **How to apply:** never conclude a startup-time feature didn't run just because its log line is absent; delay important startup log output ~60s (see rentedCheck's STARTUP_DELAY_MS) or corroborate via DB side effects (e.g. `email_throttle_counters`).
-- **The deployed runtime ships only the `.replit` module closures** (nodejs-24, python-base, postgresql-16) — no playwright/chromium nix paths, even though the workspace /nix/store has them. **How to apply:** anything needing headless Chromium in production must have a browserless fallback; `check-rented-noindex.mjs` auto-degrades to an HTTP-level subset (`--http-only` to force) and prints `MODE: http-fallback`, which rentedCheck.ts surfaces in its per-run info line.
-- Watchdog daily heartbeats alone are too sparse to confirm a publish; passing rented-check runs now log info per run with the mode.
+# Deploy runtime observability
+
+- Deployment logs drop roughly the first ~25s of app stdout after an instance starts. "Server listening" and every watchdog's "… watchdog started" line land in that window and are never visible.
+- **Fast watchdogs' immediate heartbeats are also eaten.** The dailyHeartbeat "emit on first check so a fresh deploy shows liveness" design only works when the first check takes longer than the drop window. Watchdogs whose first probe resolves in seconds (anything reading the baked availability seed, e.g. apply-link and showing-scheduler probes) emit their startup heartbeat inside the dropped window. Fee-copy/rented/legacy heartbeats survive only because their first checks take ≥~18s.
+- **How to verify such a watchdog is live:** (1) confirm the live build-id.json builtAt postdates the watchdog commit and the string exists in the deployed dist; (2) manually reproduce the probe from the workspace to confirm the healthy/skipped outcome; (3) wait for the next UTC-day heartbeat (first probe after 00:00 UTC) in a later log refresh — that is the first observable log line.
+- Healthy watchdog runs log at debug, suppressed in production — silence between daily heartbeats is expected, not evidence of death.
+- Runtime ships only module closures — no headless Chromium; Chromium-dependent checks need their HTTP fallback (rented-noindex check logs `mode: "http-fallback"`).
+- **How to apply:** when confirming any new watchdog "reports in after publish", don't expect the started line; either verify per the steps above or delay the first probe past ~30s so its startup heartbeat survives (the durable fix, in scope of the make-all-watchdogs-confirm work).
