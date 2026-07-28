@@ -20,6 +20,12 @@ logs "Pushed prospect guest card", AppFolio returned `{"guest_card_id":…}`. Go
   email domains also 422.
 - AppFolio DEDUPES: repeat posts for the same prospect (same phone/email, even +aliases)
   return 201 with the SAME guest_card_id — a 201 doesn't always mean a new card.
+- Multi-word FIRST names 422 (empty body) at creation — "TEST UTM" fails, "Testutm" works;
+  multi-word LAST names are fine (verified live 2026-07-28). 555 phones and +alias emails
+  on a real domain are accepted.
+- Sources verified live 2026-07-28: guest_cards Reports API report (POST
+  /api/v2/reports/guest_cards.json, Basic auth) exposes each card's `source` — both
+  "Website (GoogleAds-Brand)" (UTM path) and default "Website (Exhibit)" landed correctly.
 
 **How to apply:** resolve unit → listingUrl → listableUid server-side from the cached
 availability snapshot (never trust a client UID), fire-and-forget after the lead is

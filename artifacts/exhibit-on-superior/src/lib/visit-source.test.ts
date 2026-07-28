@@ -76,7 +76,9 @@ describe('sanitizeVisitSource', () => {
 
   it('rejects spaces or special characters inside the parentheses', () => {
     expect(sanitizeVisitSource('Website (Google Ads)')).toBeNull();
-    expect(sanitizeVisitSource('Website (Google_Ads)')).toBeNull();
+    // Underscore is allowed — the contact-link label uses it.
+    expect(sanitizeVisitSource('Website (Google_Ads)')).toBe('Website (Google_Ads)');
+    expect(sanitizeVisitSource('Website (Exhibit_ContactUs)')).toBe('Website (Exhibit_ContactUs)');
     expect(sanitizeVisitSource('Website (<script>)')).toBeNull();
     expect(sanitizeVisitSource('Website ()')).toBeNull();
   });

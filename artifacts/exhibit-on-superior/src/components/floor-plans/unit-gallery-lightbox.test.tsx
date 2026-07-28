@@ -35,7 +35,9 @@ describe('listing URL derivation', () => {
     expect(applyUrlForListing(LISTING)).toBe(
       'https://highlandrealestatepartners.appfolio.com/listings/rental_applications/new?listable_uid=15ac6d84-747c-4aa6-9b02-ce2be59e4d69&source=Website%20(Exhibit)',
     );
-    expect(contactUrlForListing(LISTING)).toBe(`${LISTING}/contact_us_form`);
+    expect(contactUrlForListing(LISTING)).toBe(
+      `${LISTING}/contact_us_form?source=Website%20(Exhibit_ContactUs)`,
+    );
   });
 
   it('derives the same unit-specific Schedule Showing target as the AppFolio listing page', () => {
@@ -51,6 +53,9 @@ describe('listing URL derivation', () => {
         'https://highlandrealestatepartners.appfolio.com/listings/rental_applications/new?listable_uid=15ac6d84-747c-4aa6-9b02-ce2be59e4d69&source=Website%20(GoogleAds-SpringPromo)',
       );
       expect(tourUrlForListing(LISTING)).toContain('source=Website%20(GoogleAds-SpringPromo)');
+      expect(contactUrlForListing(LISTING)).toBe(
+        `${LISTING}/contact_us_form?source=Website%20(GoogleAds-SpringPromo)`,
+      );
     } finally {
       window.sessionStorage.removeItem('exhibit-visit-source');
     }

@@ -36,7 +36,9 @@ describe("sanitizeLeadSource", () => {
 
   it("rejects spaces or special characters inside the parentheses", () => {
     expect(sanitizeLeadSource("Website (Google Ads)")).toBe(DEFAULT_LEAD_SOURCE);
-    expect(sanitizeLeadSource("Website (Google_Ads)")).toBe(DEFAULT_LEAD_SOURCE);
+    // Underscore is allowed — the contact-link label "Website (Exhibit_ContactUs)".
+    expect(sanitizeLeadSource("Website (Google_Ads)")).toBe("Website (Google_Ads)");
+    expect(sanitizeLeadSource("Website (Exhibit_ContactUs)")).toBe("Website (Exhibit_ContactUs)");
     expect(sanitizeLeadSource("Website (Google.Ads)")).toBe(DEFAULT_LEAD_SOURCE);
     expect(sanitizeLeadSource("Website ()")).toBe(DEFAULT_LEAD_SOURCE);
     expect(sanitizeLeadSource("Site (GoogleAds)")).toBe(DEFAULT_LEAD_SOURCE);

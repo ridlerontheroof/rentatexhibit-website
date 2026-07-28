@@ -21,10 +21,12 @@ export const DEFAULT_LEAD_SOURCE = "Website (Exhibit)";
 export const LEAD_SOURCE_MAX_LENGTH = 80;
 
 /**
- * The only accepted shape: `Website (Token)` where Token is alphanumerics
- * and hyphens — no spaces or special characters inside the parentheses.
+ * The only accepted shape: `Website (Token)` where Token is alphanumerics,
+ * hyphens and underscores — no spaces or other special characters inside the
+ * parentheses. (Underscore admits the contact-link label
+ * "Website (Exhibit_ContactUs)".)
  */
-const LABEL_RE = /^Website \([A-Za-z0-9-]+\)$/;
+const LABEL_RE = /^Website \([A-Za-z0-9_-]+\)$/;
 
 /**
  * Validate a client-supplied lead source. Returns the label unchanged when

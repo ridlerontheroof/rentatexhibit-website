@@ -72,11 +72,19 @@ export function tourUrlForListing(listingUrl: string): string | null {
   return `${parsed.origin}/listings/showings/new?listable_uid=${parsed.uid}&source=${leadSourceParam()}`;
 }
 
+/**
+ * Default source for the contact-form hand-off specifically, so the leasing
+ * team can tell "Contact Us" prospects apart from tour/application leads.
+ * Campaign-tagged visits still keep their UTM-derived source instead.
+ */
+export const CONTACT_LEAD_SOURCE = 'Website (Exhibit_ContactUs)';
+
 /** The listing's contact form URL — same target as AppFolio's "Contact Us". */
 export function contactUrlForListing(listingUrl: string): string | null {
   const parsed = parseListingUrl(listingUrl);
   if (!parsed) return null;
-  return `${parsed.origin}/listings/detail/${parsed.uid}/contact_us_form`;
+  const source = encodeURIComponent(getVisitSource() ?? CONTACT_LEAD_SOURCE);
+  return `${parsed.origin}/listings/detail/${parsed.uid}/contact_us_form?source=${source}`;
 }
 
 /**

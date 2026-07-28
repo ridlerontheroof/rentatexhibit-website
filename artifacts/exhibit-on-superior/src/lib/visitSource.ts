@@ -28,7 +28,7 @@ export const VISIT_SOURCE_MAX_LENGTH = 80;
  * The only accepted shape: `Website (Token)` where Token is alphanumerics
  * and hyphens — no spaces or special characters inside the parentheses.
  */
-const LABEL_RE = /^Website \([A-Za-z0-9-]+\)$/;
+const LABEL_RE = /^Website \([A-Za-z0-9_-]+\)$/;
 
 /** utm_source values that mean "this click came from Google Ads". */
 const GOOGLE_SOURCES = new Set(['google', 'googleads', 'google_ads', 'google-ads', 'adwords']);
