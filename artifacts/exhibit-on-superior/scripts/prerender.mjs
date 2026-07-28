@@ -709,7 +709,10 @@ console.log(`Prerendered ${allPaths.length} routes.`);
   const expectedSet = new Set(expected);
   const stale = [...toml.matchAll(/from = "(\/knowledge\/[^"*]+?)\/?"/g)]
     .map((m) => m[1])
-    .filter((p) => !expectedSet.has(p));
+    // Unpublished slugs that became legacy 301s (e.g. internet-options while
+    // hidden pending the Zentro install) keep their rewrite pair — it now
+    // routes to the redirect stub — so they are not stale.
+    .filter((p) => !expectedSet.has(p) && !(p in LEGACY_REDIRECT_STUBS));
   if (!toml.includes('from = "/knowledge/*"')) missing.push('/knowledge/* (not-found fallback)');
   if (missing.length || stale.length) {
     throw new Error(

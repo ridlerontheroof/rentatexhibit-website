@@ -364,7 +364,10 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         heading: 'How to get an exact figure',
         paragraphs: [
           'Because rent varies by floor plan, floor, and move-in date, the surest way to total your move-in cost is to pick a live listing on the Available Units page and add the fixed fees to its current price.',
-          'The leasing team can build a full itemized quote for a specific home and confirm whether internet through the Zentro rollout is bundled yet. Reach them at exhibit@highlandptrs.com or 312-450-0635.',
+          // HIDDEN PENDING ZENTRO INSTALL — original sentence mentioned the
+          // Zentro rollout; restore once the bulk-internet service is live:
+          // 'The leasing team can build a full itemized quote for a specific home and confirm whether internet through the Zentro rollout is bundled yet. Reach them at exhibit@highlandptrs.com or 312-450-0635.',
+          'The leasing team can build a full itemized quote for a specific home and confirm current internet options. Reach them at exhibit@highlandptrs.com or 312-450-0635.',
         ],
       },
     ],
@@ -700,7 +703,9 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'Technology and comfort features',
         paragraphs: [
-          'Every apartment is wired for 1GB internet, and the building is implementing bulk internet through a partnership with Zentro with symmetrical speeds up to 2 Gig, so the homes are built for streaming and remote work. Floor-to-ceiling windows bring in daylight across each plan.',
+          // HIDDEN PENDING ZENTRO INSTALL — restore once the bulk-internet service is live:
+          // 'Every apartment is wired for 1GB internet, and the building is implementing bulk internet through a partnership with Zentro with symmetrical speeds up to 2 Gig, so the homes are built for streaming and remote work. Floor-to-ceiling windows bring in daylight across each plan.',
+          'Every apartment is wired for 1GB internet, so the homes are built for streaming and remote work. Floor-to-ceiling windows bring in daylight across each plan.',
           'The driftwood plank flooring runs throughout the living spaces for a consistent look, while the tiled backsplash and subway tile bath surround add texture in the kitchen and bath. Confirm which extras a specific home carries with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
         ],
       },
@@ -968,7 +973,9 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'Does Exhibit On Superior have work-from-home spaces?',
     category: 'Amenities',
     answer:
-      'Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7. Apartments are wired for 1GB internet, and the building is implementing bulk internet through Zentro with symmetrical speeds up to 2 Gig.',
+      // HIDDEN PENDING ZENTRO INSTALL — restore once the bulk-internet service is live:
+      // 'Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7. Apartments are wired for 1GB internet, and the building is implementing bulk internet through Zentro with symmetrical speeds up to 2 Gig.',
+      'Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7, and every apartment is wired for 1GB internet.',
     sections: [
       {
         paragraphs: [
@@ -979,7 +986,9 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'Internet built for remote work',
         paragraphs: [
-          'Every apartment is wired for 1GB internet, so a home office is ready from day one. The building is also implementing bulk internet through a partnership with Zentro, offering symmetrical speeds up to 2 Gig.',
+          // HIDDEN PENDING ZENTRO INSTALL — restore once the bulk-internet service is live:
+          // 'Every apartment is wired for 1GB internet, so a home office is ready from day one. The building is also implementing bulk internet through a partnership with Zentro, offering symmetrical speeds up to 2 Gig.',
+          'Every apartment is wired for 1GB internet, so a home office is ready from day one.',
           'Symmetrical speeds matter for video calls and large uploads, since the connection is as fast going out as it is coming in. Confirm the current internet setup and any included service with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
         ],
       },
@@ -998,7 +1007,9 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['internet-options', 'full-amenity-list', 'party-room-reservation'],
+    // HIDDEN PENDING ZENTRO INSTALL — restore 'internet-options' as the first
+    // related slug once the article is re-published.
+    related: ['full-amenity-list', 'party-room-reservation'],
     links: [
       { label: 'Amenities', href: '/amenities' },
       { label: 'Fees & Leasing Costs', href: '/fees' },
@@ -1039,7 +1050,10 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         ],
       },
     ],
-    related: ['amenity-hours', 'full-amenity-list', 'is-there-a-pool'],
+    // 'work-from-home-spaces' added while the internet-options article is
+    // hidden pending the Zentro install (it supplied the second inbound link);
+    // it is topical here (meeting rooms) and can stay after the restore.
+    related: ['amenity-hours', 'full-amenity-list', 'is-there-a-pool', 'work-from-home-spaces'],
     links: [
       { label: 'Amenities', href: '/amenities' },
       { label: 'Contact Us', href: '/contact-us' },
@@ -2257,17 +2271,35 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'What about internet?',
         paragraphs: [
-          'Internet is handled separately from electricity and the bundled fee. The building is implementing bulk service through a partnership with Zentro at symmetrical speeds up to 2 Gig, and every apartment is already wired for 1GB.',
-          'Because the Zentro rollout is in progress, confirm current internet service, pricing, and setup with the leasing office. Electricity setup, by contrast, is always through your own ComEd account.',
+          // HIDDEN PENDING ZENTRO INSTALL — restore once the bulk-internet service is live:
+          // 'Internet is handled separately from electricity and the bundled fee. The building is implementing bulk service through a partnership with Zentro at symmetrical speeds up to 2 Gig, and every apartment is already wired for 1GB.',
+          // 'Because the Zentro rollout is in progress, confirm current internet service, pricing, and setup with the leasing office. Electricity setup, by contrast, is always through your own ComEd account.',
+          'Internet is handled separately from electricity and the bundled fee, and every apartment is already wired for 1GB.',
+          'Confirm current internet service, pricing, and setup with the leasing office. Electricity setup, by contrast, is always through your own ComEd account.',
         ],
       },
     ],
-    related: ['what-utility-fee-covers', 'utility-fee-by-floor-plan', 'internet-options'],
+    // HIDDEN PENDING ZENTRO INSTALL — restore 'internet-options' as the last
+    // related slug once the article is re-published.
+    related: ['what-utility-fee-covers', 'utility-fee-by-floor-plan'],
     links: [
       { label: 'Fees & Leasing Costs', href: '/fees' },
       { label: 'Apartment Guide', href: '/apartment-guide' },
     ],
   },
+  // ---------------------------------------------------------------------
+  // HIDDEN PENDING ZENTRO INSTALL — the whole 'internet-options' article is
+  // parked here until the Zentro bulk-internet service is live. To restore:
+  //   1. Uncomment this article object.
+  //   2. Re-add 'internet-options' to the related arrays of
+  //      'work-from-home-spaces' and 'how-is-electricity-billed' (see the
+  //      matching HIDDEN PENDING ZENTRO INSTALL markers above).
+  //   3. Remove the '/knowledge/internet-options' entry from
+  //      legacyRedirects.ts (its artifact.toml rewrite pair stays as-is).
+  //   4. Restore the other commented-out Zentro sentences in this file,
+  //      Fees.tsx, and seo.ts (search for HIDDEN PENDING ZENTRO INSTALL).
+  // ---------------------------------------------------------------------
+  /*
   {
     slug: 'internet-options',
     question: 'What internet options are available at Exhibit On Superior?',
@@ -2309,6 +2341,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       { label: 'Amenities', href: '/amenities' },
     ],
   },
+  */
   {
     slug: 'what-utility-fee-covers',
     question: 'What does the Utility & Service fee cover?',
@@ -2326,7 +2359,9 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'What is not covered',
         paragraphs: [
-          'Electricity is the single utility left out of the bundle; you set up a ComEd account in your own name and pay for your own usage. Internet is also separate, with the building implementing bulk service through Zentro at symmetrical speeds up to 2 Gig.',
+          // HIDDEN PENDING ZENTRO INSTALL — restore once the bulk-internet service is live:
+          // 'Electricity is the single utility left out of the bundle; you set up a ComEd account in your own name and pay for your own usage. Internet is also separate, with the building implementing bulk service through Zentro at symmetrical speeds up to 2 Gig.',
+          'Electricity is the single utility left out of the bundle; you set up a ComEd account in your own name and pay for your own usage. Internet is also separate, and every apartment is wired for 1GB.',
           'Because the fee is flat and set by floor plan, the covered utilities do not fluctuate with your usage. That means heat in winter and air conditioning in summer never produce a surprise metered bill.',
         ],
       },

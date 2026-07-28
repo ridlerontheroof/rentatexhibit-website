@@ -25,7 +25,11 @@ const ARTICLES_PATH = path.join(
  * of article object literals in the data file.
  */
 export async function loadKnowledgeArticles() {
-  const src = await readFile(ARTICLES_PATH, 'utf8');
+  const raw = await readFile(ARTICLES_PATH, 'utf8');
+  // Strip /* ... */ block comments first: unpublished articles are parked in
+  // block comments (e.g. internet-options, hidden pending the Zentro install)
+  // and must not be parsed as published articles.
+  const src = raw.replace(/\/\*[\s\S]*?\*\//g, '');
 
   const articles = [];
   const re = /slug:\s*'([^']+)',\s*\n\s*question:\s*'((?:[^'\\]|\\.)*)',/g;

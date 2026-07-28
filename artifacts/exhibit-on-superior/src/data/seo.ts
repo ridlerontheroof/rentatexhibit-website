@@ -404,10 +404,12 @@ export const PAGE_SEO: Record<string, PageSeo> = {
         q: 'Are utilities included?',
         a: 'A monthly Utility & Service Amenity fee ($95 for studios up to $195 for three-bedrooms) covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed to the resident directly by ComEd.',
       },
-      {
-        q: 'What internet options are available?',
-        a: 'Exhibit is implementing bulk internet through a partnership with Zentro, with symmetrical download and upload speeds up to 2 Gig.',
-      },
+      // HIDDEN PENDING ZENTRO INSTALL — restore once the bulk-internet
+      // service is live:
+      // {
+      //   q: 'What internet options are available?',
+      //   a: 'Exhibit is implementing bulk internet through a partnership with Zentro, with symmetrical download and upload speeds up to 2 Gig.',
+      // },
       {
         q: 'Is storage available?',
         a: 'Yes. On-site storage is available for $25 per month.',

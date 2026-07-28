@@ -45,6 +45,11 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   // G5/RentCafe-era .aspx URLs (2026-07 SEO audit, second batch): 404 live
   // today, but 301s preserve any historical link equity.
   '/mapsanddirections.aspx': '/map-directions',
+  // HIDDEN PENDING ZENTRO INSTALL (2026-07): the internet-options knowledge
+  // article is unpublished until the Zentro bulk-internet rollout is live.
+  // The indexed URL 301s to the Knowledge hub meanwhile. Remove this entry
+  // when the article returns (its artifact.toml rewrite pair stays as-is).
+  '/knowledge/internet-options': '/knowledge',
   '/video.aspx': '/virtual-tour',
   '/apartmentphotos.aspx': '/photo-gallery',
 };

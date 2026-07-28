@@ -54,4 +54,5 @@
 - [Source-literal fact scans](source-literal-scans.md) — guard tests scanning .ts source must decode \uXXXX escapes first, and exclude phone numbers/Tailwind shades from 3-digit fact regexes.
 - [ApartmentComplex schema typing](apartment-complex-schema-types.md) — property entity is dual-typed +LocalBusiness (priceRange) and floorSize rides a summary FloorPlan; type finders must handle @type arrays.
 - [Visit-scoped lead-source attribution](lead-source-attribution.md) — UTM → AppFolio source label must be exactly `Website (Token)`, alnum/hyphens only in parens; server sanitizer is the trust boundary.
+- [Zentro internet content hidden](zentro-hidden-content.md) — all Zentro/2-Gig claims parked behind HIDDEN PENDING ZENTRO INSTALL markers; knowledge-slug parser strips block comments; restore steps in the parked article header.
 - [QA evidence package](qa-evidence-package.md) — evidence reports must be script-derived from source JSONs; concurrent perf runs otherwise make the package inconsistent.
