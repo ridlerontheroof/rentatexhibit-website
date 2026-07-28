@@ -122,7 +122,9 @@ describe('no emitted @type escapes the checklist decision', () => {
     }
   };
 
-  it('every emitted @type has a checklist or is explicitly checklist-free', async () => {
+  // Renders every PAGE_SEO route in one test body; under concurrent
+  // validation-suite load this can blow the default 5s timeout.
+  it('every emitted @type has a checklist or is explicitly checklist-free', { timeout: 60_000 }, async () => {
     const emitted = new Set<string>();
     for (const routePath of Object.keys(PAGE_SEO)) {
       const { head } = await render(routePath);

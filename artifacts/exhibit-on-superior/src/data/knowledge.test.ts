@@ -9,6 +9,7 @@ import {
   knowledgeArticle,
   knowledgeDescription,
   knowledgeJsonLd,
+  knowledgeTitle,
   reviewAgeDays,
   staleKnowledgeReviewDates,
   wordCount,
@@ -119,6 +120,22 @@ describe('knowledge center content rules', () => {
           true,
         );
       }
+    }
+  });
+
+  it('rendered page titles stay within ~65 chars (Bing "Title too long" guard)', () => {
+    // Bing's site scan (2026-07-28) flagged knowledge titles of 73+ chars as
+    // "Title too long" while leaving a live 69-char title alone, so Bing's
+    // effective threshold sits somewhere in the 70–72 range. Guard at 70.
+    // The question drives the <title> (via knowledgeTitle, which may append a
+    // brand suffix), H1, FAQ JSON-LD, llms.txt, and .md twins — so guard the
+    // final rendered title, not just the raw question.
+    for (const a of KNOWLEDGE_ARTICLES) {
+      const title = knowledgeTitle(a);
+      expect(
+        title.length,
+        `${a.slug} title "${title}" is ${title.length} chars (>70 risks Bing's title-too-long warning)`,
+      ).toBeLessThanOrEqual(70);
     }
   });
 

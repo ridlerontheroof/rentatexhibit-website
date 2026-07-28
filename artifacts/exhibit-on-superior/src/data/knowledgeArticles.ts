@@ -2311,7 +2311,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   },
   {
     slug: 'what-utility-fee-covers',
-    question: 'What does the Utility & Service Amenity fee cover at Exhibit On Superior?',
+    question: 'What does the Utility & Service fee cover?',
     changeableFacts: true,
     category: 'Utilities',
     answer:
@@ -2353,7 +2353,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   },
   {
     slug: 'utility-fee-by-floor-plan',
-    question: 'How much is the Utility & Service Amenity fee by floor plan at Exhibit On Superior?',
+    question: 'How much is the utility fee by floor plan?',
     changeableFacts: true,
     category: 'Utilities',
     answer:
@@ -2922,7 +2922,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   },
   {
     slug: 'resident-portal',
-    question: 'How do residents pay rent and request maintenance at Exhibit On Superior?',
+    question: 'How do Exhibit On Superior residents pay rent and get repairs?',
     category: 'Building & Services',
     answer:
       'Residents at Exhibit On Superior pay rent, submit maintenance requests, and view community updates through the online resident portal, accessed from the Residents page. For urgent maintenance issues, call the maintenance line at 312-883-5503. General questions go to the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
