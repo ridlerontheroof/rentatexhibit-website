@@ -101,7 +101,12 @@ describe('prerendered /virtual-tour JSON-LD matches the shared virtualTours modu
     const video = extractJsonLd(head).find((b) => b['@type'] === 'VideoObject')!;
 
     // Required-for-rich-results properties, sourced from Vimeo oEmbed.
-    expect(video.uploadDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    // uploadDate must be a FULL ISO-8601 timestamp with a timezone offset —
+    // Search Console fails validation on date-only values ("missing a
+    // timezone"). See scripts/fetch-vimeo-oembed.mjs for the sourcing.
+    expect(video.uploadDate).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/,
+    );
     expect(video.thumbnailUrl).toMatch(/^https:\/\/i\.vimeocdn\.com\//);
     expect(video.duration).toMatch(/^PT(\d+M)?\d+S$/);
 

@@ -68,11 +68,26 @@ describe('recommended-property checklist', () => {
       name: 'V',
       description: 'D',
       thumbnailUrl: 'https://x/t.jpg',
-      uploadDate: '2024-01-01',
+      uploadDate: '2024-01-01T10:00:00-05:00',
       duration: 'PT1M',
       embedUrl: 'https://x/e', // no contentUrl — embedUrl satisfies the group
     };
     expect(checkRecommendedProperties([JSON.stringify(video)])).toEqual([]);
+  });
+
+  it('flags a date-only VideoObject uploadDate (Search Console requires a timezone)', () => {
+    const video = {
+      '@context': 'https://schema.org',
+      '@type': 'VideoObject',
+      name: 'V',
+      description: 'D',
+      thumbnailUrl: 'https://x/t.jpg',
+      uploadDate: '2024-06-25', // date-only — missing timezone
+      duration: 'PT1M',
+      embedUrl: 'https://x/e',
+    };
+    const warnings = checkRecommendedProperties([JSON.stringify(video)]) as string[];
+    expect(warnings.some((w) => w.includes('uploadDate') && w.includes('timezone'))).toBe(true);
   });
 
   it('silences allowlisted omissions only', () => {

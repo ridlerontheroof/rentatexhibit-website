@@ -73,7 +73,12 @@ describe('cached Vimeo oEmbed snapshot matches the live video (networked, skips 
 
     expect(live.video_id, REFRESH_HINT).toBe(vimeoOembed.videoId);
     expect(live.title, REFRESH_HINT).toBe(vimeoOembed.title);
-    expect(String(live.upload_date).slice(0, 10), REFRESH_HINT).toBe(vimeoOembed.uploadDate);
+    // Cached uploadDate is the live wall-clock upload_date (US Eastern per
+    // Vimeo docs) with the EST/EDT offset appended by fetch-vimeo-oembed.mjs.
+    // Compare the wall-time portion; the offset is derived, not reported live.
+    expect(String(live.upload_date).replace(' ', 'T'), REFRESH_HINT).toBe(
+      vimeoOembed.uploadDate.replace(/[+-]\d{2}:\d{2}$/, ''),
+    );
     expect(live.duration, REFRESH_HINT).toBe(vimeoOembed.durationSeconds);
 
     // The cached thumbnail is the live one with the size suffix swapped to

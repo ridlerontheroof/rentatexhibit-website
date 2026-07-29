@@ -251,6 +251,23 @@ function hasValue(v) {
  * @param {Record<string, Array<string | string[]>>} [opts.checklist]
  * @returns {string[]} human-readable warnings; empty when nothing is missing
  */
+/**
+ * Value-format requirements, keyed by @type then property. Applied to every
+ * checked node (merged @id entities and anonymous nodes alike) whenever the
+ * property is present. Search Console FAILS video validation on a date-only
+ * uploadDate ("Datetime property \"uploadDate\" is missing a timezone"), so
+ * every emitted VideoObject must carry a full ISO-8601 timestamp with offset.
+ * @type {Record<string, Record<string, { pattern: RegExp, hint: string }>>}
+ */
+export const VALUE_FORMATS = {
+  VideoObject: {
+    uploadDate: {
+      pattern: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/,
+      hint: 'must be a full ISO-8601 timestamp with a timezone offset (Search Console fails date-only uploadDate values)',
+    },
+  },
+};
+
 export function checkRecommendedProperties(payloads, opts = {}) {
   const allow = new Set(opts.allowlist ?? []);
   const checklist = opts.checklist ?? RECOMMENDED_PROPERTIES;
@@ -317,6 +334,12 @@ export function checkRecommendedProperties(payloads, opts = {}) {
       const propLabel = alternatives.join('|');
       if (allow.has(`${type}.${propLabel}`)) continue;
       warnings.push(`${type} ${label}: missing recommended property "${propLabel}"`);
+    }
+    for (const [prop, { pattern, hint }] of Object.entries(VALUE_FORMATS[type] ?? {})) {
+      const value = props[prop];
+      if (hasValue(value) && !pattern.test(String(value))) {
+        warnings.push(`${type} ${label}: property "${prop}" value "${value}" ${hint}`);
+      }
     }
   };
 
