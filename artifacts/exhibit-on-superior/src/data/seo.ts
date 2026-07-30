@@ -528,7 +528,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Knowledge Center',
     title: 'Knowledge Center: Renter Questions Answered | Exhibit On Superior',
     description:
-      'Fact-first answers to renter questions about Exhibit On Superior in River North Chicago — pricing, fees, floor plans, amenities, pets, parking, and leasing.',
+      'Find answers to every leasing question about Exhibit On Superior — apartments, fees, pets, parking, utilities, and the River North neighborhood.',
     quickAnswer:
       'The Exhibit On Superior Knowledge Center answers the questions renters ask most, each on its own page with the direct answer first: pricing and fees, apartments and floor plans, amenities, pets, parking and transportation, leasing and applications, utilities, the River North neighborhood, and building services. Every answer uses verified facts from current listings and the leasing team.',
     faqs: [],

@@ -149,7 +149,7 @@ export function Header() {
               items={[
                 { href: '/map-directions', label: 'Map + Directions' },
                 { href: '/residents', label: 'Residents' },
-                { href: '/available-units', label: 'Schedule a Tour' },
+                { href: '/schedule-a-tour', label: 'Schedule a Tour' },
                 { href: '/reviews', label: 'Reviews' },
                 { href: '/faq', label: 'FAQ' },
                 { href: '/fees', label: 'Fees & Leasing Costs' },
@@ -200,7 +200,7 @@ export function Header() {
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
               <Link href="/residents" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Residents</Link>
-              <Link href="/available-units" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</Link>
+              <Link href="/schedule-a-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</Link>
               <Link href="/reviews" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Reviews</Link>
               <Link href="/faq" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">FAQ</Link>
               <Link href="/fees" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Fees &amp; Leasing Costs</Link>
