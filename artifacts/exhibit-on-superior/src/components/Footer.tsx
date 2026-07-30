@@ -156,6 +156,11 @@ export function Footer() {
                   Contact Us
                 </Link>
               </li>
+              <li>
+                <Link href="/schedule-a-tour" aria-label="Schedule a tour of Exhibit On Superior" className="hover:text-primary-on-dark transition-colors">
+                  Schedule a Tour
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

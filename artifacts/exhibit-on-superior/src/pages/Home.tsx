@@ -50,6 +50,13 @@ export function Home() {
               >
                 View Available Units
               </Link>
+              <Link
+                href="/schedule-a-tour"
+                aria-label="Schedule a tour of Exhibit On Superior"
+                className="btn-gold-outline border-white! bg-white/20! text-white! backdrop-blur-sm transition-colors hover:bg-white! hover:text-foreground!"
+              >
+                Schedule a Tour
+              </Link>
             </div>
           </div>
         </HeroSlider>
@@ -72,6 +79,9 @@ export function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/amenities" className="btn-gold-outline">
                 View our amenities
+              </Link>
+              <Link href="/floor-plans" className="btn-gold-outline">
+                Browse All Floor Plans
               </Link>
               <Link href="/available-units" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90">
                 Explore Our River North Apartments
