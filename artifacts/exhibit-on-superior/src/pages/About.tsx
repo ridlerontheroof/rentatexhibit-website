@@ -92,7 +92,7 @@ export function About() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div className="bg-white p-8 border border-border text-center">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-                  <Building2 className="w-6 h-6" />
+                  <Building2 className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg uppercase tracking-wider mb-3">Homes</h3>
                 <p className="text-sm leading-relaxed">
@@ -106,7 +106,7 @@ export function About() {
               </div>
               <div className="bg-white p-8 border border-border text-center">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-6 h-6" />
+                  <Users className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg uppercase tracking-wider mb-3">Amenities</h3>
                 <p className="text-sm leading-relaxed">
@@ -121,7 +121,7 @@ export function About() {
               </div>
               <div className="bg-white p-8 border border-border text-center">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-6 h-6" />
+                  <MapPin className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg uppercase tracking-wider mb-3">Location</h3>
                 <p className="text-sm leading-relaxed">
@@ -181,7 +181,7 @@ export function About() {
                 <h3 className="text-lg uppercase tracking-wider mb-4">Exhibit On Superior</h3>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
+                    <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-primary" aria-hidden="true" />
                     <span>
                       165 W Superior St
                       <br />
@@ -189,13 +189,13 @@ export function About() {
                     </span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Phone className="w-4 h-4 flex-shrink-0 text-primary" />
+                    <Phone className="w-4 h-4 flex-shrink-0 text-primary" aria-hidden="true" />
                     <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
                       312-450-0635
                     </a>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 flex-shrink-0 text-primary" />
+                    <Mail className="w-4 h-4 flex-shrink-0 text-primary" aria-hidden="true" />
                     <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline underline-offset-4 hover:text-primary/80">
                       exhibit@highlandptrs.com
                     </a>
@@ -204,7 +204,7 @@ export function About() {
               </div>
               <div className="bg-white p-8 border border-border">
                 <h3 className="text-lg uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-primary" /> Office Hours
+                  <Clock className="w-4 h-4 text-primary" aria-hidden="true" /> Office Hours
                 </h3>
                 <ul className="space-y-2 text-sm">
                   {OFFICE_HOURS_LINES.map((line) => (

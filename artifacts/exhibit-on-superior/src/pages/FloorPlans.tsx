@@ -424,7 +424,7 @@ export function FloorPlans() {
                             type="button"
                             className="flex min-h-11 items-center gap-2 border border-border px-3 py-2 text-xs uppercase tracking-wide hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:hidden"
                           >
-                            <SlidersHorizontal className="h-4 w-4" />
+                            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
                             Filters
                             {hasActiveFilters && (
                               <span className="ml-1 flex h-2 w-2 rounded-full bg-primary" aria-hidden />

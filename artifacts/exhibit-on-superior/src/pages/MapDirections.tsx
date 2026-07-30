@@ -52,7 +52,7 @@ export function MapDirections() {
                 rel="noopener noreferrer"
                 className="btn-gold-outline inline-flex items-center gap-2"
               >
-                <Navigation className="w-4 h-4" />
+                <Navigation className="w-4 h-4" aria-hidden="true" />
                 Get Directions
               </a>
             </div>
@@ -67,7 +67,7 @@ export function MapDirections() {
               <div className="bg-muted p-8 border border-border">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                    <Car className="w-6 h-6" />
+                    <Car className="w-6 h-6" aria-hidden="true" />
                   </div>
                   <h4 className="text-lg uppercase tracking-wider">By Car</h4>
                 </div>
@@ -96,7 +96,7 @@ export function MapDirections() {
               <div className="bg-muted p-8 border border-border">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                    <TrainFront className="w-6 h-6" />
+                    <TrainFront className="w-6 h-6" aria-hidden="true" />
                   </div>
                   <h4 className="text-lg uppercase tracking-wider">By Train or Bus</h4>
                 </div>
@@ -170,7 +170,7 @@ export function MapDirections() {
         <section className="py-16 px-4 bg-muted">
           <div className="container mx-auto max-w-3xl text-center">
             <div className="flex items-center justify-center gap-3 mb-6">
-              <Clock className="w-6 h-6 text-primary" />
+              <Clock className="w-6 h-6 text-primary" aria-hidden="true" />
               <h3 className="text-3xl uppercase tracking-wider">Leasing Office Hours</h3>
             </div>
             <ul className="space-y-2 text-lg mb-8">
@@ -188,7 +188,7 @@ export function MapDirections() {
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
             <div className="flex items-center justify-center gap-3 mb-6">
-              <MapPin className="w-6 h-6 text-primary" />
+              <MapPin className="w-6 h-6 text-primary" aria-hidden="true" />
               <h3 className="text-3xl uppercase tracking-wider text-white">Exhibit On Superior</h3>
             </div>
             <p className="text-xl mb-8">

@@ -43,7 +43,7 @@ export function ParkingTransportation() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white border border-border p-8">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mb-4">
-                  <TrainFront className="w-6 h-6" />
+                  <TrainFront className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h2 className="text-xl uppercase tracking-wider mb-4">CTA Trains</h2>
                 <ul className="space-y-3">
@@ -54,7 +54,7 @@ export function ParkingTransportation() {
               </div>
               <div className="bg-white border border-border p-8">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mb-4">
-                  <Bus className="w-6 h-6" />
+                  <Bus className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h2 className="text-xl uppercase tracking-wider mb-4">CTA Buses</h2>
                 <ul className="space-y-3">
@@ -64,7 +64,7 @@ export function ParkingTransportation() {
               </div>
               <div className="bg-white border border-border p-8">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mb-4">
-                  <Footprints className="w-6 h-6" />
+                  <Footprints className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h2 className="text-xl uppercase tracking-wider mb-4">On Foot & Bike</h2>
                 <ul className="space-y-3">
@@ -75,7 +75,7 @@ export function ParkingTransportation() {
               </div>
               <div className="bg-white border border-border p-8">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mb-4">
-                  <Car className="w-6 h-6" />
+                  <Car className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h2 className="text-xl uppercase tracking-wider mb-4">Driving & Parking</h2>
                 <ul className="space-y-3">
