@@ -189,7 +189,7 @@ export function MapDirections() {
           <div className="container mx-auto max-w-3xl text-center">
             <div className="flex items-center justify-center gap-3 mb-6">
               <MapPin className="w-6 h-6 text-primary" />
-              <h2 className="text-3xl uppercase tracking-wider text-white">Exhibit On Superior</h2>
+              <h3 className="text-3xl uppercase tracking-wider text-white">Exhibit On Superior</h3>
             </div>
             <p className="text-xl mb-8">
               165 W Superior St<br />
