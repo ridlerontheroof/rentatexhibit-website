@@ -7,6 +7,7 @@ import { startApexRedirectCheck } from "./lib/apexRedirectCheck";
 import { startKnowledgePageCheck } from "./lib/knowledgeCheck";
 import { startFloorPlanPageCheck } from "./lib/floorPlanCheck";
 import { startShowingSchedulerCheck } from "./lib/showingSchedulerCheck";
+import { startTourUnitCheck } from "./lib/tourUnitCheck";
 import { startApplyLinkCheck } from "./lib/applyLinkCheck";
 import { startRentedNoindexCheck } from "./lib/rentedCheck";
 import { startLegacyRedirectCheck } from "./lib/redirectCheck";
@@ -66,6 +67,12 @@ app.listen(port, (err) => {
   // endpoints (slot fetch + IDV status) against a posted unit; alerts
   // (once/day) on sustained failure or an enabled IDV gate.
   startShowingSchedulerCheck(logger);
+
+  // Watchdog: hourly check that the hidden "Tour" unit still resolves via
+  // the reserved TOUR token (powers the /schedule-a-tour "no specific
+  // apartment" path); alerts (once/day) when resolution fails several runs
+  // in a row — the signature of the unit being renamed or deleted.
+  startTourUnitCheck(logger);
 
   // Watchdog: hourly probe of the derived AppFolio rental-application URL
   // for a posted unit (the "Apply Now" hand-off target); alerts the leasing

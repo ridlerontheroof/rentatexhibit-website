@@ -454,7 +454,7 @@ export async function sendApplyLinkAlert(opts: {
  * fails; deduping lives in the caller (showingSchedulerCheck).
  */
 export async function sendShowingSchedulerAlert(opts: {
-  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slot_format_drift" | "near_term_skip";
+  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slot_format_drift" | "near_term_skip" | "tour_unit_unresolved";
   detail: string;
   failedRuns: number;
 }): Promise<void> {

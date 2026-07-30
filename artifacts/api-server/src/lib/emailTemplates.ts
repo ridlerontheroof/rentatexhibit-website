@@ -928,7 +928,7 @@ export function renderAcceptedSilenceAlert(opts: {
  * booking flow is broken until someone investigates.
  */
 export function renderShowingSchedulerAlert(opts: {
-  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slot_format_drift" | "near_term_skip";
+  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slot_format_drift" | "near_term_skip" | "tour_unit_unresolved";
   detail: string;
   failedRuns: number;
 }): RenderedEmail {
@@ -942,7 +942,9 @@ export function renderShowingSchedulerAlert(opts: {
           ? "Website alert: online showing times are not displaying — AppFolio changed its slot format"
           : reason === "near_term_skip"
             ? "Website alert: AppFolio's showing feed hid near-term tour days (auto-recovered)"
-            : "Website alert: the online showing scheduler probe keeps failing";
+            : reason === "tour_unit_unresolved"
+              ? 'Website alert: the hidden "Tour" unit is missing from AppFolio — general tour booking is degraded'
+              : "Website alert: the online showing scheduler probe keeps failing";
 
   const intro =
     reason === "idv_enabled"
@@ -953,7 +955,9 @@ export function renderShowingSchedulerAlert(opts: {
           ? "AppFolio is sending showing time slots in a format the website no longer recognizes: every slot it sent was dropped, so the schedule-showing page is showing \"no online showing times\" even though openings exist. Visitors cannot self-book until the website's slot parser is updated to AppFolio's new format."
           : reason === "near_term_skip"
             ? "AppFolio's availabilities feed contradicted itself: it reported an empty showing window and suggested a later first-available date, while open near-term slots actually existed. The website caught the contradiction, recovered the hidden days, and displayed them to visitors — no action was lost this time."
-          : `The automatic probe of AppFolio's showing scheduler has now failed ${failedRuns} runs in a row — this is no longer a transient blip. AppFolio has likely changed the unofficial endpoints the website's booking flow replicates (new paths, CSRF tokens, or captcha).`;
+          : reason === "tour_unit_unresolved"
+            ? `The website can no longer find the hidden "Tour" unit in AppFolio's unit directory (${failedRuns} checks in a row). That unit is what powers day-and-time picking for visitors who choose "No specific apartment" on the schedule-a-tour page — without it, those visitors silently drop to a plain contact-form request with no calendar.`
+            : `The automatic probe of AppFolio's showing scheduler has now failed ${failedRuns} runs in a row — this is no longer a transient blip. AppFolio has likely changed the unofficial endpoints the website's booking flow replicates (new paths, CSRF tokens, or captcha).`;
 
   const impact =
     "Visitors are not stranded: the schedule-showing page falls back to standard lead capture plus a link to AppFolio's hosted booking page. But the Exhibit-branded flow is broken until this is investigated.";
@@ -965,7 +969,9 @@ export function renderShowingSchedulerAlert(opts: {
         ? "What to do: nothing is broken for visitors right now — the site self-recovered. But if this alert repeats daily, AppFolio's find_first_available_date behavior has changed for good and the showing client should be reviewed. This alert is sent at most once per day."
         : reason === "slot_format_drift"
         ? "What to do: this needs a website-side code fix — compare the raw availabilities response from AppFolio's hosted \"Schedule a Showing\" page against the site's slot parser and update it to accept the new format. Until then, expect tour requests to arrive as standard leads instead of self-booked showings. This alert is sent at most once per day."
-        : "What to do: open AppFolio's hosted \"Schedule a Showing\" page with browser dev tools and compare its requests against the site's showing client (availabilities, guest card, booking). Update the client to match, or leave the page on its fallback until fixed. This alert is sent at most once per day.";
+        : reason === "tour_unit_unresolved"
+          ? 'What to do: check AppFolio for a unit named "Tour" (or "General Tour") at the property. If it was renamed, either rename it back or update the website\'s TOUR_UNIT_NAMES setting to match; if it was deleted, recreate it (not posted to the website) so general tours can book showing times again. This alert is sent at most once per day.'
+          : "What to do: open AppFolio's hosted \"Schedule a Showing\" page with browser dev tools and compare its requests against the site's showing client (availabilities, guest card, booking). Update the client to match, or leave the page on its fallback until fixed. This alert is sent at most once per day.";
 
   const detailLabel =
     reason === "live_traffic_failure" ? "Latest failures" : "Latest probe detail";
@@ -998,7 +1004,9 @@ export function renderShowingSchedulerAlert(opts: {
             ? "Every AppFolio showing slot is being dropped — visitors can't self-book."
             : reason === "near_term_skip"
               ? "AppFolio hid open near-term tour days; the site auto-recovered them."
-              : "The online showing scheduler's AppFolio probe keeps failing.",
+              : reason === "tour_unit_unresolved"
+                ? 'The hidden "Tour" unit stopped resolving — general tours lost time picking.'
+                : "The online showing scheduler's AppFolio probe keeps failing.",
     kicker: "Website Alert",
     heading:
       reason === "idv_enabled"
@@ -1009,7 +1017,9 @@ export function renderShowingSchedulerAlert(opts: {
             ? "Online Showing Times Not Displaying"
             : reason === "near_term_skip"
               ? "Near-Term Tour Days Hidden by AppFolio"
-              : "Showing Scheduler Probe Failing",
+              : reason === "tour_unit_unresolved"
+                ? "General Tour Booking Degraded"
+                : "Showing Scheduler Probe Failing",
     bodyHtml: html,
   });
 
