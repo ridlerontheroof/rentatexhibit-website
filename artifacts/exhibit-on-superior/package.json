@@ -8,7 +8,7 @@
     "build": "node scripts/fetch-availability-snapshot.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs && tsx scripts/generate-fact-sheet.ts && node scripts/write-build-id.mjs && node scripts/precompress.mjs",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "start": "node server/index.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -b ../../lib/api-client-react && tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "check:fold": "node scripts/check-units-above-fold.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
