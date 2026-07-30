@@ -230,6 +230,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/amenities': {
     path: '/amenities',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('amenities'),
     label: 'Amenities',
     title: 'Amenities | Exhibit On Superior River North Apartments',
@@ -286,6 +287,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/pet-friendly': {
     path: '/pet-friendly',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('pet-friendly'),
     label: 'Pet Friendly',
     title: 'Pet-Friendly Apartments in River North | Exhibit On Superior',
@@ -318,6 +320,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/neighborhood': {
     path: '/neighborhood',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('neighborhood'),
     label: 'Neighborhood',
     title: 'River North Neighborhood | Exhibit On Superior Chicago',
@@ -392,6 +395,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/fees': {
     path: '/fees',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('fees'),
     label: 'Fees & Leasing Costs',
     title: 'Fees, Utilities & Leasing Costs | Exhibit On Superior Chicago',
@@ -438,6 +442,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/parking-transportation': {
     path: '/parking-transportation',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('parking-transportation'),
     label: 'Parking & Transportation',
     title: 'Parking & Transportation | Exhibit On Superior River North',

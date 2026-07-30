@@ -116,8 +116,10 @@ describe('reviewsJsonLd stays in lockstep with the rendered model', () => {
     );
     // Curated quotes render as 5-star cards; schema must say the same.
     reviews.forEach((r) => expect(r.reviewRating.ratingValue).toBe(5));
-    // Curated fallback entries have no publishTime — datePublished must be absent.
-    reviews.forEach((r) => expect(r.datePublished).toBeUndefined());
+    // Curated fallback entries now carry their known publication dates.
+    expect(reviews[0].datePublished).toBe(FALLBACK_REVIEWS[0].datePublished);
+    expect(reviews[1].datePublished).toBe(FALLBACK_REVIEWS[1].datePublished);
+    expect(reviews[2].datePublished).toBe(FALLBACK_REVIEWS[2].datePublished);
   });
 
   it('includes datePublished on live reviews that have a publishTime, omits it when absent', () => {
@@ -125,10 +127,10 @@ describe('reviewsJsonLd stays in lockstep with the rendered model', () => {
     const jsonLd = reviewsJsonLd(model);
     const reviews = jsonLd.review as JsonLdReview[];
 
-    // Curated reviews (first 3) never have datePublished.
-    expect(reviews[0].datePublished).toBeUndefined();
-    expect(reviews[1].datePublished).toBeUndefined();
-    expect(reviews[2].datePublished).toBeUndefined();
+    // Curated reviews (first 3) carry their known publication dates.
+    expect(reviews[0].datePublished).toBe(FALLBACK_REVIEWS[0].datePublished);
+    expect(reviews[1].datePublished).toBe(FALLBACK_REVIEWS[1].datePublished);
+    expect(reviews[2].datePublished).toBe(FALLBACK_REVIEWS[2].datePublished);
 
     // Live reviews with publishTime get a YYYY-MM-DD datePublished.
     expect(reviews[3].datePublished).toBe('2024-11-03'); // Fresh quote one

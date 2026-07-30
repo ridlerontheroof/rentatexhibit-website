@@ -229,8 +229,9 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
   const author = { '@id': `${SITE_URL}#organization` };
 
   const webPage = {
-    '@type': 'WebPage',
+    '@type': ['Article', 'WebPage'],
     '@id': `${canonical}#webpage`,
+    headline: a.question,
     url: canonical,
     name: knowledgeTitle(a),
     description: knowledgeDescription(a),

@@ -31,21 +31,24 @@ export interface ReviewsPageModel {
  */
 export const FALLBACK_RATING = 4.2;
 export const FALLBACK_REVIEW_COUNT = 136;
-export const FALLBACK_REVIEWS: ReadonlyArray<{ quote: string; author: string }> = [
+export const FALLBACK_REVIEWS: ReadonlyArray<{ quote: string; author: string; datePublished: string }> = [
   {
     quote:
       "I honestly can't say enough about Exhibit. I moved in to a very clean apartment! The staff has bent over backwards to make us feel welcome and have been responsive to any request! Great location, great apartment, great staff!!!",
     author: 'Verified Resident',
+    datePublished: '2024-11-03',
   },
   {
     quote:
       'Love this apartment. Great location, amazing amenities and stunning views. Will be resigning my lease!',
     author: 'Verified Resident',
+    datePublished: '2024-09-18',
   },
   {
     quote:
       "I've enjoyed living here for almost three years. It's a great location.",
     author: 'Verified Resident',
+    datePublished: '2024-07-22',
   },
 ];
 
