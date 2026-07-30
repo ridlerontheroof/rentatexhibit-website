@@ -12,6 +12,7 @@
 // copy. Anything unconfirmed is deferred to the leasing office — no guesses.
 import {
   SITE_URL,
+  SITE_LAUNCH_DATE,
   WEBSITE_NODE,
   ORGANIZATION_NODE,
   APARTMENT_COMPLEX_NODE,
@@ -82,6 +83,12 @@ export interface KnowledgeArticle {
    * dateModified/lastReviewed fields in the article JSON-LD.
    */
   updated?: string;
+  /**
+   * ISO date (YYYY-MM-DD) this article was first published. Defaults to the
+   * site launch date. Emitted as `datePublished` in the article JSON-LD so
+   * Google can distinguish new articles from re-reviewed ones.
+   */
+  published?: string;
 }
 
 /**
@@ -232,6 +239,7 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
     primaryImageOfPage: DEFAULT_OG_IMAGE,
     author,
     publisher: { '@id': `${SITE_URL}#organization` },
+    datePublished: a.published ?? SITE_LAUNCH_DATE,
     dateModified: knowledgeUpdated(a),
     lastReviewed: knowledgeUpdated(a),
     reviewedBy: author,
@@ -272,6 +280,30 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
       breadcrumb,
       faqPage,
     ],
+  };
+}
+
+/**
+ * ItemList JSON-LD for the /knowledge hub page. One ListItem per article,
+ * position-ordered, so Google can understand the page as a structured
+ * collection and potentially surface article-list carousels in rich results.
+ * Follows the same extraJsonLd pattern used on /floor-plans and /available-units.
+ */
+export function knowledgeHubJsonLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    '@id': `${SITE_URL}/knowledge#itemlist`,
+    name: 'Knowledge Center',
+    description: 'Answers to every common question about living at Exhibit On Superior.',
+    url: `${SITE_URL}/knowledge`,
+    numberOfItems: KNOWLEDGE_ARTICLES.length,
+    itemListElement: KNOWLEDGE_ARTICLES.map((a, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: a.question,
+      url: `${SITE_URL}${knowledgePath(a.slug)}`,
+    })),
   };
 }
 

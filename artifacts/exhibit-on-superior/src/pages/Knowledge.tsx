@@ -8,6 +8,7 @@ import {
   KNOWLEDGE_ARTICLES,
   KNOWLEDGE_CATEGORIES,
   knowledgeDescription,
+  knowledgeHubJsonLd,
   knowledgePath,
 } from '../data/knowledge';
 
@@ -36,7 +37,7 @@ export function Knowledge() {
 
   return (
     <>
-      <Seo path="/knowledge" />
+      <Seo path="/knowledge" extraJsonLd={[knowledgeHubJsonLd()]} />
       <div>
         <section className="pt-28 pb-12 px-4 bg-dark-section text-center">
           <div className="container mx-auto max-w-3xl">

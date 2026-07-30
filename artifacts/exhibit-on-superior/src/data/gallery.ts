@@ -72,6 +72,7 @@ export function photoGalleryJsonLd(): Record<string, unknown> {
     image: galleryImages.map((img) => ({
       '@type': 'ImageObject',
       contentUrl: `${SITE_URL}${img.src}`,
+      name: img.alt,
       caption: img.alt,
     })),
   };

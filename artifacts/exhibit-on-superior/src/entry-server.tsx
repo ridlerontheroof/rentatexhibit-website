@@ -13,6 +13,7 @@ import {
   buildKnowledgeSeoModel,
   knowledgeArticle,
   knowledgeDescription,
+  knowledgeHubJsonLd,
   knowledgePath,
   knowledgeTitle,
 } from './data/knowledge';
@@ -92,6 +93,7 @@ export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
 const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
   '/available-units': () => [floorPlansItemListJsonLd(), unitAvailabilityJsonLd()],
   '/floor-plans': () => [floorPlanHubItemListJsonLd()],
+  '/knowledge': () => [knowledgeHubJsonLd()],
   // At prerender time there is no live Google feed, so the model resolves to
   // the curated fallback — exactly what the SSR'd page body displays. The
   // client re-emits the schema from the live-merged model after hydration.

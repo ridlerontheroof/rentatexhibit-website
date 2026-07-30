@@ -36,6 +36,12 @@ const PRICING_FAQ_ANSWER = (() => {
 export const SITE_URL = 'https://www.rentatexhibit.com';
 
 /**
+ * ISO date the site first went live. Used as the default `datePublished` on
+ * WebPage nodes for standard marketing pages that don't specify their own.
+ */
+export const SITE_LAUNCH_DATE = '2025-01-01';
+
+/**
  * Cache-buster for the share cards in public/images/og/ and the site-wide
  * default card public/images/og-card.jpg. Facebook, LinkedIn, and iMessage
  * cache og:image previews by URL for weeks; bump this whenever any card is
@@ -83,6 +89,10 @@ export interface PageSeo {
   noindex?: boolean;
   /** Absolute URL for this page's share-card image; falls back to DEFAULT_OG_IMAGE. */
   ogImage?: string;
+  /** ISO date (YYYY-MM-DD) this page was first published. Falls back to SITE_LAUNCH_DATE. */
+  datePublished?: string;
+  /** ISO date (YYYY-MM-DD) this page was last substantively updated. Falls back to SITE_LAUNCH_DATE. */
+  dateModified?: string;
 }
 
 export const PAGE_SEO: Record<string, PageSeo> = {
@@ -1202,6 +1212,8 @@ export function buildJsonLd(path: string): Record<string, unknown> {
     // as the og:image meta so the two can never diverge.
     primaryImageOfPage: page?.ogImage ?? DEFAULT_OG_IMAGE,
     ...(path === '/about' ? { mainEntity: { '@id': `${SITE_URL}#organization` } } : {}),
+    datePublished: page?.datePublished ?? SITE_LAUNCH_DATE,
+    dateModified: page?.dateModified ?? SITE_LAUNCH_DATE,
     breadcrumb: { '@id': `${idBase}#breadcrumb` },
   };
 
