@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
+import { FaqSection } from '../components/FaqSection';
 import { Input } from '../components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
 import { PlanFilters } from '../components/floor-plans/PlanFilters';
@@ -257,6 +258,10 @@ export function FloorPlansHub() {
             </div>
           </div>
         </section>
+
+        {/* Visible mirror of the page's FAQPage JSON-LD — Google penalizes
+            FAQ markup whose Q&A isn't readable on the page. */}
+        <FaqSection path="/floor-plans" />
       </div>
     </>
   );
