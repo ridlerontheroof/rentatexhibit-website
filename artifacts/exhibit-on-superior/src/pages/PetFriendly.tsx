@@ -46,7 +46,7 @@ export function PetFriendly() {
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center">
-                        <PawPrint className="w-6 h-6" />
+                        <PawPrint className="w-6 h-6" aria-hidden="true" />
                       </div>
                     </div>
                     <div>
@@ -60,7 +60,7 @@ export function PetFriendly() {
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center">
-                        <MapPin className="w-6 h-6" />
+                        <MapPin className="w-6 h-6" aria-hidden="true" />
                       </div>
                     </div>
                     <div>
@@ -74,7 +74,7 @@ export function PetFriendly() {
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center">
-                        <Home className="w-6 h-6" />
+                        <Home className="w-6 h-6" aria-hidden="true" />
                       </div>
                     </div>
                     <div>
@@ -88,7 +88,7 @@ export function PetFriendly() {
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center">
-                        <Heart className="w-6 h-6" />
+                        <Heart className="w-6 h-6" aria-hidden="true" />
                       </div>
                     </div>
                     <div>

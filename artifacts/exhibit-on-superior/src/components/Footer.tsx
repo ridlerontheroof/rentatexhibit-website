@@ -17,16 +17,16 @@ export function Footer() {
               className="h-10 w-auto mb-4"
             />
             <div className="flex items-start gap-2 text-sm mb-2">
-              <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
+              <MapPin className="w-4 h-4 mt-1 flex-shrink-0" aria-hidden="true" />
               <div>
                 165 W Superior St<br />
                 Chicago, IL 60654
               </div>
             </div>
             <div className="mt-4 flex gap-4">
-              <a href="https://www.facebook.com/exhibitonsuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Facebook</a>
-              <a href="https://www.instagram.com/exhibitonsuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Instagram</a>
-              <a href="https://www.youtube.com/@ExhibitonSuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">YouTube</a>
+              <a href="https://www.facebook.com/exhibitonsuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary-on-dark transition-colors">Facebook</a>
+              <a href="https://www.instagram.com/exhibitonsuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary-on-dark transition-colors">Instagram</a>
+              <a href="https://www.youtube.com/@ExhibitonSuperior" target="_blank" rel="noopener noreferrer" className="hover:text-primary-on-dark transition-colors">YouTube</a>
             </div>
           </div>
 
@@ -35,47 +35,47 @@ export function Footer() {
             <h3 className="uppercase tracking-wider font-semibold mb-4 text-sm">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/available-units" className="hover:text-primary transition-colors">
+                <Link href="/available-units" className="hover:text-primary-on-dark transition-colors">
                   Available Units
                 </Link>
               </li>
               <li>
-                <Link href="/floor-plans" className="hover:text-primary transition-colors">
+                <Link href="/floor-plans" className="hover:text-primary-on-dark transition-colors">
                   Floor Plans
                 </Link>
               </li>
               <li>
-                <Link href="/photo-gallery" className="hover:text-primary transition-colors">
+                <Link href="/photo-gallery" className="hover:text-primary-on-dark transition-colors">
                   Photo Gallery
                 </Link>
               </li>
               <li>
-                <Link href="/virtual-tour" className="hover:text-primary transition-colors">
+                <Link href="/virtual-tour" className="hover:text-primary-on-dark transition-colors">
                   Virtual Tour
                 </Link>
               </li>
               <li>
-                <Link href="/amenities" className="hover:text-primary transition-colors">
+                <Link href="/amenities" className="hover:text-primary-on-dark transition-colors">
                   Amenities
                 </Link>
               </li>
               <li>
-                <Link href="/neighborhood" className="hover:text-primary transition-colors">
+                <Link href="/neighborhood" className="hover:text-primary-on-dark transition-colors">
                   Neighborhood
                 </Link>
               </li>
               <li>
-                <Link href="/apartment-guide" className="hover:text-primary transition-colors">
+                <Link href="/apartment-guide" className="hover:text-primary-on-dark transition-colors">
                   Apartment Guide
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="hover:text-primary transition-colors">
+                <Link href="/faq" className="hover:text-primary-on-dark transition-colors">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/knowledge" className="hover:text-primary transition-colors">
+                <Link href="/knowledge" className="hover:text-primary-on-dark transition-colors">
                   Knowledge Center
                 </Link>
               </li>
@@ -87,42 +87,42 @@ export function Footer() {
             <h3 className="uppercase tracking-wider font-semibold mb-4 text-sm">More Info</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/about" className="hover:text-primary transition-colors">
+                <Link href="/about" className="hover:text-primary-on-dark transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/pet-friendly" className="hover:text-primary transition-colors">
+                <Link href="/pet-friendly" className="hover:text-primary-on-dark transition-colors">
                   Pet Friendly
                 </Link>
               </li>
               <li>
-                <Link href="/map-directions" className="hover:text-primary transition-colors">
+                <Link href="/map-directions" className="hover:text-primary-on-dark transition-colors">
                   Map & Directions
                 </Link>
               </li>
               <li>
-                <Link href="/residents" className="hover:text-primary transition-colors">
+                <Link href="/residents" className="hover:text-primary-on-dark transition-colors">
                   Residents
                 </Link>
               </li>
               <li>
-                <Link href="/reviews" className="hover:text-primary transition-colors">
+                <Link href="/reviews" className="hover:text-primary-on-dark transition-colors">
                   Reviews
                 </Link>
               </li>
               <li>
-                <Link href="/fees" className="hover:text-primary transition-colors">
+                <Link href="/fees" className="hover:text-primary-on-dark transition-colors">
                   Fees &amp; Leasing Costs
                 </Link>
               </li>
               <li>
-                <Link href="/parking-transportation" className="hover:text-primary transition-colors">
+                <Link href="/parking-transportation" className="hover:text-primary-on-dark transition-colors">
                   Parking &amp; Transportation
                 </Link>
               </li>
               <li>
-                <Link href="/application-guide" className="hover:text-primary transition-colors">
+                <Link href="/application-guide" className="hover:text-primary-on-dark transition-colors">
                   Application Guide
                 </Link>
               </li>
@@ -136,18 +136,18 @@ export function Footer() {
               <li>
                 <a 
                   href="tel:312-450-0635" 
-                  className="flex items-center gap-2 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 hover:text-primary-on-dark transition-colors"
                 >
-                  <Phone className="w-4 h-4" />
+                  <Phone className="w-4 h-4" aria-hidden="true" />
                   312-450-0635
                 </a>
               </li>
               <li>
                 <a 
                   href="mailto:exhibit@highlandptrs.com" 
-                  className="flex items-center gap-2 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 hover:text-primary-on-dark transition-colors"
                 >
-                  <Mail className="w-4 h-4" />
+                  <Mail className="w-4 h-4" aria-hidden="true" />
                   exhibit@highlandptrs.com
                 </a>
               </li>

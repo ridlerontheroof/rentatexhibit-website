@@ -192,6 +192,7 @@ export function PhotoGallery() {
                 <button
                   key={category}
                   onClick={() => setFilter(category)}
+                  aria-pressed={filter === category}
                   className={`uppercase tracking-wider text-sm px-6 py-2 transition-colors ${
                     filter === category
                       ? 'bg-primary text-white'

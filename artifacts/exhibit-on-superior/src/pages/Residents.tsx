@@ -40,7 +40,7 @@ export function Residents() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-white p-8 border border-border text-center">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-                  <CreditCard className="w-6 h-6" />
+                  <CreditCard className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg uppercase tracking-wider mb-3">Pay Rent Online</h3>
                 <p className="text-sm leading-relaxed">
@@ -49,7 +49,7 @@ export function Residents() {
               </div>
               <div className="bg-white p-8 border border-border text-center">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-                  <Wrench className="w-6 h-6" />
+                  <Wrench className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg uppercase tracking-wider mb-3">Request Maintenance</h3>
                 <p className="text-sm leading-relaxed">
@@ -58,7 +58,7 @@ export function Residents() {
               </div>
               <div className="bg-white p-8 border border-border text-center">
                 <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-                  <Megaphone className="w-6 h-6" />
+                  <Megaphone className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg uppercase tracking-wider mb-3">Community Updates</h3>
                 <p className="text-sm leading-relaxed">
@@ -73,7 +73,7 @@ export function Residents() {
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl">
             <div className="flex items-center justify-center gap-3 mb-6">
-              <PartyPopper className="w-6 h-6 text-primary" />
+              <PartyPopper className="w-6 h-6 text-primary" aria-hidden="true" />
               <h2 className="text-3xl uppercase tracking-wider text-center">Make The Most Of Living Here</h2>
             </div>
             <p className="text-lg leading-relaxed text-center mb-8">

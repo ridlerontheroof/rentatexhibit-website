@@ -70,6 +70,7 @@
   --color-popover-border: hsl(var(--popover-border));
 
   --color-primary: hsl(var(--primary));
+  --color-primary-on-dark: hsl(var(--primary-on-dark));
   --color-primary-foreground: hsl(var(--primary-foreground));
   --color-primary-border: var(--primary-border);
 
@@ -139,7 +140,8 @@
   --popover-foreground: 0 0% 20%;
   --popover-border: 0 0% 90%;
 
-  --primary: 42 36% 54%; /* #b39a5f gold */
+  --primary: 42 40% 30%; /* accessible gold — 4.5:1 on white (WCAG AA) */
+  --primary-on-dark: 42 36% 54%; /* original gold — passes on dark backgrounds (#3c3c3e, #1c1c1c) */
   --primary-foreground: 0 0% 100%;
 
   --secondary: 0 0% 11%; /* #1c1c1c dark */
@@ -275,6 +277,18 @@
 
 .btn-gold-outline:hover {
   @apply bg-primary text-white;
+}
+
+/* On dark backgrounds, use the lighter gold token so the border/text are visible */
+.bg-footer .btn-gold-outline,
+.bg-dark-section .btn-gold-outline {
+  border-color: hsl(var(--primary-on-dark));
+  color: hsl(var(--primary-on-dark));
+}
+.bg-footer .btn-gold-outline:hover,
+.bg-dark-section .btn-gold-outline:hover {
+  background-color: hsl(var(--primary-on-dark));
+  color: white;
 }
 
 .btn-dark-outline {
