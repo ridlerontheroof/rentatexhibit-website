@@ -19,6 +19,7 @@ import {
   type SeoModel,
   type SeoMeta,
   DEFAULT_OG_IMAGE,
+  TWITTER_SITE,
 } from './seo';
 import { KNOWLEDGE_ARTICLES } from './knowledgeArticles';
 
@@ -327,6 +328,7 @@ export function buildKnowledgeSeoModel(a: KnowledgeArticle): SeoModel {
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:site', content: TWITTER_SITE },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
     { name: 'twitter:image', content: ogImage },

@@ -12,6 +12,7 @@ import {
   APARTMENT_COMPLEX_NODE,
   type SeoModel,
   type SeoMeta,
+  TWITTER_SITE,
 } from './seo';
 import {
   apartmentNode,
@@ -273,6 +274,7 @@ export function buildUnitSeoModel(u: AvailableUnit, updatedAt?: string | null): 
           { property: 'og:image:height', content: '630' },
         ]),
     { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:site', content: TWITTER_SITE },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
     { name: 'twitter:image', content: ogImage },

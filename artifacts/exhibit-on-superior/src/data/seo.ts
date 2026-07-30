@@ -35,6 +35,8 @@ const PRICING_FAQ_ANSWER = (() => {
 
 export const SITE_URL = 'https://www.rentatexhibit.com';
 
+/** X (Twitter) handle for the property, used in twitter:site card metadata. */
+export const TWITTER_SITE = '@ExhibitSuperior';
 /**
  * ISO date the site first went live. Used as the default `datePublished` on
  * WebPage nodes for standard marketing pages that don't specify their own.
@@ -102,7 +104,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Exhibit On Superior',
     title: 'Luxury Apartments in River North Chicago | Exhibit On Superior',
     description:
-      'Luxury apartments in River North Chicago — studio, convertible, one, two & three-bedroom homes with skyline views, amenities, and on-site retail.',
+      'Luxury apartments in River North Chicago — studio, convertible, 1, 2 & 3-bedroom homes with skyline views, resort amenities, and on-site retail and dining.',
     quickAnswer:
       'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, convertible, one-, two-, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
     faqs: [
@@ -208,7 +210,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Virtual Tour',
     title: 'Virtual Tours | Exhibit On Superior Apartments Chicago',
     description:
-      'Take a virtual tour of Exhibit On Superior apartments and amenities in River North Chicago with video and Matterport tour embeds.',
+      'Take a virtual tour of Exhibit On Superior apartments and amenities in River North Chicago with video walkthroughs and an interactive Matterport 3D tour.',
     quickAnswer:
       'Renters can tour Exhibit On Superior remotely through the video tour and interactive 3D Matterport walkthroughs on this page \u2014 covering apartment homes and the full amenity floor of the 34-story River North tower \u2014 before scheduling an in-person visit with the leasing team.',
     faqs: [
@@ -288,7 +290,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Pet Friendly',
     title: 'Pet-Friendly Apartments in River North | Exhibit On Superior',
     description:
-      'Learn about pet-friendly living at Exhibit On Superior in Chicago, including dog and cat-friendly apartment content and on-site pet amenities.',
+      'Pet-friendly apartments in River North Chicago at Exhibit On Superior — cats and dogs welcome, dog spa, outdoor walk, no weight limits, no monthly pet rent.',
     quickAnswer:
       'Exhibit On Superior is a pet-friendly River North apartment community for cats and dogs (maximum 2 pets), with pet amenities including a dog spa and gated outdoor dog walk. There is a one-time non-refundable pet fee \u2014 $650 for one dog or $750 for two, and $325 for cats \u2014 with no pet deposit, no monthly pet rent, and no weight limits. Breed restrictions apply; see the leasing team for details.',
     faqs: [
@@ -355,7 +357,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Apartment Guide',
     title: 'Apartment Guide: Layouts, Finishes & Views | Exhibit On Superior',
     description:
-      'A complete guide to Exhibit On Superior apartments — studio, convertible, 1, 2 & 3 bedroom layouts, finishes, in-home laundry, and skyline views.',
+      'A complete guide to Exhibit On Superior apartments — studio, convertible, 1, 2 & 3 bedroom layouts, finishes, in-home laundry, balconies, and skyline views.',
     quickAnswer: `Exhibit On Superior offers studio, convertible, one, two, and three-bedroom apartments from about ${SQFT_MIN_DISPLAY} to ${SQFT_MAX_DISPLAY} square feet across floors 2\u201334, finished with driftwood plank floors, quartz countertops, stainless-steel appliances, in-home washers and dryers, floor-to-ceiling windows, and private balconies in nearly every home.`,
     faqs: [
       {
@@ -394,7 +396,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Fees & Leasing Costs',
     title: 'Fees, Utilities & Leasing Costs | Exhibit On Superior Chicago',
     description:
-      'What it costs to lease at Exhibit On Superior in River North Chicago — application fees, the monthly utility bundle, plus parking and other charges.',
+      'What it costs to lease at Exhibit On Superior in River North Chicago — application fees, the monthly utility bundle, plus parking, storage, and other charges.',
     quickAnswer:
       'Beyond monthly rent, Exhibit On Superior charges a per-application fee (shown on each unit\u2019s listing), a $500 non-refundable administration fee per apartment, and a monthly Utility & Service Amenity fee of $95\u2013$195 by floor plan covering water, sewer, trash, heat, air conditioning, and natural gas for cooking and the dryer. There is no security deposit. Electricity is billed directly by ComEd. Garage parking is $335/month and on-site storage is $25/month.',
     faqs: [
@@ -440,7 +442,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Parking & Transportation',
     title: 'Parking & Transportation | Exhibit On Superior River North',
     description:
-      'Getting around from Exhibit On Superior at 165 W Superior St — CTA Brown, Purple & Red Line stops, bus routes, highway access, and on-site parking.',
+      'Getting around from Exhibit On Superior at 165 W Superior St — CTA Brown, Purple & Red Lines, bus routes, highway access, and on-site parking for residents.',
     quickAnswer:
       'Exhibit On Superior has an attached indoor multi-level garage with unreserved parking at $335/month (subject to availability), plus EV charging and complimentary ground-floor bike storage. It sits about two blocks from the CTA Chicago (Brown/Purple Line) station at Chicago & Franklin and about 0.3 miles from the Chicago (Red Line) station at Chicago & State, with the #66 Chicago Avenue bus one block north and the Loop roughly a mile south.',
     faqs: [
@@ -569,7 +571,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/map-directions',
     ogImage: ogCardUrl('map-directions'),
     label: 'Map + Directions',
-    title: 'Map & Directions | Exhibit On Superior Chicago IL',
+    title: 'Map & Directions | Exhibit On Superior River North Chicago',
     description:
       "Get map and direction information for Exhibit On Superior at 165 W Superior St in Chicago's River North, including transit, driving, and parking options.",
     quickAnswer:
@@ -589,7 +591,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/residents',
     ogImage: ogCardUrl('residents'),
     label: 'Residents',
-    title: 'Resident Resources | Exhibit On Superior',
+    title: 'Resident Portal & Resources | Exhibit On Superior Chicago',
     description:
       'Resident resource page for Exhibit On Superior in River North Chicago with online portal access, rent payments, maintenance requests, and contact information.',
     quickAnswer:
@@ -613,7 +615,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/schedule-a-tour',
     ogImage: ogCardUrl('schedule-a-tour'),
     label: 'Schedule a Tour',
-    title: 'Schedule a Tour | Exhibit On Superior Apartments',
+    title: 'Schedule a Tour | Exhibit On Superior River North Chicago',
     description:
       'Schedule a tour of Exhibit On Superior in River North Chicago — pick an available apartment and book it directly, or request a showing with the leasing team.',
     quickAnswer:
@@ -657,9 +659,9 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/reviews',
     ogImage: ogCardUrl('reviews'),
     label: 'Reviews',
-    title: 'Reviews | Exhibit On Superior Chicago Apartments',
+    title: 'Resident Reviews | Exhibit On Superior River North Chicago',
     description:
-      "Read reviews for Exhibit On Superior and connect with verified review sources for this River North Chicago apartment community.",
+      'Read verified resident reviews for Exhibit On Superior in River North Chicago and see why renters love our luxury apartments, amenities, and skyline views.',
     quickAnswer:
       `Reviews of Exhibit On Superior come directly from the property\u2019s Google Business Profile, so the star rating and quotes shown on this page reflect what residents and visitors have actually posted about the ${UNIT_TOTAL}-residence River North tower \u2014 refreshed automatically rather than hand-picked marketing testimonials.`,
     faqs: [
@@ -1319,6 +1321,7 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:site', content: TWITTER_SITE },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
     { name: 'twitter:image', content: ogImage },

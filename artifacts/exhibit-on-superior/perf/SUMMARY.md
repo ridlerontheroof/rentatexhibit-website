@@ -1,6 +1,6 @@
 # Page-speed lab report
 
-Generated: 2026-07-30T01:24:23.754Z
+Generated: 2026-07-30T01:41:56.892Z
 
 Target: local production build (dist/public via `vite preview`)
 
@@ -8,23 +8,23 @@ Lab metrics with Lighthouse default throttling (simulated Slow-4G/4x-CPU mobile;
 
 | FF | Page | Score | LCP | CLS | TBT | JS | Images | 3rd-party | Result |
 |---|---|---|---|---|---|---|---|---|---|
-| mobile | / | 52 | 4705 ms | 0.000 | 2555 ms | 495 KB | 461 KB | 335 KB | ❌ tbtMs 2555 > limit 200 |
-| mobile | /available-units | 56 | 4331 ms | 0.000 | 1987 ms | 544 KB | 671 KB | 472 KB | ❌ lcpMs 4331 > limit 3600; tbtMs 1987 > limit 200 |
-| mobile | /available-units/0208 | 79 | 2827 ms | 0.046 | 579 ms | 500 KB | 910 KB | 782 KB | ❌ tbtMs 579 > limit 200 |
-| mobile | /available-units/2705 | 58 | 5182 ms | 0.000 | 989 ms | 500 KB | 463 KB | 333 KB | ❌ tbtMs 989 > limit 200 |
-| mobile | /amenities | 63 | 5934 ms | 0.000 | 496 ms | 495 KB | 544 KB | 333 KB | ❌ lcpMs 5934 > limit 4200; tbtMs 496 > limit 200 |
-| mobile | /photo-gallery | 71 | 5019 ms | 0.000 | 388 ms | 500 KB | 559 KB | 334 KB | ❌ tbtMs 388 > limit 200 |
-| mobile | /virtual-tour | 82 | 2813 ms | 0.000 | 502 ms | 493 KB | 597 KB | 333 KB | ❌ tbtMs 502 > limit 200 |
-| mobile | /knowledge | 92 | 2651 ms | 0.000 | 221 ms | 489 KB | 461 KB | 333 KB | ❌ tbtMs 221 > limit 200 |
-| mobile | /knowledge/application-fee | 89 | 2953 ms | 0.000 | 256 ms | 488 KB | 461 KB | 333 KB | ❌ tbtMs 256 > limit 200 |
-| mobile | /contact-us | 79 | 4105 ms | 0.000 | 317 ms | 517 KB | 480 KB | 334 KB | ❌ tbtMs 317 > limit 200 |
-| desktop | / | 98 | 1094 ms | 0.000 | 2 ms | 494 KB | 1433 KB | 333 KB | ✅ |
-| desktop | /available-units | 88 | 2303 ms | 0.000 | 2 ms | 544 KB | 1752 KB | 524 KB | ✅ |
-| desktop | /available-units/0208 | 89 | 2213 ms | 0.001 | 14 ms | 500 KB | 1882 KB | 782 KB | ✅ |
-| desktop | /available-units/2705 | 91 | 1986 ms | 0.000 | 4 ms | 500 KB | 1435 KB | 333 KB | ✅ |
-| desktop | /amenities | 95 | 1503 ms | 0.000 | 6 ms | 495 KB | 1741 KB | 333 KB | ✅ |
-| desktop | /photo-gallery | 98 | 1064 ms | 0.000 | 7 ms | 500 KB | 1792 KB | 334 KB | ✅ |
-| desktop | /virtual-tour | 97 | 1321 ms | 0.000 | 31 ms | 493 KB | 1717 KB | 333 KB | ✅ |
-| desktop | /knowledge | 94 | 1608 ms | 0.000 | 89 ms | 489 KB | 1433 KB | 333 KB | ✅ |
-| desktop | /knowledge/application-fee | 91 | 1949 ms | 0.000 | 64 ms | 489 KB | 1435 KB | 333 KB | ✅ |
-| desktop | /contact-us | 62 | 1713 ms | 0.000 | 706 ms | 518 KB | 1536 KB | 333 KB | ❌ tbtMs 706 > limit 200 |
+| mobile | / | 74 | 4592 ms | 0.000 | 356 ms | 495 KB | 461 KB | 335 KB | ❌ tbtMs 356 > limit 200 |
+| mobile | /available-units | 64 | 4423 ms | 0.000 | 864 ms | 544 KB | 671 KB | 472 KB | ❌ lcpMs 4423 > limit 3600; tbtMs 864 > limit 200 |
+| mobile | /available-units/0208 | 83 | 3326 ms | 0.046 | 354 ms | 500 KB | 910 KB | 782 KB | ❌ tbtMs 354 > limit 200 |
+| mobile | /available-units/2705 | 77 | 4861 ms | 0.000 | 242 ms | 500 KB | 463 KB | 333 KB | ❌ tbtMs 242 > limit 200 |
+| mobile | /amenities | 90 | 3023 ms | 0.000 | 205 ms | 495 KB | 544 KB | 333 KB | ❌ tbtMs 205 > limit 200 |
+| mobile | /photo-gallery | 87 | 3315 ms | 0.000 | 231 ms | 499 KB | 559 KB | 333 KB | ❌ tbtMs 231 > limit 200 |
+| mobile | /virtual-tour | 91 | 3103 ms | 0.000 | 162 ms | 493 KB | 597 KB | 333 KB | ✅ |
+| mobile | /knowledge | 92 | 3088 ms | 0.000 | 127 ms | 489 KB | 461 KB | 333 KB | ✅ |
+| mobile | /knowledge/application-fee | 90 | 3238 ms | 0.000 | 140 ms | 489 KB | 461 KB | 334 KB | ✅ |
+| mobile | /contact-us | 88 | 3314 ms | 0.000 | 188 ms | 517 KB | 480 KB | 333 KB | ✅ |
+| desktop | / | 100 | 652 ms | 0.000 | 0 ms | 494 KB | 1433 KB | 333 KB | ✅ |
+| desktop | /available-units | 98 | 1196 ms | 0.000 | 18 ms | 544 KB | 1752 KB | 524 KB | ✅ |
+| desktop | /available-units/0208 | 95 | 1466 ms | 0.001 | 21 ms | 500 KB | 1882 KB | 782 KB | ✅ |
+| desktop | /available-units/2705 | 91 | 1991 ms | 0.000 | 5 ms | 500 KB | 1435 KB | 333 KB | ✅ |
+| desktop | /amenities | 91 | 1939 ms | 0.000 | 0 ms | 495 KB | 1741 KB | 333 KB | ✅ |
+| desktop | /photo-gallery | 91 | 1937 ms | 0.000 | 4 ms | 499 KB | 1792 KB | 333 KB | ✅ |
+| desktop | /virtual-tour | 94 | 1633 ms | 0.000 | 5 ms | 493 KB | 1717 KB | 333 KB | ✅ |
+| desktop | /knowledge | 91 | 1938 ms | 0.000 | 1 ms | 489 KB | 1433 KB | 333 KB | ✅ |
+| desktop | /knowledge/application-fee | 93 | 1718 ms | 0.000 | 0 ms | 488 KB | 1435 KB | 333 KB | ✅ |
+| desktop | /contact-us | 98 | 1068 ms | 0.000 | 0 ms | 517 KB | 1536 KB | 333 KB | ✅ |
