@@ -62,6 +62,26 @@ describe('parameterized page variants emit distinct head metadata', () => {
     expect(seo.description).toContain('ADA-accessible');
   });
 
+  it('/floor-plans?ada=1 overrides title and description', async () => {
+    window.history.replaceState(null, '', '/floor-plans?ada=1');
+    const { FloorPlansHub } = await import('./FloorPlansHub');
+    renderPage(<FloorPlansHub />);
+    const seo = lastSeo();
+    expect(seo.path).toBe('/floor-plans');
+    expect(seo.title).toContain('ADA-Accessible');
+    expect(seo.description).toContain('ADA-accessible');
+  });
+
+  it('/floor-plans without params keeps the base metadata', async () => {
+    window.history.replaceState(null, '', '/floor-plans');
+    const { FloorPlansHub } = await import('./FloorPlansHub');
+    renderPage(<FloorPlansHub />);
+    const seo = lastSeo();
+    expect(seo.path).toBe('/floor-plans');
+    expect(seo.title).toBeUndefined();
+    expect(seo.description).toBeUndefined();
+  });
+
   it('/available-units without params keeps the base metadata', async () => {
     window.history.replaceState(null, '', '/available-units');
     const { FloorPlans } = await import('./FloorPlans');
