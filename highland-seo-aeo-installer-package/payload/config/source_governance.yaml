@@ -1,0 +1,71 @@
+version: 1
+
+principles:
+  factual_accuracy_over_marketing_language: true
+  report_conflicts_without_guessing: true
+  public_claims_require_verified_sources: true
+
+sources:
+  - rank: 1
+    id: verified_property_context
+    path: config/property_context.yaml
+    use_for:
+      - canonical property facts
+      - approved public claims
+      - amenity availability
+      - unit mix
+      - address
+      - fees when explicitly marked current
+    authority: canonical_after_human_review
+
+  - rank: 2
+    id: current_public_website
+    location: https://www.rentatexhibit.com
+    use_for:
+      - current public positioning
+      - current routes
+      - current disclosures
+      - current contact information
+    authority: public_current
+    note: Crawl only when network access is approved.
+
+  - rank: 3
+    id: property_knowledge_exports
+    path: knowledge/
+    use_for:
+      - supporting property facts
+      - floor plans
+      - unit maps
+      - accessibility designations
+    authority: supporting
+    note: Export relevant Custom GPT knowledge into this folder before relying on it.
+
+  - rank: 4
+    id: live_property_feeds
+    use_for:
+      - availability
+      - rent
+      - concessions
+      - dates
+    authority: time_sensitive
+    note: Never cache as permanent copy unless the feed contract requires it.
+
+  - rank: 5
+    id: exhibit_ad_copy_marketing_agent
+    path: knowledge/ad-copy-agent-export/
+    use_for:
+      - tone
+      - approved phrasing
+      - marketing structure
+      - copy examples
+    authority: style_only
+    prohibited_uses:
+      - overriding verified facts
+      - establishing current availability
+      - establishing current pricing
+      - establishing legal or fee requirements
+
+conflict_policy:
+  report_path: reports/fact_conflicts.md
+  action: preserve_existing_public_claim_or_omit_new_claim
+  require_human_resolution: true
