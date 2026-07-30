@@ -58,6 +58,11 @@ export const CARDS = {
     gravity: 'west',
     offsetX: 189,
   },
+  'available-units': {
+    src: 'image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg',
+    tagline: 'Apartments available now — live pricing & move-in dates',
+    gravity: 'south',
+  },
   'floor-plans': {
     src: 'image-014-exhibit-living-room-n5xrna.jpg',
     tagline: 'Studio, 1, 2 & 3 bedroom homes in River North',

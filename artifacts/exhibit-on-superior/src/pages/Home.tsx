@@ -133,7 +133,7 @@ export function Home() {
               <div className="relative h-[350px] overflow-hidden group">
                 <SmartImg
                   src="/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg"
-                  alt="Well-furnished modern apartment at Exhibit On Superior in Chicago, Illinois"
+                  alt="Full-floor amenity deck with skyline views at Exhibit On Superior in River North Chicago"
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />

@@ -51,7 +51,7 @@ export const SITE_LAUNCH_DATE = '2025-01-01';
  * fresh image. (v2: 2026-07 regeneration of nine stale cards, notably
  * reviews.jpg. v3: default og-card.jpg brought under the same guard.)
  */
-export const OG_CARD_VERSION = 5;
+export const OG_CARD_VERSION = 6;
 
 /** Site-wide fallback share card, cache-busted like the per-page cards. */
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg?v=${OG_CARD_VERSION}`;
@@ -136,7 +136,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   '/available-units': {
     path: '/available-units',
     dateModified: '2026-07-30',
-    ogImage: ogCardUrl('floor-plans'),
+    ogImage: ogCardUrl('available-units'),
     label: 'Available Units',
     title: 'Available Units & Floor Plans | Exhibit On Superior Chicago',
     description:
@@ -1354,11 +1354,13 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
     { property: 'og:image', content: ogImage },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: title },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:site', content: TWITTER_SITE },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
     { name: 'twitter:image', content: ogImage },
+    { name: 'twitter:image:alt', content: title },
   ];
 
   return { title, canonical, metas, jsonLd };
