@@ -29,7 +29,7 @@ const {
   ROUTE_PATHS,
   extractLcpPreload,
   LEGACY_REDIRECTS,
-  FLOOR_PLAN_COUNT,
+  LIVE_FLOORPLAN_COUNT,
   BAKED_UNIT_COUNT,
   UNIT_PATHS,
   BAKED_SNAPSHOT_STATUS,
@@ -414,7 +414,8 @@ const LCP_NO_HERO_ROUTES = [
 }
 
 // Post-build guard: /available-units must publish machine-readable inventory —
-// one FloorPlan node per residence line, and (whenever the build carried a
+// one FloorPlan node per residence line WITH A LIVE UNIT (the full 27-line
+// catalog schema lives on the /floor-plans hub now), and (whenever the build carried a
 // fresh availability snapshot) one Apartment node with a lease Offer per
 // available unit. A refactor that drops these silently would erase the site's
 // unit-level structured data for AI/Bing crawlers.
@@ -440,8 +441,15 @@ const LCP_NO_HERO_ROUTES = [
   const perPlanFloorPlans = nodes.filter(
     (n) => n['@type'] === 'FloorPlan' && n['@id'] !== `${SITE_URL}#floorplan-range`,
   ).length;
-  if (perPlanFloorPlans !== FLOOR_PLAN_COUNT) {
-    problems.push(`expected ${FLOOR_PLAN_COUNT} FloorPlan nodes, found ${perPlanFloorPlans}`);
+  if (perPlanFloorPlans !== LIVE_FLOORPLAN_COUNT) {
+    problems.push(
+      `expected ${LIVE_FLOORPLAN_COUNT} FloorPlan nodes (live residence lines), found ${perPlanFloorPlans}`,
+    );
+  }
+  // The 27-plan catalog ItemList moved to the /floor-plans hub — it must not
+  // reappear here and duplicate the hub's entities.
+  if (nodes.some((n) => n['@type'] === 'ItemList')) {
+    problems.push('found a catalog ItemList on /available-units — it belongs on /floor-plans');
   }
   // Offers are standalone nodes linked to their Apartment via itemOffered
   // (schema.org core has no `offers` property on Apartment).
@@ -473,7 +481,7 @@ const LCP_NO_HERO_ROUTES = [
     );
   }
   console.log(
-    `Unit-level structured data verified: ${FLOOR_PLAN_COUNT} FloorPlans, ${BAKED_UNIT_COUNT} available units with Offers.`,
+    `Unit-level structured data verified: ${LIVE_FLOORPLAN_COUNT} live-line FloorPlans, ${BAKED_UNIT_COUNT} available units with Offers.`,
   );
 }
 

@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { render } from './entry-server';
-import { planGroups } from './data/floorPlans';
 import { getBakedAvailability } from './data/availabilitySnapshot';
-import { unitAvailabilityJsonLd, planGroupForUnitNumber } from './data/unitJsonLd';
+import {
+  unitAvailabilityJsonLd,
+  planGroupForUnitNumber,
+  liveUnitPlanGroups,
+} from './data/unitJsonLd';
 
 // Task: /available-units must publish machine-readable inventory for AI/Bing
 // crawlers — one FloorPlan node per residence line (linked from the property
@@ -33,16 +36,19 @@ function allNodes(blocks: Record<string, unknown>[]): Record<string, unknown>[] 
 }
 
 describe('/available-units unit-level structured data', () => {
-  it('ships one FloorPlan per plan group, linked from the property entity', async () => {
+  it('ships one FloorPlan per live residence line, linked from the property entity', async () => {
     const { head } = await render('/available-units');
     const nodes = allNodes(extractJsonLd(head));
 
     // Exclude the building-wide summary FloorPlan (#floorplan-range) from the
     // base graph — it carries the tower-wide sq-ft range, not a plan sheet.
+    // Only residence lines with a live unit ship a FloorPlan node here; the
+    // full catalog schema lives on the /floor-plans hub.
     const floorPlans = nodes.filter(
       (n) => n['@type'] === 'FloorPlan' && !(n['@id'] as string)?.endsWith('#floorplan-range'),
     );
-    expect(floorPlans).toHaveLength(planGroups.length);
+    const liveGroups = liveUnitPlanGroups(getBakedAvailability()?.units ?? []);
+    expect(floorPlans).toHaveLength(liveGroups.length);
     for (const fp of floorPlans) {
       expect(fp['numberOfBedrooms']).toBeTypeOf('number');
       expect(fp['numberOfBathroomsTotal']).toBeTypeOf('number');
@@ -103,10 +109,24 @@ describe('/available-units unit-level structured data', () => {
     expect(planGroupForUnitNumber('9908')).toBeNull(); // no floor 99
   });
 
-  it('omits Apartment nodes (but keeps FloorPlans) when no snapshot units exist', () => {
+  it('omits Apartment AND FloorPlan nodes when no snapshot units exist', () => {
     const block = unitAvailabilityJsonLd([]);
     const nodes = allNodes([block]);
     expect(nodes.filter((n) => n['@type'] === 'Apartment')).toHaveLength(0);
-    expect(nodes.filter((n) => n['@type'] === 'FloorPlan')).toHaveLength(planGroups.length);
+    // No live units → no plan sheets to reference; the catalog lives on the hub.
+    expect(nodes.filter((n) => n['@type'] === 'FloorPlan')).toHaveLength(0);
+  });
+
+  it('every live Apartment accommodationFloorPlan @id resolves to a shipped FloorPlan', async () => {
+    const { head } = await render('/available-units');
+    const nodes = allNodes(extractJsonLd(head));
+    const floorPlanIds = new Set(
+      nodes.filter((n) => n['@type'] === 'FloorPlan').map((n) => n['@id'] as string),
+    );
+    const apartments = nodes.filter((n) => n['@type'] === 'Apartment' && n['@id']);
+    for (const apt of apartments) {
+      const ref = (apt['accommodationFloorPlan'] as { '@id': string } | undefined)?.['@id'];
+      if (ref) expect(floorPlanIds.has(ref), `dangling floor-plan ref ${ref}`).toBe(true);
+    }
   });
 });

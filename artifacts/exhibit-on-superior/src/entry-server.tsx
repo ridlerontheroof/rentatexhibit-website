@@ -29,8 +29,8 @@ import {
   floorPlanPagePath,
 } from './data/floorPlanPages';
 import { FloorPlanDetail } from './pages/FloorPlanDetail';
-import { floorPlansItemListJsonLd, planGroups } from './data/floorPlans';
-import { unitAvailabilityJsonLd } from './data/unitJsonLd';
+import { planGroups } from './data/floorPlans';
+import { liveUnitPlanGroups, unitAvailabilityJsonLd } from './data/unitJsonLd';
 import { getBakedAvailability, getBakedSnapshotStatus } from './data/availabilitySnapshot';
 import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
 import { photoGalleryJsonLd } from './data/gallery';
@@ -46,6 +46,11 @@ export { LEGACY_REDIRECTS } from './data/legacyRedirects';
 // Counts the prerenderer uses to REQUIRE the FloorPlan/Apartment/Offer
 // structured data on /available-units (see scripts/prerender.mjs).
 export const FLOOR_PLAN_COUNT = planGroups.length;
+// Distinct residence lines among the baked snapshot's units — the number of
+// FloorPlan nodes /available-units ships (the full catalog lives on the hub).
+export const LIVE_FLOORPLAN_COUNT = liveUnitPlanGroups(
+  getBakedAvailability()?.units ?? [],
+).length;
 export const BAKED_UNIT_COUNT = getBakedAvailability()?.units.length ?? 0;
 
 // 'fresh' | 'stale' | 'invalid' — the prerenderer fails the build on anything
@@ -92,7 +97,7 @@ export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
 // Page-specific JSON-LD that isn't derivable from PAGE_SEO. Mirrors what the
 // page component passes to <Seo extraJsonLd>; keep in sync with that page.
 const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
-  '/available-units': () => [floorPlansItemListJsonLd(), unitAvailabilityJsonLd()],
+  '/available-units': () => [unitAvailabilityJsonLd()],
   '/fees': () => [feesOfferCatalogJsonLd()],
   '/floor-plans': () => [floorPlanHubItemListJsonLd()],
   '/knowledge': () => [knowledgeHubJsonLd()],

@@ -6,7 +6,14 @@
 // lease Offer (rent, availability date) sourced from the SAME baked
 // availability snapshot the page renders from.
 import { SITE_URL } from './seo';
-import { floorDisplayLabel, parseUnitNumber, planGroups, type PlanGroup } from './floorPlans';
+import {
+  floorDisplayLabel,
+  groupKey,
+  parseUnitNumber,
+  planGroups,
+  type PlanGroup,
+} from './floorPlans';
+import { FLOOR_PLAN_PAGES, floorPlanPagePath } from './floorPlanPages';
 import { getBakedAvailability } from './availabilitySnapshot';
 import type { AvailableUnit } from '../hooks/use-availability';
 import { adaDesignation, ADA_DISCLAIMER, type AdaDesignation } from './ada';
@@ -19,13 +26,23 @@ export function floorPlanId(g: PlanGroup): string {
   return `${PAGE_URL}#floorplan-${g.id}`;
 }
 
+/**
+ * Canonical layout landing page for a plan group (the group's first plan
+ * sheet on the /floor-plans hub). The old `/available-units?plan=` deep link
+ * now client-redirects there, so schema URLs point straight at the target.
+ */
+export function floorPlanPageUrlForGroup(g: PlanGroup): string | null {
+  const page = FLOOR_PLAN_PAGES.find((fp) => groupKey(fp.plan) === g.id);
+  return page ? `${SITE_URL}${floorPlanPagePath(page.slug)}` : null;
+}
+
 /** One schema.org FloorPlan node per residence line (plan group). */
 export function floorPlanNode(g: PlanGroup): Record<string, unknown> {
   return {
     '@type': 'FloorPlan',
     '@id': floorPlanId(g),
     name: `${g.typeLabel} \u2013 Unit ${g.unit}`,
-    url: `${PAGE_URL}?plan=${encodeURIComponent(g.id)}`,
+    url: floorPlanPageUrlForGroup(g) ?? `${SITE_URL}/floor-plans`,
     numberOfBedrooms: g.beds,
     numberOfBathroomsTotal: g.baths,
     floorSize: {
@@ -168,24 +185,42 @@ export function unitOfferNode(
 }
 
 /**
- * Build the FloorPlan/Apartment/Offer @graph for /available-units. When no
- * fresh baked snapshot exists (or `units` is passed explicitly), the graph
- * still carries every FloorPlan — only the per-unit Apartment nodes vary.
+ * Plan groups with at least one unit in `units`, in catalog order. Only these
+ * groups' FloorPlan nodes ship on /available-units — the full 27-line catalog
+ * schema lives on the /floor-plans hub and its landing pages, so this page
+ * carries just the plan sheets its live Apartment nodes reference.
+ */
+export function liveUnitPlanGroups(units: AvailableUnit[]): PlanGroup[] {
+  const liveIds = new Set(
+    units
+      .map((u) => planGroupForUnitNumber(u.unit))
+      .filter((g): g is PlanGroup => g !== null)
+      .map((g) => g.id),
+  );
+  return planGroups.filter((g) => liveIds.has(g.id));
+}
+
+/**
+ * Build the FloorPlan/Apartment/Offer @graph for /available-units. FloorPlan
+ * nodes are emitted only for residence lines with a live unit (so every
+ * Apartment's accommodationFloorPlan @id resolves on-page); the full layout
+ * catalog schema lives on /floor-plans, not here.
  */
 export function unitAvailabilityJsonLd(
   units: AvailableUnit[] | null = getBakedAvailability()?.units ?? null,
   updatedAt: string | null = getBakedAvailability()?.updatedAt ?? null,
 ): Record<string, unknown> {
   const priceValidUntil = updatedAt ? offerPriceValidUntil(updatedAt) : null;
+  const liveGroups = liveUnitPlanGroups(units ?? []);
   const graph: Record<string, unknown>[] = [
     // Re-open the property entity (crawlers merge nodes by @id) to attach the
     // floor-plan links; the full definition lives in the base page @graph.
     {
       '@type': 'ApartmentComplex',
       '@id': COMPLEX_ID,
-      accommodationFloorPlan: planGroups.map((g) => ({ '@id': floorPlanId(g) })),
+      accommodationFloorPlan: liveGroups.map((g) => ({ '@id': floorPlanId(g) })),
     },
-    ...planGroups.map(floorPlanNode),
+    ...liveGroups.map(floorPlanNode),
     // Explicit lambda: Array#map's index argument must not leak into `opts`.
     ...(units ?? []).map((u) => apartmentNode(u, { priceValidUntil })),
     // Standalone lease Offers, linked back to their Apartments via itemOffered.

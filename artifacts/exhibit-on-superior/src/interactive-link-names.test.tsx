@@ -175,18 +175,8 @@ describe('interactive surfaces label-in-name (WCAG 2.5.3)', () => {
     expectNoOffenders('UnitDetail (floor-plan modal open)');
   });
 
-  it('FloorPlans: mobile filter sheet open', () => {
-    mountAt('/floor-plans', <FloorPlans />);
-
-    const filtersBtn = screen
-      .getAllByRole('button')
-      .find((b) => /filters/i.test(b.textContent ?? ''));
-    if (!filtersBtn) throw new Error('Filters sheet trigger not found');
-    act(() => {
-      fireEvent.click(filtersBtn);
-    });
-    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
-
-    expectNoOffenders('FloorPlans (filter sheet open)');
+  it('FloorPlans (available units page)', () => {
+    mountAt('/available-units', <FloorPlans />);
+    expectNoOffenders('FloorPlans (available units page)');
   });
 });

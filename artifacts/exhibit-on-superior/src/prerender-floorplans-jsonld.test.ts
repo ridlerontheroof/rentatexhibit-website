@@ -1,82 +1,67 @@
 import { describe, expect, it } from 'vitest';
 import { render } from './entry-server';
-import { floorPlansItemListJsonLd, planGroups } from './data/floorPlans';
+import { getBakedAvailability } from './data/availabilitySnapshot';
+import { liveUnitPlanGroups } from './data/unitJsonLd';
 
-// Task: Google must see the SAME floor-plan list in the pre-built page and the
-// live page.
-//
-// The Floor Plans page's ItemList JSON-LD is emitted twice:
-//   1. At build time by scripts/prerender.mjs, which injects the head produced
-//      by entry-server's render() (EXTRA_JSONLD wiring for '/floor-plans').
-//   2. Client-side by <Seo extraJsonLd> in the page component.
-// Both are supposed to flow through the same shared module
-// (floorPlansItemListJsonLd()). This test renders the route through the SAME
-// entry-server pipeline the prerenderer uses, extracts the JSON-LD it would
-// ship, and asserts it deep-equals what the shared module produces. If a
-// refactor of the SEO model, the prerender wiring (EXTRA_JSONLD), or
-// floorPlans.ts ever makes them diverge, this fails loudly instead of crawlers
-// silently indexing a stale or mismatched floor-plan list.
+// Task: the 27-plan catalog schema (ItemList + one FloorPlan per residence
+// line) moved OFF /available-units and onto the /floor-plans hub and its
+// per-layout landing pages. /available-units now carries only live-inventory
+// structured data: Apartment/Offer nodes plus the FloorPlan sheets those live
+// units reference. This suite locks that boundary — a regression that
+// re-attaches the full catalog here would duplicate the hub's entities and
+// re-bloat the page crawlers see.
 
 /** Pull every <script type="application/ld+json"> payload out of a head string. */
 function extractJsonLd(head: string): Record<string, unknown>[] {
   const scripts = [
     ...head.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g),
   ].map((m) => m[1]);
-  // renderHeadTags escapes "<" as \u003c inside the JSON; JSON.parse restores it.
   return scripts.map((s) => JSON.parse(s) as Record<string, unknown>);
 }
 
-describe('prerendered /available-units JSON-LD matches the shared floorPlans module', () => {
-  it('ships an ItemList that deep-equals floorPlansItemListJsonLd()', async () => {
+function allNodes(blocks: Record<string, unknown>[]): Record<string, unknown>[] {
+  const nodes: Record<string, unknown>[] = [];
+  const collect = (v: unknown): void => {
+    if (Array.isArray(v)) return v.forEach(collect);
+    if (v && typeof v === 'object') {
+      const o = v as Record<string, unknown>;
+      if (typeof o['@type'] === 'string' || Array.isArray(o['@type'])) nodes.push(o);
+      for (const k of Object.keys(o)) if (!k.startsWith('@')) collect(o[k]);
+      if (Array.isArray(o['@graph'])) collect(o['@graph']);
+    }
+  };
+  blocks.forEach(collect);
+  return nodes;
+}
+
+describe('/available-units carries no floor-plan catalog schema', () => {
+  it('ships no ItemList (the catalog list lives on /floor-plans)', async () => {
     const { head } = await render('/available-units');
-
-    const jsonLdBlocks = extractJsonLd(head);
-    // Base @graph plus the floor-plans extra block — at minimum two scripts.
-    expect(jsonLdBlocks.length).toBeGreaterThanOrEqual(2);
-
-    // Find the ItemList structurally rather than by position so reordering
-    // alone doesn't mask a real divergence.
-    const itemLists = jsonLdBlocks.filter((b) => b['@type'] === 'ItemList');
-    expect(itemLists).toHaveLength(1);
-
-    expect(itemLists[0]).toEqual(floorPlansItemListJsonLd());
+    const nodes = allNodes(extractJsonLd(head));
+    expect(nodes.filter((n) => n['@type'] === 'ItemList')).toHaveLength(0);
   });
 
-  it('lists every plan group exactly once, in order, with resolvable deep links', async () => {
+  it('ships FloorPlan nodes only for residence lines with a live unit', async () => {
     const { head } = await render('/available-units');
-    const itemList = extractJsonLd(head).find((b) => b['@type'] === 'ItemList')!;
-    const items = itemList.itemListElement as {
-      position: number;
-      item: { url: string };
-    }[];
-
-    // One ListItem per plan group, positions 1..N with no gaps or duplicates.
-    expect(items).toHaveLength(planGroups.length);
-    items.forEach((li, i) => expect(li.position).toBe(i + 1));
-
-    // Every schema URL must deep-link to a group id that actually exists.
-    const groupIds = new Set(planGroups.map((g) => g.id));
-    for (const li of items) {
-      const planParam = new URL(li.item.url).searchParams.get('plan');
-      expect(planParam).not.toBeNull();
-      expect(groupIds.has(planParam!)).toBe(true);
+    const nodes = allNodes(extractJsonLd(head));
+    const floorPlans = nodes.filter(
+      (n) => n['@type'] === 'FloorPlan' && !(n['@id'] as string)?.endsWith('#floorplan-range'),
+    );
+    const liveGroups = liveUnitPlanGroups(getBakedAvailability()?.units ?? []);
+    expect(floorPlans.map((fp) => fp['@id']).sort()).toEqual(
+      liveGroups
+        .map((g) => `https://www.rentatexhibit.com/available-units#floorplan-${g.id}`)
+        .sort(),
+    );
+    // Each shipped FloorPlan links out to its layout landing page on the hub.
+    for (const fp of floorPlans) {
+      expect(String(fp['url'])).toMatch(/^https:\/\/www\.rentatexhibit\.com\/floor-plans\//);
     }
   });
 
-  it('prerendered page body visibly shows the same plans the schema claims', async () => {
-    const { html } = await render('/available-units');
-
-    // Google requires structured data to reflect visible page content: every
-    // group's type label and sq ft range must appear in the prerendered body.
-    for (const g of planGroups) {
-      const label = g.typeLabel.replace(/&/g, '&amp;');
-      expect(html).toContain(label);
-      // PlanCard renders sqft with toLocaleString (e.g. "1,003 sq ft").
-      const sqftText =
-        g.sqftMin === g.sqftMax
-          ? `${g.sqftMin.toLocaleString()} sq ft`
-          : `${g.sqftMin.toLocaleString()}\u2013${g.sqftMax.toLocaleString()} sq ft`;
-      expect(html).toContain(sqftText);
-    }
+  it('no legacy ?plan= deep-link URLs remain in the prerendered head', async () => {
+    const { head } = await render('/available-units');
+    expect(head).not.toContain('?plan=');
+    expect(head).not.toContain('%3Fplan%3D');
   });
 });

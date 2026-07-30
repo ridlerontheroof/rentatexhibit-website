@@ -1,169 +1,67 @@
 import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { DeferBelowFold } from '../components/DeferBelowFold';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { PageHero } from '../components/PageHero';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
-import { ChevronDown, Search, SlidersHorizontal, X } from 'lucide-react';
 import { SplitHeadline } from '../components/SplitHeadline';
-import { Input } from '../components/ui/input';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
-import { PlanCard } from '../components/floor-plans/PlanCard';
 import { AvailableUnits } from '../components/floor-plans/AvailableUnits';
 import { useAvailability } from '../hooks/use-availability';
-import { PlanFilters, type FilterState } from '../components/floor-plans/PlanFilters';
-import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { SmartImg } from '../components/SmartImg';
-import {
-  planGroups,
-  filterGroups,
-  sortGroups,
-  nextPosition,
-  resolveDeepLink,
-  floorPlansItemListJsonLd,
-} from '../data/floorPlans';
+import { planGroups, resolveDeepLink, groupKey } from '../data/floorPlans';
+import { FLOOR_PLAN_PAGES, floorPlanPagePath } from '../data/floorPlanPages';
 import { unitAvailabilityJsonLd } from '../data/unitJsonLd';
 import { ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
-import {
-  SQFT_MIN,
-  SQFT_MAX,
-  FLOOR_BANDS,
-  CATEGORIES,
-  type Category,
-  type PlanGroup,
-  type SortKey,
-} from '../data/floorPlans';
-
-
-const SORT_OPTIONS: { value: SortKey; label: string }[] = [
-  { value: 'featured', label: 'Featured' },
-  { value: 'size-desc', label: 'Largest first' },
-  { value: 'size-asc', label: 'Smallest first' },
-  { value: 'beds-asc', label: 'Fewest bedrooms' },
-  { value: 'beds-desc', label: 'Most bedrooms' },
-];
 
 function readPlanFromUrl(): string | null {
   if (typeof window === 'undefined') return null;
   return new URLSearchParams(window.location.search).get('plan');
 }
 
-// Deep-link: `?ada=1` lands visitors with the ADA-accessible filter already on
-// (used by the accessibility statement, the ADA Knowledge article, and ads).
+// Deep-link: `?ada=1` marks visitors arriving from accessibility-focused
+// links (the accessibility statement, the ADA Knowledge article, and ads);
+// the page shows the ADA designation key and routes them to the layouts
+// carrying designated apartments.
 function readAdaFromUrl(): boolean {
   if (typeof window === 'undefined') return false;
   const value = new URLSearchParams(window.location.search).get('ada');
   return value === '1' || value === 'true';
 }
 
-// Opening a plan pushes a history entry so the phone's Back button closes the
-// pop-up instead of leaving the page; plan-to-plan arrow navigation and close
-// replace the current entry so history doesn't pile up.
-function writePlanToUrl(id: string | null, mode: 'push' | 'replace' = 'replace') {
-  if (typeof window === 'undefined') return;
-  const params = new URLSearchParams(window.location.search);
-  if (id) params.set('plan', id);
-  else params.delete('plan');
-  const query = params.toString();
-  const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
-  if (mode === 'push') window.history.pushState(null, '', newUrl);
-  else window.history.replaceState(null, '', newUrl);
+/**
+ * The floor-plan landing page for a legacy `?plan=<group id>` deep link.
+ * Groups with several plan sheets (floor-band variants) resolve to the
+ * group's first sheet — the same card order the /floor-plans hub lists.
+ */
+export function landingPathForPlanId(planId: string | null): string | null {
+  const id = resolveDeepLink(planGroups, planId);
+  if (!id) return null;
+  const page = FLOOR_PLAN_PAGES.find((fp) => groupKey(fp.plan) === id);
+  return page ? floorPlanPagePath(page.slug) : null;
 }
 
-// Shareable filters: bedroom categories (`beds`), floor bands (`floors`), and
-// the square-footage range (`sqft=min-max`) round-trip to the URL the same way
-// `ada` does, so copying the address bar reproduces the filtered view.
-const VALID_CATEGORIES = new Set<Category>(['studio', 'convertible', '1br', '2br', '3br']);
-const VALID_BANDS = new Set(FLOOR_BANDS.map((b) => b.id));
-const VALID_SORTS = new Set<SortKey>(SORT_OPTIONS.map((o) => o.value));
-
-// The full shareable view state: sidebar filters plus the free-text search
-// (`q`) and sort order (`sort`), so a copied link reproduces the whole view.
-export type ShareableState = FilterState & { q: string; sort: SortKey };
-
-export function readFiltersFromUrl(): ShareableState {
-  const base: ShareableState = {
-    categories: new Set<Category>(),
-    bands: new Set<string>(),
-    sqft: [SQFT_MIN, SQFT_MAX],
-    ada: readAdaFromUrl(),
-    q: '',
-    sort: 'featured',
-  };
-  if (typeof window === 'undefined') return base;
-  const params = new URLSearchParams(window.location.search);
-
-  for (const raw of (params.get('beds') ?? '').split(',')) {
-    const value = raw.trim() as Category;
-    if (VALID_CATEGORIES.has(value)) base.categories.add(value);
-  }
-  for (const raw of (params.get('floors') ?? '').split(',')) {
-    const value = raw.trim();
-    if (VALID_BANDS.has(value)) base.bands.add(value);
-  }
-  const sqft = params.get('sqft');
-  if (sqft) {
-    const match = /^(\d+)-(\d+)$/.exec(sqft.trim());
-    if (match) {
-      const lo = Math.max(SQFT_MIN, Math.min(SQFT_MAX, Number(match[1])));
-      const hi = Math.max(SQFT_MIN, Math.min(SQFT_MAX, Number(match[2])));
-      if (lo <= hi) base.sqft = [lo, hi];
-    }
-  }
-  base.q = (params.get('q') ?? '').trim();
-  const sort = (params.get('sort') ?? '').trim() as SortKey;
-  if (VALID_SORTS.has(sort)) base.sort = sort;
-  return base;
-}
-
-export function writeFiltersToUrl(filters: ShareableState) {
-  if (typeof window === 'undefined') return;
-  const params = new URLSearchParams(window.location.search);
-
-  if (filters.categories.size > 0) {
-    // Keep a stable, canonical order so equivalent views share one URL.
-    const beds = CATEGORIES.filter((c) => filters.categories.has(c.id)).map((c) => c.id);
-    params.set('beds', beds.join(','));
-  } else params.delete('beds');
-
-  if (filters.bands.size > 0) {
-    const floors = FLOOR_BANDS.filter((b) => filters.bands.has(b.id)).map((b) => b.id);
-    params.set('floors', floors.join(','));
-  } else params.delete('floors');
-
-  if (filters.sqft[0] !== SQFT_MIN || filters.sqft[1] !== SQFT_MAX) {
-    params.set('sqft', `${filters.sqft[0]}-${filters.sqft[1]}`);
-  } else params.delete('sqft');
-
-  if (filters.ada) params.set('ada', '1');
-  else params.delete('ada');
-
-  // Defaults (empty search, "featured" sort) keep the URL clean.
-  if (filters.q.trim() !== '') params.set('q', filters.q.trim());
-  else params.delete('q');
-
-  if (filters.sort !== 'featured') params.set('sort', filters.sort);
-  else params.delete('sort');
-
-  const query = params.toString();
-  const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
-  window.history.replaceState(null, '', newUrl);
-}
-
-// Shared with the build-time prerenderer (see entry-server.tsx) so the static
-// HTML and the client emit identical floor-plan structured data.
-const structuredData = floorPlansItemListJsonLd();
 // Baked fallback only — the component swaps in the live feed's units below so
 // rented apartments drop out of the rendered Apartment/Offer graph immediately
 // instead of lingering until the next publish.
 const bakedUnitStructuredData = unitAvailabilityJsonLd();
 
 export function FloorPlans() {
-  const [filters, setFilters] = useState<ShareableState>(readFiltersFromUrl);
-  const search = filters.q;
-  const sort = filters.sort;
+  const ada = readAdaFromUrl();
+  const [, navigate] = useLocation();
+
+  // Legacy `?plan=` deep links used to open the on-page floor-plan lightbox.
+  // The catalog now lives at /floor-plans, so resolve the id to its layout
+  // landing page instead of silently ignoring the parameter. `replace` keeps
+  // the redirect out of history so Back returns to wherever the visitor came
+  // from, not to the redirecting URL.
+  useEffect(() => {
+    const target = landingPathForPlanId(readPlanFromUrl());
+    if (target) navigate(target, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Live-feed structured data: once the availability query resolves (it starts
   // from the baked snapshot via placeholderData), the Apartment/Offer graph
   // reflects current inventory — a unit rented after the last publish
@@ -176,139 +74,10 @@ export function FloorPlans() {
         : bakedUnitStructuredData,
     [availability],
   );
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [variantIndex, setVariantIndex] = useState(0);
-  // True while the current history entry is the one handleOpen pushed. Lets a
-  // manual close (the X) consume that entry with history.back() so the phone's
-  // Back button afterwards leaves the page in one press instead of two.
-  const pushedEntryRef = useRef(false);
-
-  const filtered = useMemo(
-    () => sortGroups(filterGroups(planGroups, search, filters), sort),
-    [search, filters, sort],
-  );
-
-  // Deep-link: open from URL on load.
-  useEffect(() => {
-    const id = resolveDeepLink(planGroups, readPlanFromUrl());
-    if (id) {
-      setOpenId(id);
-      setVariantIndex(0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // History navigation: Back/Forward changes the URL without remounting the
-  // page, so re-read the shareable state whenever the browser fires popstate.
-  // (Normal filter changes go through updateFilters → writeFiltersToUrl and
-  // never fire popstate, so this only runs on real history navigation.)
-  // The `?plan=` deep-link is part of that state too: navigating history to a
-  // URL with `plan` reopens that plan's lightbox, navigating away closes it.
-  useEffect(() => {
-    const onPopState = () => {
-      // Whatever entry handleOpen pushed has been navigated away from, so a
-      // later manual close must not call history.back() again.
-      pushedEntryRef.current = false;
-      setFilters(readFiltersFromUrl());
-      const id = resolveDeepLink(planGroups, readPlanFromUrl());
-      setOpenId(id);
-      if (id) setVariantIndex(0);
-    };
-    window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
-  }, []);
-
-  const openGroup = openId ? planGroups.find((g) => g.id === openId) ?? null : null;
-  const openPosition = openGroup ? filtered.findIndex((g) => g.id === openGroup.id) : -1;
-
-  const handleOpen = (group: PlanGroup) => {
-    setOpenId(group.id);
-    setVariantIndex(0);
-    writePlanToUrl(group.id, 'push');
-    pushedEntryRef.current = true;
-  };
-
-  const handleClose = () => {
-    setOpenId(null);
-    if (pushedEntryRef.current) {
-      // Consume the entry handleOpen pushed so one Back press leaves the page.
-      // The resulting popstate re-runs the close (idempotent) and clears the flag.
-      pushedEntryRef.current = false;
-      window.history.back();
-    } else {
-      // Deep-link opens (no pushed entry) just clean the URL in place.
-      writePlanToUrl(null);
-    }
-  };
-
-  const handleNavigate = (dir: -1 | 1) => {
-    if (openPosition < 0 || filtered.length === 0) return;
-    const next = nextPosition(openPosition, dir, filtered.length);
-    const nextGroup = filtered[next];
-    setOpenId(nextGroup.id);
-    setVariantIndex(0);
-    writePlanToUrl(nextGroup.id);
-  };
-
-  // Single funnel for filter changes so the URL always mirrors the state.
-  const updateFilters = (update: (f: ShareableState) => ShareableState) =>
-    setFilters((f) => {
-      const next = update(f);
-      writeFiltersToUrl(next);
-      return next;
-    });
-
-  const toggleCategory = (c: Category) =>
-    updateFilters((f) => {
-      const categories = new Set(f.categories);
-      categories.has(c) ? categories.delete(c) : categories.add(c);
-      return { ...f, categories };
-    });
-
-  const toggleBand = (id: string) =>
-    updateFilters((f) => {
-      const bands = new Set(f.bands);
-      bands.has(id) ? bands.delete(id) : bands.add(id);
-      return { ...f, bands };
-    });
-
-  const setSqft = (range: [number, number]) =>
-    updateFilters((f) => ({ ...f, sqft: range }));
-
-  const toggleAda = () => updateFilters((f) => ({ ...f, ada: !f.ada }));
-
-  const setSearch = (q: string) => updateFilters((f) => ({ ...f, q }));
-  const setSort = (sortKey: SortKey) => updateFilters((f) => ({ ...f, sort: sortKey }));
-
-  const hasActiveFilters =
-    search.trim() !== '' ||
-    filters.categories.size > 0 ||
-    filters.bands.size > 0 ||
-    filters.sqft[0] !== SQFT_MIN ||
-    filters.sqft[1] !== SQFT_MAX ||
-    filters.ada;
-
-  const resetAll = () =>
-    updateFilters((f) => ({
-      categories: new Set(),
-      bands: new Set(),
-      sqft: [SQFT_MIN, SQFT_MAX],
-      ada: false,
-      q: '',
-      sort: f.sort,
-    }));
-
-  const filterProps = {
-    state: filters,
-    sqftMin: SQFT_MIN,
-    sqftMax: SQFT_MAX,
-    onToggleCategory: toggleCategory,
-    onToggleBand: toggleBand,
-    onSqftChange: setSqft,
-    onToggleAda: toggleAda,
-  };
+  // ADA-designated layouts (for the ?ada=1 arrival panel): every landing page
+  // with at least one designated (A)/(AC) apartment.
+  const adaPages = ada ? FLOOR_PLAN_PAGES.filter((fp) => fp.adaUnits.length > 0) : [];
 
   return (
     <>
@@ -318,16 +87,14 @@ export function FloorPlans() {
         // parameterized variant as a duplicate of the base page (canonical
         // still points at /available-units).
         title={
-          filters.ada
-            ? 'ADA-Accessible Units & Floor Plans | Exhibit On Superior'
-            : undefined
+          ada ? 'ADA-Accessible Units & Floor Plans | Exhibit On Superior' : undefined
         }
         description={
-          filters.ada
+          ada
             ? 'Browse ADA-accessible apartments at Exhibit On Superior in River North, Chicago — accessible floor plans, real-time pricing, and availability.'
             : undefined
         }
-        extraJsonLd={[structuredData, unitStructuredData]}
+        extraJsonLd={[unitStructuredData]}
       />
 
       <div>
@@ -335,8 +102,8 @@ export function FloorPlans() {
           image="/images/image-030-012417-5663-hxwee6.jpg"
           alt="Available Units | Exhibit On Superior in Chicago, Illinois"
           titleScript="Move-In Ready Residences"
-          title="Available Units & Floor Plans"
-          subtitle="Studio, Convertible, 1, 2 & 3 Bedroom Apartments in River North Chicago"
+          title="Available Units"
+          subtitle="Live Pricing & Availability, Studio to 3 Bedroom Apartments in River North Chicago"
           compact
         />
 
@@ -348,187 +115,65 @@ export function FloorPlans() {
             on all viewports (verified by check-units-above-fold), so it can
             hydrate in a time-sliced transition instead of the critical path. */}
         <DeferBelowFold>
+        {/* Layout intent hands off to the /floor-plans hub — the full
+            27-line catalog (34 plan sheets) lives there now, one landing
+            page per layout. */}
         <section className="cv-below-fold px-4 py-14">
           <div className="container mx-auto max-w-3xl text-center">
-            <SplitHeadline script="Live Smart, Live Beautifully" caps="Explore All Floor Plans" className="mb-6" />
+            <SplitHeadline
+              script="Find Your Perfect Fit"
+              caps="Explore All Layouts"
+              className="mb-6"
+            />
             <p className="text-lg leading-relaxed text-muted-foreground">
-              Looking for a specific layout? Compare all Exhibit On Superior floor plans here,
-              then check current unit availability and pricing above. Filter by bedroom count,
-              square footage, floor range, or unit line to find your best fit.
+              Looking for a specific layout rather than what&rsquo;s available today? Every
+              distinct Exhibit On Superior floor plan &mdash; studios, convertibles, and one-,
+              two-, and three-bedroom homes &mdash; has its own page with the plan sheet,
+              square footage, floor range, and balcony and accessibility details.
             </p>
-          </div>
-        </section>
+            <Link href="/floor-plans" className="btn-gold-outline mt-8 inline-block">
+              Browse All Floor Plans
+            </Link>
 
-        <section className="cv-below-fold px-4 pb-20">
-          <div className="container mx-auto">
-            <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-10">
-              {/* Sidebar filters (desktop) */}
-              <aside className="hidden lg:block">
-                <div className="sticky top-24 space-y-6">
-                  <label className="relative block">
-                    <span className="sr-only">Search by unit or floor</span>
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      aria-label="Search by unit or floor"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search unit # or floor…"
-                      className="pl-9"
-                    />
-                  </label>
-                  <PlanFilters {...filterProps} />
-                  {hasActiveFilters && (
-                    <button
-                      type="button"
-                      onClick={resetAll}
-                      className="flex min-h-11 items-center gap-1.5 text-sm uppercase tracking-wide text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <X className="h-4 w-4" aria-hidden="true" /> Clear all filters
-                    </button>
-                  )}
-                </div>
-              </aside>
-
-              {/* Results column */}
-              <div>
-                {/* Top bar: mobile search + count + sort */}
-                <div className="mb-6 space-y-4">
-                  <label className="relative block lg:hidden">
-                    <span className="sr-only">Search by unit or floor</span>
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      aria-label="Search by unit or floor"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search unit # or floor…"
-                      className="h-11 pl-9"
-                    />
-                  </label>
-
-                  <div className="flex items-center justify-between gap-4">
-                    {/* Doubles as the screen-reader live region: filtering
-                        re-renders this text, and role="status" (polite) makes
-                        assistive tech announce the new count without moving
-                        focus off the control that changed. */}
-                    <p
-                      role="status"
-                      aria-live="polite"
-                      aria-atomic="true"
-                      className="text-sm uppercase tracking-wide text-muted-foreground"
-                    >
-                      {filtered.length} {filtered.length === 1 ? 'plan' : 'plans'} shown
+            {/* ADA arrivals (?ada=1): designation key + direct links to every
+                layout with designated (A)/(AC) apartments. */}
+            {ada && (
+              <div className="mt-10 border border-border bg-white p-6 text-left text-sm leading-relaxed text-muted-foreground">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[2px] text-foreground">
+                  ADA designation key
+                </p>
+                {ADA_KEY.map((k) => (
+                  <p key={k.code}>
+                    <span className="font-semibold text-foreground">{k.label}</span>: {k.description}
+                  </p>
+                ))}
+                <p className="mt-2">{ADA_DISCLAIMER}</p>
+                {adaPages.length > 0 && (
+                  <>
+                    <p className="mb-2 mt-4 text-xs font-semibold uppercase tracking-[2px] text-foreground">
+                      Layouts with ADA-designated apartments
                     </p>
-
-                    <div className="flex items-center gap-3">
-                      {/* Mobile filter trigger */}
-                      <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-                        <SheetTrigger asChild>
-                          <button
-                            type="button"
-                            className="flex min-h-11 items-center gap-2 border border-border px-3 py-2 text-xs uppercase tracking-wide hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:hidden"
+                    <ul className="flex flex-wrap gap-x-4 gap-y-1">
+                      {adaPages.map((fp) => (
+                        <li key={fp.slug}>
+                          <Link
+                            href={floorPlanPagePath(fp.slug)}
+                            className="text-primary underline underline-offset-4 hover:text-primary/80"
                           >
-                            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
-                            Filters
-                            {hasActiveFilters && (
-                              <span className="ml-1 flex h-2 w-2 rounded-full bg-primary" aria-hidden />
-                            )}
-                          </button>
-                        </SheetTrigger>
-                        <SheetContent side="left" className="w-[85vw] max-w-sm overflow-y-auto">
-                          <SheetHeader>
-                            <SheetTitle className="uppercase tracking-wider">Filter Plans</SheetTitle>
-                          </SheetHeader>
-                          <div className="mt-6">
-                            <PlanFilters {...filterProps} />
-                            {hasActiveFilters && (
-                              <button
-                                type="button"
-                                onClick={resetAll}
-                                className="mt-6 flex min-h-11 items-center gap-1.5 text-sm uppercase tracking-wide text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                              >
-                                <X className="h-4 w-4" aria-hidden="true" /> Clear all filters
-                              </button>
-                            )}
-                          </div>
-                        </SheetContent>
-                      </Sheet>
-
-                      {/* Native <select>: Radix Select renders a hidden native
-                          select clone that accessibility scanners flag
-                          (focusable element inside aria-hidden, unlabeled
-                          select). A styled native control has none of those
-                          issues and works before hydration. */}
-                      <label className="relative block">
-                        <span className="sr-only">Sort plans</span>
-                        <select
-                          value={sort}
-                          onChange={(e) => setSort(e.target.value as SortKey)}
-                          className="h-11 w-[170px] appearance-none rounded-md border border-input bg-background px-3 pr-8 text-sm shadow-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ring lg:h-9"
-                        >
-                          {SORT_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown
-                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground opacity-50"
-                          aria-hidden="true"
-                        />
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                {/* ADA designation key + disclaimer — always shown while the
-                    ADA filter is active, next to the results it explains. */}
-                {filters.ada && (
-                  <div className="mb-6 border border-border bg-white p-4 text-sm leading-relaxed text-muted-foreground">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-[2px] text-foreground">
-                      ADA designation key
-                    </p>
-                    {ADA_KEY.map((k) => (
-                      <p key={k.code}>
-                        <span className="font-semibold text-foreground">{k.label}</span>: {k.description}
-                      </p>
-                    ))}
-                    <p className="mt-2">{ADA_DISCLAIMER}</p>
-                  </div>
-                )}
-
-                {/* Grid or empty state */}
-                {filtered.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                    {filtered.map((group, index) => (
-                      <PlanCard
-                        key={group.id}
-                        group={group}
-                        onOpen={handleOpen}
-                        showAda={filters.ada}
-                        eager={index < 3}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center border border-dashed border-border py-20 text-center">
-                    <p className="mb-2 text-lg uppercase tracking-wider">No plans match your search</p>
-                    <p className="mb-6 max-w-md text-muted-foreground">
-                      Try widening your filters or clearing your search to see every available layout.
-                    </p>
-                    <button type="button" onClick={resetAll} className="btn-gold-outline">
-                      Reset filters
-                    </button>
-                  </div>
+                            {fp.plan.typeLabel} &mdash; Unit {String(fp.plan.unit).padStart(2, '0')}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </section>
 
-        {/* Closing CTA */}
-        {/* Live Smart, Live Beautifully — carried over from the original site */}
+        {/* Closing CTA — carried over from the original site, now pointing
+            layout browsing at the /floor-plans hub. */}
         <section className="cv-below-fold px-4 py-20">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
@@ -547,9 +192,9 @@ export function FloorPlans() {
                   space that&rsquo;s uniquely yours, perfect for both relaxing and entertaining
                   right here at Exhibit.
                 </p>
-                <a href="#available-units" className="btn-gold-outline inline-block">
-                  View Available Residences
-                </a>
+                <Link href="/floor-plans" className="btn-gold-outline inline-block">
+                  Compare Every Layout
+                </Link>
               </div>
               <div className="relative lg:order-2">
                 <div aria-hidden="true" className="pointer-events-none absolute -right-4 -top-4 bottom-8 left-8 border border-primary" />
@@ -615,15 +260,6 @@ export function FloorPlans() {
         />
         </DeferBelowFold>
       </div>
-
-      <PlanLightbox
-        group={openGroup}
-        variantIndex={variantIndex}
-        position={{ index: openPosition, total: filtered.length }}
-        onClose={handleClose}
-        onNavigate={handleNavigate}
-        onVariantChange={setVariantIndex}
-      />
     </>
   );
 }

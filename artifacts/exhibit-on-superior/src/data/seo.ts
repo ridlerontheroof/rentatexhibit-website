@@ -138,11 +138,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     dateModified: '2026-07-30',
     ogImage: ogCardUrl('available-units'),
     label: 'Available Units',
-    title: 'Available Units & Floor Plans | Exhibit On Superior Chicago',
+    title: 'Available Apartments, Live Pricing | Exhibit On Superior Chicago',
     description:
-      'Browse available apartments at Exhibit On Superior in River North Chicago — live pricing, photos, move-in dates, and every studio to 3 bedroom floor plan.',
+      'Browse available apartments at Exhibit On Superior in River North Chicago — live pricing, photos, and move-in dates for studio to 3 bedroom residences.',
     quickAnswer:
-      'This page lists every currently available Exhibit On Superior apartment with live rent, photos, and move-in dates, updated automatically from the leasing system. You can also compare every studio, convertible, one-, two-, and three-bedroom floor plan and apply directly from each available listing.',
+      'This page lists every currently available Exhibit On Superior apartment with live rent, photos, and move-in dates, updated automatically from the leasing system, and you can schedule a tour or apply directly from each listing. To compare every studio, convertible, one-, two-, and three-bedroom layout in the tower, see the Floor Plans directory.',
     faqs: [
       {
         q: 'What apartments are available now at Exhibit On Superior?',

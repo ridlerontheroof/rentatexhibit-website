@@ -197,12 +197,29 @@ async function main() {
   }
 
   // Sanity: this check exercises the production build via the real server.
-  for (const f of ['index.html', path.join('available-units', 'index.html')]) {
-    if (!existsSync(path.join(root, 'dist', 'public', f))) {
-      throw new Error(
-        `dist/public is missing ${f} — run \`pnpm --filter @workspace/exhibit-on-superior run build\` first.`,
-      );
-    }
+  // Validation runs sibling workflows concurrently and a racing rebuild
+  // empties dist/public mid-check (emptyOutDir) before repopulating it, so —
+  // per the repo's dist-race convention — wait for the build chain's LAST
+  // output (index.html.br, written by precompress) instead of failing on the
+  // first missing-file snapshot.
+  const required = [
+    'index.html',
+    'index.html.br',
+    path.join('available-units', 'index.html'),
+  ].map((f) => path.join(root, 'dist', 'public', f));
+  const distDeadline = Date.now() + 240_000;
+  let missing = required.filter((f) => !existsSync(f));
+  while (missing.length > 0 && Date.now() < distDeadline) {
+    console.log(
+      `dist/public incomplete (missing ${missing.map((f) => path.relative(root, f)).join(', ')}) — waiting for a rebuild in flight…`,
+    );
+    await new Promise((r) => setTimeout(r, 5_000));
+    missing = required.filter((f) => !existsSync(f));
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `dist/public is missing ${missing.map((f) => path.relative(root, f)).join(', ')} — run \`pnpm --filter @workspace/exhibit-on-superior run build\` first.`,
+    );
   }
 
   // 1. The REAL production server (server/index.mjs) with the CSP enforced,

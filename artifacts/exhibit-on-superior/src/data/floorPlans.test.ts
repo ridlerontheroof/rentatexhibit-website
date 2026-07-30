@@ -16,7 +16,6 @@ import {
   floorDisplayLabel,
   floorToken,
   slugFor,
-  floorPlansItemListJsonLd,
   planGroups,
   plans,
   resolveDeepLink,
@@ -1011,52 +1010,3 @@ describe('planGroups', () => {
   });
 });
 
-describe('floorPlansItemListJsonLd', () => {
-  const list = floorPlansItemListJsonLd() as {
-    '@type': string;
-    itemListElement: { position: number; item: Record<string, unknown> }[];
-  };
-
-  it('emits one enriched Apartment item per plan group', () => {
-    expect(list['@type']).toBe('ItemList');
-    expect(list.itemListElement).toHaveLength(planGroups.length);
-    for (const { item } of list.itemListElement) {
-      expect(item['@type']).toBe('Apartment');
-      expect(item.name).toBeTruthy();
-      expect(item.description).toBeTruthy();
-      expect(String(item.url)).toMatch(/^https:\/\/www\.rentatexhibit\.com\/available-units\?plan=/);
-      expect(item.accommodationCategory).toBeTruthy();
-      expect(typeof item.numberOfBathroomsTotal).toBe('number');
-      const floorSize = item.floorSize as Record<string, unknown>;
-      expect(floorSize.unitCode).toBe('FTK');
-      expect(typeof floorSize.minValue).toBe('number');
-      expect(String(item.image)).toMatch(/^https:\/\/www\.rentatexhibit\.com\/images\//);
-    }
-  });
-
-  it('links each item to the site-wide ApartmentComplex node', () => {
-    for (const { item } of list.itemListElement) {
-      expect(item.containedInPlace).toEqual({
-        '@id': 'https://www.rentatexhibit.com#apartmentcomplex',
-      });
-    }
-  });
-
-  it('never emits pricing/availability claims not shown on the page', () => {
-    for (const { item } of list.itemListElement) {
-      expect(item).not.toHaveProperty('offers');
-      expect(item).not.toHaveProperty('price');
-      expect(item).not.toHaveProperty('petsAllowed');
-      // numberOfRooms is not derivable from bedroom count — must not be claimed
-      expect(item).not.toHaveProperty('numberOfRooms');
-    }
-  });
-
-  it('only claims numberOfBedrooms for plans that actually have bedrooms', () => {
-    list.itemListElement.forEach(({ item }, i) => {
-      const g = planGroups[i];
-      if (g.beds > 0) expect(item.numberOfBedrooms).toBe(g.beds);
-      else expect(item).not.toHaveProperty('numberOfBedrooms');
-    });
-  });
-});
