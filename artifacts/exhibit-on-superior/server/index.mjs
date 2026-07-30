@@ -134,6 +134,19 @@ if (inlineScriptHashes.length === 0) {
 console.log(`Allowing ${inlineScriptHashes.length} inline-script hashes in script-src`);
 
 // ---------------------------------------------------------------------------
+// GTM-injected inline scripts (runtime, so startup hashing can't see them).
+// The GTM container (GTM-MDPWH532) serves a Custom HTML tag that injects the
+// Ahrefs Analytics loader as an inline <script>. Its content is fixed by the
+// container config, so it is allowed by hash. If the tag is ever edited in
+// GTM, check:csp fails at prepublish with the new required hash — update it
+// here.
+// ---------------------------------------------------------------------------
+const gtmInjectedScriptHashes = [
+  // Ahrefs Analytics loader (GTM Custom HTML tag)
+  "'sha256-4QVZ8pB20FlguyBJHonvohn/Z1AzVSRh5oBkVcjkySY='",
+];
+
+// ---------------------------------------------------------------------------
 // Headers
 // ---------------------------------------------------------------------------
 const CSP = [
@@ -145,7 +158,7 @@ const CSP = [
   // Inline scripts (GTM bootstrap, availability prefetch, host redirect,
   // legacy-redirect stubs) are allowed by hash — collected from the build
   // output at startup — so 'unsafe-inline' is not needed.
-  `script-src 'self' ${inlineScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com`,
+  `script-src 'self' ${inlineScriptHashes.join(' ')} ${gtmInjectedScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://analytics.ahrefs.com`,
   // Google Maps JS injects its own stylesheet + font loads at runtime.
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
@@ -153,7 +166,11 @@ const CSP = [
   // Matterport/Vimeo CDNs, map tiles from gstatic — https: keeps this robust.
   "img-src 'self' data: https:",
   "media-src 'self' https:",
-  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com",
+  // Google tag (GA4 + ads) beacon endpoints: the re-activated GTM container
+  // sends measurement hits to www.google.com (/g/collect, /ccm/collect),
+  // analytics.google.com, and the doubleclick collect hosts. Ahrefs Analytics
+  // (GTM tag) beacons to analytics.ahrefs.com.
+  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://analytics.ahrefs.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com",
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://my.matterport.com https://www.google.com https://maps.google.com https://www.googletagmanager.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
