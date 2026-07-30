@@ -2,7 +2,7 @@
 //
 // Measures Lighthouse performance metrics for the key leasing pages, mobile
 // and desktop, against the LOCAL PRODUCTION BUILD (dist/public served via
-// `vite preview`) — the same prerendered HTML/CSS/JS visitors receive. It
+// the production server) — the same prerendered HTML/CSS/JS visitors receive. It
 // deliberately measures the local build (not the live site) so runs are
 // hermetic and can gate a publish; network-level CDN effects are out of scope.
 //
@@ -49,11 +49,28 @@ const WRITE_BASELINE = process.argv.includes('--baseline');
 const CALIBRATE = process.argv.includes('--calibrate');
 const pagesArgIdx = process.argv.indexOf('--pages');
 
+// Unit-detail pages come and go as apartments rent; audit two real ones from
+// the current build (first + last published unit) instead of hardcoding unit
+// numbers that 404 once rented. Their thresholds use the shared
+// "/available-units/<unit>" override key below.
+function currentUnitPages() {
+  try {
+    const units = readdirSync(path.join(root, 'dist', 'public', 'available-units'), { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name)
+      .sort();
+    if (units.length === 0) return [];
+    const picks = units.length > 1 ? [units[0], units[units.length - 1]] : [units[0]];
+    return picks.map((u) => `/available-units/${u}`);
+  } catch {
+    return [];
+  }
+}
+
 const DEFAULT_PAGES = [
   '/',
   '/available-units',
-  '/available-units/0208',
-  '/available-units/2705',
+  ...currentUnitPages(),
   '/amenities',
   '/photo-gallery',
   '/virtual-tour',
@@ -197,11 +214,16 @@ async function main() {
   const chrome = findChromium();
   if (!chrome) throw new Error('No headless Chromium found (CHROME_BIN, PATH, ms-playwright cache, nix store).');
 
-  // Serve the production build.
+  // Serve the production build through the real production server
+  // (server/index.mjs), NOT `vite preview`: preview ignores the artifact's
+  // clean-URL rewrites and answers every route (/available-units, /amenities,
+  // …) with the HOME page's prerendered HTML, so Lighthouse was measuring an
+  // SPA-boot render (LCP gated on hydration, wrong hero preload) instead of
+  // the per-page prerendered HTML real visitors receive.
   const appPort = await freePort();
   const vite = spawn(
-    path.join(root, 'node_modules', '.bin', 'vite'),
-    ['preview', '--config', 'vite.config.ts', '--host', '127.0.0.1', '--port', String(appPort), '--strictPort'],
+    process.execPath,
+    [path.join(root, 'server', 'index.mjs')],
     { cwd: root, env: { ...process.env, PORT: String(appPort) }, stdio: ['ignore', 'pipe', 'pipe'] },
   );
   children.push(vite);
@@ -244,8 +266,38 @@ async function main() {
     overrides = JSON.parse(readFileSync(thresholdsPath, 'utf8')).overrides ?? {};
   }
 
+  // Let the machine settle before the first audit. The suite is usually
+  // launched right after a build or a workflow restart, and that startup
+  // churn (vite dev servers, watchers, sibling workflows) reliably inflates
+  // TBT/LCP for the first few audits only. Waiting for the 1-minute load
+  // average to drop keeps those first pages honest without touching any
+  // thresholds.
+  const settleDeadline = Date.now() + 4 * 60 * 1000;
+  for (;;) {
+    let load1 = 0;
+    try { load1 = parseFloat(readFileSync('/proc/loadavg', 'utf8').split(' ')[0]); } catch { break; }
+    if (load1 < 1.5 || Date.now() > settleDeadline) {
+      if (load1 >= 1.5) console.log(`Warning: starting audits with 1-min load average still at ${load1} after 4 min.`);
+      else console.log(`System load settled (1-min load average ${load1}); starting audits.`);
+      break;
+    }
+    console.log(`Waiting for system load to settle before auditing (1-min load average ${load1})...`);
+    await sleep(15000);
+  }
+
   const results = [];
   const failures = [];
+
+  // Throwaway warm-up audit. The very first audit of a session reliably
+  // absorbs one-time costs (Chrome profile creation, server JIT/page cache,
+  // font/disk cache warm-up) that inflate its TBT/LCP; its numbers are not
+  // representative, so run one audit of the first page and discard it.
+  {
+    process.stdout.write('Warm-up audit (discarded) ... ');
+    const flags = { port: debugPort, output: 'json', logLevel: 'silent', onlyCategories: ['performance'] };
+    await lighthouse(`http://127.0.0.1:${appPort}${PAGES[0]}`, flags);
+    console.log('done');
+  }
 
   for (const formFactor of FORM_FACTORS) {
     for (const page of PAGES) {
@@ -257,7 +309,15 @@ async function main() {
       if (lhr.runtimeError) throw new Error(`Lighthouse runtime error on ${page}: ${lhr.runtimeError.message}`);
       const metrics = extractMetrics(lhr);
       const key = `${formFactor} ${page}`;
-      const limits = { ...ASPIRATIONAL_THRESHOLDS, ...(overrides[key] ?? {}) };
+      // Unit-detail pages share one calibrated limit set (unit numbers churn).
+      const genericKey = /^\/available-units\/\d+$/.test(page)
+        ? `${formFactor} /available-units/<unit>`
+        : null;
+      const limits = {
+        ...ASPIRATIONAL_THRESHOLDS,
+        ...((genericKey && overrides[genericKey]) ?? {}),
+        ...(overrides[key] ?? {}),
+      };
       const pageFailures = [];
       for (const metric of ['lcpMs', 'cls', 'tbtMs']) {
         if (metrics[metric] != null && metrics[metric] > limits[metric]) {
@@ -280,7 +340,7 @@ async function main() {
   mkdirSync(perfDir, { recursive: true });
   const report = {
     generatedAt: new Date().toISOString(),
-    target: 'local production build (dist/public via `vite preview`)',
+    target: 'local production build (dist/public via the production server, server/index.mjs)',
     lighthouseVersion: results.length ? undefined : undefined,
     note:
       'Lab metrics with Lighthouse default throttling (simulated Slow-4G/4x-CPU mobile; desktop preset). ' +

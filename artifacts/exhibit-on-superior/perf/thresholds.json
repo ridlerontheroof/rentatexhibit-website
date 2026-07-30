@@ -1,5 +1,5 @@
 {
-  "note": "Calibrated per-page limits (measured * 1.25 headroom) for pages that currently exceed the aspirational Core Web Vitals targets. Tighten/remove entries as pages improve. Regenerate with `node scripts/check-perf.mjs --calibrate`. Tightened 2026-07-27 after the GTM-deferral + mobile-image-slimming work; limits only ever move down (never loosen an existing entry).",
+  "note": "Calibrated per-page limits (measured * 1.25 headroom) for pages that currently exceed the aspirational Core Web Vitals targets. Tighten/remove entries as pages improve. Regenerate with `node scripts/check-perf.mjs --calibrate`. Tightened 2026-07-27 after the GTM-deferral + mobile-image-slimming work; limits only ever move down (never loosen an existing entry). Unit-detail pages are audited by current unit number (they churn as apartments rent) and share the generic \"/available-units/<unit>\" override key.",
   "calibratedAt": "2026-07-27T13:26:16.207Z",
   "aspirational": {
     "lcpMs": 2500,
@@ -12,12 +12,6 @@
     },
     "mobile /available-units": {
       "lcpMs": 3600
-    },
-    "mobile /available-units/0208": {
-      "lcpMs": 6100
-    },
-    "mobile /available-units/2705": {
-      "lcpMs": 6100
     },
     "mobile /amenities": {
       "lcpMs": 4200
@@ -36,6 +30,9 @@
     },
     "mobile /contact-us": {
       "lcpMs": 4700
+    },
+    "mobile /available-units/<unit>": {
+      "lcpMs": 6100
     }
   }
 }

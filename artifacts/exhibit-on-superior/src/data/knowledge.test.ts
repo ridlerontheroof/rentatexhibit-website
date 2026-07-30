@@ -227,3 +227,19 @@ describe('knowledge center content rules', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// knowledgeQuestions.ts (lightweight slug → question index used by
+// KnowledgeLinks so site-wide pages don't bundle the full article content)
+// must stay in exact sync with the articles.
+// ---------------------------------------------------------------------------
+import { KNOWLEDGE_QUESTIONS } from './knowledgeQuestions';
+
+describe('knowledgeQuestions index', () => {
+  it('contains exactly the article slugs with matching question text', () => {
+    const fromArticles = Object.fromEntries(
+      KNOWLEDGE_ARTICLES.map((a) => [a.slug, a.question]),
+    );
+    expect(KNOWLEDGE_QUESTIONS).toEqual(fromArticles);
+  });
+});

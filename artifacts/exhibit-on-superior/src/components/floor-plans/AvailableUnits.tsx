@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { startTransition, useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import { BedDouble, Bath, Ruler, PawPrint } from 'lucide-react';
 import {
@@ -15,16 +15,44 @@ function UnitThumb({ photoUrl, unit, eager = false }: { photoUrl: string; unit: 
   // rejects (and these AppFolio CDN photos shouldn't be preloaded from the
   // static HTML anyway — the snapshot's photo may have rotated by visit time).
   const eagerNow = eager && !import.meta.env.SSR;
+  // Off-screen thumbs wait for real viewport proximity via IntersectionObserver.
+  // `loading="lazy"` alone is not enough: Chrome's lazy-load distance threshold
+  // on slow connections spans thousands of pixels, so all eleven external CDN
+  // thumbnails downloaded at page load anyway — keeping the network busy through
+  // the startup window and dragging out time-to-interactive on mobile. SSR still
+  // renders the plain lazy <img> so crawlers see every photo.
+  const [nearViewport, setNearViewport] = useState(false);
+  const [holder, setHolder] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!holder || eagerNow || nearViewport) return;
+    if (!('IntersectionObserver' in window)) {
+      setNearViewport(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) setNearViewport(true);
+      },
+      { rootMargin: '600px' },
+    );
+    io.observe(holder);
+    return () => io.disconnect();
+  }, [holder, eagerNow, nearViewport]);
+  const showImg = import.meta.env.SSR || eagerNow || nearViewport;
   return (
-    <img
-      src={photoUrl}
-      alt={`Apartment ${unit} interior`}
-      loading={eagerNow ? 'eager' : 'lazy'}
-      fetchPriority={eagerNow ? 'high' : undefined}
-      width={112}
-      height={84}
-      className="h-[84px] w-[112px] object-cover transition-transform duration-300 hover:scale-105"
-    />
+    <span ref={setHolder} className="block h-[84px] w-[112px] bg-muted" data-thumb-url={photoUrl}>
+      {showImg && (
+        <img
+          src={photoUrl}
+          alt={`Apartment ${unit} interior`}
+          loading={eagerNow ? 'eager' : 'lazy'}
+          fetchPriority={eagerNow ? 'high' : undefined}
+          width={112}
+          height={84}
+          className="h-[84px] w-[112px] object-cover transition-transform duration-300 hover:scale-105"
+        />
+      )}
+    </span>
   );
 }
 
@@ -280,6 +308,15 @@ export function AvailableUnits() {
   const { data, isPending } = useAvailability();
   const probe = layoutProbeMode();
 
+  // Only ~1–2 unit rows fit above the fold; hydrate the first few
+  // immediately and pull the rest in via a time-sliced transition so the
+  // full list never contributes a >50 ms long task to mobile TBT.
+  // SSR/prerender always renders every row for crawlers.
+  const [allRows, setAllRows] = useState(import.meta.env.SSR);
+  useEffect(() => {
+    startTransition(() => setAllRows(true));
+  }, []);
+
   const rows = useMemo(() => {
     const units = probe === 'skeleton' ? [] : probe === 'mock' ? probeUnits : data?.units;
     if (!units) return [];
@@ -310,7 +347,7 @@ export function AvailableUnits() {
           {showSkeleton && <UnitRowsSkeleton />}
 
           <ul className="divide-y divide-border">
-            {rows.map((u, rowIndex) => {
+            {(allRows ? rows : rows.slice(0, 3)).map((u, rowIndex) => {
               // Posted units link to their own AppFolio listing's showing
               // scheduler and application (same targets as the buttons on
               // AppFolio's hosted listing page), so tour requests and

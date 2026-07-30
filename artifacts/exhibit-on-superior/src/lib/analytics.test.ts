@@ -285,3 +285,62 @@ describe('UTM capture and persistence across SPA navigation', () => {
     expect(String(lastLeadParams().utm_campaign)).toHaveLength(100);
   });
 });
+
+describe('deferred gtag.js loading', () => {
+  /** Load analytics without replacing window.gtag, keeping the real loader wiring. */
+  async function loadDeferred(): Promise<void> {
+    window.history.replaceState(null, '', '/');
+    vi.resetModules();
+    vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TEST123');
+    const analytics = await import('./analytics');
+    analytics.initAnalytics();
+  }
+  const gtagScript = () =>
+    document.querySelector('script[src^="https://www.googletagmanager.com/gtag/js"]');
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    gtagScript()?.remove();
+  });
+
+  it('does not inject gtag.js eagerly at init', async () => {
+    await loadDeferred();
+    expect(gtagScript()).toBeNull();
+  });
+
+  it('injects gtag.js on the first user gesture', async () => {
+    await loadDeferred();
+    document.dispatchEvent(new Event('pointerdown'));
+    expect(gtagScript()).not.toBeNull();
+  });
+
+  it('injects gtag.js via the post-load fallback timer without any gesture', async () => {
+    await loadDeferred();
+    // jsdom readyState is 'complete', so the 5s post-load timer is armed.
+    vi.advanceTimersByTime(5000);
+    expect(gtagScript()).not.toBeNull();
+  });
+
+  it('injects gtag.js when the tab is backgrounded before the fallback timer (short bounce)', async () => {
+    await loadDeferred();
+    vi.advanceTimersByTime(1000); // leave before the 5s fallback
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(gtagScript()).not.toBeNull();
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
+  });
+
+  it('injects the script only once across gesture, hide and timer triggers', async () => {
+    await loadDeferred();
+    document.dispatchEvent(new Event('pointerdown'));
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+    vi.advanceTimersByTime(31000);
+    const scripts = document.querySelectorAll('script[src^="https://www.googletagmanager.com/gtag/js"]');
+    expect(scripts.length).toBe(1);
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
+  });
+});

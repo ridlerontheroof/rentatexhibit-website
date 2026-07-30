@@ -27,7 +27,12 @@
         w.dataLayer = w.dataLayer || [];
         w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
         var loaded = false;
-        var events = ['pointerdown', 'touchstart', 'keydown', 'scroll'];
+        // Real user gestures only. Deliberately NOT the 'scroll' event: the
+        // browser fires synthetic scroll events from scroll anchoring when
+        // below-fold content mounts, which would pull gtm.js right back into
+        // the busy startup window with nobody touching the page. Wheel and
+        // touchmove only fire for actual input.
+        var events = ['pointerdown', 'touchstart', 'keydown', 'wheel', 'touchmove'];
         function load() {
           if (loaded) return;
           loaded = true;
@@ -40,10 +45,19 @@
         for (var i = 0; i < events.length; i++) {
           d.addEventListener(events[i], load, { capture: true, passive: true, once: true });
         }
-        w.addEventListener('load', function () {
-          ('requestIdleCallback' in w ? w.requestIdleCallback : w.setTimeout)(load);
+        // Tab backgrounding (how most mobile bounces end) loads gtm.js
+        // immediately — the browser finishes the request in the background,
+        // so short no-gesture visits still deliver their queued pageview.
+        d.addEventListener('visibilitychange', function () {
+          if (d.visibilityState === 'hidden') load();
         });
-        w.setTimeout(load, 5000);
+        // Fallback for fully idle visits (no touch/scroll/keys at all):
+        // shortly after the page finished loading, so a short bounce still
+        // records its pageview. Anchored to `load` (with an absolute cap in
+        // case `load` never fires) so the ~250ms gtm.js+gtag.js main-thread
+        // hit lands after the startup window instead of inside it.
+        w.addEventListener('load', function () { w.setTimeout(load, 5000); });
+        w.setTimeout(load, 30000);
       })(window, document);
     </script>
     <!-- End Google Tag Manager -->

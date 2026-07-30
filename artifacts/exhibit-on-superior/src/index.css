@@ -358,3 +358,14 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Below-the-fold render deferral: sections marked .cv-below-fold skip
+   style/layout/paint work until they approach the viewport, cutting main
+   thread time during hydration on long pages (mobile TBT budget). The
+   intrinsic-size placeholder keeps the scrollbar stable so deferral never
+   registers as layout shift. Safe on prerendered HTML too — content stays
+   in the DOM for crawlers, find-in-page, and anchor navigation. */
+.cv-below-fold {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}

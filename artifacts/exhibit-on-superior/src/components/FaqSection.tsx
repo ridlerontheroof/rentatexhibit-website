@@ -1,6 +1,6 @@
 import { Link } from 'wouter';
 import { PAGE_SEO } from '../data/seo';
-import { knowledgePath } from '../data/knowledge';
+import { knowledgePath } from '../data/knowledgePath';
 import { Plus } from 'lucide-react';
 import { SplitHeadline } from './SplitHeadline';
 
@@ -14,7 +14,7 @@ export function FaqSection({ path }: FaqSectionProps) {
   if (!page || page.faqs.length === 0) return null;
 
   return (
-    <section className="px-4 py-16">
+    <section className="cv-below-fold px-4 py-16">
       <div className="container mx-auto max-w-3xl">
         <p className="eyebrow mb-2 text-center">Good to Know</p>
         <SplitHeadline caps="Frequently Asked Questions" className="mb-8" />

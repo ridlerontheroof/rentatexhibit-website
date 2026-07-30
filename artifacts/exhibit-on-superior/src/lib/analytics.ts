@@ -78,10 +78,45 @@ export function initAnalytics(): void {
   // client-side navigations are counted (see trackPageView in App.tsx).
   window.gtag('config', MEASUREMENT_ID, { send_page_view: false });
 
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(MEASUREMENT_ID!)}`;
-  document.head.appendChild(script);
+  // Defer the gtag.js script itself out of the startup window, mirroring the
+  // inline GTM loader in index.html: first real user gesture, tab
+  // backgrounding, or shortly after `load` for fully idle visits. The `window.gtag` stub above queues every
+  // event pushed in the meantime (page views included), so nothing is lost —
+  // gtag.js drains the dataLayer queue when it arrives. Injecting it eagerly
+  // at hydration put ~250ms of third-party main-thread work inside mobile
+  // TBT on the busiest pages.
+  let injected = false;
+  const events = ['pointerdown', 'touchstart', 'keydown', 'wheel', 'touchmove'] as const;
+  const inject = () => {
+    if (injected) return;
+    injected = true;
+    for (const e of events) document.removeEventListener(e, inject, true);
+    document.removeEventListener('visibilitychange', onHidden);
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(MEASUREMENT_ID!)}`;
+    document.head.appendChild(script);
+  };
+  // Short-bounce coverage: the moment the tab is backgrounded (app switch,
+  // tab switch — how most mobile visits end) inject immediately; the browser
+  // finishes loading in the background and the queued page_view is delivered.
+  // This never fires during a foreground page load, so it cannot re-enter
+  // the startup window it was deferred out of. Only a hard navigation away
+  // within the first ~5s remains uncounted — the same bounded loss as the
+  // previous fixed 5s fallback timer.
+  const onHidden = () => {
+    if (document.visibilityState === 'hidden') inject();
+  };
+  for (const e of events) {
+    document.addEventListener(e, inject, { capture: true, passive: true, once: true });
+  }
+  document.addEventListener('visibilitychange', onHidden);
+  if (document.readyState === 'complete') {
+    window.setTimeout(inject, 5000);
+  } else {
+    window.addEventListener('load', () => window.setTimeout(inject, 5000));
+  }
+  window.setTimeout(inject, 30000);
 }
 
 /** Report a page view (initial load and every SPA navigation). */

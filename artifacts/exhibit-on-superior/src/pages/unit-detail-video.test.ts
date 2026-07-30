@@ -89,6 +89,16 @@ describe('UnitDetail video tour', () => {
 
     // Before activation: no iframe (no third-party JS), just the facade
     // button with a descriptive accessible name and the poster thumbnail.
+    // The video section sits below the fold, so the client mounts it in a
+    // deferred transition — wait for that pass to land.
+    await waitFor(() => {
+      if (
+        !document.querySelector(
+          'button[data-embed-url="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0"]',
+        )
+      )
+        throw new Error('facade not mounted yet');
+    });
     expect(document.querySelector('iframe')).toBeNull();
     const facade = document.querySelector(
       'button[data-embed-url="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0"]',

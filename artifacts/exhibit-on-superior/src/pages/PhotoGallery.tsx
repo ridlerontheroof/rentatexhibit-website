@@ -225,6 +225,10 @@ export function PhotoGallery() {
                     // (SmartImg renders a <picture>, so eager here is safe
                     // from React 19's fixed-href auto-preload.)
                     loading={index < 4 ? 'eager' : 'lazy'}
+                    // Eager-but-low: keeps the peeking first row from lazy
+                    // popping in, while letting the hero (the LCP image) win
+                    // the Slow-4G bandwidth race.
+                    fetchPriority={index < 4 ? 'low' : undefined}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />

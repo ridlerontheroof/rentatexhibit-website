@@ -1,5 +1,6 @@
 import { Link } from 'wouter';
-import { knowledgeArticle, knowledgePath } from '../data/knowledge';
+import { knowledgePath } from '../data/knowledgePath';
+import { KNOWLEDGE_QUESTIONS } from '../data/knowledgeQuestions';
 
 interface KnowledgeLinksProps {
   /** Knowledge article slugs — must resolve (enforced by knowledge.test.ts). */
@@ -15,12 +16,12 @@ interface KnowledgeLinksProps {
  */
 export function KnowledgeLinks({ slugs, title = 'Common Questions' }: KnowledgeLinksProps) {
   const articles = slugs
-    .map((slug) => knowledgeArticle(slug))
-    .filter((a): a is NonNullable<typeof a> => Boolean(a));
+    .map((slug) => (KNOWLEDGE_QUESTIONS[slug] ? { slug, question: KNOWLEDGE_QUESTIONS[slug] } : null))
+    .filter((a): a is { slug: string; question: string } => Boolean(a));
   if (articles.length === 0) return null;
 
   return (
-    <section className="px-4 py-12">
+    <section className="cv-below-fold px-4 py-12">
       <div className="container mx-auto max-w-3xl">
         <p className="eyebrow mb-2">From the Knowledge Center</p>
         <h2 className="text-2xl uppercase tracking-wider mb-6">{title}</h2>

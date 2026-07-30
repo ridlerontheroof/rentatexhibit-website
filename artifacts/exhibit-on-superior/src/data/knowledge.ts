@@ -22,6 +22,12 @@ import {
   TWITTER_SITE,
 } from './seo';
 import { KNOWLEDGE_ARTICLES } from './knowledgeArticles';
+// Lives in its own tiny module so site-wide components (FaqSection,
+// KnowledgeLinks) can link into the Knowledge Center without bundling the
+// full article content — see knowledgePath.ts. Re-exported for article-page
+// consumers that already import this module.
+import { knowledgePath } from './knowledgePath';
+export { knowledgePath };
 
 export { KNOWLEDGE_ARTICLES };
 
@@ -179,11 +185,6 @@ export function knowledgeUpdatedDisplay(a: KnowledgeArticle): string {
   ];
   return `${months[m - 1]} ${d}, ${y}`;
 }
-
-export function knowledgePath(slug: string): string {
-  return `/knowledge/${slug}`;
-}
-
 export const KNOWLEDGE_PATHS: string[] = KNOWLEDGE_ARTICLES.map((a) => knowledgePath(a.slug));
 
 const bySlug = new Map(KNOWLEDGE_ARTICLES.map((a) => [a.slug, a]));

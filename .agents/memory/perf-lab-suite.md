@@ -17,3 +17,7 @@ description: How the repeatable Lighthouse suite works, its calibration model, a
 
 - ShellExec sessions are isolated: `/tmp` is not shared between calls and background (`nohup`/`setsid`) processes die when the session ends.
 - **How to apply:** for anything longer than ~4 minutes, register/run it as a console workflow (`configureWorkflow` + autoStart) and poll its output files, instead of backgrounding in a shell.
+
+- The suite serves dist via the real production server (`node server/index.mjs`), NOT `vite preview` — preview ignores artifact.toml clean-URL rewrites and silently serves the home page HTML for every route, so all per-page numbers measure the wrong document.
+- check-perf waits for the 1-min load average to settle before the first audit; startup churn from workflow restarts otherwise inflates the first few pages only.
+- Unit pages are discovered dynamically from dist (units rent and disappear); their limits use a generic `<formFactor> /available-units/<unit>` override key.

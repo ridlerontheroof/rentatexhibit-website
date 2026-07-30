@@ -25,6 +25,11 @@ declare global {
 
 const parseResponse = async (response: Response): Promise<AvailabilityData> => {
   if (!response.ok) {
+    // Drain the body before rejecting. An abandoned body keeps the request
+    // "in flight" at the network layer, which holds the browser's
+    // network-quiet signal open indefinitely (and, in lab tools like
+    // Lighthouse, keeps the page observation window pinned at its maximum).
+    response.body?.cancel().catch(() => {});
     throw new Error('Availability feed unavailable');
   }
   return normalizeAvailability(await response.json());

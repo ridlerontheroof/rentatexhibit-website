@@ -46,6 +46,10 @@ export function Amenities() {
                   src="/images/image-009-34-southeast-levwhc.jpg"
                   alt="Rooftop amenity deck with panoramic Chicago skyline views to the southeast"
                   loading="eager"
+                  // Eager-but-low: can peek above the fold on tall screens,
+                  // but must not outrank the hero (the LCP image) for
+                  // Slow-4G bandwidth.
+                  fetchPriority="low"
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />

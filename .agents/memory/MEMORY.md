@@ -45,8 +45,9 @@
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.
 - [Alert-email inbox verification](alert-email-inbox-verification.md) — leasingexhibit@ is IMAP-readable with the same app password; bodies are base64 MIME; claim rows prove send timing.
 - [Sitemap lastmod content-hash map](sitemap-lastmod-map.md) — lastmod comes from a committed twin-hash→date map, not build date; map is seo-source-hash-excluded; sitemap gen must stay after twins.
-- [GTM deferred loading](gtm-deferred-loading.md) — gtm.js loads on interaction/idle/5s fallback, never eagerly; ≤800w image rungs cap at ~60KB; solo-run perf before trusting TBT fails.
-- [Perf lab suite (check:perf)](perf-lab-suite.md) — Lighthouse vs dist via vite preview; calibrated per-page thresholds; run long checks as workflows, not nohup (ShellExec /tmp+bg isolated).
+- [GTM deferred loading](gtm-deferred-loading.md) — gtm.js AND analytics.ts gtag load on real gestures (never 'scroll') or shortly after `load`, never eagerly; ≤800w rungs cap ~60KB.
+- [Mobile TBT/LCP playbook](mobile-tbt-lcp-playbook.md) — data-module import trap, DeferBelowFold time-slicing (createRoot = no mismatch risk), fetchPriority=low on eager non-heroes, gtag ≈150ms fixed TBT floor.
+- [Perf lab suite (check:perf)](perf-lab-suite.md) — Lighthouse vs dist via the production server (vite preview serves wrong HTML per route); load-settle gate; run long checks as workflows.
 - [Click-to-load embed facades](embed-facades.md) — embeds mount on click behind poster buttons; `data-embed-url` keeps prerender mirror tests green; maps defer on viewport proximity.
 - [Lead-form bot guard](lead-form-bot-guard.md) — honeypot+fill-time checked server-side before any side effect; showing fallback never fires on 400; honeypot must be nonsense-named (Safari autofilled "company") and elapsedMs omitted when the visitor never typed.
 - [Floor-plan landing pages](floor-plan-landing-pages.md) — /floor-plans is a real hub now (not a 301); slug/collision rules, managed toml region boundary, JSON-LD @id gotcha.

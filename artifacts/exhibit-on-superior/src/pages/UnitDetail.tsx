@@ -19,6 +19,7 @@ import { planPageForUnit, floorPlanPagePath, floorPlanH1 } from '../data/floorPl
 import { resolveUnitSqft } from '../data/unitSqft';
 import { youTubeEmbedUrl, youTubeThumbnailUrl } from '../lib/youtube';
 import { EmbedFacade } from '../components/EmbedFacade';
+import { DeferBelowFold } from '../components/DeferBelowFold';
 import { buildUnitSeoModel, unitFactSummary, unitFloor } from '../data/unitPageSeo';
 import { adaDesignation, adaDesignationLabel, ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
 import { useModalHistory } from '../hooks/use-modal-history';
@@ -107,7 +108,12 @@ export function UnitDetail() {
   const sqft = resolveUnitSqft(unit);
   const baths = unit.bathrooms ?? group?.baths ?? null;
   const tourUrl = unit.listingUrl ? tourUrlForListing(unit.listingUrl) : null;
-  const heroPhotos = unit.photos.slice(0, 5);
+  // The collage displays at most ~585px wide, so request AppFolio's `medium`
+  // rendition (~43KB webp) instead of `large` (~260KB) — a 6x lighter LCP
+  // download at identical displayed sharpness. The lightbox keeps the
+  // original full-size URLs (unit.photos).
+  const collageSrc = (url: string) => url.replace(/\/large\.jpg$/, '/medium.jpg');
+  const heroPhotos = unit.photos.slice(0, 5).map(collageSrc);
   // The tour's VideoObject JSON-LD is emitted from the shared unit SEO model
   // (unitPageSeo.ts) — uploadDate/thumbnail come from the committed YouTube
   // metadata cache, not AppFolio.
@@ -361,9 +367,13 @@ export function UnitDetail() {
           )}
         </div>
 
+        {/* Everything below is under the mobile fold: prerendered HTML keeps it
+            for crawlers/first paint, while the client mounts it in a low-priority
+            transition after the visible listing header is interactive. */}
+        <DeferBelowFold>
         {/* Video tour — wide, cinematic break between story and specs */}
         {videoEmbedUrl && (
-          <div className="mx-auto mt-20 max-w-4xl">
+          <div className="cv-below-fold mx-auto mt-20 max-w-4xl">
             <div className="mb-10 h-px bg-border" />
             <h2 className="mb-8 text-center text-xl uppercase tracking-wider text-foreground">
               Video Tour
@@ -393,7 +403,7 @@ export function UnitDetail() {
 
         {/* Detail sections — multi-column grid, full width */}
         {unit.details.length > 0 && (
-          <div className="mx-auto mt-20 max-w-5xl">
+          <div className="cv-below-fold mx-auto mt-20 max-w-5xl">
             <div className="mb-10 h-px bg-border" />
             <h2 className="mb-8 text-center text-xl uppercase tracking-wider text-foreground">
               Residence Details
@@ -419,7 +429,7 @@ export function UnitDetail() {
 
         {/* Related pages — descriptive internal links so visitors (and
             crawlers) can reach the building-wide facts behind this listing. */}
-        <div className="mx-auto mt-20 max-w-3xl">
+        <div className="cv-below-fold mx-auto mt-20 max-w-3xl">
           <div className="mb-10 h-px bg-border" />
           <h2 className="mb-6 text-center text-xl uppercase tracking-wider text-foreground">
             More About Exhibit On Superior
@@ -449,6 +459,7 @@ export function UnitDetail() {
             ))}
           </ul>
         </div>
+        </DeferBelowFold>
       </div>
 
       {galleryOpen && <UnitGalleryLightbox unit={unit} onClose={closeGallery} />}

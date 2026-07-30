@@ -5,7 +5,7 @@ import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { Plus } from 'lucide-react';
 import { FAQ_HUB_TOPICS } from '../data/seo';
-import { knowledgePath } from '../data/knowledge';
+import { knowledgePath } from '../data/knowledgePath';
 import { KnowledgeLinks } from '../components/KnowledgeLinks';
 
 /**

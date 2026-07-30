@@ -1,4 +1,5 @@
 import { KnowledgeLinks } from '../components/KnowledgeLinks';
+import { DeferBelowFold } from '../components/DeferBelowFold';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { Link } from 'wouter';
@@ -343,7 +344,11 @@ export function FloorPlans() {
 
         <QuickAnswer path="/available-units" />
 
-        <section className="px-4 py-14">
+        {/* Everything below the Available Units strip starts below the fold
+            on all viewports (verified by check-units-above-fold), so it can
+            hydrate in a time-sliced transition instead of the critical path. */}
+        <DeferBelowFold>
+        <section className="cv-below-fold px-4 py-14">
           <div className="container mx-auto max-w-3xl text-center">
             <SplitHeadline script="Live Smart, Live Beautifully" caps="Explore All Floor Plans" className="mb-6" />
             <p className="text-lg leading-relaxed text-muted-foreground">
@@ -354,7 +359,7 @@ export function FloorPlans() {
           </div>
         </section>
 
-        <section className="px-4 pb-20">
+        <section className="cv-below-fold px-4 pb-20">
           <div className="container mx-auto">
             <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-10">
               {/* Sidebar filters (desktop) */}
@@ -524,7 +529,7 @@ export function FloorPlans() {
 
         {/* Closing CTA */}
         {/* Live Smart, Live Beautifully — carried over from the original site */}
-        <section className="px-4 py-20">
+        <section className="cv-below-fold px-4 py-20">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
               <div className="lg:order-1">
@@ -560,7 +565,7 @@ export function FloorPlans() {
         </section>
 
         {/* Your Space, Your Style — carried over from the original site */}
-        <section className="bg-dark-section px-4 py-20">
+        <section className="cv-below-fold bg-dark-section px-4 py-20">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
               <div className="relative">
@@ -608,6 +613,7 @@ export function FloorPlans() {
             'lease-terms',
           ]}
         />
+        </DeferBelowFold>
       </div>
 
       <PlanLightbox
