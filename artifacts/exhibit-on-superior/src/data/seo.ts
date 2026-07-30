@@ -43,7 +43,7 @@ export const SITE_URL = 'https://www.rentatexhibit.com';
  * fresh image. (v2: 2026-07 regeneration of nine stale cards, notably
  * reviews.jpg. v3: default og-card.jpg brought under the same guard.)
  */
-export const OG_CARD_VERSION = 3;
+export const OG_CARD_VERSION = 4;
 
 /** Site-wide fallback share card, cache-busted like the per-page cards. */
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg?v=${OG_CARD_VERSION}`;
@@ -524,7 +524,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/knowledge': {
     path: '/knowledge',
-    ogImage: ogCardUrl('faq'),
+    ogImage: ogCardUrl('knowledge'),
     label: 'Knowledge Center',
     title: 'Knowledge Center: Renter Questions Answered | Exhibit On Superior',
     description:

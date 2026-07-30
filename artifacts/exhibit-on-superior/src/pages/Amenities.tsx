@@ -44,7 +44,7 @@ export function Amenities() {
               <div className="relative h-[350px] overflow-hidden group">
                 <SmartImg
                   src="/images/image-009-34-southeast-levwhc.jpg"
-                  alt="Views for days"
+                  alt="Rooftop amenity deck with panoramic Chicago skyline views to the southeast"
                   loading="eager"
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -56,7 +56,7 @@ export function Amenities() {
               <div className="relative h-[350px] overflow-hidden group">
                 <SmartImg
                   src="/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg"
-                  alt="Cozy comfort"
+                  alt="Full-floor amenity deck lounge area overlooking the city and private park"
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -67,7 +67,7 @@ export function Amenities() {
               <div className="relative h-[350px] overflow-hidden group">
                 <SmartImg
                   src="/images/image-011-20170808-0713-n8k48b.jpg"
-                  alt="Sun Soaked Vibes"
+                  alt="Outdoor amenity deck with sun loungers overlooking River North Chicago"
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -78,7 +78,7 @@ export function Amenities() {
               <div className="relative h-[350px] overflow-hidden group">
                 <SmartImg
                   src="/images/image-012-012417-6415-hgfghu.jpg"
-                  alt="Sweat Session"
+                  alt="Fitness center with cardio equipment and floor-to-ceiling windows"
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />

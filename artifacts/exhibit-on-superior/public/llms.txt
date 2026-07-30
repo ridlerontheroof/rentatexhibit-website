@@ -6,8 +6,7 @@
 ## Primary Information
 
 - [Property Overview](https://www.rentatexhibit.com/): Official property overview, address, contact information, apartment types, and management information.
-- [Available Apartments](https://www.rentatexhibit.com/available-units): Current unit availability, rents, floor plans, and availability dates.
-- [Floor Plans](https://www.rentatexhibit.com/floor-plans): Official studio through three-bedroom floor plans.
+- [Available Apartments & Floor Plans](https://www.rentatexhibit.com/available-units): Current unit availability, rents, floor plans, and availability dates.
 - [Amenities](https://www.rentatexhibit.com/amenities): Apartment and community amenities.
 - [Pet Policy](https://www.rentatexhibit.com/pet-friendly): Pet rules, fees, and restrictions.
 - [Neighborhood](https://www.rentatexhibit.com/neighborhood): River North location, transportation, shopping, and dining.

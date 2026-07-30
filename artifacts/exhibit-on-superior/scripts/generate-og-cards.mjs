@@ -108,6 +108,10 @@ export const CARDS = {
     src: 'image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg',
     tagline: 'Your questions, answered',
   },
+  knowledge: {
+    src: 'image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq.jpg',
+    tagline: 'Renter questions, fact-first answers',
+  },
   'contact-us': {
     src: 'image-070-012417-6535-gpdv36.jpg',
     tagline: 'Get in touch with our leasing team',
