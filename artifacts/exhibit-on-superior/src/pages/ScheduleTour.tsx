@@ -171,37 +171,11 @@ export function ScheduleTour() {
               </div>
             ) : (
               <div>
-                {/* The tour-request form is the primary path on this page;
-                    live listings moved behind the View Available Units button
-                    in the Leasing Office card. */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Left Column - Info */}
-                <div>
-
-                  <div className="bg-dark-section text-white p-6 mb-8">
-                    <h2 className="text-lg uppercase tracking-wider mb-3">Leasing Office</h2>
-                    <p className="mb-2">165 W Superior St Chicago, IL 60654</p>
-                    <p className="mb-4">
-                      <a href="tel:312-450-0635" className="text-white underline underline-offset-4 hover:text-white/80">
-                        312-450-0635
-                      </a>
-                    </p>
-                    <div className="flex w-fit flex-col gap-4">
-                      <a href="mailto:exhibit@highlandptrs.com?subject=Schedule%20a%20Tour%20at%20Exhibit%20On%20Superior" className="btn-gold-outline block text-center">
-                        Email us to schedule a tour
-                      </a>
-                      <Link
-                        href="/available-units"
-                        className="btn-gold-outline bg-primary! text-white! border-primary! hover:bg-primary/90! block text-center"
-                      >
-                        View Available Units
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column - Form */}
-                <div className="bg-muted p-8 border border-border">
+                {/* The tour-request form is the primary path on this page and
+                    leads the section; the Leasing Office contact strip sits
+                    below it as the secondary path. Live listings stay behind
+                    the View Available Units button. */}
+                <div className="max-w-3xl mx-auto bg-muted p-6 sm:p-8 border border-border">
                   <h2 className="text-2xl uppercase tracking-wider mb-6">Request a Showing</h2>
 
                   {!isOnline && (
@@ -254,7 +228,7 @@ export function ScheduleTour() {
                     noValidate
                   >
                     <HoneypotField inputRef={botGuard.honeypotRef} />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-4">
                       <div>
                         <label htmlFor="firstName" className="block text-sm uppercase tracking-wider mb-2">
                           First Name *
@@ -293,6 +267,7 @@ export function ScheduleTour() {
                       </div>
                     </div>
 
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-4">
                     <div>
                       <label htmlFor="email" className="block text-sm uppercase tracking-wider mb-2">
                         Email *
@@ -330,7 +305,9 @@ export function ScheduleTour() {
                         </p>
                       )}
                     </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-4">
                     <div>
                       <label htmlFor="moveInDate" className="block text-sm uppercase tracking-wider mb-2">
                         Desired Move-In Date *
@@ -373,6 +350,7 @@ export function ScheduleTour() {
                           {errors.bedrooms.message}
                         </p>
                       )}
+                    </div>
                     </div>
 
                     {availableUnits.length > 0 && (
@@ -417,6 +395,31 @@ export function ScheduleTour() {
                     </button>
                   </form>
                 </div>
+
+                {/* Leasing Office — secondary contact strip below the form */}
+                <div className="max-w-3xl mx-auto mt-8 bg-dark-section text-white p-6">
+                  <h2 className="text-lg uppercase tracking-wider mb-3">Leasing Office</h2>
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                      <p className="mb-1">165 W Superior St Chicago, IL 60654</p>
+                      <p>
+                        <a href="tel:312-450-0635" className="text-white underline underline-offset-4 hover:text-white/80">
+                          312-450-0635
+                        </a>
+                      </p>
+                    </div>
+                    <div className="flex w-fit flex-col sm:flex-row gap-4">
+                      <a href="mailto:exhibit@highlandptrs.com?subject=Schedule%20a%20Tour%20at%20Exhibit%20On%20Superior" className="btn-gold-outline block text-center">
+                        Email us to schedule a tour
+                      </a>
+                      <Link
+                        href="/available-units"
+                        className="btn-gold-outline bg-primary! text-white! border-primary! hover:bg-primary/90! block text-center"
+                      >
+                        View Available Units
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
