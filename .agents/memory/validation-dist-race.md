@@ -12,3 +12,5 @@ Rule: any test that asserts on `dist/public` contents (prerendered pages, `.br`/
 Related trap: the SEO source hash (`scripts/seo-source-hash.mjs`) fingerprints ALL non-test `.ts/.tsx/.json` under `src/data`. Adding any head-irrelevant data/stamp file there marks dist stale, forces the prepublish rebuild mid-validation, and triggers this race — add an explicit exclusion for files that don't affect head markup (like the availability snapshot and og-cards stamp).
 
 - Test-created build outputs must not live under dist/ either: the concurrent prepublish rebuild recreates dist/ and deletes them mid-assertion (font base-path test now builds into node_modules/.cache).
+
+- New variant: the prepublish build's own `precompress` step can ENOENT mid-write when *other tasks are merging* into the workspace concurrently (their rebuilds recreate dist/public under it). Not a code bug — wait for merge activity to quiesce, then re-run validation.
