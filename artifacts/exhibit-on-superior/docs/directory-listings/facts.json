@@ -20,7 +20,8 @@
   "socialProfiles": [
     "https://www.facebook.com/exhibitonsuperior",
     "https://www.instagram.com/exhibitonsuperior",
-    "https://www.youtube.com/@ExhibitonSuperior"
+    "https://www.youtube.com/@ExhibitonSuperior",
+    "https://www.google.com/maps?cid=15240815771270963454"
   ],
   "amenities": [
     "Full-floor amenity deck overlooking the city and private park",
@@ -51,6 +52,6 @@
     "Transit Score 100 (Rider's Paradise, per Walk Score)",
     "Bike Score 86 (Very Bikeable, per Walk Score)"
   ],
-  "factsHash": "d60a82bc7ef0598c6863a6667e22b95f20ab8ecccbf09b6d8190d55990e23ef1",
-  "generated": "2026-07-27"
+  "factsHash": "5227428ce2829e1a5be369480a626ba5ad6386c3e98714bd62fa210e535ff6d0",
+  "generated": "2026-07-30"
 }

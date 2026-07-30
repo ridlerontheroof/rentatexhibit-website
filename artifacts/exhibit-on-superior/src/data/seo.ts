@@ -1196,6 +1196,7 @@ export const APARTMENT_COMPLEX_NODE = {
     'https://www.facebook.com/exhibitonsuperior',
     'https://www.instagram.com/exhibitonsuperior',
     'https://www.youtube.com/@ExhibitonSuperior',
+    'https://www.google.com/maps?cid=15240815771270963454',
   ],
   amenityFeature: [
     'Full-floor amenity deck overlooking the city and private park',
