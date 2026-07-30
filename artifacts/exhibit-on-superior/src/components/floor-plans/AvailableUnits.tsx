@@ -407,17 +407,34 @@ export function AvailableUnits() {
 
           {showSkeleton && <UnitRowsSkeleton />}
 
-          {/* Filter row appears with the post-hydration transition only
-              (allRows starts false in the browser), so it never renders
-              during SSR/prerender and never disturbs the skeleton state. */}
-          {allRows && !import.meta.env.SSR && !showSkeleton && rows.length > 0 && (
-            <UnitFilterRow
-              units={rows}
-              state={filters}
-              onChange={setFilters}
-              onClear={() => setFilters(DEFAULT_UNIT_FILTERS)}
-              shownCount={visibleRows.length}
-            />
+          {/* The live filter row still mounts only with the post-hydration
+              transition (allRows starts false in the browser), but its space
+              is reserved from the very first paint: SSR/prerender and the
+              pre-hydration frames render the same row inert and aria-hidden
+              (identical geometry — real units, default state), so the swap to
+              the interactive row never shifts the unit list. aria-hidden keeps
+              it out of the markdown twins and the accessibility tree; inert
+              keeps every control unfocusable until the real row takes over. */}
+          {!showSkeleton && rows.length > 0 && (
+            allRows && !import.meta.env.SSR ? (
+              <UnitFilterRow
+                units={rows}
+                state={filters}
+                onChange={setFilters}
+                onClear={() => setFilters(DEFAULT_UNIT_FILTERS)}
+                shownCount={visibleRows.length}
+              />
+            ) : (
+              <div inert aria-hidden="true" className="pointer-events-none select-none">
+                <UnitFilterRow
+                  units={rows}
+                  state={DEFAULT_UNIT_FILTERS}
+                  onChange={() => {}}
+                  onClear={() => {}}
+                  shownCount={rows.length}
+                />
+              </div>
+            )
           )}
 
           {filtersActive && visibleRows.length === 0 && rows.length > 0 && (

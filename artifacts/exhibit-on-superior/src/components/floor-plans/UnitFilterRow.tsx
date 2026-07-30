@@ -12,9 +12,12 @@ import {
 /**
  * Thin filter row for the Available Residences strip: move-in date, beds,
  * baths, and square footage. Pure client-side narrowing of the live unit
- * list — it is mounted after hydration only (see AvailableUnits), so the
- * prerendered HTML and markdown twins never contain it and the default
- * (no filters) render is exactly today's full list.
+ * list — the interactive row mounts after hydration only (see
+ * AvailableUnits), but an inert aria-hidden twin of it renders during
+ * SSR/prerender so its height is reserved from the first paint (no layout
+ * shift when the live row swaps in). aria-hidden keeps it out of the
+ * markdown twins, and the default (no filters) render is exactly the full
+ * unit list.
  *
  * Native <select>/<input> controls throughout: compact, keyboard-operable,
  * labeled, and free of the hidden-clone issues Radix selects bring (same
