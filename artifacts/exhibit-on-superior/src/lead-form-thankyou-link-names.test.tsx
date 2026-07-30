@@ -133,9 +133,9 @@ describe('ScheduleTour post-submit states label-in-name (WCAG 2.5.3)', () => {
 
   it('thank-you screen after a successful tour request', async () => {
     mountAt('/schedule-a-tour?unit=0807', <ScheduleTour />);
-    // The pre-submit page carries aria-labelled per-unit links; the scan must
-    // not be vacuous here.
-    expectNoOffenders('ScheduleTour (pre-submit form)', 1);
+    // The per-unit listing section (with its aria-labelled links) was removed
+    // from this page; the form leads now, so zero labelled elements is fine.
+    expectNoOffenders('ScheduleTour (pre-submit form)');
 
     await submitTourForm();
     await waitFor(() =>

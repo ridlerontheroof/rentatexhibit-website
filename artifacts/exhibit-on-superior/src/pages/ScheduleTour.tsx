@@ -12,8 +12,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Seo } from '../components/Seo';
 import { trackLead } from '../lib/analytics';
-import { tourUrlForListing } from '../components/floor-plans/UnitGalleryLightbox';
-import { UnitRow } from '../components/floor-plans/AvailableUnits';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { HoneypotField, useBotGuard } from '../components/BotGuard';
@@ -147,75 +145,6 @@ export function ScheduleTour() {
 
         <QuickAnswer path="/schedule-a-tour" />
 
-        {/* Primary path: pick a specific available residence and book a tour
-            straight from its card, so the request lands in the leasing system
-            attached to that exact unit. Reuses the Available Units card so the
-            two surfaces stay identical. Reads from the same availability hook
-            (baked snapshot + live refresh). */}
-        {availableUnits.length > 0 && (
-          <section id="available-units" className="py-16 px-4 bg-muted">
-            <div className="container mx-auto max-w-5xl">
-              <h2 className="text-3xl uppercase tracking-wider mb-3 text-center">
-                Pick the Residence You'd Like to See
-              </h2>
-              <p className="text-lg leading-relaxed mb-10 text-center max-w-2xl mx-auto">
-                Choose an available apartment and book your tour right from its
-                card — the time you pick goes straight onto our calendar,
-                attached to that exact home.
-              </p>
-              <ul className="divide-y divide-border border border-border bg-white px-4 md:px-6">
-                {availableUnits.map((u, rowIndex) => {
-                  const tourUrl = u.listingUrl ? tourUrlForListing(u.listingUrl) : null;
-                  return (
-                    <UnitRow
-                      key={u.unit}
-                      unit={u}
-                      eager={rowIndex === 0}
-                      actions={
-                        <>
-                          <Link
-                            href={`/available-units/${u.unit}`}
-                            // Accessible name starts with the visible text
-                            // ("View details") so voice-control users can speak
-                            // what they see (WCAG 2.5.3 label-in-name).
-                            aria-label={`View details for apartment ${u.unit}`}
-                            className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
-                          >
-                            View details
-                          </Link>
-                          {tourUrl ? (
-                            // Posted units book through the on-site real-time
-                            // scheduler (Exhibit-branded, real AppFolio times),
-                            // pre-selected for this unit.
-                            <Link
-                              href={`/schedule-showing?unit=${u.unit}`}
-                              aria-label={`Book this tour of apartment ${u.unit}`}
-                              className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-                            >
-                              Book this tour
-                            </Link>
-                          ) : (
-                            // Not-yet-posted units have no live scheduler; jump
-                            // to the request form with this apartment prefilled.
-                            <a
-                              href="#request-a-showing"
-                              onClick={() => setValue('unit', u.unit)}
-                              aria-label={`Book this tour of apartment ${u.unit}`}
-                              className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-                            >
-                              Book this tour
-                            </a>
-                          )}
-                        </>
-                      }
-                    />
-                  );
-                })}
-              </ul>
-            </div>
-          </section>
-        )}
-
         <section id="request-a-showing" className="py-16 px-4">
           <div className="container mx-auto max-w-5xl">
             {submitted ? (
@@ -242,33 +171,19 @@ export function ScheduleTour() {
               </div>
             ) : (
               <div>
-                {/* When units are posted above, the form is the demoted
-                    fallback ("don't see the right fit"). With zero availability
-                    the cards section is absent, so the form leads and the copy
-                    reads as the primary path instead. */}
-                {availableUnits.length > 0 ? (
-                  <div className="mb-10 text-center max-w-2xl mx-auto">
-                    <h2 className="text-3xl uppercase tracking-wider mb-3">
-                      Don't See the Right Fit Yet?
-                    </h2>
-                    <p className="text-lg leading-relaxed">
-                      Tell us what you're looking for and a member of our leasing
-                      team will arrange a showing with you directly — including
-                      residences that aren't posted online yet.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="mb-10 text-center max-w-2xl mx-auto">
-                    <h2 className="text-3xl uppercase tracking-wider mb-3">
-                      Tell Us What You're Looking For
-                    </h2>
-                    <p className="text-lg leading-relaxed">
-                      Share your move-in date and floor-plan preference and a
-                      member of our leasing team will reach out to arrange a
-                      showing as soon as the right residence opens up.
-                    </p>
-                  </div>
-                )}
+                {/* The tour-request form is the primary path on this page;
+                    live listings moved behind the View Available Units button
+                    in the Leasing Office card. */}
+                <div className="mb-10 text-center max-w-2xl mx-auto">
+                  <h2 className="text-3xl uppercase tracking-wider mb-3">
+                    Didn't see the right fit?
+                  </h2>
+                  <p className="text-lg leading-relaxed">
+                    Tell us what you're looking for and a member of our leasing
+                    team will arrange a showing with you directly — including
+                    residences that aren't posted online yet.
+                  </p>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Left Column - Info */}
@@ -278,7 +193,7 @@ export function ScheduleTour() {
                     <h3 className="text-lg uppercase tracking-wider mb-3">Leasing Office</h3>
                     <p className="mb-2">165 W Superior St Chicago, IL 60654</p>
                     <p className="mb-4">
-                      <a href="tel:312-450-0635" className="text-primary underline underline-offset-4 hover:text-primary/80">
+                      <a href="tel:312-450-0635" className="text-white underline underline-offset-4 hover:text-white/80">
                         312-450-0635
                       </a>
                     </p>
