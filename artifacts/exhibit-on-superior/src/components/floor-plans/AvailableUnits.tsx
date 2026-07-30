@@ -8,6 +8,13 @@ import { SplitHeadline } from '../SplitHeadline';
 import { useAvailability, type AvailableUnit } from '../../hooks/use-availability';
 import { planGroups, type PlanGroup } from '../../data/floorPlans';
 import { resolveUnitSqft } from '../../data/unitSqft';
+import { UnitFilterRow } from './UnitFilterRow';
+import {
+  DEFAULT_UNIT_FILTERS,
+  filterUnits,
+  hasActiveUnitFilters,
+  type UnitFilterState,
+} from '../../data/unitFilters';
 
 function UnitThumb({ photoUrl, unit, eager = false }: { photoUrl: string; unit: string; eager?: boolean }) {
   // Eager-load only in the browser: React 19 SSR auto-emits a fixed-href
@@ -76,7 +83,23 @@ function UnitRowsSkeleton() {
   // tracks the real rows automatically at every breakpoint. Verified by the
   // skeleton-geometry phase of scripts/check-units-above-fold.mjs.
   return (
-    <ul className="divide-y divide-border" aria-hidden="true" data-testid="units-skeleton">
+    <>
+      {/* Filter-row placeholder: the real UnitFilterRow rendered inert (no
+          focus, no pointer, hidden from AT) with the same representative
+          units as the `mock` layout probe, so the skeleton's geometry —
+          including where the row wraps on narrow screens — tracks the real
+          filter row automatically and the skeleton→live swap doesn't shift
+          the unit list. */}
+      <div inert aria-hidden="true" className="pointer-events-none select-none opacity-50">
+        <UnitFilterRow
+          units={probeUnits}
+          state={DEFAULT_UNIT_FILTERS}
+          onChange={() => {}}
+          onClear={() => {}}
+          shownCount={0}
+        />
+      </div>
+      <ul className="divide-y divide-border" aria-hidden="true" data-testid="units-skeleton">
       {[0, 1, 2].map((i) => (
         <li key={i} className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 lg:contents">
@@ -114,7 +137,8 @@ function UnitRowsSkeleton() {
           </span>
         </li>
       ))}
-    </ul>
+      </ul>
+    </>
   );
 }
 
@@ -317,11 +341,22 @@ export function AvailableUnits() {
     startTransition(() => setAllRows(true));
   }, []);
 
+  // Filter row state (move-in / beds / baths / sqft). The row itself mounts
+  // only after hydration (inside the same transition that reveals the full
+  // list), so prerendered HTML and the markdown twins never contain it and
+  // the default no-filter render is byte-identical to today's full list.
+  const [filters, setFilters] = useState<UnitFilterState>(DEFAULT_UNIT_FILTERS);
+  const filtersActive = hasActiveUnitFilters(filters);
+
   const rows = useMemo(() => {
     const units = probe === 'skeleton' ? [] : probe === 'mock' ? probeUnits : data?.units;
     if (!units) return [];
     return units.map((u) => ({ ...u, group: groupForUnit(u.unit) }));
   }, [data, probe]);
+
+  // Pure client-side narrowing of the live list; default state passes
+  // everything through untouched (same array identity).
+  const visibleRows = useMemo(() => filterUnits(rows, filters), [rows, filters]);
 
   // First browser paint racing the live fetch with no baked snapshot: show
   // skeletons rather than a blank gap. SSR skips this — prerendered HTML only
@@ -346,8 +381,37 @@ export function AvailableUnits() {
 
           {showSkeleton && <UnitRowsSkeleton />}
 
+          {/* Filter row appears with the post-hydration transition only
+              (allRows starts false in the browser), so it never renders
+              during SSR/prerender and never disturbs the skeleton state. */}
+          {allRows && !import.meta.env.SSR && !showSkeleton && rows.length > 0 && (
+            <UnitFilterRow
+              units={rows}
+              state={filters}
+              onChange={setFilters}
+              onClear={() => setFilters(DEFAULT_UNIT_FILTERS)}
+              shownCount={visibleRows.length}
+            />
+          )}
+
+          {filtersActive && visibleRows.length === 0 && rows.length > 0 && (
+            <div className="flex flex-col items-center gap-3 py-10 text-center">
+              <p className="text-sm text-muted-foreground">
+                No available residences match those filters. Try widening the range or clearing
+                your filters to see every posted residence.
+              </p>
+              <button
+                type="button"
+                onClick={() => setFilters(DEFAULT_UNIT_FILTERS)}
+                className="btn-gold-outline"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+
           <ul className="divide-y divide-border">
-            {(allRows ? rows : rows.slice(0, 3)).map((u, rowIndex) => {
+            {(allRows ? visibleRows : visibleRows.slice(0, 3)).map((u, rowIndex) => {
               // Posted units link to their own AppFolio listing's showing
               // scheduler and application (same targets as the buttons on
               // AppFolio's hosted listing page), so tour requests and
