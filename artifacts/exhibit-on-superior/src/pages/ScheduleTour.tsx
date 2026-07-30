@@ -174,23 +174,12 @@ export function ScheduleTour() {
                 {/* The tour-request form is the primary path on this page;
                     live listings moved behind the View Available Units button
                     in the Leasing Office card. */}
-                <div className="mb-10 text-center max-w-2xl mx-auto">
-                  <h2 className="text-3xl uppercase tracking-wider mb-3">
-                    Didn't see the right fit?
-                  </h2>
-                  <p className="text-lg leading-relaxed">
-                    Tell us what you're looking for and a member of our leasing
-                    team will arrange a showing with you directly — including
-                    residences that aren't posted online yet.
-                  </p>
-                </div>
-
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Left Column - Info */}
                 <div>
 
                   <div className="bg-dark-section text-white p-6 mb-8">
-                    <h3 className="text-lg uppercase tracking-wider mb-3">Leasing Office</h3>
+                    <h2 className="text-lg uppercase tracking-wider mb-3">Leasing Office</h2>
                     <p className="mb-2">165 W Superior St Chicago, IL 60654</p>
                     <p className="mb-4">
                       <a href="tel:312-450-0635" className="text-white underline underline-offset-4 hover:text-white/80">
