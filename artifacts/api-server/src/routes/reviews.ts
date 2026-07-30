@@ -24,6 +24,8 @@ export interface GoogleReviewQuote {
   author: string;
   rating: number;
   relativeTime: string | null;
+  /** ISO-8601 date string of the original review (e.g. "2024-11-03T14:22:00Z"). */
+  publishTime: string | null;
 }
 
 export interface GoogleReviewsPayload {
@@ -83,6 +85,7 @@ async function fetchReviews(apiKey: string): Promise<GoogleReviewsPayload> {
     userRatingCount?: number;
     reviews?: Array<{
       rating?: number;
+      publishTime?: string;
       relativePublishTimeDescription?: string;
       text?: { text?: string };
       authorAttribution?: { displayName?: string };
@@ -107,6 +110,7 @@ async function fetchReviews(apiKey: string): Promise<GoogleReviewsPayload> {
       author: r.authorAttribution?.displayName?.trim() || "Verified Resident",
       rating: r.rating!,
       relativeTime: r.relativePublishTimeDescription ?? null,
+      publishTime: r.publishTime ?? null,
     }));
 
   return {

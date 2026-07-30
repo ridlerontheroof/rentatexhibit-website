@@ -12,6 +12,8 @@ export interface DisplayReview {
   quote: string;
   author: string;
   rating: number;
+  /** ISO-8601 date string for the review (e.g. "2024-11-03"); absent for curated fallback entries. */
+  datePublished?: string;
 }
 
 export interface ReviewsPageModel {
@@ -62,7 +64,16 @@ export function buildReviewsPageModel(live?: GoogleReviewsData): ReviewsPageMode
   const curated: DisplayReview[] = FALLBACK_REVIEWS.map((r) => ({ ...r, rating: 5 }));
   const fresh: DisplayReview[] = (live?.reviews ?? [])
     .filter((r) => !FALLBACK_REVIEWS.some((c) => c.quote === r.quote))
-    .map((r) => ({ quote: r.quote, author: r.author, rating: r.rating }));
+    .map((r) => ({
+      quote: r.quote,
+      author: r.author,
+      rating: r.rating,
+      // Normalise to a date-only ISO string (YYYY-MM-DD) — Google's review
+      // snippet guidelines require at minimum a year; a full date is preferred.
+      ...(r.publishTime
+        ? { datePublished: r.publishTime.split('T')[0] }
+        : {}),
+    }));
 
   return { rating, reviewCount, reviews: [...curated, ...fresh].slice(0, 6) };
 }
@@ -114,6 +125,7 @@ export function reviewsJsonLd(model: ReviewsPageModel): Record<string, unknown> 
       '@type': 'Review',
       reviewBody: r.quote,
       author: { '@type': 'Person', name: r.author },
+      ...(r.datePublished ? { datePublished: r.datePublished } : {}),
       reviewRating: {
         '@type': 'Rating',
         ratingValue: r.rating,

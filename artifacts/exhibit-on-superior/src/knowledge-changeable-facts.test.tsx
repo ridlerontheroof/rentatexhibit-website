@@ -49,6 +49,7 @@ describe('changeable-facts qualifier footer', () => {
     }
   });
 
+  // Rendering 20+ article components sequentially needs more than the default 5 s.
   it('renders the footer (with a real Available Units link) on every flagged article', () => {
     for (const a of flagged) {
       const { container } = renderArticle(a.slug);
@@ -60,7 +61,7 @@ describe('changeable-facts qualifier footer', () => {
       expect(link.getAttribute('href')).toBe(CHANGEABLE_FACTS_NOTE_PARTS.linkHref);
       cleanup();
     }
-  });
+  }, 30_000);
 
   it('does not render the footer on untagged articles', () => {
     for (const a of unflagged) {

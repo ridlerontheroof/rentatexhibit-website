@@ -1012,6 +1012,10 @@ export const ORGANIZATION_NODE = {
     'https://www.facebook.com/exhibitonsuperior',
     'https://www.instagram.com/exhibitonsuperior',
     'https://www.youtube.com/@ExhibitonSuperior',
+    // Google Maps CID link — the authoritative Knowledge Graph anchor for
+    // entity resolution; same CID already referenced in hasMap on
+    // APARTMENT_COMPLEX_NODE.
+    'https://www.google.com/maps?cid=15240815771270963454',
   ],
 };
 

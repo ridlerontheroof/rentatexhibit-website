@@ -18,6 +18,7 @@ interface JsonLdReview {
   '@type': string;
   reviewBody: string;
   author: { '@type': string; name: string };
+  datePublished?: string;
   reviewRating: {
     '@type': string;
     ratingValue: number;
@@ -36,12 +37,14 @@ function liveData(overrides?: Partial<{ rating: number; reviewCount: number }>) 
         quote: FALLBACK_REVIEWS[1].quote,
         author: 'Duplicate Resident',
         rating: 5,
+        publishTime: '2025-03-01T10:00:00Z',
+        relativeTime: '3 months ago',
       },
-      { quote: 'Fresh quote one', author: 'Live Resident 1', rating: 5 },
-      { quote: 'Fresh quote two', author: 'Live Resident 2', rating: 4 },
-      { quote: 'Fresh quote three', author: 'Live Resident 3', rating: 5 },
+      { quote: 'Fresh quote one', author: 'Live Resident 1', rating: 5, publishTime: '2024-11-03T14:22:00Z', relativeTime: '8 months ago' },
+      { quote: 'Fresh quote two', author: 'Live Resident 2', rating: 4, publishTime: '2025-01-15T09:00:00Z', relativeTime: '6 months ago' },
+      { quote: 'Fresh quote three', author: 'Live Resident 3', rating: 5, publishTime: null, relativeTime: '5 months ago' },
       // 7th candidate counting the three curated — dropped by the 6-card cap.
-      { quote: 'Fresh quote four', author: 'Live Resident 4', rating: 3 },
+      { quote: 'Fresh quote four', author: 'Live Resident 4', rating: 3, publishTime: '2025-02-10T12:00:00Z', relativeTime: '4 months ago' },
     ],
   };
 }
@@ -113,5 +116,24 @@ describe('reviewsJsonLd stays in lockstep with the rendered model', () => {
     );
     // Curated quotes render as 5-star cards; schema must say the same.
     reviews.forEach((r) => expect(r.reviewRating.ratingValue).toBe(5));
+    // Curated fallback entries have no publishTime — datePublished must be absent.
+    reviews.forEach((r) => expect(r.datePublished).toBeUndefined());
+  });
+
+  it('includes datePublished on live reviews that have a publishTime, omits it when absent', () => {
+    const model = buildReviewsPageModel(liveData());
+    const jsonLd = reviewsJsonLd(model);
+    const reviews = jsonLd.review as JsonLdReview[];
+
+    // Curated reviews (first 3) never have datePublished.
+    expect(reviews[0].datePublished).toBeUndefined();
+    expect(reviews[1].datePublished).toBeUndefined();
+    expect(reviews[2].datePublished).toBeUndefined();
+
+    // Live reviews with publishTime get a YYYY-MM-DD datePublished.
+    expect(reviews[3].datePublished).toBe('2024-11-03'); // Fresh quote one
+    expect(reviews[4].datePublished).toBe('2025-01-15'); // Fresh quote two
+    // Fresh quote three has publishTime: null — datePublished must be absent.
+    expect(reviews[5].datePublished).toBeUndefined();
   });
 });
