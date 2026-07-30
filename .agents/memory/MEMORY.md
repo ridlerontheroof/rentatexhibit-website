@@ -24,7 +24,7 @@
 - [Above-the-fold guard via raw CDP](fold-check-cdp.md) — real-layout viewport checks drive nix chromium over CDP with Node's built-in WebSocket; no Playwright dep; vite.config needs PORT env even with --port.
 - [Validation races the prepublish rebuild](validation-dist-race.md) — dist-dependent tests must wait for the build's last output (index.html.br) or they fail spuriously mid-rebuild; adding/editing any src/data file shifts the SEO source hash, so rebuild dist before running the suite.
 - [Unit data authority rules](unit-data-authority.md) — floor-plan DB beats AppFolio sqft via a single resolver; feed typos normalized server-side AND web-side (deploy lag).
-- [Availability seed drift](availability-seed-drift.md) — api-server rewrites its committed availability seed at runtime; revert unintended drift before completing a task or review rejects.
+- [Generated-data drift blocks task apply](availability-seed-drift.md) — runtime-rewritten availability seed AND perf outputs (perf/SUMMARY.md, latest.json) can auto-commit onto a task branch; drop the drift or "Cannot apply changes" on merge.
 - [Review-snippet JSON-LD for GSC](reviews-jsonld-gsc.md) — reviews node must be LocalBusiness (not ApartmentComplex), and prerendered JSON-LD is stripped pre-hydration to avoid duplicate aggregate ratings.
 - [Trust proxy on Replit](trust-proxy-replit.md) — edge strips client XFF but there are multiple internal hops; trust private/loopback CIDRs, never a numeric hop count (hop 1 keyed everyone to 127.0.0.1).
 - [Prerender + lazy routes CLS trap](prerender-lazy-cls.md) — boot must preload the current route chunk before first render or the prerendered page collapses to the Suspense fallback (0.31 CLS site-wide).
