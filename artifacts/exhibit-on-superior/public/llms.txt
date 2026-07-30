@@ -7,10 +7,21 @@
 
 - [Property Overview](https://www.rentatexhibit.com/): Official property overview, address, contact information, apartment types, and management information.
 - [Available Apartments & Floor Plans](https://www.rentatexhibit.com/available-units): Current unit availability, rents, floor plans, and availability dates.
+- [Floor Plans](https://www.rentatexhibit.com/floor-plans): 34 distinct floor-plan layouts with plan sheets, square footage, floor ranges, and balcony details.
+- [Virtual Tour](https://www.rentatexhibit.com/virtual-tour): Matterport 3D tours and video walkthroughs of the building and apartments.
 - [Amenities](https://www.rentatexhibit.com/amenities): Apartment and community amenities.
+- [Fees & Leasing Costs](https://www.rentatexhibit.com/fees): Application fees, utility bundle, parking, storage, and other charges.
 - [Pet Policy](https://www.rentatexhibit.com/pet-friendly): Pet rules, fees, and restrictions.
 - [Neighborhood](https://www.rentatexhibit.com/neighborhood): River North location, transportation, shopping, and dining.
+- [Apartment Guide](https://www.rentatexhibit.com/apartment-guide): Layouts, finishes, balconies, in-unit laundry, and views by floor range.
+- [Application Guide](https://www.rentatexhibit.com/application-guide): Online application process, credit requirements, guarantors, and lease terms.
+- [Parking & Transportation](https://www.rentatexhibit.com/parking-transportation): On-site garage, EV charging, bike storage, and CTA access.
+- [Resident Reviews](https://www.rentatexhibit.com/reviews): Verified resident reviews from Google.
 - [Frequently Asked Questions](https://www.rentatexhibit.com/faq): Leasing, touring, parking, utilities, and building information.
+- [Contact Us](https://www.rentatexhibit.com/contact-us): Leasing office phone, email, address, and hours.
+- [Schedule a Tour](https://www.rentatexhibit.com/schedule-a-tour): Book an in-person or virtual tour.
+- [About](https://www.rentatexhibit.com/about): Building history, management, and community overview.
+- [Map & Directions](https://www.rentatexhibit.com/map-directions): Driving and transit directions to 165 W Superior St.
 
 ## Knowledge Center
 

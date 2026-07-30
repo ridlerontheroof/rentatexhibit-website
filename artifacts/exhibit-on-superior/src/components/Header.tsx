@@ -143,6 +143,12 @@ export function Header() {
             />
 
             <NavDropdown
+              label="Floor Plans"
+              href="/floor-plans"
+              items={[]}
+            />
+
+            <NavDropdown
               label="Contact Us"
               href="/contact-us"
               align="right"
@@ -155,6 +161,7 @@ export function Header() {
                 { href: '/faq', label: 'FAQ' },
                 { href: '/fees', label: 'Fees & Leasing Costs' },
                 { href: '/application-guide', label: 'Application Guide' },
+                { href: '/knowledge', label: 'Knowledge Center' },
               ]}
             />
           </nav>
@@ -198,6 +205,7 @@ export function Header() {
               <Link href="/apartment-guide" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Apartment Guide</Link>
               <Link href="/neighborhood" className="text-sm uppercase tracking-wider py-2">Neighborhood</Link>
               <Link href="/parking-transportation" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Parking + Transportation</Link>
+              <Link href="/floor-plans" className="text-sm uppercase tracking-wider py-2">Floor Plans</Link>
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/about" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">About</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
@@ -207,6 +215,7 @@ export function Header() {
               <Link href="/faq" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">FAQ</Link>
               <Link href="/fees" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Fees &amp; Leasing Costs</Link>
               <Link href="/application-guide" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Application Guide</Link>
+              <Link href="/knowledge" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Knowledge Center</Link>
             </div>
           </nav>
         )}

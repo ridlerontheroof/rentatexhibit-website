@@ -4,6 +4,7 @@ import { Heart, Home, MapPin, PawPrint } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 
@@ -173,6 +174,17 @@ export function PetFriendly() {
         </section>
       </div>
         <FaqSection path="/pet-friendly" />
+
+        <KnowledgeLinks
+          slugs={[
+            'does-exhibit-allow-dogs',
+            'does-exhibit-allow-cats',
+            'what-are-pet-fees',
+            'breed-and-weight-rules',
+            'pet-amenities',
+            'how-many-pets',
+          ]}
+        />
     </>
   );
 }

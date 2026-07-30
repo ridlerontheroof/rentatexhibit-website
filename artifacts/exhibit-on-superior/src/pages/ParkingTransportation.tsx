@@ -2,6 +2,7 @@ import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { TrainFront, Bus, Car, Footprints } from 'lucide-react';
@@ -111,6 +112,17 @@ export function ParkingTransportation() {
         </section>
       </div>
       <FaqSection path="/parking-transportation" />
+
+      <KnowledgeLinks
+        slugs={[
+          'how-much-does-parking-cost',
+          'is-there-ev-charging',
+          'is-there-bike-storage',
+          'cta-proximity',
+          'car-free-living',
+          'is-there-guest-parking',
+        ]}
+      />
     </>
   );
 }

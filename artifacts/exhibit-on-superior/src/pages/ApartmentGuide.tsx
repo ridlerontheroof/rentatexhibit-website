@@ -3,6 +3,7 @@ import { SmartImg } from '../components/SmartImg';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { CATEGORIES, planGroups } from '../data/floorPlans';
@@ -129,6 +130,17 @@ export function ApartmentGuide() {
         </section>
       </div>
       <FaqSection path="/apartment-guide" />
+
+      <KnowledgeLinks
+        slugs={[
+          'in-unit-laundry',
+          'which-units-have-balconies',
+          'apartment-finishes',
+          'views-and-windows',
+          'what-apartment-sizes',
+          'what-is-a-convertible',
+        ]}
+      />
     </>
   );
 }

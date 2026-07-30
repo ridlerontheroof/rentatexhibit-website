@@ -3,6 +3,7 @@ import { SmartImg } from '../components/SmartImg';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { Bike, Footprints, TrainFront } from 'lucide-react';
@@ -186,6 +187,17 @@ export function Neighborhood() {
         </section>
       </div>
         <FaqSection path="/neighborhood" />
+
+        <KnowledgeLinks
+          slugs={[
+            'what-neighborhood',
+            'neighborhood-groceries',
+            'neighborhood-dining',
+            'neighborhood-parks',
+            'neighborhood-gyms',
+            'whats-near-superior-and-wells',
+          ]}
+        />
     </>
   );
 }

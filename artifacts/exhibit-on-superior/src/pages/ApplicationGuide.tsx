@@ -2,6 +2,7 @@ import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { CREDIT_SCORE_MIN, CREDIT_SCORE_COSIGNER_MIN } from '../data/propertyFacts';
@@ -102,6 +103,17 @@ export function ApplicationGuide() {
         </section>
       </div>
       <FaqSection path="/application-guide" />
+
+      <KnowledgeLinks
+        slugs={[
+          'how-do-i-apply',
+          'credit-score-required',
+          'documents-needed',
+          'lease-terms',
+          'co-signers-accepted',
+          'approval-time',
+        ]}
+      />
     </>
   );
 }
