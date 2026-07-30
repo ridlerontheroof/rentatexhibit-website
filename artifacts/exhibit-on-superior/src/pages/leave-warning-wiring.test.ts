@@ -70,6 +70,39 @@ function mockLeadSubmitOk() {
   );
 }
 
+// ScheduleTour now routes into the showing scheduler: the submit posts the
+// contact step (guest card), then fetches live slots. Answer both so the
+// page reaches the day/time picker, which is the "request is safe" state.
+function mockTourSchedulerOk() {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes('api/availability')) {
+        return { ok: true, json: async () => ({ units: [] }) };
+      }
+      if (url.includes('api/showings/contact')) {
+        return {
+          ok: true,
+          json: async () => ({ guestCardId: '1', jwt: 'tok', hostedUrl: null }),
+        };
+      }
+      if (url.includes('api/showings/slots')) {
+        return {
+          ok: true,
+          json: async () => ({
+            unit: 'TOUR',
+            durationMinutes: 15,
+            days: [{ date: '2026/08/03', slots: [{ time: '2026/08/03 10:00', agentId: 1 }] }],
+            hostedUrl: null,
+          }),
+        };
+      }
+      return { ok: true, json: async () => ({ id: 1 }) };
+    })
+  );
+}
+
 // A failed lead POST (non-ok response), so the mutation errors out: the error
 // banner shows, the form keeps its values, and the guard must stay ON.
 function mockLeadSubmitFail() {
@@ -131,8 +164,8 @@ describe('leave-warning wiring', () => {
     expect(guardIsOn()).toBe(false);
   });
 
-  it('ScheduleTour: guard is OFF pristine, ON when dirty, OFF after a successful submit', async () => {
-    mockLeadSubmitOk();
+  it('ScheduleTour: guard is OFF pristine, ON when dirty, OFF once the scheduler has the contact info', async () => {
+    mockTourSchedulerOk();
     renderPage(ScheduleTour);
 
     expect(guardIsOn()).toBe(false);
@@ -147,9 +180,10 @@ describe('leave-warning wiring', () => {
     setField('bedrooms', '1 Bedroom');
     submitForm();
 
-    // Success screen replaces the form once onSuccess runs.
+    // The day/time picker replaces the form once the contact step lands —
+    // the guest card exists server-side, so nothing can be lost anymore.
     await waitFor(() =>
-      expect(document.body.textContent).toContain('Tour Request Received')
+      expect(document.body.textContent).toContain('Select a Time for Your Tour')
     );
 
     expect(guardIsOn()).toBe(false);
@@ -186,6 +220,9 @@ describe('leave-warning wiring', () => {
   });
 
   it('ScheduleTour: guard stays ON when the submit fails, so the visitor cannot silently lose their request', async () => {
+    // Every endpoint fails: the scheduler's contact step errors, the page
+    // engages the lead-capture fallback, and that fallback lead ALSO fails —
+    // the request never landed anywhere, so the guard must still be armed.
     mockLeadSubmitFail();
     renderPage(ScheduleTour);
 
@@ -205,9 +242,6 @@ describe('leave-warning wiring', () => {
       )
     );
 
-    expect(
-      (document.getElementById('email') as HTMLInputElement).value
-    ).toBe('grace@example.com');
     expect(guardIsOn()).toBe(true);
   });
 
@@ -252,15 +286,14 @@ describe('leave-warning wiring', () => {
 
     submitForm();
 
+    // Contact step and fallback lead both died with the network — the
+    // request is still only in the visitor's browser.
     await waitFor(() =>
       expect(document.body.textContent).toContain(
         "your tour request couldn't be sent"
       )
     );
 
-    expect(
-      (document.getElementById('email') as HTMLInputElement).value
-    ).toBe('grace@example.com');
     expect(guardIsOn()).toBe(true);
   });
 });

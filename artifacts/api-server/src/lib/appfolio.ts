@@ -16,6 +16,7 @@
 // if the database is ever renamed.
 import { recordFeeCopyCheck, reportStrippedFeeCopy } from "./feeCopyAlert";
 import { DEFAULT_LEAD_SOURCE } from "./leadSource";
+import { isTourUnitName } from "./tourUnit";
 
 const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners";
 const APPFOLIO_BASE = `https://${APPFOLIO_DB}.appfolio.com/api/v2/reports`;
@@ -610,6 +611,76 @@ interface ReportResponse {
 }
 
 /**
+ * Resolve the dedicated "Tour" unit (see lib/tourUnit.ts) to the UID the
+ * showing scheduler books against. The tour unit is deliberately NOT posted
+ * to the website, so it has no public listing card — its `rentable_uid` from
+ * the Unit Directory report is what AppFolio's showings API accepts as the
+ * listable UID (verified live 2026-07-30: availabilities return real slots).
+ *
+ * Cached with a long TTL (the UID only changes if the leasing team recreates
+ * the unit); a resolution failure returns the last known UID when one exists,
+ * otherwise null — callers answer 404 `unit_not_listed` and the page falls
+ * back to a standard tour lead, so this can never strand a prospect.
+ */
+const TOUR_UID_TTL_MS = 6 * 60 * 60 * 1000;
+let tourUidCache: { uid: string; fetchedAt: number } | null = null;
+let tourUidInflight: Promise<string | null> | null = null;
+
+/** Test-only: clear the cached tour-unit UID. */
+export function resetTourUnitUidCacheForTests(): void {
+  tourUidCache = null;
+  tourUidInflight = null;
+}
+
+export async function resolveTourUnitListableUid(): Promise<string | null> {
+  if (tourUidCache && Date.now() - tourUidCache.fetchedAt < TOUR_UID_TTL_MS) {
+    return tourUidCache.uid;
+  }
+  const clientId = process.env.APPFOLIO_CLIENT_ID;
+  const clientSecret = process.env.APPFOLIO_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return tourUidCache?.uid ?? null;
+  tourUidInflight ??= (async () => {
+    const auth = "Basic " + Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+    let response = await postReport(`${APPFOLIO_BASE}/unit_directory.json`, auth, "{}");
+    let guard = 0;
+    for (;;) {
+      for (const row of response.results ?? []) {
+        if (!isExhibitRow(row)) continue;
+        // Exact-key matches only: unit_directory rows carry unit_address
+        // ("165 W Superior St - Tour …") BEFORE unit_name, so a fuzzy "unit"
+        // needle would grab the address and never match the name.
+        const unitRaw = pick(row, ["=unitname", "=unit"]);
+        const unit = typeof unitRaw === "string" ? unitRaw.trim() : "";
+        if (!unit || !isTourUnitName(unit)) continue;
+        const uid = pick(row, ["=rentableuid"]);
+        if (typeof uid === "string" && uid.trim()) {
+          tourUidCache = { uid: uid.trim().toLowerCase(), fetchedAt: Date.now() };
+          return tourUidCache.uid;
+        }
+      }
+      if (!response.next_page_url || guard >= 10) break;
+      if (!isSafeNextPageUrl(response.next_page_url)) {
+        throw new Error("AppFolio returned an unexpected next_page_url host; refusing to follow it");
+      }
+      response = await postReport(new URL(response.next_page_url, APPFOLIO_BASE).toString(), auth, "{}");
+      guard += 1;
+    }
+    // Not found: loud null (no negative caching — the leasing team may be
+    // mid-rename, and the next request should re-check).
+    return null;
+  })().finally(() => {
+    tourUidInflight = null;
+  });
+  try {
+    return await tourUidInflight;
+  } catch {
+    // Report fetch failed — serve the last known UID (even expired) rather
+    // than break a prospect mid-flow; null only when we never resolved one.
+    return tourUidCache?.uid ?? null;
+  }
+}
+
+/**
  * Only follow pagination URLs that stay on the AppFolio database host over
  * HTTPS — the Basic auth header is attached to every page request, so an
  * unexpected next_page_url must never be able to send credentials elsewhere.
@@ -668,6 +739,11 @@ export async function fetchAvailability(clientId: string, clientSecret: string):
     .filter(isExhibitRow)
     .map(normalizeRow)
     .filter((u): u is AvailableUnit => u !== null)
+    // The dedicated "Tour" unit (showing-scheduler bookings for prospects
+    // with no specific apartment) is not a real residence — it must never
+    // reach the public feed, snapshot, prerender, sitemap, or counts. This
+    // is the single feed-boundary choke point for that rule.
+    .filter((u) => !isTourUnitName(u.unit))
     .sort((a, b) => a.unit.localeCompare(b.unit));
 
   // Marketing info (posted-to-website flags + video) and public listing media.

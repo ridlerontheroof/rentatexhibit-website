@@ -1,3 +1,17 @@
+// Schedule-a-Tour — every prospect picks a real day & time on the leasing
+// calendar (same scheduler as /schedule-showing). The form keeps its apartment
+// dropdown; picking one books that unit's calendar, while "No specific
+// apartment" books against the dedicated internal tour unit via the reserved
+// "TOUR" token — the visitor only ever sees "your tour of Exhibit On
+// Superior", never that unit.
+//
+// Designed fallback (mandatory, no dead ends): if anything AppFolio-side
+// fails — contact step, slot fetch, or booking — the page captures the
+// prospect as a standard tour lead through POST /leads with all their form
+// details (move-in date, floor-plan preference, comments), exactly like the
+// old request form. A specific-apartment prospect also gets the hosted
+// AppFolio scheduling link; the general path never does (the hosted page
+// would expose the internal tour unit).
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearch } from 'wouter';
 import { PageHero } from '../components/PageHero';
@@ -6,15 +20,26 @@ import { useCreateLead } from '../hooks/use-create-lead';
 import { useUnsavedChangesWarning } from '../hooks/use-unsaved-changes';
 import { useOnlineStatus } from '../hooks/use-online-status';
 import { useBackOnlineNotice } from '../hooks/use-back-online-notice';
-import { Calendar } from 'lucide-react';
+import { Calendar, CalendarCheck, ExternalLink } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Seo } from '../components/Seo';
-import { trackLead } from '../lib/analytics';
+import { trackLead, trackOutboundClick } from '../lib/analytics';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { HoneypotField, useBotGuard } from '../components/BotGuard';
+import { SlotPicker } from '../components/showings/SlotPicker';
+import {
+  formatSlotDate,
+  formatSlotTime,
+  useBookShowing,
+  useShowingContact,
+  useShowingSlots,
+  ShowingApiError,
+  type ShowingContactResponse,
+  type ShowingSlot,
+} from '../hooks/use-showings';
 
 const tourSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -35,9 +60,22 @@ const tourSchema = z.object({
 
 type TourFormData = z.infer<typeof tourSchema>;
 
+/**
+ * Reserved unit token for the no-specific-apartment path. The api-server
+ * resolves it to the dedicated tour unit; it never collides with real
+ * apartment numbers (digits / "04M02" style).
+ */
+const GENERAL_TOUR_UNIT = 'TOUR';
+
+interface BookedInfo {
+  slot: ShowingSlot;
+  fullAddress: string | null;
+}
+
 export function ScheduleTour() {
-  const [submitted, setSubmitted] = useState(false);
   const createLead = useCreateLead();
+  const contact = useShowingContact();
+  const book = useBookShowing();
   const isOnline = useOnlineStatus();
   const [showBackOnline, dismissBackOnline] = useBackOnlineNotice();
   const botGuard = useBotGuard();
@@ -50,11 +88,34 @@ export function ScheduleTour() {
     ? requestedUnit
     : '';
 
+  // Scheduler state (same machine as ScheduleShowing). Contact details are
+  // carried over in memory only — never in the URL.
+  const [tourData, setTourData] = useState<TourFormData | null>(null);
+  const [credentials, setCredentials] = useState<ShowingContactResponse | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<ShowingSlot | null>(null);
+  const [booked, setBooked] = useState<BookedInfo | null>(null);
+  const [slotTakenNotice, setSlotTakenNotice] = useState(false);
+  // Lead-capture fallback engaged (= today's plain tour request). hostedUrl
+  // is only ever set for a specific-apartment choice.
+  const [fallback, setFallback] = useState<{ hostedUrl: string | null } | null>(null);
+  // Server rejected the contact submission itself (validation / bot guard).
+  // Terminal for this attempt — no fallback lead is created.
+  const [contactRejected, setContactRejected] = useState(false);
+  const leadSubmittedRef = useRef(false);
+
+  const chosenUnit = tourData?.unit || '';
+  const isGeneral = !chosenUnit;
+  const schedulerUnit = chosenUnit || GENERAL_TOUR_UNIT;
+
+  const slots = useShowingSlots(
+    credentials ? schedulerUnit : null,
+    !!credentials && !fallback && !booked,
+  );
+
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty, dirtyFields },
-    reset,
     setValue,
   } = useForm<TourFormData>({
     resolver: zodResolver(tourSchema),
@@ -70,51 +131,150 @@ export function ScheduleTour() {
     }
   }, [defaultUnit, dirtyFields.unit, setValue]);
 
-  useUnsavedChangesWarning(isDirty && !submitted && !createLead.isPending);
+  // The request is safe once the guest card exists (credentials) or the
+  // fallback lead actually landed; until then, warn before leaving.
+  useUnsavedChangesWarning(
+    isDirty && !credentials && !createLead.isSuccess && !createLead.isPending && !contact.isPending,
+  );
 
-  // Screen-reader focus management (same pattern as ScheduleShowing): when the
-  // form swaps to the thank-you screen or an error banner appears, move focus
-  // onto it so the state change is announced and the keyboard user is standing
-  // on the next action.
-  const thankYouRef = useRef<HTMLDivElement>(null);
+  // Screen-reader focus management (same pattern as ScheduleShowing).
+  const fallbackRef = useRef<HTMLDivElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  const slotTakenRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (submitted) thankYouRef.current?.focus();
-  }, [submitted]);
+    if (fallback) fallbackRef.current?.focus();
+  }, [fallback]);
   useEffect(() => {
-    if (createLead.isError) errorRef.current?.focus();
-  }, [createLead.isError]);
+    if (createLead.isError || contactRejected) errorRef.current?.focus();
+  }, [createLead.isError, contactRejected]);
+  useEffect(() => {
+    if (slotTakenNotice) slotTakenRef.current?.focus();
+  }, [slotTakenNotice]);
 
-  const onSubmit = (data: TourFormData) => {
-    if (createLead.isPending) return;
-    const details = [
-      data.unit ? `Apartment: ${data.unit}` : '',
+  const leadDetails = (data: TourFormData) =>
+    [
+      data.unit ? `Apartment: ${data.unit}` : 'No specific apartment — general tour',
       data.bedrooms ? `Floor plan preference: ${data.bedrooms}` : '',
       data.message ?? '',
     ]
       .filter(Boolean)
       .join('\n');
-    createLead.mutate(
+
+  /**
+   * The mandatory no-dead-end path: capture the prospect as a standard tour
+   * lead with everything they typed (move-in date, preference, comments) —
+   * exactly today's plain submission. Submitted at most once per visit; the
+   * scheduler's contact step and this lead never both create a guest card
+   * for the same prospect unless AppFolio already failed before the card
+   * existed.
+   */
+  const activateFallback = (data: TourFormData | null, hostedUrl?: string | null) => {
+    // Never hand the general path the hosted page — it would present the
+    // internal tour unit as if it were an apartment.
+    setFallback({ hostedUrl: data?.unit ? (hostedUrl ?? null) : null });
+    if (data && !leadSubmittedRef.current) {
+      leadSubmittedRef.current = true;
+      createLead.mutate(
+        {
+          type: 'tour',
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          preferredDate: data.moveInDate,
+          message: leadDetails(data) || undefined,
+          unit: data.unit || undefined,
+          ...botGuard.collect(),
+        },
+        {
+          onSuccess: () => trackLead('tour', { floorPlanPreference: data.bedrooms }),
+          // Let a network hiccup be retried from the fallback screen.
+          onError: () => {
+            leadSubmittedRef.current = false;
+          },
+        },
+      );
+    }
+  };
+
+  // Slot fetch failed after contact succeeded → fallback (prospect is typed
+  // in already; never make them re-enter anything).
+  useEffect(() => {
+    if (slots.isError && credentials && !fallback && !booked) {
+      activateFallback(tourData, credentials.hostedUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slots.isError]);
+
+  const onSubmit = (data: TourFormData) => {
+    if (contact.isPending) return;
+    setContactRejected(false);
+    setTourData(data);
+    contact.mutate(
       {
-        type: 'tour',
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        preferredDate: data.moveInDate,
-        message: details || undefined,
-        unit: data.unit || undefined,
+        unit: data.unit || GENERAL_TOUR_UNIT,
         ...botGuard.collect(),
       },
       {
-        onSuccess: () => {
+        onSuccess: (res) => {
+          setCredentials(res);
           trackLead('tour', { floorPlanPreference: data.bedrooms });
-          setSubmitted(true);
-          reset();
         },
-      }
+        onError: (err) => {
+          // A validation/bot rejection (400) is terminal — routing it into
+          // the lead-capture fallback would let a bot the server just
+          // rejected re-enter the pipeline as a standard tour lead.
+          if (err instanceof ShowingApiError && err.code === 'invalid_submission') {
+            setContactRejected(true);
+            return;
+          }
+          // Anything else (AppFolio down, unit pulled mid-visit, tour unit
+          // misconfigured) → today's plain tour request.
+          activateFallback(data, err instanceof ShowingApiError ? err.hostedUrl : null);
+        },
+      },
     );
   };
+
+  const onConfirmSlot = () => {
+    if (!credentials || !selectedSlot || book.isPending) return;
+    setSlotTakenNotice(false);
+    book.mutate(
+      {
+        unit: schedulerUnit,
+        guestCardId: credentials.guestCardId,
+        jwt: credentials.jwt,
+        slotTime: selectedSlot.time,
+        agentId: selectedSlot.agentId,
+      },
+      {
+        onSuccess: (res) => {
+          setBooked({ slot: selectedSlot, fullAddress: res.fullAddress });
+          trackLead('tour', { floorPlanPreference: 'tour_booked' });
+        },
+        onError: (err) => {
+          if (err.code === 'slot_taken') {
+            // Someone grabbed it — refresh the slots and let them re-pick.
+            setSelectedSlot(null);
+            setSlotTakenNotice(true);
+            void slots.refetch();
+            return;
+          }
+          activateFallback(tourData, err.hostedUrl);
+        },
+      },
+    );
+  };
+
+  const inSlotStep = !!credentials && !fallback && !booked;
+
+  // The general path never shows the internal tour unit's address line.
+  const bookedAddress =
+    booked && (isGeneral ? '165 W Superior St, Chicago, IL 60654' : (booked.fullAddress ?? '165 W Superior St, Chicago, IL 60654'));
 
   return (
     <>
@@ -147,29 +307,148 @@ export function ScheduleTour() {
 
         <section id="request-a-showing" className="py-16 px-4">
           <div className="container mx-auto max-w-5xl">
-            {submitted ? (
+            {/* Booked — the scheduler confirmed a real calendar appointment. */}
+            {booked && (
               <div
-                ref={thankYouRef}
+                className="max-w-2xl mx-auto text-center bg-muted p-12 border border-border"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 text-primary mb-6">
+                  <CalendarCheck className="w-10 h-10" aria-hidden />
+                </div>
+                <h2 className="text-3xl uppercase tracking-wider mb-4">You're All Set!</h2>
+                <p className="text-lg leading-relaxed mb-2">
+                  {isGeneral
+                    ? 'Your tour of Exhibit On Superior is booked for '
+                    : `Your in-person showing of Apartment ${chosenUnit} is booked for `}
+                  <strong>
+                    {formatSlotDate(booked.slot.time.slice(0, 10))} at{' '}
+                    {formatSlotTime(booked.slot.time)}
+                  </strong>
+                  .
+                </p>
+                <p className="text-lg leading-relaxed mb-8">
+                  {bookedAddress} — you will receive an email or text confirmation with your
+                  appointment details.
+                </p>
+                <Link
+                  href={isGeneral ? '/available-units' : `/available-units/${chosenUnit}`}
+                  className="btn-gold-outline inline-block"
+                >
+                  {isGeneral ? 'Browse available apartments' : `Back to Apartment ${chosenUnit}`}
+                </Link>
+              </div>
+            )}
+
+            {/* Fallback — request captured as a standard tour lead. */}
+            {!booked && fallback && (
+              <div
+                ref={fallbackRef}
                 tabIndex={-1}
                 className="max-w-2xl mx-auto text-center bg-muted p-12 border border-border focus:outline-none"
                 role="status"
                 aria-live="polite"
               >
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 text-primary mb-6">
-                  <Calendar className="w-10 h-10" />
+                  <Calendar className="w-10 h-10" aria-hidden />
                 </div>
-                <h2 className="text-3xl uppercase tracking-wider mb-4">Tour Request Received!</h2>
-                <p className="text-lg leading-relaxed mb-8">
-                  Thank you for your interest in Exhibit on Superior. A member of our leasing team will contact you shortly to confirm your tour appointment.
-                </p>
-                <button
-                  onClick={() => setSubmitted(false)}
-                  className="btn-gold-outline inline-block"
-                >
-                  Schedule Another Tour
-                </button>
+                {createLead.isError ? (
+                  <>
+                    <h2 className="text-3xl uppercase tracking-wider mb-4">Almost There</h2>
+                    <div
+                      ref={errorRef}
+                      tabIndex={-1}
+                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none text-left"
+                      role="alert"
+                    >
+                      Something went wrong and your tour request couldn't be sent. Please check
+                      your connection and try again, or call us at{' '}
+                      <a href="tel:312-450-0635" className="underline">
+                        312-450-0635
+                      </a>
+                      .
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => activateFallback(tourData, fallback.hostedUrl)}
+                      className="btn-gold-outline inline-block"
+                    >
+                      Try sending my tour request again
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-3xl uppercase tracking-wider mb-4">
+                      Tour Request Received!
+                    </h2>
+                    <p className="text-lg leading-relaxed mb-8">
+                      Online booking isn't available right this moment, but your tour request has
+                      been sent to our leasing team. A member of the team will contact you shortly
+                      to confirm your tour appointment.
+                      {fallback.hostedUrl && ' Prefer to pick a time yourself right now?'}
+                    </p>
+                    {fallback.hostedUrl && (
+                      <a
+                        href={fallback.hostedUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() =>
+                          trackOutboundClick(
+                            'tour',
+                            fallback.hostedUrl as string,
+                            'schedule_tour_fallback',
+                            { floorPlan: chosenUnit },
+                          )
+                        }
+                        className="btn-gold-outline inline-flex items-center gap-2"
+                      >
+                        Open the scheduling page
+                        <ExternalLink className="h-4 w-4" aria-hidden />
+                      </a>
+                    )}
+                  </>
+                )}
               </div>
-            ) : (
+            )}
+
+            {/* Step 2 — pick a day & time (same scheduler as /schedule-showing). */}
+            {inSlotStep && (
+              <div className="max-w-3xl mx-auto bg-muted p-6 sm:p-8 border border-border">
+                <h2 className="mb-2 text-2xl uppercase tracking-wider">
+                  {isGeneral
+                    ? 'Select a Time for Your Tour'
+                    : `Select a Time to View Apartment ${chosenUnit}`}
+                </h2>
+                <p className="mb-6 text-sm text-muted-foreground">
+                  All times are Chicago local time at 165 W Superior St.
+                </p>
+                <SlotPicker
+                  isPending={slots.isPending}
+                  days={slots.data?.days}
+                  selectedSlot={selectedSlot}
+                  onSelectSlot={setSelectedSlot}
+                  onConfirm={onConfirmSlot}
+                  confirmPending={book.isPending}
+                  confirmDisabled={!isOnline}
+                  selectionLabel={
+                    isGeneral
+                      ? 'Your tour of Exhibit On Superior'
+                      : `In-person showing of Apartment ${chosenUnit}`
+                  }
+                  slotTakenNotice={slotTakenNotice}
+                  slotTakenRef={slotTakenRef}
+                  noSlotsMessage="No online tour times are open right now. Send us your request and the leasing team will arrange a time with you directly — we already have your contact details."
+                  noSlotsActionLabel="Have the leasing team contact me"
+                  onNoSlotsAction={() =>
+                    activateFallback(tourData, isGeneral ? null : credentials?.hostedUrl)
+                  }
+                />
+              </div>
+            )}
+
+            {/* Step 1 — the tour request form (unchanged fields). */}
+            {!booked && !fallback && !inSlotStep && (
               <div>
                 {/* The tour-request form is the primary path on this page and
                     leads the section; the Leasing Office contact strip sits
@@ -206,14 +485,19 @@ export function ScheduleTour() {
                     </div>
                   )}
 
-                  {createLead.isError && (
+                  {contactRejected && (
                     <div
                       ref={errorRef}
                       tabIndex={-1}
                       className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none"
                       role="alert"
                     >
-                      Something went wrong and your tour request couldn't be sent. Please check your connection and try again.
+                      Your submission couldn't be verified. Please review your details and try
+                      again, or call us at{' '}
+                      <a href="tel:312-450-0635" className="underline">
+                        312-450-0635
+                      </a>
+                      .
                     </div>
                   )}
 
@@ -388,11 +672,49 @@ export function ScheduleTour() {
 
                     <button
                       type="submit"
-                      disabled={createLead.isPending || !isOnline}
+                      disabled={contact.isPending || !isOnline}
                       className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 w-full disabled:opacity-50"
                     >
-                      {createLead.isPending ? 'Submitting...' : 'Request Tour'}
+                      {contact.isPending ? 'Submitting...' : 'Request Tour'}
                     </button>
+
+                    {/* Texting-consent / privacy language mirroring the AppFolio
+                        hosted scheduling form this flow books through. */}
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      By submitting this form, I agree to receive communication related to my
+                      interest in available properties or unit(s). By including my phone number, I
+                      agree to receive calls and text messages. Message frequency varies. I can opt
+                      out at any time by replying STOP or text HELP for help. Standard message and
+                      data rates may apply. Scheduling is provided through AppFolio; all
+                      information provided will be treated in accordance with the AppFolio{' '}
+                      <a
+                        href="https://www.appfolio.com/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Privacy Policy (AppFolio)"
+                        className="underline hover:text-primary"
+                      >
+                        Privacy Policy
+                      </a>{' '}
+                      and{' '}
+                      <a
+                        href="https://www.appfolio.com/terms/listings"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-primary"
+                      >
+                        Terms of Service
+                      </a>
+                      , and our{' '}
+                      <Link
+                        href="/privacy-policy"
+                        aria-label="Privacy Policy (Exhibit on Superior)"
+                        className="underline hover:text-primary"
+                      >
+                        Privacy Policy
+                      </Link>
+                      .
+                    </p>
                   </form>
                 </div>
 
