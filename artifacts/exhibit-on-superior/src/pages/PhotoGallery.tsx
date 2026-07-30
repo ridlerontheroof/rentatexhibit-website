@@ -158,7 +158,7 @@ export function PhotoGallery() {
       <div>
         <PageHero
           image="/images/image-033-lounge-mfioa0.jpg"
-          alt="Photo Gallery | Exhibit On Superior in Chicago, Illinois"
+          alt="Resident lounge with floor-to-ceiling windows and city views at Exhibit On Superior"
           titleScript="The Art"
           title="Of City Living"
           subtitle="Photo Gallery"

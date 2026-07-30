@@ -139,7 +139,7 @@ export function ScheduleTour() {
       <div>
         <PageHero
           image="/images/image-087-012417-5548-ocwsdh.jpg"
-          alt="Schedule a Tour | Exhibit On Superior in Chicago, Illinois"
+          alt="Furnished apartment sitting area with leather daybed and floor-to-ceiling windows at Exhibit On Superior"
           titleScript="Let Us Show You"
           title="Around"
           subtitle="Schedule a Tour"

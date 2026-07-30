@@ -14,7 +14,7 @@ export function PetFriendly() {
       <div>
         <PageHero
           image="/images/image-079-gettyimages-1440280890-ox4ske.jpg"
-          alt="Pet Friendly | Exhibit On Superior in Chicago, Illinois"
+          alt="Bengal cat relaxing on a soft surface at Exhibit On Superior in River North Chicago"
           titleScript="Dogs & Cats"
           title="Say Hello to Pet-Friendly Living In Chicago"
           subtitle="Pet Friendly"

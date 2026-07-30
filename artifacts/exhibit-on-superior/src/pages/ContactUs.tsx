@@ -90,7 +90,7 @@ export function ContactUs() {
       <div>
         <PageHero
           image="/images/image-084-20170601-0076-p0s5be.jpg"
-          alt="Contact Us | Exhibit On Superior in Chicago, Illinois"
+          alt="Built-in window seat with decorative pillows and bookshelves at Exhibit On Superior"
           titleScript="Get in Touch"
           title="With Exhibit On Superior"
           subtitle="Contact Us"

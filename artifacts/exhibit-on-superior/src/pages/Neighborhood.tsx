@@ -21,7 +21,7 @@ export function Neighborhood() {
       <div>
         <PageHero
           image="/images/image-081-20170926-1450-wmbiod.jpg"
-          alt="Neighborhood | Exhibit On Superior in Chicago, Illinois"
+          alt="Panoramic Chicago downtown skyline view from Exhibit On Superior in River North"
           titleScript="Get Out and Explore"
           title="The Best of River North"
           subtitle="Neighborhood"

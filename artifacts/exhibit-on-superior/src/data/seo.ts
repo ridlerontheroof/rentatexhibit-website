@@ -49,7 +49,7 @@ export const SITE_LAUNCH_DATE = '2025-01-01';
  * fresh image. (v2: 2026-07 regeneration of nine stale cards, notably
  * reviews.jpg. v3: default og-card.jpg brought under the same guard.)
  */
-export const OG_CARD_VERSION = 4;
+export const OG_CARD_VERSION = 5;
 
 /** Site-wide fallback share card, cache-busted like the per-page cards. */
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg?v=${OG_CARD_VERSION}`;
@@ -631,6 +631,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/about': {
     path: '/about',
+    ogImage: ogCardUrl('about'),
     label: 'About',
     title: 'About Exhibit On Superior | River North Chicago Apartments',
     description:

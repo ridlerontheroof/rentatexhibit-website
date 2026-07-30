@@ -14,7 +14,7 @@ export function Residents() {
       <div>
         <PageHero
           image="/images/image-086-work-spaces-with-blazing-fast-wifi-access-d3tr2q.jpg"
-          alt="Residents | Exhibit On Superior in Chicago, Illinois"
+          alt="Resident lounge with large wood conference table and leather chairs at Exhibit On Superior"
           titleScript="Resident Life"
           title="Made Simple"
           subtitle="Residents"

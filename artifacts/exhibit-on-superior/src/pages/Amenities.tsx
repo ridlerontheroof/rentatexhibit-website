@@ -15,7 +15,7 @@ export function Amenities() {
       <div>
         <PageHero
           image="/images/image-075-20170601-0036-z1fw1i.jpg"
-          alt="Amenities | Exhibit On Superior in Chicago, Illinois"
+          alt="Outdoor lap pool and sundeck with Chicago skyline views at Exhibit On Superior"
           titleScript="Endless Opportunities"
           title="Your Urban Playground"
           subtitle="Amenities"

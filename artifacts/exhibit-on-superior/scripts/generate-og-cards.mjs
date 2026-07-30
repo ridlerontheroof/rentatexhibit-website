@@ -132,6 +132,11 @@ export const CARDS = {
     src: 'image-018-lounge-with-fireplace-and-big-screen-tv-ymvrom.jpg',
     tagline: 'See what residents say about Exhibit',
   },
+  about: {
+    src: 'image-009-34-southeast-levwhc.jpg',
+    tagline: 'A 34-story luxury tower in River North, Chicago',
+    gravity: 'south',
+  },
 };
 
 async function generateCard(page, spec, outDir) {
