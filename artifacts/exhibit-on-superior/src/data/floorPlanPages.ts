@@ -26,6 +26,7 @@ import { adaUnitsAmong, type AdaDesignation } from './ada';
 import {
   SITE_URL,
   ogCardUrl,
+  SITE_LAUNCH_DATE,
   WEBSITE_NODE,
   ORGANIZATION_NODE,
   APARTMENT_COMPLEX_NODE,
@@ -280,6 +281,7 @@ export function floorPlanPageJsonLd(
     // Same share card the og:image meta uses (see buildFloorPlanSeoModel).
     primaryImageOfPage: ogCardUrl('floor-plans'),
     breadcrumb: { '@id': `${canonical}#breadcrumb` },
+    datePublished: SITE_LAUNCH_DATE,
     ...(updatedAt ? { dateModified: updatedAt } : {}),
   };
 
