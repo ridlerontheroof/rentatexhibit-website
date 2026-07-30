@@ -11,7 +11,7 @@ export interface GalleryImage {
 }
 
 export const galleryImages: GalleryImage[] = [
-  { src: '/images/image-033-lounge-mfioa0.jpg', alt: 'Photo Gallery | Exhibit On Superior in Chicago, Illinois', category: 'Lobby' },
+  { src: '/images/image-033-lounge-mfioa0.jpg', alt: 'Resident lounge at Exhibit On Superior in River North Chicago', category: 'Lobby' },
   { src: '/images/image-034-012417-5663-hxwee6.jpg', alt: 'Kitchen and dining table at Exhibit On Superior in Chicago, Illinois', category: 'Apartment Gallery' },
   { src: '/images/image-035-012417-5680-yegi2f.jpg', alt: 'Kitchen with upscale appliances at Exhibit On Superior in Chicago, Illinois', category: 'Apartment Gallery' },
   { src: '/images/image-036-012417-5793-ebbynh.jpg', alt: 'Quartz countertops at Exhibit On Superior in Chicago, Illinois', category: 'Apartment Gallery' },
