@@ -147,6 +147,7 @@ export function Header() {
               href="/contact-us"
               align="right"
               items={[
+                { href: '/about', label: 'About' },
                 { href: '/map-directions', label: 'Map + Directions' },
                 { href: '/residents', label: 'Residents' },
                 { href: '/schedule-a-tour', label: 'Schedule a Tour' },
@@ -198,6 +199,7 @@ export function Header() {
               <Link href="/neighborhood" className="text-sm uppercase tracking-wider py-2">Neighborhood</Link>
               <Link href="/parking-transportation" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Parking + Transportation</Link>
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
+              <Link href="/about" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">About</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
               <Link href="/residents" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Residents</Link>
               <Link href="/schedule-a-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</Link>

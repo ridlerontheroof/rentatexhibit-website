@@ -23,6 +23,9 @@ Allow: /
 User-agent: Perplexity-User
 Allow: /
 
+User-agent: Applebot-Extended
+Allow: /
+
 # Traditional search engines.
 User-agent: Googlebot
 Allow: /
