@@ -30,7 +30,11 @@ vi.mock("../lib/showingLiveFailureAlert", () => ({
 // assert only the route wiring (when it is consulted, what it changes).
 vi.mock("../lib/showingFormatAlert", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/showingFormatAlert")>();
-  return { ...actual, detectSlotFormatDrift: vi.fn(actual.detectSlotFormatDrift) };
+  return {
+    ...actual,
+    detectSlotFormatDrift: vi.fn(actual.detectSlotFormatDrift),
+    detectNearTermSkip: vi.fn(actual.detectNearTermSkip),
+  };
 });
 
 import {
@@ -44,7 +48,7 @@ import {
   recordLiveShowingFailure,
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
-import { detectSlotFormatDrift } from "../lib/showingFormatAlert";
+import { detectNearTermSkip, detectSlotFormatDrift } from "../lib/showingFormatAlert";
 import showingsRouter, { resetShowingHeartbeatForTests } from "./showings";
 
 const LISTING_URL =
@@ -83,6 +87,7 @@ const availabilities = {
   firstAvailableDate: null,
   rawTimeslotCount: 1,
   acceptedSlotCount: 1,
+  nearTermRecovery: null,
 };
 
 beforeEach(() => {
@@ -156,6 +161,36 @@ describe("GET /showings/slots", () => {
       { unit: "2801" },
     );
     expect(vi.mocked(detectSlotFormatDrift)).toHaveReturnedWith(true);
+  });
+
+  it("serves recovered near-term days, flags them via the skip alarm, and strips the internal field", async () => {
+    // Regression wiring for the 2026-07-29 incident: the lib recovered days
+    // AppFolio's first_available_date would have skipped. The route must
+    // serve them, consult the alarm, and never leak the internal flag.
+    vi.mocked(fetchShowingAvailabilities).mockResolvedValue({
+      ...availabilities,
+      days: [
+        { date: "2026/07/30", slots: [{ time: "2026/07/30 10:30", agentId: 444 }] },
+        { date: "2026/07/31", slots: [{ time: "2026/07/31 09:30", agentId: 444 }] },
+      ],
+      firstAvailableDate: "2026/08/01",
+      nearTermRecovery: {
+        mode: "recheck",
+        firstAvailableDate: "2026/08/01",
+        recoveredDates: ["2026/07/30", "2026/07/31"],
+      },
+    });
+    const res = await request(makeApp()).get("/showings/slots?unit=2801");
+    expect(res.status).toBe(200);
+    expect(res.body.days[0].date).toBe("2026/07/30");
+    expect(res.body).not.toHaveProperty("nearTermRecovery");
+    expect(vi.mocked(detectNearTermSkip)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(Number),
+      expect.objectContaining({ nearTermRecovery: expect.objectContaining({ mode: "recheck" }) }),
+      { unit: "2801" },
+    );
+    expect(vi.mocked(detectNearTermSkip)).toHaveReturnedWith(true);
   });
 });
 

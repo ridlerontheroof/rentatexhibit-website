@@ -78,6 +78,30 @@ export interface ShowingAvailabilities {
   rawTimeslotCount: number;
   /** Timeslots that parsed into a bookable canonical slot. */
   acceptedSlotCount: number;
+  /**
+   * Non-null when the jump-ahead guard caught AppFolio contradicting itself:
+   * the first (find_first_available_date=true) window claimed no open days,
+   * but slots genuinely existed on days before `first_available_date`. The
+   * recovered days ARE included in `days` — this flag exists so the route can
+   * alarm loudly (see showingFormatAlert.detectNearTermSkip) instead of the
+   * skip staying invisible (observed 2026-07-29: page offered 8/1 while the
+   * hosted AppFolio page had open times on 7/30 and 7/31).
+   */
+  nearTermRecovery: NearTermRecovery | null;
+}
+
+export interface NearTermRecovery {
+  /**
+   * "recheck": re-reading the original window WITHOUT the jump hint found
+   * slots the hinted response omitted. "jump_overshoot": the jump window
+   * (started a day early, hosted-page parity) found slots on days before
+   * the first_available_date AppFolio pointed at.
+   */
+  mode: "recheck" | "jump_overshoot";
+  /** The first_available_date AppFolio sent ("YYYY/MM/DD"). */
+  firstAvailableDate: string;
+  /** Days with open slots that the jump would have skipped ("YYYY/MM/DD"). */
+  recoveredDates: string[];
 }
 
 /**
@@ -226,19 +250,35 @@ export function normalizeAvailabilities(data: Json): ShowingAvailabilities {
     firstAvailableDate: normalizeDateKey(data.first_available_date),
     rawTimeslotCount,
     acceptedSlotCount,
+    nearTermRecovery: null,
   };
 }
 
-/**
- * Fetch live showing availabilities for a listing. `findFirstAvailableDate`
- * lets AppFolio suggest the first date with open slots; when it does and the
- * requested window is empty, we follow the suggestion once (same behavior as
- * the hosted page).
- */
-export async function fetchShowingAvailabilities(
+/** "YYYY/MM/DD" canonical date key → the previous calendar day, same format. */
+function previousDayKey(dateKey: string): string {
+  const [y, mo, d] = dateKey.split("/").map(Number);
+  const t = new Date(Date.UTC(y, mo - 1, d - 1));
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${t.getUTCFullYear()}/${pad(t.getUTCMonth() + 1)}/${pad(t.getUTCDate())}`;
+}
+
+/** "YYYY/MM/DD" date key → AppFolio's "MM/DD/YYYY" start_date param. */
+function keyToMMDDYYYY(dateKey: string): string {
+  const [y, mo, d] = dateKey.split("/");
+  return `${mo}/${d}/${y}`;
+}
+
+/** "MM/DD/YYYY" start_date param → canonical "YYYY/MM/DD" date key. */
+function mmddyyyyToKey(startDate: string): string {
+  const [mo, d, y] = startDate.split("/");
+  return `${y}/${mo}/${d}`;
+}
+
+/** One availabilities request, normalized — no jump-ahead logic. */
+async function fetchAvailabilitiesOnce(
   listableUid: string,
   startDateMMDDYYYY: string,
-  findFirstAvailableDate = true,
+  findFirstAvailableDate: boolean,
 ): Promise<ShowingAvailabilities> {
   const query = new URLSearchParams({
     start_date: startDateMMDDYYYY,
@@ -251,13 +291,69 @@ export async function fetchShowingAvailabilities(
   if (!res.ok) {
     throw await appfolioResponseError("AppFolio availabilities failed", res);
   }
-  const first = normalizeAvailabilities((await res.json()) as Json);
+  return normalizeAvailabilities((await res.json()) as Json);
+}
+
+/**
+ * Fetch live showing availabilities for a listing. `findFirstAvailableDate`
+ * lets AppFolio suggest the first date with open slots; when it does and the
+ * requested window is empty, we follow the suggestion once (same behavior as
+ * the hosted page) — but never blindly.
+ *
+ * Why the guards (2026-07-29 incident): the production page offered 8/1 as
+ * the soonest tour day while AppFolio's hosted page had open times on 7/30
+ * and 7/31. The only pipeline stage that can skip genuinely open near-term
+ * days is this jump-ahead trusting a wrong/stale `first_available_date` after
+ * an empty first window. So before jumping we:
+ *
+ *  1. Re-read the SAME window without the find_first_available_date hint
+ *     (the hint changes AppFolio's server codepath); if slots appear, serve
+ *     them and flag `nearTermRecovery` so the route alarms.
+ *  2. Jump starting one day BEFORE first_available_date (the hosted page
+ *     effectively does this: it parses the date with `new Date("YYYY-MM-DD")`,
+ *     which lands a day early in US timezones), so an off-by-one hint can't
+ *     hide an open day.
+ *  3. If the jump window reveals slots on days before first_available_date,
+ *     flag that too (`jump_overshoot`).
+ */
+export async function fetchShowingAvailabilities(
+  listableUid: string,
+  startDateMMDDYYYY: string,
+  findFirstAvailableDate = true,
+): Promise<ShowingAvailabilities> {
+  const first = await fetchAvailabilitiesOnce(listableUid, startDateMMDDYYYY, findFirstAvailableDate);
   const hasSlots = first.days.some((d) => d.slots.length > 0);
-  if (!hasSlots && findFirstAvailableDate && first.firstAvailableDate) {
-    const [y, mo, d] = first.firstAvailableDate.split("/");
-    return fetchShowingAvailabilities(listableUid, `${mo}/${d}/${y}`, false);
+  if (hasSlots || !findFirstAvailableDate || !first.firstAvailableDate) return first;
+  const fad = first.firstAvailableDate;
+
+  // Guard 1: re-check the original window without the jump hint before
+  // trusting it. Only runs on the (rare) fully-empty-window path.
+  const recheck = await fetchAvailabilitiesOnce(listableUid, startDateMMDDYYYY, false);
+  const recoveredDates = recheck.days.filter((d) => d.slots.length > 0).map((d) => d.date);
+  if (recoveredDates.length > 0) {
+    return {
+      ...recheck,
+      firstAvailableDate: fad,
+      nearTermRecovery: { mode: "recheck", firstAvailableDate: fad, recoveredDates },
+    };
   }
-  return first;
+
+  // Guard 2: jump from one day before the suggested date (hosted-page
+  // parity), never earlier than the window we already confirmed empty.
+  const startKey = mmddyyyyToKey(startDateMMDDYYYY);
+  const dayBefore = previousDayKey(fad);
+  const jumpKey = dayBefore > startKey ? dayBefore : fad;
+  const jumped = await fetchAvailabilitiesOnce(listableUid, keyToMMDDYYYY(jumpKey), false);
+  const earlyDates = jumped.days
+    .filter((d) => d.slots.length > 0 && d.date < fad)
+    .map((d) => d.date);
+  if (earlyDates.length > 0) {
+    return {
+      ...jumped,
+      nearTermRecovery: { mode: "jump_overshoot", firstAvailableDate: fad, recoveredDates: earlyDates },
+    };
+  }
+  return jumped;
 }
 
 /**

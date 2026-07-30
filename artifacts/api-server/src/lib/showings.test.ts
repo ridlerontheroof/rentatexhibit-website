@@ -181,54 +181,145 @@ describe("fetchShowingAvailabilities", () => {
     expect(url).toContain("find_first_available_date=true");
   });
 
+  const emptyWindow = (dates: string[], firstAvailable: string) =>
+    jsonResponse({
+      prospect_scheduled_showing_duration: 15,
+      availabilities_by_date: dates.map((date) => ({ date, timeslots: [] })),
+      future_availabilities_exist: true,
+      first_available_date: firstAvailable,
+    });
+
   it("follows a dash-format first_available_date (2026-07 format) when the window is empty", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(
-        jsonResponse({
-          prospect_scheduled_showing_duration: 15,
-          availabilities_by_date: [{ date: "2026-07-27", timeslots: [] }],
-          future_availabilities_exist: true,
-          first_available_date: "2026-07-30",
-        }),
-      )
+      // Hinted request: empty window pointing at 07/30.
+      .mockResolvedValueOnce(emptyWindow(["2026-07-27"], "2026-07-30"))
+      // No-hint re-check of the same window: still empty (genuinely no near-term slots).
+      .mockResolvedValueOnce(emptyWindow(["2026-07-27"], ""))
+      // Jump window (starts a day early, hosted-page parity).
       .mockResolvedValueOnce(
         jsonResponse({
           prospect_scheduled_showing_duration: 15,
           availabilities_by_date: [
+            { date: "2026-07-29", timeslots: [] },
             { date: "2026-07-30", timeslots: [{ agent_id: 444, time: "2026-07-30T10:30:00-05:00" }] },
           ],
         }),
       );
     const out = await fetchShowingAvailabilities("uid-1", "07/27/2026");
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(String(fetchMock.mock.calls[1][0])).toContain("start_date=07%2F30%2F2026");
-    expect(out.days[0]).toEqual({
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    // Re-check hits the same window without the hint before trusting the jump.
+    expect(String(fetchMock.mock.calls[1][0])).toContain("start_date=07%2F27%2F2026");
+    expect(String(fetchMock.mock.calls[1][0])).toContain("find_first_available_date=false");
+    // Jump starts one day BEFORE first_available_date (hosted-page parity).
+    expect(String(fetchMock.mock.calls[2][0])).toContain("start_date=07%2F29%2F2026");
+    expect(out.days.find((d) => d.slots.length > 0)).toEqual({
       date: "2026/07/30",
       slots: [{ time: "2026/07/30 10:30", agentId: 444 }],
     });
+    expect(out.nearTermRecovery).toBeNull();
   });
 
   it("follows first_available_date once when the requested window is empty", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(emptyWindow(["2026/07/27"], "2026/08/03"))
+      .mockResolvedValueOnce(emptyWindow(["2026/07/27"], ""))
       .mockResolvedValueOnce(
         jsonResponse({
           prospect_scheduled_showing_duration: 15,
-          availabilities_by_date: [{ date: "2026/07/27", timeslots: [] }],
-          first_available_date: "2026/08/03",
-        }),
-      )
-      .mockResolvedValueOnce(
-        jsonResponse({
-          prospect_scheduled_showing_duration: 15,
-          availabilities_by_date: [{ date: "2026/08/03", timeslots: [{ agent_id: 1, time: "2026/08/03 10:00" }] }],
+          availabilities_by_date: [
+            { date: "2026/08/02", timeslots: [] },
+            { date: "2026/08/03", timeslots: [{ agent_id: 1, time: "2026/08/03 10:00" }] },
+          ],
         }),
       );
     const out = await fetchShowingAvailabilities("uid-1", "07/27/2026");
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(String(fetchMock.mock.calls[2][0])).toContain("start_date=08%2F02%2F2026");
+    expect(out.days.find((d) => d.slots.length > 0)?.date).toBe("2026/08/03");
+    expect(out.nearTermRecovery).toBeNull();
+  });
+
+  // Regression for the 2026-07-29 incident: the page offered 8/1 as the
+  // soonest tour day while AppFolio's hosted page had open times on 7/30 and
+  // 7/31. The empty hinted window + late first_available_date must NOT skip
+  // near-term days that genuinely have slots.
+  it("recovers near-term days the jump hint hid (no-hint re-check finds slots)", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      // Hinted request: 4-day window all empty, hint points at 08/01.
+      .mockResolvedValueOnce(
+        emptyWindow(["2026-07-29", "2026-07-30", "2026-07-31", "2026-08-01"], "2026-08-01"),
+      )
+      // Same window WITHOUT the hint: 7/30 and 7/31 actually have slots.
+      .mockResolvedValueOnce(
+        jsonResponse({
+          prospect_scheduled_showing_duration: 15,
+          availabilities_by_date: [
+            { date: "2026-07-29", timeslots: [] },
+            { date: "2026-07-30", timeslots: [{ agent_id: 444, time: "2026-07-30T10:30:00-05:00" }] },
+            { date: "2026-07-31", timeslots: [{ agent_id: 444, time: "2026-07-31T09:30:00-05:00" }] },
+            { date: "2026-08-01", timeslots: [] },
+          ],
+          future_availabilities_exist: true,
+        }),
+      );
+    const out = await fetchShowingAvailabilities("uid-1", "07/29/2026");
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(String(fetchMock.mock.calls[1][0])).toContain("start_date=08%2F03%2F2026");
-    expect(out.days[0].date).toBe("2026/08/03");
+    expect(out.days.filter((d) => d.slots.length > 0).map((d) => d.date)).toEqual([
+      "2026/07/30",
+      "2026/07/31",
+    ]);
+    expect(out.nearTermRecovery).toEqual({
+      mode: "recheck",
+      firstAvailableDate: "2026/08/01",
+      recoveredDates: ["2026/07/30", "2026/07/31"],
+    });
+  });
+
+  it("flags a jump overshoot when the day-early jump window reveals slots before first_available_date", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(emptyWindow(["2026-07-27", "2026-07-28"], "2026-08-01"))
+      .mockResolvedValueOnce(emptyWindow(["2026-07-27", "2026-07-28"], ""))
+      // Jump window starts 07/31 (day before hint) and 07/31 has slots.
+      .mockResolvedValueOnce(
+        jsonResponse({
+          prospect_scheduled_showing_duration: 15,
+          availabilities_by_date: [
+            { date: "2026-07-31", timeslots: [{ agent_id: 444, time: "2026-07-31T09:30:00-05:00" }] },
+            { date: "2026-08-01", timeslots: [{ agent_id: 444, time: "2026-08-01T10:30:00-05:00" }] },
+          ],
+        }),
+      );
+    const out = await fetchShowingAvailabilities("uid-1", "07/27/2026");
+    expect(String(fetchMock.mock.calls[2][0])).toContain("start_date=07%2F31%2F2026");
+    expect(out.days[0].date).toBe("2026/07/31");
+    expect(out.nearTermRecovery).toEqual({
+      mode: "jump_overshoot",
+      firstAvailableDate: "2026/08/01",
+      recoveredDates: ["2026/07/31"],
+    });
+  });
+
+  it("does not jump a day early past the already-checked window (first_available_date = start + 1)", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(emptyWindow(["2026/07/27"], "2026/07/28"))
+      .mockResolvedValueOnce(emptyWindow(["2026/07/27"], ""))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          prospect_scheduled_showing_duration: 15,
+          availabilities_by_date: [
+            { date: "2026/07/28", timeslots: [{ agent_id: 1, time: "2026/07/28 10:00" }] },
+          ],
+        }),
+      );
+    const out = await fetchShowingAvailabilities("uid-1", "07/27/2026");
+    // previousDay(07/28) = 07/27 = start, not strictly after → jump at the hint itself.
+    expect(String(fetchMock.mock.calls[2][0])).toContain("start_date=07%2F28%2F2026");
+    expect(out.days[0].date).toBe("2026/07/28");
   });
 
   it("throws loudly on a non-OK response", async () => {

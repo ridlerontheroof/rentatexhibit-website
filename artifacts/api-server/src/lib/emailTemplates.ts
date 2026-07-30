@@ -928,7 +928,7 @@ export function renderAcceptedSilenceAlert(opts: {
  * booking flow is broken until someone investigates.
  */
 export function renderShowingSchedulerAlert(opts: {
-  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slot_format_drift";
+  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slot_format_drift" | "near_term_skip";
   detail: string;
   failedRuns: number;
 }): RenderedEmail {
@@ -940,7 +940,9 @@ export function renderShowingSchedulerAlert(opts: {
         ? "Website alert: real visitors' showing bookings keep failing"
         : reason === "slot_format_drift"
           ? "Website alert: online showing times are not displaying — AppFolio changed its slot format"
-          : "Website alert: the online showing scheduler probe keeps failing";
+          : reason === "near_term_skip"
+            ? "Website alert: AppFolio's showing feed hid near-term tour days (auto-recovered)"
+            : "Website alert: the online showing scheduler probe keeps failing";
 
   const intro =
     reason === "idv_enabled"
@@ -949,6 +951,8 @@ export function renderShowingSchedulerAlert(opts: {
         ? `${failedRuns} real visitors' showing requests in a row have failed at the AppFolio guest-card or booking step, with zero successes in between — this is no longer a single blip or one unlucky visitor. AppFolio has likely changed the guest-card or booking endpoints the website's flow replicates (the hourly probe can only cover the anonymous slot-fetch and IDV endpoints, so it may still look green).`
         : reason === "slot_format_drift"
           ? "AppFolio is sending showing time slots in a format the website no longer recognizes: every slot it sent was dropped, so the schedule-showing page is showing \"no online showing times\" even though openings exist. Visitors cannot self-book until the website's slot parser is updated to AppFolio's new format."
+          : reason === "near_term_skip"
+            ? "AppFolio's availabilities feed contradicted itself: it reported an empty showing window and suggested a later first-available date, while open near-term slots actually existed. The website caught the contradiction, recovered the hidden days, and displayed them to visitors — no action was lost this time."
           : `The automatic probe of AppFolio's showing scheduler has now failed ${failedRuns} runs in a row — this is no longer a transient blip. AppFolio has likely changed the unofficial endpoints the website's booking flow replicates (new paths, CSRF tokens, or captcha).`;
 
   const impact =
@@ -957,7 +961,9 @@ export function renderShowingSchedulerAlert(opts: {
   const remedy =
     reason === "idv_enabled"
       ? "What to do: confirm with the leasing team whether IDV was enabled intentionally. If it was, the branded scheduler should stay in hosted-page mode; if not, disable IDV in AppFolio's showing settings. This alert is sent at most once per day."
-      : reason === "slot_format_drift"
+      : reason === "near_term_skip"
+        ? "What to do: nothing is broken for visitors right now — the site self-recovered. But if this alert repeats daily, AppFolio's find_first_available_date behavior has changed for good and the showing client should be reviewed. This alert is sent at most once per day."
+        : reason === "slot_format_drift"
         ? "What to do: this needs a website-side code fix — compare the raw availabilities response from AppFolio's hosted \"Schedule a Showing\" page against the site's slot parser and update it to accept the new format. Until then, expect tour requests to arrive as standard leads instead of self-booked showings. This alert is sent at most once per day."
         : "What to do: open AppFolio's hosted \"Schedule a Showing\" page with browser dev tools and compare its requests against the site's showing client (availabilities, guest card, booking). Update the client to match, or leave the page on its fallback until fixed. This alert is sent at most once per day.";
 
@@ -990,7 +996,9 @@ export function renderShowingSchedulerAlert(opts: {
           ? "Real visitors' showing bookings keep failing against AppFolio."
           : reason === "slot_format_drift"
             ? "Every AppFolio showing slot is being dropped — visitors can't self-book."
-            : "The online showing scheduler's AppFolio probe keeps failing.",
+            : reason === "near_term_skip"
+              ? "AppFolio hid open near-term tour days; the site auto-recovered them."
+              : "The online showing scheduler's AppFolio probe keeps failing.",
     kicker: "Website Alert",
     heading:
       reason === "idv_enabled"
@@ -999,7 +1007,9 @@ export function renderShowingSchedulerAlert(opts: {
           ? "Visitor Showing Bookings Failing"
           : reason === "slot_format_drift"
             ? "Online Showing Times Not Displaying"
-            : "Showing Scheduler Probe Failing",
+            : reason === "near_term_skip"
+              ? "Near-Term Tour Days Hidden by AppFolio"
+              : "Showing Scheduler Probe Failing",
     bodyHtml: html,
   });
 

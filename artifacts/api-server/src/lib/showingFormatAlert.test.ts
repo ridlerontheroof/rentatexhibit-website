@@ -14,7 +14,7 @@ vi.mock("@workspace/db", () => ({
   db: {
     execute: vi.fn(async (query: { queryChunks?: unknown[] }) => {
       const text = JSON.stringify(query);
-      const key = text.match(/slotformat:[^"\\]+/)?.[0];
+      const key = text.match(/(?:slotformat|neartermskip):[^"\\]+/)?.[0];
       if (typeof key !== "string") return { rows: [] };
       if (sharedKeys.has(key)) return { rows: [] };
       sharedKeys.add(key);
@@ -24,6 +24,7 @@ vi.mock("@workspace/db", () => ({
 }));
 
 import {
+  detectNearTermSkip,
   detectSlotFormatDrift,
   __resetSlotFormatAlertForTests,
 } from "./showingFormatAlert";
@@ -131,6 +132,77 @@ describe("detectSlotFormatDrift", () => {
     expect(log.error).toHaveBeenCalledWith(
       expect.objectContaining({ err: expect.any(Error) }),
       "Failed to send slot-format drift alert",
+    );
+  });
+});
+
+describe("detectNearTermSkip", () => {
+  beforeEach(() => {
+    __resetSlotFormatAlertForTests();
+    sharedKeys.clear();
+    vi.clearAllMocks();
+    mailerMock.mockReturnValue(true);
+  });
+
+  const recovery = {
+    mode: "recheck" as const,
+    firstAvailableDate: "2026/08/01",
+    recoveredDates: ["2026/07/30", "2026/07/31"],
+  };
+
+  it("does nothing when no recovery happened", async () => {
+    const log = makeLog();
+    const fired = detectNearTermSkip(log, DAY1, { nearTermRecovery: null });
+    await flush();
+    expect(fired).toBe(false);
+    expect(log.error).not.toHaveBeenCalled();
+    expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  it("logs an error and emails when near-term days were recovered", async () => {
+    const log = makeLog();
+    const fired = detectNearTermSkip(log, DAY1, { nearTermRecovery: recovery }, { unit: "0807" });
+    await flush();
+    expect(fired).toBe(true);
+    expect(log.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        unit: "0807",
+        mode: "recheck",
+        firstAvailableDate: "2026/08/01",
+        recoveredDates: ["2026/07/30", "2026/07/31"],
+      }),
+      expect.stringContaining("near-term days"),
+    );
+    expect(sendMock).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        reason: "near_term_skip",
+        detail: expect.stringContaining("2026/07/30"),
+      }),
+    );
+  });
+
+  it("emails at most once per UTC day, but keeps logging", async () => {
+    const log = makeLog();
+    detectNearTermSkip(log, DAY1, { nearTermRecovery: recovery });
+    await flush();
+    detectNearTermSkip(log, DAY1 + 60_000, { nearTermRecovery: recovery });
+    await flush();
+    expect(sendMock).toHaveBeenCalledTimes(1);
+    expect(log.error).toHaveBeenCalledTimes(2);
+
+    detectNearTermSkip(log, DAY2, { nearTermRecovery: recovery });
+    await flush();
+    expect(sendMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("never throws when the email send fails", async () => {
+    sendMock.mockRejectedValueOnce(new Error("smtp down"));
+    const log = makeLog();
+    expect(() => detectNearTermSkip(log, DAY1, { nearTermRecovery: recovery })).not.toThrow();
+    await flush();
+    expect(log.error).toHaveBeenCalledWith(
+      expect.objectContaining({ err: expect.any(Error) }),
+      "Failed to send near-term-skip alert",
     );
   });
 });

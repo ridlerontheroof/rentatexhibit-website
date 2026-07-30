@@ -36,7 +36,7 @@ import {
   recordLiveShowingFailure,
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
-import { detectSlotFormatDrift } from "../lib/showingFormatAlert";
+import { detectNearTermSkip, detectSlotFormatDrift } from "../lib/showingFormatAlert";
 import { sanitizeLeadSource } from "../lib/leadSource";
 
 const router: IRouter = Router();
@@ -62,6 +62,10 @@ const heartbeat = createDailyHeartbeat({
     // drifted again. Distinct from slots_failed so the deploy-log heartbeat
     // shows silent filtering, not just hard fetch errors.
     "slots_degraded",
+    // AppFolio's first_available_date pointed past days with real open slots
+    // (2026-07-29 incident); the pipeline recovered them, but the
+    // contradiction must show up in deploy logs.
+    "slots_recovered",
     "slots_failed",
     "contact_ok",
     "contact_failed",
@@ -106,9 +110,21 @@ router.get("/showings/slots", showingLimiter, async (req, res) => {
     // leasing alert email; the response still goes out (empty calendar) so
     // the page's designed lead-capture fallback keeps working.
     const degraded = detectSlotFormatDrift(req.log, Date.now(), availabilities, { unit });
-    heartbeat.record(req.log, Date.now(), degraded ? "slots_degraded" : "slots_ok");
-    const { rawTimeslotCount: _raw, acceptedSlotCount: _accepted, ...publicAvailabilities } =
-      availabilities;
+    // Near-term days AppFolio's jump hint would have hidden were recovered
+    // and ARE in the response — but the contradiction alarms loudly (error
+    // log + slots_recovered heartbeat + once-a-day alert email).
+    const recovered = detectNearTermSkip(req.log, Date.now(), availabilities, { unit });
+    heartbeat.record(
+      req.log,
+      Date.now(),
+      degraded ? "slots_degraded" : recovered ? "slots_recovered" : "slots_ok",
+    );
+    const {
+      rawTimeslotCount: _raw,
+      acceptedSlotCount: _accepted,
+      nearTermRecovery: _recovery,
+      ...publicAvailabilities
+    } = availabilities;
     res.json({
       unit,
       hostedUrl: hostedShowingsUrl(listableUid),

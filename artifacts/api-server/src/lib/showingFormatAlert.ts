@@ -72,7 +72,65 @@ async function alertOncePerDay(log: Logger, now: number, rawCount: number): Prom
   }
 }
 
+const nearTermClaim = createDailyClaim({
+  prefix: "neartermskip",
+  claimFailedMessage:
+    "Near-term-skip alert database claim failed; falling back to in-memory dedupe",
+});
+
+/**
+ * Loud alarm for the "jump-ahead nearly skipped open near-term days" failure
+ * mode (2026-07-29: the page offered 8/1 while AppFolio's hosted page had
+ * open times on 7/30 and 7/31). The pipeline now self-recovers — the days
+ * ARE served — but AppFolio contradicting its own first_available_date must
+ * never be invisible again: error log, `slots_recovered` heartbeat outcome
+ * (recorded by the caller), and a once-per-UTC-day alert email.
+ */
+export function detectNearTermSkip(
+  log: Logger,
+  now: number,
+  availabilities: Pick<ShowingAvailabilities, "nearTermRecovery">,
+  context: Record<string, unknown> = {},
+): boolean {
+  const recovery = availabilities.nearTermRecovery;
+  if (!recovery) return false;
+  log.error(
+    {
+      ...context,
+      mode: recovery.mode,
+      firstAvailableDate: recovery.firstAvailableDate,
+      recoveredDates: recovery.recoveredDates,
+    },
+    "AppFolio availabilities contradiction — near-term days with open slots were hidden behind first_available_date; recovered and served",
+  );
+  void alertNearTermOncePerDay(log, now, recovery);
+  return true;
+}
+
+async function alertNearTermOncePerDay(
+  log: Logger,
+  now: number,
+  recovery: NonNullable<ShowingAvailabilities["nearTermRecovery"]>,
+): Promise<void> {
+  try {
+    if (!(await nearTermClaim.claim(log, now))) return;
+    if (!mailerConfigured()) return;
+    await sendShowingSchedulerAlert({
+      reason: "near_term_skip",
+      detail:
+        `AppFolio's availabilities feed reported an empty window and pointed to ${recovery.firstAvailableDate} ` +
+        `as the first available date, but open slots actually existed on ${recovery.recoveredDates.join(", ")} ` +
+        `(caught by the ${recovery.mode === "recheck" ? "no-hint re-check" : "day-early jump window"}). ` +
+        "The website recovered and displayed those days automatically this time.",
+      failedRuns: 0,
+    });
+  } catch (err) {
+    log.error({ err }, "Failed to send near-term-skip alert");
+  }
+}
+
 /** Test-only: clear the per-process fallback dedupe state. */
 export function __resetSlotFormatAlertForTests(): void {
   dailyClaim.reset();
+  nearTermClaim.reset();
 }
