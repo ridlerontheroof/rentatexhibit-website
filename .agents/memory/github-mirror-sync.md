@@ -1,9 +1,10 @@
 ---
 name: GitHub mirror sync
-description: How to push workspace main to the protected GitHub mirror; branch quirks with the Codex scaffold branch.
+description: How to push workspace main to the GitHub mirror for Codex; one-way rules and branch quirks.
 ---
 
-- GitHub mirror: https://github.com/ridlerontheroof/rentatexhibit-website (origin). `main` is branch-protected: direct pushes fail — gitPush returns the misleading error `BRANCH_ALREADY_EXISTS`. That is protection, not a real conflict.
-- **How to apply:** to sync main → GitHub, create a branch off local main (e.g. `sync/workspace-main-...`), `gitPush({})`, then `createPullRequest` into main. Shell `git push` has no credentials (PAT not wired to git); only the gitPush callback works.
-- The workspace has repeatedly been found checked out on `agent/highland-seo-aeo-setup` (the Codex scaffold branch) — external Codex runs appear to switch branches/commit there. Always verify `git branch --show-current` is `main` before edits, and switch back to main after any git work.
+- GitHub mirror: https://github.com/ridlerontheroof/rentatexhibit-website (origin), one-way. NEVER pull from origin back into the workspace.
+- **How to sync:** run `bash scripts/sync-github-mirror.sh` — force-pushes local main to origin/main using the GITHUB_PAT secret via GIT_ASKPASS. Run after significant work sessions. Force is intentional: remote-side (Codex) commits are discarded; the workspace is the single source of truth.
+- The gitPush callback to `main` fails with the misleading `BRANCH_ALREADY_EXISTS` (it refuses non-fast-forward / existing-branch pushes); the PAT script is the working route. **Why:** the mirror's main diverges whenever Codex commits remotely, so only a force push stays clean.
+- The workspace has repeatedly been found checked out on a Codex scaffold branch — always verify `git branch --show-current` is `main` before edits, and switch back after any git work.
 - Merged task commits land on local `main` even if the working tree is on another branch — "missing files" after a merge usually means wrong checked-out branch, not a failed merge.

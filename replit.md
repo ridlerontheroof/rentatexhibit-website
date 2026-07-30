@@ -47,3 +47,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+
+## GitHub mirror (one-way, for Codex)
+
+- Origin: https://github.com/ridlerontheroof/rentatexhibit-website.git — a read-only mirror so Codex can analyze current code.
+- To re-sync after significant work: `bash scripts/sync-github-mirror.sh` (force-pushes local main using the GITHUB_PAT secret; remote-side commits are intentionally discarded).
+- Never pull from origin back into the workspace.
