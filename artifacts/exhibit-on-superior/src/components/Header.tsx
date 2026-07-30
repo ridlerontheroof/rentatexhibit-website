@@ -136,16 +136,19 @@ export function Header() {
               ]}
             />
 
+            <Link
+              href="/available-units"
+              className="flex flex-col items-center text-base uppercase tracking-wider font-semibold text-primary hover:opacity-80 transition-opacity"
+            >
+              Available Units
+              {/* Short gold rule mimicking the page headline underline (.headline-rule). */}
+              <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
+            </Link>
+
             <NavDropdown
               label="Neighborhood"
               href="/neighborhood"
               items={[{ href: '/parking-transportation', label: 'Parking + Transportation' }]}
-            />
-
-            <NavDropdown
-              label="Floor Plans"
-              href="/floor-plans"
-              items={[]}
             />
 
             <NavDropdown
@@ -156,7 +159,6 @@ export function Header() {
                 { href: '/about', label: 'About' },
                 { href: '/map-directions', label: 'Map + Directions' },
                 { href: '/residents', label: 'Residents' },
-                { href: '/schedule-a-tour', label: 'Schedule a Tour' },
                 { href: '/reviews', label: 'Reviews' },
                 { href: '/faq', label: 'FAQ' },
                 { href: '/fees', label: 'Fees & Leasing Costs' },
@@ -168,8 +170,8 @@ export function Header() {
 
           {/* CTA Buttons - Desktop */}
           <div className="hidden lg:flex items-center gap-4">
-            <Link href="/available-units" className="btn-gold-outline text-sm">
-              Available Units
+            <Link href="/schedule-a-tour" className="btn-gold-outline text-sm">
+              Schedule a Tour
             </Link>
           </div>
 
@@ -194,8 +196,14 @@ export function Header() {
           >
             <div className="flex flex-col gap-4" onClick={() => setMobileMenuOpen(false)}>
               <div className="flex flex-col gap-3 pb-4 border-b border-border">
-                <Link href="/available-units" className="btn-gold-outline text-center">
-                  Available Units
+                <Link href="/schedule-a-tour" className="btn-gold-outline text-center">
+                  Schedule a Tour
+                </Link>
+                <Link href="/available-units" className="text-base uppercase tracking-wider py-2 text-center font-semibold text-primary">
+                  <span className="inline-flex flex-col">
+                    Available Units
+                    <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
+                  </span>
                 </Link>
               </div>
               <Link href="/photo-gallery" className="text-sm uppercase tracking-wider py-2">Photo Gallery</Link>
@@ -205,12 +213,10 @@ export function Header() {
               <Link href="/apartment-guide" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Apartment Guide</Link>
               <Link href="/neighborhood" className="text-sm uppercase tracking-wider py-2">Neighborhood</Link>
               <Link href="/parking-transportation" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Parking + Transportation</Link>
-              <Link href="/floor-plans" className="text-sm uppercase tracking-wider py-2">Floor Plans</Link>
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/about" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">About</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>
               <Link href="/residents" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Residents</Link>
-              <Link href="/schedule-a-tour" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Schedule a Tour</Link>
               <Link href="/reviews" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Reviews</Link>
               <Link href="/faq" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">FAQ</Link>
               <Link href="/fees" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Fees &amp; Leasing Costs</Link>

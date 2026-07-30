@@ -318,6 +318,7 @@ export function UnitDetail() {
                 : `/schedule-a-tour?unit=${unit.unit}`
             }
             className="w-full border border-border px-8 py-4 text-center text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary sm:w-auto"
+            aria-label={`Schedule a tour of apartment ${unit.unit}`}
           >
             Schedule a tour
           </Link>

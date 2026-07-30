@@ -179,7 +179,7 @@ export function MapDirections() {
               ))}
             </ul>
             <p className="text-sm text-muted-foreground">
-              Planning a visit? <Link href="/available-units" className="text-primary underline">Schedule a tour</Link> ahead of time so our team is ready to show you around.
+              Planning a visit? <Link href="/schedule-a-tour" className="text-primary underline">Schedule a tour</Link> ahead of time so our team is ready to show you around.
             </p>
           </div>
         </section>
@@ -199,7 +199,7 @@ export function MapDirections() {
               <a href="tel:312-450-0635" className="btn-gold-outline inline-block">
                 312-450-0635
               </a>
-              <Link href="/available-units" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
+              <Link href="/schedule-a-tour" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">
                 Schedule a Tour
               </Link>
             </div>
