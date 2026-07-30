@@ -179,6 +179,8 @@ export const RECOMMENDED_PROPERTIES = {
   // Lease offers on available units: rent, currency, and availability are the
   // facts Bing/Copilot and AI answer engines extract.
   Offer: ['price', 'priceCurrency', 'availability'],
+  // Fee catalog on /fees: container node analogous to ItemList.
+  OfferCatalog: ['name', 'itemListElement'],
   // Review snippets on /reviews. No datePublished checklist entry: quotes are
   // curated + live-merged without reliable per-review dates.
   Review: ['author', 'reviewRating', 'reviewBody'],
@@ -210,6 +212,10 @@ export const NO_CHECKLIST_TYPES = [
   // potentialAction entries carry only a target URL + name.
   'ScheduleAction',
   'ViewAction',
+  // SearchAction + its EntryPoint target carry only urlTemplate / query-input;
+  // schema.org recommends nothing further for this site's use of them.
+  'SearchAction',
+  'EntryPoint',
   // Review authors: name-only Person nodes per Google review-snippet docs.
   'Person',
 ];

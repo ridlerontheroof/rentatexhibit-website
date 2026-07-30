@@ -51,6 +51,89 @@ export interface FeeSummaryRow {
  * The at-a-glance fees & costs table rendered on /fees. Amounts reference the
  * constants above — never hand-typed twice.
  */
+/**
+ * OfferCatalog JSON-LD for the /fees page. Surfaces fixed fee amounts to
+ * Google for cost-comparison queries and AI Overviews. Values derive from the
+ * single-source constants above — they can never diverge from the page copy.
+ * Exported for both the client <Seo extraJsonLd> in Fees.tsx and the
+ * prerenderer's EXTRA_JSONLD map in entry-server.tsx.
+ */
+export function feesOfferCatalogJsonLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'OfferCatalog',
+    name: 'Fees and Leasing Costs at Exhibit On Superior',
+    itemListElement: [
+      {
+        '@type': 'Offer',
+        name: 'Application Fee',
+        price: APPLICATION_FEE.replace('$', ''),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'Non-refundable application processing fee per applicant',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Administration Fee',
+        price: ADMIN_FEE.replace('$', ''),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description:
+          'One-time non-refundable administration fee per apartment; refunded only if the application is denied',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Garage Parking',
+        price: PARKING_FEE.replace('$', ''),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'Monthly unreserved garage parking, subject to availability',
+      },
+      {
+        '@type': 'Offer',
+        name: 'On-Site Storage Locker',
+        price: STORAGE_FEE.replace('$', ''),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'Monthly storage locker rental',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Pet Fee — One Dog',
+        price: PET_FEE_ONE_DOG.replace('$', ''),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'One-time pet fee for one dog; no monthly pet rent',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Pet Fee — Two Dogs',
+        price: PET_FEE_TWO_DOGS.replace('$', ''),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'One-time pet fee for two dogs; no monthly pet rent',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Pet Fee — Cats',
+        price: PET_FEE_CATS.replace('$', ''),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'One-time pet fee for cats (up to two); no monthly pet rent',
+      },
+      // Utility & Service Amenity fee has multiple tiers — one Offer per tier.
+      ...UTILITY_BUNDLE.map((tier) => ({
+        '@type': 'Offer',
+        name: `Utility & Service Amenity Fee — ${tier.type}`,
+        price: tier.fee.replace('$', ''),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: `Monthly utility bundle (water, sewer, trash, heat, A/C, cooking/dryer gas) for ${tier.type} floor plans (${tier.size})`,
+      })),
+    ],
+  };
+}
+
 export const FEE_SUMMARY: FeeSummaryRow[] = [
   {
     item: 'Application fee',

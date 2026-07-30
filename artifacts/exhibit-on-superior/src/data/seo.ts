@@ -1008,12 +1008,26 @@ export const WEBSITE_NODE = {
   name: 'Exhibit On Superior',
   url: SITE_URL,
   publisher: { '@id': `${SITE_URL}#organization` },
+  // SearchAction enables a Sitelinks Search Box for brand queries; target
+  // routes to the Available Units page which accepts a ?q= filter param.
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${SITE_URL}/available-units?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
 };
 
 export const ORGANIZATION_NODE = {
   '@type': 'Organization',
   '@id': `${SITE_URL}#organization`,
   name: 'Exhibit On Superior',
+  // Legal entity that manages the property — helps Google disambiguate the
+  // property name from the management company in the Knowledge Graph.
+  legalName: 'Highland Management LLC',
+  // foundingDate intentionally omitted until confirmed with the leasing team.
   url: SITE_URL,
   email: 'exhibit@highlandptrs.com',
   telephone: '312-450-0635',

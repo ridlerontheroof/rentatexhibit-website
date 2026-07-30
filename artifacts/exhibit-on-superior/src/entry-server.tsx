@@ -35,6 +35,7 @@ import { getBakedAvailability, getBakedSnapshotStatus } from './data/availabilit
 import { buildReviewsPageModel, reviewsJsonLd } from './data/reviews';
 import { photoGalleryJsonLd } from './data/gallery';
 import { virtualToursJsonLd, virtualTourVideoJsonLd } from './data/virtualTours';
+import { feesOfferCatalogJsonLd } from './data/fees';
 
 // Re-exported so the (browserless) prerender script can read the route list,
 // canonical URLs, and noindex flags straight from the built SSR bundle.
@@ -92,6 +93,7 @@ export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
 // page component passes to <Seo extraJsonLd>; keep in sync with that page.
 const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
   '/available-units': () => [floorPlansItemListJsonLd(), unitAvailabilityJsonLd()],
+  '/fees': () => [feesOfferCatalogJsonLd()],
   '/floor-plans': () => [floorPlanHubItemListJsonLd()],
   '/knowledge': () => [knowledgeHubJsonLd()],
   // At prerender time there is no live Google feed, so the model resolves to

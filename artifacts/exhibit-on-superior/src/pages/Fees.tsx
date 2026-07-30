@@ -16,6 +16,7 @@ import {
   PET_FEE_TWO_DOGS,
   STORAGE_FEE,
   UTILITY_BUNDLE,
+  feesOfferCatalogJsonLd,
 } from '../data/fees';
 
 /**
@@ -29,7 +30,7 @@ import {
 export function Fees() {
   return (
     <>
-      <Seo path="/fees" />
+      <Seo path="/fees" extraJsonLd={[feesOfferCatalogJsonLd()]} />
       <div>
         <PageHero
           image="/images/image-004-012417-5732-pu4fo5.jpg"
