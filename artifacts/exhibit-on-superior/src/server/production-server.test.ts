@@ -267,6 +267,38 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
   });
 
   // -------------------------------------------------------------------------
+  // Legacy ?plan= deep links on /available-units (dist/plan-redirects.json)
+  // -------------------------------------------------------------------------
+  it('301s /available-units?plan=<known id> straight to its floor-plan landing page', async () => {
+    const mapPath = path.join(root, 'dist', 'plan-redirects.json');
+    expect(fs.existsSync(mapPath), 'dist/plan-redirects.json missing — rerun the build').toBe(true);
+    const map = JSON.parse(fs.readFileSync(mapPath, 'utf8')) as Record<string, string>;
+    const entries = Object.entries(map);
+    expect(entries.length).toBeGreaterThan(0);
+    const [id, target] = entries[0];
+    expect(target).toMatch(/^\/floor-plans\/[a-z0-9-]+$/);
+
+    const res = await get(`/available-units?plan=${encodeURIComponent(id)}`);
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe(target);
+    // Single hop: the landing page answers 200 directly.
+    const dest = await get(target);
+    expect(dest.status).toBe(200);
+
+    // Trailing-slash variant is also one hop, and other params ride along.
+    const slashed = await get(`/available-units/?plan=${encodeURIComponent(id)}&ada=1`);
+    expect(slashed.status).toBe(301);
+    expect(slashed.headers.get('location')).toBe(`${target}?ada=1`);
+  });
+
+  it('falls through to the normal /available-units page for unknown plan ids', async () => {
+    const res = await get('/available-units?plan=not-a-real-plan');
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toContain('text/html');
+    expect(await res.text()).toContain('rel="canonical" href="https://www.rentatexhibit.com/available-units"');
+  });
+
+  // -------------------------------------------------------------------------
   // Floor-plan landing pages (/floor-plans + /floor-plans/<slug>)
   // -------------------------------------------------------------------------
   it('serves the floor-plan hub and a plan page with their own prerendered HTML', async () => {

@@ -84,6 +84,26 @@ function collectLegacyRedirects(rootDir) {
 const legacyRedirects = collectLegacyRedirects(publicDir);
 console.log(`Loaded ${legacyRedirects.size} legacy 301 redirects from redirect stubs`);
 
+// ---------------------------------------------------------------------------
+// Legacy `?plan=<group id>` deep links to /available-units → single-hop 301
+// to the matching /floor-plans/<slug> landing page. The prerenderer writes
+// the id → path map (dist/plan-redirects.json) from the same data module the
+// client fallback redirect uses (src/pages/FloorPlans.tsx), so the two can
+// never disagree. Unknown ids fall through to the normal page. Missing map
+// (pre-regeneration dist) is non-fatal: the client fallback still redirects.
+// ---------------------------------------------------------------------------
+const planRedirectsPath = path.resolve(publicDir, '..', 'plan-redirects.json');
+let planRedirects = new Map();
+try {
+  planRedirects = new Map(Object.entries(JSON.parse(fs.readFileSync(planRedirectsPath, 'utf8'))));
+  console.log(`Loaded ${planRedirects.size} legacy ?plan= deep-link redirects from plan-redirects.json`);
+} catch (err) {
+  console.error(
+    `Warning: no plan-redirects.json at ${planRedirectsPath} (${err.code ?? err.message}) — ` +
+      'legacy /available-units?plan= links fall back to the client-side redirect.',
+  );
+}
+
 const knowledgeStub = path.join(publicDir, 'knowledge', 'not-found', 'index.html');
 const floorPlanStub = path.join(publicDir, 'floor-plans', 'not-found', 'index.html');
 const notFoundPage = fs.existsSync(path.join(publicDir, '404.html'))
@@ -314,6 +334,25 @@ app.use((req, res) => {
   const direct = path.join(publicDir, urlPath);
   if (direct.startsWith(publicDir) && fs.existsSync(direct) && fs.statSync(direct).isFile()) {
     return serveFile(req, res, direct, 200, urlPath);
+  }
+
+  // 2.4 Legacy `?plan=<known group id>` deep link on /available-units →
+  //     single-hop 301 to the matching /floor-plans/<slug> landing page
+  //     (checked before the trailing-slash redirect so the slash variant is
+  //     also one hop). The `plan` parameter is consumed; any other query
+  //     parameters (e.g. ?ada=1) ride along. Unknown ids fall through.
+  {
+    const bare = urlPath !== '/' && urlPath.endsWith('/') ? urlPath.replace(/\/+$/, '') : urlPath;
+    if (bare === '/available-units' && req.url.includes('?')) {
+      const params = new URLSearchParams(req.url.slice(req.url.indexOf('?') + 1));
+      const target = planRedirects.get(params.get('plan') ?? '');
+      if (target) {
+        params.delete('plan');
+        const rest = params.toString();
+        res.set('Cache-Control', 'public, max-age=3600');
+        return res.redirect(301, rest ? `${target}?${rest}` : target);
+      }
+    }
   }
 
   // 2.5 Legacy URL → single-hop 301 to the canonical destination. Checked

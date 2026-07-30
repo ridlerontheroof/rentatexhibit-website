@@ -21,6 +21,7 @@ import { KnowledgeArticle } from './pages/KnowledgeArticle';
 import {
   FLOOR_PLAN_PAGES,
   FLOOR_PLAN_PAGE_PATHS as FLOOR_PLAN_PATHS_INTERNAL,
+  PLAN_DEEP_LINK_REDIRECTS as PLAN_DEEP_LINK_REDIRECTS_INTERNAL,
   buildFloorPlanSeoModel,
   floorPlanH1,
   floorPlanDescription,
@@ -76,6 +77,13 @@ export const KNOWLEDGE_PATHS: string[] = KNOWLEDGE_ARTICLES.map((a) => knowledge
 // data/floorPlanPages.ts). Slugs are code-derived, so the artifact.toml
 // rewrite parity guard in scripts/prerender.mjs pins them.
 export const FLOOR_PLAN_PAGE_PATHS: string[] = FLOOR_PLAN_PATHS_INTERNAL;
+/**
+ * Legacy `?plan=<group id>` → /floor-plans/<slug> map, exported so the
+ * prerenderer can write dist/plan-redirects.json for the production
+ * server's single-hop 301 (same map the client fallback redirect uses).
+ */
+export const PLAN_DEEP_LINK_REDIRECTS: Record<string, string> =
+  PLAN_DEEP_LINK_REDIRECTS_INTERNAL;
 export const FLOOR_PLAN_PAGE_META: Array<{ path: string; title: string; description: string }> =
   FLOOR_PLAN_PAGES.map((fp) => ({
     path: floorPlanPagePath(fp.slug),

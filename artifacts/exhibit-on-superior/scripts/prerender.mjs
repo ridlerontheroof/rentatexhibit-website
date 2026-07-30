@@ -37,7 +37,27 @@ const {
   KNOWLEDGE_META,
   FLOOR_PLAN_PAGE_PATHS,
   FLOOR_PLAN_PAGE_META,
+  PLAN_DEEP_LINK_REDIRECTS,
 } = await import(pathToFileURL(serverEntry).href);
+
+// Legacy `?plan=<group id>` deep links to /available-units: write the id →
+// /floor-plans/<slug> map next to dist/public so the production server
+// (server/index.mjs) can answer them with a single-hop 301. Kept OUTSIDE
+// dist/public on purpose — it configures the server, it is not a page asset.
+{
+  const planRedirects = PLAN_DEEP_LINK_REDIRECTS ?? {};
+  if (Object.keys(planRedirects).length === 0) {
+    throw new Error(
+      'Prerender aborted: PLAN_DEEP_LINK_REDIRECTS is empty — legacy ?plan= deep links ' +
+        'would stop 301ing to their floor-plan landing pages.',
+    );
+  }
+  const planRedirectsPath = path.join(publicDir, '..', 'plan-redirects.json');
+  await fs.writeFile(planRedirectsPath, JSON.stringify(planRedirects, null, 2) + '\n');
+  console.log(
+    `Plan deep-link redirect map written (${Object.keys(planRedirects).length} ids) → dist/plan-redirects.json`,
+  );
+}
 
 // Snapshot freshness guard: per-unit pages, their sitemap entries, and the
 // /available-units Apartment/Offer nodes are all generated from the baked

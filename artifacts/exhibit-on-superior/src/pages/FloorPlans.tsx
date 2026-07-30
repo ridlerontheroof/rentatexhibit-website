@@ -10,8 +10,12 @@ import { SplitHeadline } from '../components/SplitHeadline';
 import { AvailableUnits } from '../components/floor-plans/AvailableUnits';
 import { useAvailability } from '../hooks/use-availability';
 import { SmartImg } from '../components/SmartImg';
-import { planGroups, resolveDeepLink, groupKey } from '../data/floorPlans';
-import { FLOOR_PLAN_PAGES, floorPlanPagePath } from '../data/floorPlanPages';
+import { planGroups, resolveDeepLink } from '../data/floorPlans';
+import {
+  FLOOR_PLAN_PAGES,
+  floorPlanPagePath,
+  PLAN_DEEP_LINK_REDIRECTS,
+} from '../data/floorPlanPages';
 import { unitAvailabilityJsonLd } from '../data/unitJsonLd';
 import { ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
 
@@ -34,12 +38,15 @@ function readAdaFromUrl(): boolean {
  * The floor-plan landing page for a legacy `?plan=<group id>` deep link.
  * Groups with several plan sheets (floor-band variants) resolve to the
  * group's first sheet — the same card order the /floor-plans hub lists.
+ *
+ * Production answers these deep links with a server-side 301 built from the
+ * SAME map (PLAN_DEEP_LINK_REDIRECTS via dist/plan-redirects.json), so this
+ * client redirect is the dev/preview fallback and can never disagree with it.
  */
 export function landingPathForPlanId(planId: string | null): string | null {
   const id = resolveDeepLink(planGroups, planId);
   if (!id) return null;
-  const page = FLOOR_PLAN_PAGES.find((fp) => groupKey(fp.plan) === id);
-  return page ? floorPlanPagePath(page.slug) : null;
+  return PLAN_DEEP_LINK_REDIRECTS[id] ?? null;
 }
 
 // Baked fallback only — the component swaps in the live feed's units below so

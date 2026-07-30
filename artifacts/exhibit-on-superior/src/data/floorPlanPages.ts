@@ -142,6 +142,20 @@ export function filterFloorPlanPages(
   return pages.filter((fp) => pageMatchesFilters(fp, search, filters));
 }
 
+/**
+ * Legacy `?plan=<group id>` deep-link redirect map: every plan-group id →
+ * its landing page path (the group's FIRST sheet, matching the hub's card
+ * order). Feeds both the client fallback redirect (pages/FloorPlans.tsx)
+ * and the production server's single-hop 301 (server/index.mjs, via the
+ * plan-redirects.json the prerenderer writes into dist/).
+ */
+export const PLAN_DEEP_LINK_REDIRECTS: Record<string, string> = Object.fromEntries(
+  planGroups.flatMap((g) => {
+    const page = FLOOR_PLAN_PAGES.find((fp) => groupKey(fp.plan) === g.id);
+    return page ? [[g.id, floorPlanPagePath(page.slug)]] : [];
+  }),
+);
+
 export function floorPlanPage(slug: string): FloorPlanPage | null {
   return FLOOR_PLAN_PAGES.find((fp) => fp.slug === slug) ?? null;
 }
