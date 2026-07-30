@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { Seo } from '../components/Seo';
 import { trackLead } from '../lib/analytics';
 import { tourUrlForListing } from '../components/floor-plans/UnitGalleryLightbox';
-import { formatRent, groupForUnit } from '../components/floor-plans/AvailableUnits';
+import { UnitRow } from '../components/floor-plans/AvailableUnits';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { HoneypotField, useBotGuard } from '../components/BotGuard';
@@ -147,70 +147,68 @@ export function ScheduleTour() {
 
         <QuickAnswer path="/schedule-a-tour" />
 
-        {/* Primary path: book a tour from a specific residence so the
-            request lands in the leasing system attached to that unit. */}
+        {/* Primary path: pick a specific available residence and book a tour
+            straight from its card, so the request lands in the leasing system
+            attached to that exact unit. Reuses the Available Units card so the
+            two surfaces stay identical. Reads from the same availability hook
+            (baked snapshot + live refresh). */}
         {availableUnits.length > 0 && (
-          <section className="py-16 px-4 bg-muted">
+          <section id="available-units" className="py-16 px-4 bg-muted">
             <div className="container mx-auto max-w-5xl">
               <h2 className="text-3xl uppercase tracking-wider mb-3 text-center">
                 Pick the Residence You'd Like to See
               </h2>
               <p className="text-lg leading-relaxed mb-10 text-center max-w-2xl mx-auto">
                 Choose an available apartment and book your tour right from its
-                listing — the time you pick there goes straight onto our
-                calendar, attached to that exact home.
+                card — the time you pick goes straight onto our calendar,
+                attached to that exact home.
               </p>
-              <ul className="divide-y divide-border border border-border bg-white">
-                {availableUnits.map((u) => {
-                  const group = groupForUnit(u.unit);
-                  const rent = formatRent(u.rent);
+              <ul className="divide-y divide-border border border-border bg-white px-4 md:px-6">
+                {availableUnits.map((u, rowIndex) => {
                   const tourUrl = u.listingUrl ? tourUrlForListing(u.listingUrl) : null;
                   return (
-                    <li
+                    <UnitRow
                       key={u.unit}
-                      className="flex flex-wrap items-center justify-between gap-4 p-5"
-                    >
-                      <div>
-                        <p className="uppercase tracking-wider font-semibold">
-                          Apartment {u.unit}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {[group?.typeLabel, rent].filter(Boolean).join(' · ')}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Link
-                          href={`/available-units/${u.unit}`}
-                          // Accessible name starts with the visible text ("Apt
-                          // NNNN details") so voice-control users can speak what
-                          // they see (WCAG 2.5.3 label-in-name). Unique visible
-                          // text also satisfies scanners that key on link text
-                          // rather than accessible name.
-                          aria-label={`Apt ${u.unit} details`}
-                          className="border border-border px-4 py-2 text-xs uppercase tracking-wider transition-colors hover:border-primary hover:text-primary"
-                        >
-                          Apt {u.unit} details
-                        </Link>
-                        {tourUrl ? (
+                      unit={u}
+                      eager={rowIndex === 0}
+                      actions={
+                        <>
                           <Link
-                            href={`/schedule-showing?unit=${u.unit}`}
-                            aria-label={`Schedule a tour of apartment ${u.unit}`}
-                            className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                            href={`/available-units/${u.unit}`}
+                            // Accessible name starts with the visible text
+                            // ("View details") so voice-control users can speak
+                            // what they see (WCAG 2.5.3 label-in-name).
+                            aria-label={`View details for apartment ${u.unit}`}
+                            className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
                           >
-                            Schedule a tour
+                            View details
                           </Link>
-                        ) : (
-                          <a
-                            href="#request-a-showing"
-                            onClick={() => setValue('unit', u.unit)}
-                            aria-label={`Schedule a tour of apartment ${u.unit}`}
-                            className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-                          >
-                            Schedule a tour
-                          </a>
-                        )}
-                      </div>
-                    </li>
+                          {tourUrl ? (
+                            // Posted units book through the on-site real-time
+                            // scheduler (Exhibit-branded, real AppFolio times),
+                            // pre-selected for this unit.
+                            <Link
+                              href={`/schedule-showing?unit=${u.unit}`}
+                              aria-label={`Book this tour of apartment ${u.unit}`}
+                              className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                            >
+                              Book this tour
+                            </Link>
+                          ) : (
+                            // Not-yet-posted units have no live scheduler; jump
+                            // to the request form with this apartment prefilled.
+                            <a
+                              href="#request-a-showing"
+                              onClick={() => setValue('unit', u.unit)}
+                              aria-label={`Book this tour of apartment ${u.unit}`}
+                              className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                            >
+                              Book this tour
+                            </a>
+                          )}
+                        </>
+                      }
+                    />
                   );
                 })}
               </ul>
@@ -243,15 +241,38 @@ export function ScheduleTour() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div>
+                {/* When units are posted above, the form is the demoted
+                    fallback ("don't see the right fit"). With zero availability
+                    the cards section is absent, so the form leads and the copy
+                    reads as the primary path instead. */}
+                {availableUnits.length > 0 ? (
+                  <div className="mb-10 text-center max-w-2xl mx-auto">
+                    <h2 className="text-3xl uppercase tracking-wider mb-3">
+                      Don't See the Right Fit Yet?
+                    </h2>
+                    <p className="text-lg leading-relaxed">
+                      Tell us what you're looking for and a member of our leasing
+                      team will arrange a showing with you directly — including
+                      residences that aren't posted online yet.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mb-10 text-center max-w-2xl mx-auto">
+                    <h2 className="text-3xl uppercase tracking-wider mb-3">
+                      Tell Us What You're Looking For
+                    </h2>
+                    <p className="text-lg leading-relaxed">
+                      Share your move-in date and floor-plan preference and a
+                      member of our leasing team will reach out to arrange a
+                      showing as soon as the right residence opens up.
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Left Column - Info */}
                 <div>
-                  <p className="text-lg leading-relaxed mb-8">
-                    Don't see the right fit above, or not sure which residence
-                    you want to see yet? Tell us what you're looking for and a
-                    member of our leasing team will arrange a showing with you
-                    directly.
-                  </p>
 
                   <div className="bg-dark-section text-white p-6 mb-8">
                     <h3 className="text-lg uppercase tracking-wider mb-3">Leasing Office</h3>
@@ -491,6 +512,7 @@ export function ScheduleTour() {
                       {createLead.isPending ? 'Submitting...' : 'Request Tour'}
                     </button>
                   </form>
+                </div>
                 </div>
               </div>
             )}

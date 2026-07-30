@@ -178,6 +178,98 @@ export function bedBathLabel(u: AvailableUnit, group: PlanGroup | null): string 
 }
 
 /**
+ * One available-unit card: photo thumbnail, unit number + rent, the bed/bath/
+ * sqft/pets/availability chips, and marketing headline. The action buttons are
+ * supplied by the caller so the same summarized card can back both the
+ * /available-units strip (View details · Schedule a tour · Apply now) and the
+ * unit-first /schedule-a-tour page (View details · Book this tour). Shared so
+ * the two surfaces never drift apart.
+ */
+export function UnitRow({
+  unit: u,
+  eager = false,
+  actions,
+}: {
+  unit: AvailableUnit;
+  eager?: boolean;
+  actions: React.ReactNode;
+}) {
+  const group = groupForUnit(u.unit);
+  const rent = formatRent(u.rent);
+  // Floor-plan database is authoritative over the AppFolio feed — see data/unitSqft.ts.
+  const sqft = resolveUnitSqft(u);
+  return (
+    <li className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
+      {/* On mobile: photo and Apt/rent share the top row and the
+          detail chips span full width beneath, so no gap is left
+          beside the photo. lg:contents dissolves the wrappers on
+          desktop (lg+) so the row layout there is unchanged. */}
+      <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 lg:contents">
+        {u.photoUrl &&
+          (u.details.length > 0 ? (
+            <Link
+              href={`/available-units/${u.unit}`}
+              className="block shrink-0 cursor-pointer self-start overflow-hidden border border-border lg:self-center"
+              aria-label={`View details for apartment ${u.unit}`}
+            >
+              <UnitThumb photoUrl={u.photoUrl} unit={u.unit} eager={eager} />
+            </Link>
+          ) : (
+            <span className="block shrink-0 self-start overflow-hidden border border-border lg:self-center">
+              <UnitThumb photoUrl={u.photoUrl} unit={u.unit} eager={eager} />
+            </span>
+          ))}
+        <div className="contents lg:flex lg:flex-1 lg:flex-wrap lg:items-start lg:gap-x-6 lg:gap-y-1">
+          {/* Unit number stacked above rent so pricing lines up in
+              the same spot on every row. */}
+          <span className="flex w-28 shrink-0 flex-col">
+            <Link
+              href={`/available-units/${u.unit}`}
+              className="text-lg font-semibold uppercase tracking-wider text-foreground transition-colors hover:text-primary"
+            >
+              Apt {u.unit}
+            </Link>
+            {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
+          </span>
+          <span className="col-span-2 flex min-w-0 flex-col gap-y-1 pt-0.5 lg:col-auto lg:flex-1">
+            <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
+                {bedBathLabel(u, group).split(' · ')[0] ?? ''}
+              </span>
+              {(u.bathrooms ?? group?.baths) != null && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Bath className="h-4 w-4 text-primary" aria-hidden="true" />
+                  {u.bathrooms ?? group?.baths} Bath
+                </span>
+              )}
+              {sqft !== null && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Ruler className="h-4 w-4 text-primary" aria-hidden="true" />
+                  {sqft.toLocaleString()} sq ft
+                </span>
+              )}
+              {petsLabel(u) && (
+                <span className="inline-flex items-center gap-1.5">
+                  <PawPrint className="h-4 w-4 text-primary" aria-hidden="true" />
+                  {petsLabel(u)}
+                </span>
+              )}
+              <span>{formatAvailable(u.availableOn)}</span>
+            </span>
+            {u.marketingTitle && (
+              <span className="text-sm text-muted-foreground">{u.marketingTitle}</span>
+            )}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex shrink-0 flex-wrap items-center gap-3">{actions}</div>
+    </li>
+  );
+}
+
+/**
  * Live "available now" strip fed by AppFolio. Paints instantly from the
  * build-time snapshot (via useAvailability's placeholderData) and is silently
  * replaced by live data; when no snapshot exists it shows skeleton rows while
@@ -219,143 +311,70 @@ export function AvailableUnits() {
 
           <ul className="divide-y divide-border">
             {rows.map((u, rowIndex) => {
-              const rent = formatRent(u.rent);
-              // Floor-plan database is authoritative over the AppFolio feed — see data/unitSqft.ts.
-              const sqft = resolveUnitSqft(u);
+              // Posted units link to their own AppFolio listing's showing
+              // scheduler and application (same targets as the buttons on
+              // AppFolio's hosted listing page), so tour requests and
+              // applications arrive tied to this exact unit. Units not yet
+              // posted fall back to the general application link / tour page.
+              const tourUrl = u.listingUrl ? tourUrlForListing(u.listingUrl) : null;
               return (
-                <li
+                <UnitRow
                   key={u.unit}
-                  className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between"
-                >
-                  {/* On mobile: photo and Apt/rent share the top row and the
-                      detail chips span full width beneath, so no gap is left
-                      beside the photo. lg:contents dissolves the wrappers on
-                      desktop (lg+) so the row layout there is unchanged. */}
-                  <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 lg:contents">
-                  {u.photoUrl &&
-                    (u.details.length > 0 ? (
-                      <Link
-                        href={`/available-units/${u.unit}`}
-                        className="block shrink-0 cursor-pointer self-start overflow-hidden border border-border lg:self-center"
-                        aria-label={`View details for apartment ${u.unit}`}
-                      >
-                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} eager={rowIndex === 0} />
-                      </Link>
-                    ) : (
-                      <span className="block shrink-0 self-start overflow-hidden border border-border lg:self-center">
-                        <UnitThumb photoUrl={u.photoUrl} unit={u.unit} eager={rowIndex === 0} />
-                      </span>
-                    ))}
-                  <div className="contents lg:flex lg:flex-1 lg:flex-wrap lg:items-start lg:gap-x-6 lg:gap-y-1">
-                    {/* Unit number stacked above rent so pricing lines up in
-                        the same spot on every row. */}
-                    <span className="flex w-28 shrink-0 flex-col">
-                      <Link
-                        href={`/available-units/${u.unit}`}
-                        className="text-lg font-semibold uppercase tracking-wider text-foreground transition-colors hover:text-primary"
-                      >
-                        Apt {u.unit}
-                      </Link>
-                      {rent && <span className="text-lg font-semibold text-primary">{rent}</span>}
-                    </span>
-                    <span className="col-span-2 flex min-w-0 flex-col gap-y-1 pt-0.5 lg:col-auto lg:flex-1">
-                      <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                        <span className="inline-flex items-center gap-1.5">
-                          <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
-                          {bedBathLabel(u, u.group).split(' · ')[0] ?? ''}
-                        </span>
-                        {(u.bathrooms ?? u.group?.baths) != null && (
-                          <span className="inline-flex items-center gap-1.5">
-                            <Bath className="h-4 w-4 text-primary" aria-hidden="true" />
-                            {u.bathrooms ?? u.group?.baths} Bath
-                          </span>
-                        )}
-                        {sqft !== null && (
-                          <span className="inline-flex items-center gap-1.5">
-                            <Ruler className="h-4 w-4 text-primary" aria-hidden="true" />
-                            {sqft.toLocaleString()} sq ft
-                          </span>
-                        )}
-                        {petsLabel(u) && (
-                          <span className="inline-flex items-center gap-1.5">
-                            <PawPrint className="h-4 w-4 text-primary" aria-hidden="true" />
-                            {petsLabel(u)}
-                          </span>
-                        )}
-                        <span>{formatAvailable(u.availableOn)}</span>
-                      </span>
-                      {u.marketingTitle && (
-                        <span className="text-sm text-muted-foreground">{u.marketingTitle}</span>
+                  unit={u}
+                  eager={rowIndex === 0}
+                  actions={
+                    <>
+                      {u.details.length > 0 && (
+                        <Link
+                          href={`/available-units/${u.unit}`}
+                          // Accessible name starts with the visible text ("Apt
+                          // NNNN details") so voice-control users can speak what
+                          // they see (WCAG 2.5.3 label-in-name).
+                          aria-label={`Apt ${u.unit} details${bedBathLabel(u, u.group) ? ` (${bedBathLabel(u, u.group)})` : ''}`}
+                          className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                        >
+                          {/* Descriptive anchor text: crawlers/AI use it to label
+                              the per-unit page this row links to. */}
+                          Apt {u.unit} details
+                        </Link>
                       )}
-                    </span>
-                  </div>
-                  </div>
-
-                  <div className="flex shrink-0 flex-wrap items-center gap-3">
-                    {u.details.length > 0 && (
+                      {u.videoUrl && (
+                        <a
+                          href={u.videoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Video tour of apartment ${u.unit}`}
+                          className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                        >
+                          Video tour
+                        </a>
+                      )}
+                      {/* Posted units book through the on-site scheduler
+                          (Exhibit-branded, real AppFolio showing times). */}
                       <Link
-                        href={`/available-units/${u.unit}`}
-                        // Accessible name starts with the visible text ("Apt
-                        // NNNN details") so voice-control users can speak what
-                        // they see (WCAG 2.5.3 label-in-name).
-                        aria-label={`Apt ${u.unit} details${bedBathLabel(u, u.group) ? ` (${bedBathLabel(u, u.group)})` : ''}`}
-                        className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                        href={
+                          tourUrl
+                            ? `/schedule-showing?unit=${u.unit}`
+                            : `/schedule-a-tour?unit=${u.unit}`
+                        }
+                        aria-label={`Schedule a tour of apartment ${u.unit}`}
+                        className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
                       >
-                        {/* Descriptive anchor text: crawlers/AI use it to label
-                            the per-unit page this row links to. */}
-                        Apt {u.unit} details
+                        Schedule a tour
                       </Link>
-                    )}
-                    {u.videoUrl && (
-                      <a
-                        href={u.videoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Video tour of apartment ${u.unit}`}
-                        className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                      {/* Applications route through the Exhibit-branded
+                          application-start step (lead capture + hand-off
+                          to the unit's secure AppFolio application). */}
+                      <Link
+                        href={`/start-application?unit=${u.unit}`}
+                        aria-label={`Apply now for apartment ${u.unit}`}
+                        className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                       >
-                        Video tour
-                      </a>
-                    )}
-                    {(() => {
-                      // Posted units link to their own AppFolio listing's
-                      // showing scheduler and application (same targets as the
-                      // buttons on AppFolio's hosted listing page), so tour
-                      // requests and applications arrive tied to this exact
-                      // unit. Units not yet posted fall back to the general
-                      // application link / tour page.
-                      const tourUrl = u.listingUrl ? tourUrlForListing(u.listingUrl) : null;
-                      return (
-                        <>
-                          {/* Posted units book through the on-site scheduler
-                              (Exhibit-branded, real AppFolio showing times). */}
-                          <Link
-                            href={
-                              tourUrl
-                                ? `/schedule-showing?unit=${u.unit}`
-                                : `/schedule-a-tour?unit=${u.unit}`
-                            }
-                            aria-label={`Schedule a tour of apartment ${u.unit}`}
-                            className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
-                          >
-                            Schedule a tour
-                          </Link>
-                          {/* Applications route through the Exhibit-branded
-                              application-start step (lead capture + hand-off
-                              to the unit's secure AppFolio application). */}
-                          <Link
-                            href={`/start-application?unit=${u.unit}`}
-                            aria-label={`Apply now for apartment ${u.unit}`}
-                            className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-                          >
-                            Apply now
-                          </Link>
-                        </>
-                      );
-                    })()}
-                  </div>
-
-                </li>
+                        Apply now
+                      </Link>
+                    </>
+                  }
+                />
               );
             })}
           </ul>
