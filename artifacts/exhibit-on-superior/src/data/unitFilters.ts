@@ -147,6 +147,114 @@ export function filterUnits<T extends FilterableUnit>(
   return units.filter((u) => unitMatchesFilters(u, state, today));
 }
 
+// ---------------------------------------------------------------------------
+// URL round-trip (shareable/bookmarkable filtered views).
+//
+// Same pattern as the floor-plans section's ?beds/?floors/?sqft params on this
+// page, with distinct names so the two filter sets never collide: `movein`,
+// `ubeds`, `ubaths`, and `usqft=min-max`. Pure string/URLSearchParams work only
+// — the component owns window.location and history.replaceState — so these
+// stay testable in the node environment.
+//
+// SEO note: nothing ever links to a filtered URL, the canonical is untouched,
+// and the prerender never reads these params (the filter row itself only
+// mounts after hydration), so no new crawlable variants are created.
+// ---------------------------------------------------------------------------
+
+/** The query params owned by the unit filters (deleted when at defaults). */
+export const UNIT_FILTER_PARAMS = ['movein', 'ubeds', 'ubaths', 'usqft'] as const;
+
+/** Bedroom-type labels that can legitimately appear (plan sheet + "N Bed"). */
+function isValidBedsLabel(label: string): boolean {
+  if (/^\d{1,2} Bed$/.test(label)) return true;
+  if (label === 'Studio') return true;
+  return planGroups.some((g) => g.beds === 0 && g.typeLabel === label);
+}
+
+function moveInToParam(f: MoveInFilter): string | null {
+  switch (f.kind) {
+    case 'any':
+      return null;
+    case 'now':
+      return 'now';
+    case 'days':
+      return String(f.days);
+    case 'date':
+      // An unfinished "By a date…" pick (empty date) is not a shareable state.
+      return /^\d{4}-\d{2}-\d{2}$/.test(f.date.trim()) ? f.date.trim() : null;
+  }
+}
+
+function moveInFromParam(raw: string): MoveInFilter | null {
+  const value = raw.trim();
+  if (value === 'now') return { kind: 'now' };
+  if (/^\d{1,3}$/.test(value)) {
+    const days = Number(value);
+    if (days > 0) return { kind: 'days', days };
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return { kind: 'date', date: value };
+  return null;
+}
+
+/**
+ * Parse the unit-filter params out of a query string. Unknown or malformed
+ * values fall back to the default (no filter) so a mangled shared link still
+ * shows the full list rather than a confusing empty state.
+ */
+export function readUnitFiltersFromParams(search: string): UnitFilterState {
+  const params = new URLSearchParams(search);
+  const state: UnitFilterState = { ...DEFAULT_UNIT_FILTERS };
+
+  const movein = params.get('movein');
+  if (movein) state.moveIn = moveInFromParam(movein) ?? state.moveIn;
+
+  const ubeds = params.get('ubeds');
+  if (ubeds && isValidBedsLabel(ubeds.trim())) state.beds = ubeds.trim();
+
+  const ubaths = params.get('ubaths');
+  if (ubaths) {
+    const n = Number(ubaths.trim());
+    if (Number.isFinite(n) && n > 0 && n <= 10 && Number.isInteger(n * 2)) state.baths = n;
+  }
+
+  const usqft = params.get('usqft');
+  if (usqft) {
+    const m = /^(\d*)-(\d*)$/.exec(usqft.trim());
+    if (m && (m[1] !== '' || m[2] !== '')) {
+      const min = m[1] === '' ? null : Number(m[1]);
+      const max = m[2] === '' ? null : Number(m[2]);
+      if (min === null || max === null || min <= max) {
+        state.sqftMin = min;
+        state.sqftMax = max;
+      }
+    }
+  }
+
+  return state;
+}
+
+/**
+ * Write the unit-filter state into an existing URLSearchParams (mutating it),
+ * leaving every other param — the floor-plans section's ?beds/?floors/?sqft,
+ * ?plan, ?ada, etc. — untouched. Defaults delete their param so the no-filter
+ * URL stays exactly the clean canonical one.
+ */
+export function writeUnitFiltersToParams(state: UnitFilterState, params: URLSearchParams): void {
+  const movein = moveInToParam(state.moveIn);
+  if (movein) params.set('movein', movein);
+  else params.delete('movein');
+
+  if (state.beds !== null) params.set('ubeds', state.beds);
+  else params.delete('ubeds');
+
+  if (state.baths !== null) params.set('ubaths', String(state.baths));
+  else params.delete('ubaths');
+
+  if (state.sqftMin !== null || state.sqftMax !== null) {
+    params.set('usqft', `${state.sqftMin ?? ''}-${state.sqftMax ?? ''}`);
+  } else params.delete('usqft');
+}
+
 /** Distinct bedroom-type labels present in the live list, smallest first. */
 export function bedsOptions(units: FilterableUnit[]): string[] {
   const rank = (label: string) => {

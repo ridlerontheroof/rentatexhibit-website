@@ -11,6 +11,8 @@ import {
   bedsOptions,
   filterUnits,
   hasActiveUnitFilters,
+  readUnitFiltersFromParams,
+  writeUnitFiltersToParams,
   sqftBounds,
   unitBedsLabel,
   unitMatchesFilters,
@@ -140,5 +142,70 @@ describe('square footage (resolver-based)', () => {
   it('sqftBounds uses resolved values and ignores unresolvable units', () => {
     expect(sqftBounds([unit({ unit: '2705', sqft: 478 }), unit({ unit: '9999', sqft: 1200 })])).toEqual([450, 1200]);
     expect(sqftBounds([unit({ unit: '9999', sqft: null })])).toBeNull();
+  });
+});
+
+describe('URL round-trip (shareable filtered views)', () => {
+  const roundTrip = (s: UnitFilterState): UnitFilterState => {
+    const params = new URLSearchParams();
+    writeUnitFiltersToParams(s, params);
+    return readUnitFiltersFromParams(params.toString());
+  };
+
+  it('defaults write no params and read back as defaults', () => {
+    const params = new URLSearchParams();
+    writeUnitFiltersToParams(DEFAULT_UNIT_FILTERS, params);
+    expect(params.toString()).toBe('');
+    expect(readUnitFiltersFromParams('')).toEqual(DEFAULT_UNIT_FILTERS);
+  });
+
+  it('round-trips every filter kind', () => {
+    expect(roundTrip(state({ moveIn: { kind: 'now' } }))).toEqual(state({ moveIn: { kind: 'now' } }));
+    expect(roundTrip(state({ moveIn: { kind: 'days', days: 30 } }))).toEqual(
+      state({ moveIn: { kind: 'days', days: 30 } }),
+    );
+    expect(roundTrip(state({ moveIn: { kind: 'date', date: '2026-09-01' } }))).toEqual(
+      state({ moveIn: { kind: 'date', date: '2026-09-01' } }),
+    );
+    expect(roundTrip(state({ beds: 'Convertible', baths: 1.5, sqftMin: 500, sqftMax: 900 }))).toEqual(
+      state({ beds: 'Convertible', baths: 1.5, sqftMin: 500, sqftMax: 900 }),
+    );
+    expect(roundTrip(state({ sqftMin: 500 }))).toEqual(state({ sqftMin: 500 }));
+    expect(roundTrip(state({ sqftMax: 900 }))).toEqual(state({ sqftMax: 900 }));
+  });
+
+  it('an unfinished "By a date…" pick (empty date) is not written', () => {
+    const params = new URLSearchParams();
+    writeUnitFiltersToParams(state({ moveIn: { kind: 'date', date: '' } }), params);
+    expect(params.toString()).toBe('');
+  });
+
+  it('leaves unrelated params (floor-plans filters, plan pop-up) untouched', () => {
+    const params = new URLSearchParams('beds=studio,1br&floors=high&sqft=400-900&plan=a1&ada=1');
+    writeUnitFiltersToParams(state({ beds: '1 Bed', sqftMin: 600 }), params);
+    expect(params.get('beds')).toBe('studio,1br');
+    expect(params.get('floors')).toBe('high');
+    expect(params.get('sqft')).toBe('400-900');
+    expect(params.get('plan')).toBe('a1');
+    expect(params.get('ubeds')).toBe('1 Bed');
+    expect(params.get('usqft')).toBe('600-');
+    // Clearing back to defaults removes only the unit-filter params.
+    writeUnitFiltersToParams(DEFAULT_UNIT_FILTERS, params);
+    expect(params.get('ubeds')).toBeNull();
+    expect(params.get('usqft')).toBeNull();
+    expect(params.get('beds')).toBe('studio,1br');
+  });
+
+  it('malformed or unknown values fall back to no filter (full list, not empty state)', () => {
+    expect(readUnitFiltersFromParams('movein=soonish&ubeds=Penthouse&ubaths=abc&usqft=900-500')).toEqual(
+      DEFAULT_UNIT_FILTERS,
+    );
+    expect(readUnitFiltersFromParams('ubaths=1.3&usqft=-')).toEqual(DEFAULT_UNIT_FILTERS);
+    expect(readUnitFiltersFromParams('movein=0')).toEqual(DEFAULT_UNIT_FILTERS);
+  });
+
+  it('accepts valid marketing bed labels and "N Bed"', () => {
+    expect(readUnitFiltersFromParams('ubeds=Studio').beds).toBe('Studio');
+    expect(readUnitFiltersFromParams('ubeds=2%20Bed').beds).toBe('2 Bed');
   });
 });

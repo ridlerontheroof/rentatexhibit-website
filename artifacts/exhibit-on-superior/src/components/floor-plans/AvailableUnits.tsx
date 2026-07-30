@@ -13,6 +13,8 @@ import {
   DEFAULT_UNIT_FILTERS,
   filterUnits,
   hasActiveUnitFilters,
+  readUnitFiltersFromParams,
+  writeUnitFiltersToParams,
   type UnitFilterState,
 } from '../../data/unitFilters';
 
@@ -337,9 +339,6 @@ export function AvailableUnits() {
   // full list never contributes a >50 ms long task to mobile TBT.
   // SSR/prerender always renders every row for crawlers.
   const [allRows, setAllRows] = useState(import.meta.env.SSR);
-  useEffect(() => {
-    startTransition(() => setAllRows(true));
-  }, []);
 
   // Filter row state (move-in / beds / baths / sqft). The row itself mounts
   // only after hydration (inside the same transition that reveals the full
@@ -347,6 +346,33 @@ export function AvailableUnits() {
   // the default no-filter render is byte-identical to today's full list.
   const [filters, setFilters] = useState<UnitFilterState>(DEFAULT_UNIT_FILTERS);
   const filtersActive = hasActiveUnitFilters(filters);
+
+  // Shareable filters: a bookmarked/shared ?movein/?ubeds/?ubaths/?usqft link
+  // reproduces the filtered view. Read once inside the same post-hydration
+  // transition that reveals the full list — never during SSR or the hydration
+  // render — so the prerendered page can never depend on filter params.
+  useEffect(() => {
+    const fromUrl = readUnitFiltersFromParams(window.location.search);
+    startTransition(() => {
+      setAllRows(true);
+      if (hasActiveUnitFilters(fromUrl)) setFilters(fromUrl);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Round-trip filter changes back to the URL (replaceState — no history
+  // pile-up, canonical untouched), preserving every other param such as the
+  // floor-plans section's ?beds/?floors/?sqft and ?plan.
+  useEffect(() => {
+    if (!allRows || import.meta.env.SSR || probe !== null) return;
+    const params = new URLSearchParams(window.location.search);
+    writeUnitFiltersToParams(filters, params);
+    const query = params.toString();
+    const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`;
+    if (newUrl !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [filters, allRows, probe]);
 
   const rows = useMemo(() => {
     const units = probe === 'skeleton' ? [] : probe === 'mock' ? probeUnits : data?.units;
