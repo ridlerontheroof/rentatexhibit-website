@@ -100,6 +100,7 @@ export interface PageSeo {
 export const PAGE_SEO: Record<string, PageSeo> = {
   '/': {
     path: '/',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('home'),
     label: 'Exhibit On Superior',
     title: 'Luxury Apartments in River North Chicago | Exhibit On Superior',
@@ -134,6 +135,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/available-units': {
     path: '/available-units',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('floor-plans'),
     label: 'Available Units',
     title: 'Available Units & Floor Plans | Exhibit On Superior Chicago',
@@ -158,6 +160,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/floor-plans': {
     path: '/floor-plans',
+    dateModified: '2026-07-27',
     ogImage: ogCardUrl('floor-plans'),
     label: 'Floor Plans',
     title: 'Floor Plan Layouts, Studio to 3 Bedroom | Exhibit On Superior',
@@ -182,6 +185,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/photo-gallery': {
     path: '/photo-gallery',
+    dateModified: '2026-07-26',
     ogImage: ogCardUrl('photo-gallery'),
     label: 'Photo Gallery',
     title: 'Photo Gallery | Exhibit On Superior Chicago Apartments',
@@ -206,6 +210,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/virtual-tour': {
     path: '/virtual-tour',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('virtual-tour'),
     label: 'Virtual Tour',
     title: 'Virtual Tours | Exhibit On Superior Apartments Chicago',
@@ -356,6 +361,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/apartment-guide': {
     path: '/apartment-guide',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('apartment-guide'),
     label: 'Apartment Guide',
     title: 'Apartment Guide: Layouts, Finishes & Views | Exhibit On Superior',
@@ -491,6 +497,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/application-guide': {
     path: '/application-guide',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('application-guide'),
     label: 'Application Guide',
     title: 'Application & Qualification Guide | Exhibit On Superior',
@@ -530,6 +537,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/faq': {
     path: '/faq',
+    dateModified: '2026-07-28',
     ogImage: ogCardUrl('faq'),
     label: 'FAQ',
     title: 'Frequently Asked Questions | Exhibit On Superior Chicago',
@@ -541,6 +549,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/knowledge': {
     path: '/knowledge',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('knowledge'),
     label: 'Knowledge Center',
     title: 'Knowledge Center: Renter Questions Answered | Exhibit On Superior',
@@ -552,6 +561,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/contact-us': {
     path: '/contact-us',
+    dateModified: '2026-07-26',
     ogImage: ogCardUrl('contact-us'),
     label: 'Contact Us',
     title: 'Contact Exhibit On Superior | River North Chicago Apartments',
@@ -574,6 +584,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/map-directions': {
     path: '/map-directions',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('map-directions'),
     label: 'Map + Directions',
     title: 'Map & Directions | Exhibit On Superior River North Chicago',
@@ -594,6 +605,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/residents': {
     path: '/residents',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('residents'),
     label: 'Residents',
     title: 'Resident Portal & Resources | Exhibit On Superior Chicago',
@@ -618,6 +630,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/schedule-a-tour': {
     path: '/schedule-a-tour',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('schedule-a-tour'),
     label: 'Schedule a Tour',
     title: 'Schedule a Tour | Exhibit On Superior River North Chicago',
@@ -638,6 +651,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/about': {
     path: '/about',
+    dateModified: '2026-07-27',
     ogImage: ogCardUrl('about'),
     label: 'About',
     title: 'About Exhibit On Superior | River North Chicago Apartments',
@@ -662,6 +676,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/reviews': {
     path: '/reviews',
+    dateModified: '2026-07-30',
     ogImage: ogCardUrl('reviews'),
     label: 'Reviews',
     title: 'Resident Reviews | Exhibit On Superior River North Chicago',
