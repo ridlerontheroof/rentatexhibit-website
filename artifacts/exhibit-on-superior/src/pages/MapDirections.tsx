@@ -22,7 +22,7 @@ export function MapDirections() {
       <div>
         <PageHero
           image="/images/image-085-30-south-kis7bz.jpg"
-          alt="Map + Directions | Exhibit On Superior in Chicago, Illinois"
+          alt="Panoramic aerial view of the Chicago downtown skyline from River North near Exhibit On Superior"
           titleScript="Driving Directions"
           title="To Exhibit On Superior"
           subtitle="Map + Directions"

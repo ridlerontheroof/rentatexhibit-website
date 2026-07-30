@@ -33,7 +33,7 @@ export function ApplicationGuide() {
       <div>
         <PageHero
           image="/images/image-003-gettyimages-1216663469-cc9uxz.jpg"
-          alt="Application and Qualification Guide | Exhibit On Superior in Chicago, Illinois"
+          alt="Minimalist bedroom with white bedding, pendant light, and indoor plants at Exhibit On Superior"
           titleScript="Make It Official"
           title="Application & Qualification Guide"
           subtitle="Application Guide"

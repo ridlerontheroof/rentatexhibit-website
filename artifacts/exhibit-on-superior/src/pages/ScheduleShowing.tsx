@@ -239,7 +239,7 @@ export function ScheduleShowing() {
       <div>
         <PageHero
           image="/images/image-087-012417-5548-ocwsdh.jpg"
-          alt="Schedule a Showing | Exhibit On Superior in Chicago, Illinois"
+          alt="Styled apartment living room with leather daybed and open wood shelving at Exhibit On Superior in River North Chicago"
           titleScript="Pick Your Time"
           title={unit ? `Tour Apartment ${unit}` : 'Tour Exhibit'}
           subtitle="Schedule a Showing"
