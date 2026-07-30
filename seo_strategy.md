@@ -6,9 +6,13 @@ Exhibit On Superior (`https://www.rentatexhibit.com`) is a luxury apartment comm
 ## In scope
 - All public marketing pages: Home, Available Units & Floor Plans, Photo Gallery, Virtual Tour, Amenities, Pet Friendly, Neighborhood, Artist-in-Residence (now redirects to /), Contact Us, Map & Directions, Schedule a Tour, Reviews
 - Residents page (public but utility-focused)
+- Privacy Policy (intentionally indexed — discoverable privacy policy is a trust signal; see seo.ts comment ~line 738)
+- Knowledge Center hub and all knowledge articles
+- Floor Plan hub and all floor-plan landing pages
 
 ## Out of scope
-- Privacy Policy and Accessibility Statement (intentionally `noindex`'d in source)
+- Accessibility Statement (intentionally `noindex`'d in source; `noindex: true` at seo.ts line 750)
+- `/schedule-showing` and `/start-application` (intentionally `noindex`'d in source — utility pages, not conversion landing pages)
 - Authenticated dashboards or admin pages (none present)
 - `/available-units/:unit` detail pages (client-only, `noindex` in source)
 
@@ -29,5 +33,6 @@ Exhibit On Superior (`https://www.rentatexhibit.com`) is a luxury apartment comm
 ## Crawler assumptions
 - Static HTML (prerendered at build time) is served to all crawlers — Googlebot, social bots, and AI crawlers all receive full page content in the initial HTML response
 - No Cloudflare proxy configured in source
-- robots.txt: allows all, references sitemap at `https://www.rentatexhibit.com/sitemap.xml`
-- llms.txt: present at `/llms.txt`, links to canonical `/available-units` (fixed as of last scan)
+- robots.txt: allows all (including all major AI crawlers explicitly), references sitemap at `https://www.rentatexhibit.com/sitemap.xml`
+- llms.txt: present at `/llms.txt`, references `/llms-full.txt` for the full dynamic page catalog (build-generated; not a committed source file)
+- Sitemap lastmod: computed from SHA-256 hash of each page's markdown twin — advances only when content actually changes
