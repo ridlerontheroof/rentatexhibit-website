@@ -170,7 +170,7 @@ export function Home() {
             <div className="text-center mt-12">
               <Link href="/photo-gallery" className="btn-gold-outline inline-flex items-center gap-2">
                 Photo Gallery
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </Link>
             </div>
           </div>
@@ -193,7 +193,7 @@ export function Home() {
                 </p>
                 <Link href="/neighborhood" className="btn-gold-outline inline-flex items-center gap-2">
                   Explore The Neighborhood
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Link>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -232,13 +232,13 @@ export function Home() {
             <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" className="mb-6" />
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
               <div className="flex items-center gap-2">
-                <Phone className="w-5 h-5 text-primary" />
+                <Phone className="w-5 h-5 text-primary" aria-hidden="true" />
                 <a href="tel:312-450-0635" className="text-lg hover:text-primary transition-colors">
                   312-450-0635
                 </a>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
+                <MapPin className="w-5 h-5 text-primary" aria-hidden="true" />
                 <span className="text-lg">
                   165 W Superior St, Chicago, IL 60654
                 </span>

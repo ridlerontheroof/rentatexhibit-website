@@ -117,7 +117,7 @@ export function ContactUs() {
                 <div className="space-y-6 mb-8">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-6 h-6" />
+                      <Phone className="w-6 h-6" aria-hidden="true" />
                     </div>
                     <div>
                       <h3 className="text-lg uppercase tracking-wider mb-1">Phone</h3>
@@ -129,7 +129,7 @@ export function ContactUs() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-6 h-6" />
+                      <Mail className="w-6 h-6" aria-hidden="true" />
                     </div>
                     <div>
                       <h3 className="text-lg uppercase tracking-wider mb-1">Email</h3>
@@ -141,7 +141,7 @@ export function ContactUs() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-6 h-6" />
+                      <MapPin className="w-6 h-6" aria-hidden="true" />
                     </div>
                     <div>
                       <h3 className="text-lg uppercase tracking-wider mb-1">Address</h3>
