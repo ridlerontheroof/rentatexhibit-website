@@ -33,6 +33,13 @@
 //
 // Requires a prior production build:
 //   pnpm --filter @workspace/exhibit-on-superior run build
+//
+// Related build-time guard (runs in the normal `pnpm test` vitest suite):
+//   src/knowledge-chunk-isolation.test.ts — fails if any non-knowledge page
+//   chunk in dist/public/assets imports the ~176 KB knowledge article bundle
+//   again (the mobile-budget win this suite measures depends on that split;
+//   shared components must import knowledgePath.ts / knowledgeQuestions.ts,
+//   never src/data/knowledge.ts).
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, mkdirSync, mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
