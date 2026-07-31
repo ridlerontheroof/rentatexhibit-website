@@ -82,6 +82,43 @@ function mockLeadSubmitPending() {
   return { resolveFetch, fetchMock, leadCalls };
 }
 
+/**
+ * Same gated-promise pattern for ScheduleTour's scheduler contact step
+ * (POST /api/showings/contact): availability answers immediately, the
+ * contact POST rides the gate, and the follow-up slots fetch answers with
+ * one open day so the picker renders.
+ */
+function mockContactSubmitPending() {
+  let resolveFetch!: () => void;
+  const gate = new Promise<void>((res) => {
+    resolveFetch = res;
+  });
+  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    const url = String(input);
+    if (url.includes('api/availability')) {
+      return { ok: true, json: async () => ({ units: [] }) };
+    }
+    if (url.includes('api/showings/slots')) {
+      return {
+        ok: true,
+        json: async () => ({
+          unit: 'TOUR',
+          durationMinutes: 15,
+          days: [{ date: '2026/08/03', slots: [{ time: '2026/08/03 10:00', agentId: 1 }] }],
+          hostedUrl: null,
+        }),
+      };
+    }
+    await gate;
+    return { ok: true, json: async () => ({ guestCardId: '1', jwt: 'tok', hostedUrl: null }) };
+  });
+  vi.stubGlobal('fetch', fetchMock);
+  const contactCalls = () =>
+    fetchMock.mock.calls.filter(([input]) => String(input).includes('api/showings/contact'))
+      .length;
+  return { resolveFetch, fetchMock, contactCalls };
+}
+
 function fillContactForm() {
   setField('firstName', 'Ada');
   setField('lastName', 'Lovelace');
@@ -146,8 +183,11 @@ describe('pending submit lock (double-click duplicate-lead guard)', () => {
     expect(leadCalls()).toBe(1);
   });
 
-  it('ScheduleTour: Request Tour is disabled and reads "Submitting..." while in flight, then the success screen replaces the form', async () => {
-    const { resolveFetch, leadCalls } = mockLeadSubmitPending();
+  it('ScheduleTour: Request Tour is disabled and reads "Submitting..." while in flight, then the scheduler replaces the form', async () => {
+    // ScheduleTour now posts the scheduler's contact step (guest card) on
+    // submit — the double-submit guard must hold on THAT request, or a fast
+    // double-click creates duplicate guest cards in AppFolio.
+    const { resolveFetch, contactCalls } = mockContactSubmitPending();
     renderPage(ScheduleTour);
 
     expect(submitButton().disabled).toBe(false);
@@ -158,22 +198,22 @@ describe('pending submit lock (double-click duplicate-lead guard)', () => {
 
     await waitFor(() => expect(submitButton().disabled).toBe(true));
     expect(submitButton().textContent).toBe('Submitting...');
-    expect(leadCalls()).toBe(1);
+    expect(contactCalls()).toBe(1);
 
     fireEvent.click(submitButton());
-    expect(leadCalls()).toBe(1);
+    expect(contactCalls()).toBe(1);
 
     // Programmatic submit bypasses the disabled button; the handler's
     // isPending early-return must still block a second POST.
     submitForm();
     await waitFor(() => expect(submitButton().disabled).toBe(true));
-    expect(leadCalls()).toBe(1);
+    expect(contactCalls()).toBe(1);
 
     resolveFetch();
     await waitFor(() =>
-      expect(document.body.textContent).toContain('Tour Request Received')
+      expect(document.body.textContent).toContain('Select a Time for Your Tour')
     );
-    expect(leadCalls()).toBe(1);
+    expect(contactCalls()).toBe(1);
   });
 
   it('ContactUs: button re-enables after a failed request so the visitor can retry', async () => {

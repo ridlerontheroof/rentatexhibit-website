@@ -28,7 +28,7 @@ export function Reviews() {
       <div>
         <PageHero
           image="/images/image-088-20170808-0868-1-odeo9b.jpg"
-          alt="Reviews | Exhibit On Superior in Chicago, Illinois"
+          alt="Rooftop outdoor lap pool with lounge chairs and Chicago skyline views at Exhibit On Superior"
           titleScript="Exhibit On Superior"
           title="Reviews"
           subtitle="Reviews"

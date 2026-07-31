@@ -13,7 +13,7 @@ import { Link, useSearch } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CalendarCheck, CalendarClock, ExternalLink } from 'lucide-react';
+import { CalendarCheck, ExternalLink } from 'lucide-react';
 import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
 import { useAvailability } from '../hooks/use-availability';
@@ -30,6 +30,7 @@ import {
   type ShowingContactResponse,
   type ShowingSlot,
 } from '../hooks/use-showings';
+import { SlotPicker } from '../components/showings/SlotPicker';
 import { tourUrlForListing } from '../components/floor-plans/UnitGalleryLightbox';
 import { trackLead, trackOutboundClick } from '../lib/analytics';
 import { HoneypotField, useBotGuard } from '../components/BotGuard';
@@ -239,7 +240,7 @@ export function ScheduleShowing() {
       <div>
         <PageHero
           image="/images/image-087-012417-5548-ocwsdh.jpg"
-          alt="Schedule a Showing | Exhibit On Superior in Chicago, Illinois"
+          alt="Styled apartment living room with leather daybed and open wood shelving at Exhibit On Superior in River North Chicago"
           titleScript="Pick Your Time"
           title={unit ? `Tour Apartment ${unit}` : 'Tour Exhibit'}
           subtitle="Schedule a Showing"
@@ -471,95 +472,21 @@ export function ScheduleShowing() {
                   All times are Chicago local time at 165 W Superior St.
                 </p>
 
-                {slotTakenNotice && (
-                  <div
-                    ref={slotTakenRef}
-                    tabIndex={-1}
-                    className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive focus:outline-none"
-                    role="alert"
-                  >
-                    That time was just booked by someone else. Please pick another time below.
-                  </div>
-                )}
-
-                {slots.isPending && (
-                  <p className="py-8 text-center" role="status" aria-live="polite">
-                    <CalendarClock className="mr-2 inline-block h-5 w-5 text-primary" aria-hidden />
-                    Loading available times…
-                  </p>
-                )}
-
-                {slots.data &&
-                  (slots.data.days.some((d) => d.slots.length > 0) ? (
-                    <div className="space-y-8">
-                      {slots.data.days
-                        .filter((d) => d.slots.length > 0)
-                        .map((day) => (
-                          <div key={day.date}>
-                            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider">
-                              {formatSlotDate(day.date)}
-                            </h3>
-                            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
-                              {day.slots.map((slot) => {
-                                const selected =
-                                  selectedSlot?.time === slot.time &&
-                                  selectedSlot.agentId === slot.agentId;
-                                return (
-                                  <button
-                                    key={`${slot.time}-${slot.agentId}`}
-                                    type="button"
-                                    onClick={() => setSelectedSlot(slot)}
-                                    aria-pressed={selected}
-                                    className={`border px-2 py-2 text-sm transition-colors ${
-                                      selected
-                                        ? 'border-primary bg-primary text-white'
-                                        : 'border-border bg-white hover:border-primary hover:text-primary'
-                                    }`}
-                                  >
-                                    {formatSlotTime(slot.time)}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        ))}
-
-                      <div className="border-t border-border pt-6 text-center">
-                        {selectedSlot && (
-                          <p className="mb-4">
-                            In-person showing of Apartment {unit} —{' '}
-                            <strong>
-                              {formatSlotDate(selectedSlot.time.slice(0, 10))} at{' '}
-                              {formatSlotTime(selectedSlot.time)}
-                            </strong>
-                          </p>
-                        )}
-                        <button
-                          type="button"
-                          onClick={onConfirmSlot}
-                          disabled={!selectedSlot || book.isPending || !isOnline}
-                          className="btn-gold-outline border-primary bg-primary text-white hover:bg-primary/90 disabled:opacity-50"
-                        >
-                          {book.isPending ? 'Booking…' : 'Confirm Appointment'}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="py-6 text-center">
-                      <p className="mb-6">
-                        No online showing times are open right now. Send us a tour request and the
-                        leasing team will arrange a time with you directly — we already have your
-                        contact details.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => activateFallback(contactData, credentials?.hostedUrl)}
-                        className="btn-gold-outline"
-                      >
-                        Have the leasing team contact me
-                      </button>
-                    </div>
-                  ))}
+                <SlotPicker
+                  isPending={slots.isPending}
+                  days={slots.data?.days}
+                  selectedSlot={selectedSlot}
+                  onSelectSlot={setSelectedSlot}
+                  onConfirm={onConfirmSlot}
+                  confirmPending={book.isPending}
+                  confirmDisabled={!isOnline}
+                  selectionLabel={`In-person showing of Apartment ${unit}`}
+                  slotTakenNotice={slotTakenNotice}
+                  slotTakenRef={slotTakenRef}
+                  noSlotsMessage="No online showing times are open right now. Send us a tour request and the leasing team will arrange a time with you directly — we already have your contact details."
+                  noSlotsActionLabel="Have the leasing team contact me"
+                  onNoSlotsAction={() => activateFallback(contactData, credentials?.hostedUrl)}
+                />
               </div>
             )}
 

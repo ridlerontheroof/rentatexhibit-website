@@ -1,0 +1,42 @@
+version: 1
+
+global:
+  build_passes: true
+  no_broken_internal_links_introduced: true
+  no_duplicate_title_tags_introduced: true
+  no_duplicate_h1_introduced: true
+  no_placeholder_copy: true
+  no_unverified_property_claims: true
+  semantic_html: true
+  mobile_responsive: true
+
+metadata:
+  unique_title: true
+  unique_meta_description: true
+  canonical_present: true
+  indexability_intentional: true
+  open_graph_consistent: true
+
+structured_data:
+  valid_json_syntax: true
+  reflects_visible_content: true
+  no_unsupported_reviews: true
+  no_invented_offers: true
+  stable_entity_ids: true
+
+content:
+  intent_satisfied: true
+  useful_to_renter: true
+  no_keyword_stuffing: true
+  no_near_duplicate_pages: true
+  clear_conversion_action: true
+  fair_housing_review_required: true
+
+performance:
+  no_large_unoptimized_images_added: true
+  no_blocking_third_party_scripts_added_without_approval: true
+
+reporting:
+  changed_files_listed: true
+  validation_commands_listed: true
+  unresolved_conflicts_listed: true

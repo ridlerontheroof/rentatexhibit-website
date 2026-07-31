@@ -28,7 +28,7 @@ export function About() {
       <div>
         <PageHero
           image="/images/image-002-gettyimages-1286580777-nvdupq.jpg"
-          alt="About | Exhibit On Superior in Chicago, Illinois"
+          alt="Woman celebrating joyfully with gold confetti at Exhibit On Superior in River North Chicago"
           titleScript="The Story Behind"
           title="Exhibit On Superior"
           subtitle="About"

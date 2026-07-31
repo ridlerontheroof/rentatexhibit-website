@@ -34,7 +34,7 @@ export function Fees() {
       <div>
         <PageHero
           image="/images/image-004-012417-5732-pu4fo5.jpg"
-          alt="Fees and Leasing Costs | Exhibit On Superior in Chicago, Illinois"
+          alt="Apartment sitting nook with colorful mosaic accent wall and floor-to-ceiling Chicago skyline views at Exhibit On Superior"
           titleScript="Know Before You Apply"
           title="Fees & Leasing Costs"
           subtitle="Fees & Leasing Costs"

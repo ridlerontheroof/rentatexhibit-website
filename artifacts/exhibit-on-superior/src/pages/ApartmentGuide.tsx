@@ -36,7 +36,7 @@ export function ApartmentGuide() {
       <div>
         <PageHero
           image="/images/image-014-exhibit-living-room-n5xrna.jpg"
-          alt="Apartment Guide | Exhibit On Superior in Chicago, Illinois"
+          alt="Furnished living room with grey sectional sofa, floor-to-ceiling windows, and Chicago city views at Exhibit On Superior"
           titleScript="Find Your Fit"
           title="The Exhibit Apartment Guide"
           subtitle="Apartment Guide"

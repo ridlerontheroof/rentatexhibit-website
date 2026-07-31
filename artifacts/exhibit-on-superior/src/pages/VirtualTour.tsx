@@ -20,7 +20,7 @@ export function VirtualTour() {
       <div>
         <PageHero
           image="/images/image-074-game-area-with-arcade-games-and-wall-scrabble-ej.jpg"
-          alt="Virtual Tour | Exhibit On Superior in Chicago, Illinois"
+          alt="Chess table and leather armchairs in the game lounge with city views at Exhibit On Superior in River North Chicago"
           titleScript="See Yourself"
           title="Here"
           subtitle="Virtual Tour"

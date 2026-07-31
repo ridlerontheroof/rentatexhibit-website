@@ -1,7 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createGuestCard,
+  fetchAvailability,
   fixAmenitySpelling,
+  resetTourUnitUidCacheForTests,
+  resolveTourUnitListableUid,
   normalizeGuestCardName,
   isExhibitRow,
   isSafeNextPageUrl,
@@ -511,6 +514,105 @@ describe("createGuestCard", () => {
     // AppFolio 422s any first_name containing a space (verified 2026-07-28).
     expect(body.first_name).toBe("Mary");
     expect(body.last_name).toBe("Jane Watson");
+  });
+});
+
+describe("dedicated tour unit (feed hygiene + UID resolution)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    resetTourUnitUidCacheForTests();
+  });
+
+  // Field order mirrors the real report: unit_address (which embeds the
+  // unit name in a street string) comes BEFORE unit_name — a fuzzy "unit"
+  // pick would return the address and break the name match.
+  const directoryRow = {
+    property: "Exhibit on Superior - 165 W Superior St Chicago, IL 60654",
+    property_id: 2299,
+    unit_address: "165 W Superior St - Tour Chicago, IL 60654",
+    unit_name: "Tour",
+    posted_to_website: "No",
+    rentable_uid: "96A20390-F2A3-4806-B877-A758094C2A2B",
+  };
+
+  function stubAppfolioFetch(directoryResults: unknown[]) {
+    const fetchMock = vi.fn(async (input: string | URL) => {
+      const url = String(input);
+      if (url.includes("unit_vacancy.json")) {
+        return new Response(
+          JSON.stringify({
+            results: [
+              { property: "Exhibit on Superior", unit_name: "2801", unit_status: "Vacant-Unrented" },
+              // The tour unit must be dropped at this boundary even if it
+              // ever shows up in the vacancy report (e.g. flipped vacant).
+              { property: "Exhibit on Superior", unit_name: "Tour", unit_status: "Vacant-Unrented" },
+              { property: "Exhibit on Superior", unit_name: "General Tour", unit_status: "Vacant-Unrented" },
+            ],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      if (url.includes("unit_directory.json")) {
+        return new Response(JSON.stringify({ results: directoryResults }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      if (url.includes("/listings?")) {
+        return new Response("<html></html>", { status: 200 });
+      }
+      throw new Error(`Unexpected fetch in test: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  it("fetchAvailability excludes the tour unit under both its names", async () => {
+    stubAppfolioFetch([
+      { property: "Exhibit on Superior", unit_name: "2801", posted_to_website: "Yes" },
+      { property: "Exhibit on Superior", unit_name: "Tour", posted_to_website: "Yes" },
+      { property: "Exhibit on Superior", unit_name: "General Tour", posted_to_website: "Yes" },
+    ]);
+    const payload = await fetchAvailability("id", "secret");
+    expect(payload.units.map((u) => u.unit)).toEqual(["2801"]);
+  });
+
+  it("resolveTourUnitListableUid finds the Exhibit tour unit's rentable UID", async () => {
+    vi.stubEnv("APPFOLIO_CLIENT_ID", "id");
+    vi.stubEnv("APPFOLIO_CLIENT_SECRET", "secret");
+    const fetchMock = stubAppfolioFetch([
+      { property: "Some Other Property", unit_name: "Tour", rentable_uid: "wrong-property" },
+      directoryRow,
+    ]);
+    expect(await resolveTourUnitListableUid()).toBe("96a20390-f2a3-4806-b877-a758094c2a2b");
+    // Second call is served from cache — no extra report request.
+    expect(await resolveTourUnitListableUid()).toBe("96a20390-f2a3-4806-b877-a758094c2a2b");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("resolveTourUnitListableUid returns null (no negative cache) when the unit is missing", async () => {
+    vi.stubEnv("APPFOLIO_CLIENT_ID", "id");
+    vi.stubEnv("APPFOLIO_CLIENT_SECRET", "secret");
+    const fetchMock = stubAppfolioFetch([
+      { property: "Exhibit on Superior", unit_name: "2801", rentable_uid: "not-the-tour-unit" },
+    ]);
+    expect(await resolveTourUnitListableUid()).toBeNull();
+    expect(await resolveTourUnitListableUid()).toBeNull();
+    // Missing is re-checked every call (leasing team may be mid-rename).
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("resolveTourUnitListableUid serves the last known UID when the report fetch fails", async () => {
+    vi.stubEnv("APPFOLIO_CLIENT_ID", "id");
+    vi.stubEnv("APPFOLIO_CLIENT_SECRET", "secret");
+    stubAppfolioFetch([directoryRow]);
+    expect(await resolveTourUnitListableUid()).toBe("96a20390-f2a3-4806-b877-a758094c2a2b");
+    // Simulate an expired cache + AppFolio outage: the resolver must not
+    // strand a prospect mid-flow.
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
+    vi.spyOn(Date, "now").mockReturnValue(Date.now() + 7 * 60 * 60 * 1000);
+    expect(await resolveTourUnitListableUid()).toBe("96a20390-f2a3-4806-b877-a758094c2a2b");
+    vi.restoreAllMocks();
   });
 });
 

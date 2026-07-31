@@ -59,4 +59,6 @@
 - [GTM-injected inline scripts vs hashed CSP](gtm-injected-inline-csp.md) — runtime GTM Custom HTML tags need explicit hashes in server CSP; check:csp failure names the missing hash/host.
 - [SSR-reserved inert control rows](ssr-reserved-inert-controls.md) — client-only UI rows must render an inert aria-hidden twin in prerender or desktop CLS explodes; aria-hidden keeps md twins clean.
 - [Post-hydration inserts need inert SSR placeholders](post-hydration-insert-cls.md) — controls that mount only after hydration above visible content blow desktop CLS; reserve space with an inert aria-hidden twin.
+- [GitHub mirror sync](github-mirror-sync.md) — protected main: gitPush says BRANCH_ALREADY_EXISTS; sync via branch+PR; Codex runs leave workspace on the scaffold branch — check current branch first.
+- [Dedicated "Tour" unit](dedicated-tour-unit.md) — general tours book via reserved TOUR token against a hidden AppFolio unit; unit_directory pick() needs exact needles (unit_address precedes unit_name).
 - [QA evidence package](qa-evidence-package.md) — evidence reports must be script-derived from source JSONs; concurrent perf runs otherwise make the package inconsistent.

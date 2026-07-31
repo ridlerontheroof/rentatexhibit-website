@@ -18,6 +18,10 @@ import {
   parseUnitNumber,
   planSqftLabel,
   unitNumbersForPlan,
+  bandsForFloors,
+  groupMatchesQuery,
+  groupMatchesFilters,
+  type GroupFilterState,
   type Plan,
   type PlanGroup,
   type Category,
@@ -99,6 +103,44 @@ export const FLOOR_PLAN_PAGES: FloorPlanPage[] = (() => {
     };
   });
 })();
+
+/**
+ * A single-plan PlanGroup view of a hub page, so the hub's filter panel can
+ * reuse the exact same matching rules (groupMatchesQuery/groupMatchesFilters)
+ * as the /available-units floor-plan section — but scoped to THIS sheet's
+ * floor range and square footage, not the whole residence line. Searching
+ * "22" therefore matches the 22–29 sheet, not its 17–21 sibling.
+ */
+function pageAsSingleVariantGroup(fp: FloorPlanPage): PlanGroup {
+  const p = fp.plan;
+  return {
+    ...fp.group,
+    sqftMin: p.sqftMin,
+    sqftMax: p.sqft,
+    bands: bandsForFloors(p.floorMin, p.floorMax),
+    floors: p.floors,
+    variants: [p],
+  };
+}
+
+/** True when a hub card passes the free-text search and filter state. */
+export function pageMatchesFilters(
+  fp: FloorPlanPage,
+  search: string,
+  filters: GroupFilterState,
+): boolean {
+  const g = pageAsSingleVariantGroup(fp);
+  return groupMatchesQuery(g, search) && groupMatchesFilters(g, filters);
+}
+
+/** Hub pages narrowed by the filter panel (order preserved). */
+export function filterFloorPlanPages(
+  pages: FloorPlanPage[],
+  search: string,
+  filters: GroupFilterState,
+): FloorPlanPage[] {
+  return pages.filter((fp) => pageMatchesFilters(fp, search, filters));
+}
 
 export function floorPlanPage(slug: string): FloorPlanPage | null {
   return FLOOR_PLAN_PAGES.find((fp) => fp.slug === slug) ?? null;
@@ -348,11 +390,13 @@ export function buildFloorPlanSeoModel(
     { property: 'og:image', content: ogImage },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: title },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:site', content: TWITTER_SITE },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
     { name: 'twitter:image', content: ogImage },
+    { name: 'twitter:image:alt', content: title },
   ];
 
   return { title, canonical, metas, jsonLd: [floorPlanPageJsonLd(page, units, updatedAt)] };

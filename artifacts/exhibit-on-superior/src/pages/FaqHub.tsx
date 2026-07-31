@@ -20,7 +20,7 @@ export function FaqHub() {
       <div>
         <PageHero
           image="/images/image-033-lounge-mfioa0.jpg"
-          alt="Frequently Asked Questions | Exhibit On Superior in Chicago, Illinois"
+          alt="Bright resident lounge with cream sofas and floor-to-ceiling city views at Exhibit On Superior"
           titleScript="Ask Away"
           title="Frequently Asked Questions"
           subtitle="FAQ"

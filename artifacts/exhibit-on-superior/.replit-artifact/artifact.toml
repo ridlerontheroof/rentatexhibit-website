@@ -1346,20 +1346,20 @@ from = "/available-units/1808/"
 to = "/available-units/1808/index.html"
 
 [[services.production.rewrites]]
-from = "/available-units/2102"
-to = "/available-units/2102/index.html"
-
-[[services.production.rewrites]]
-from = "/available-units/2102/"
-to = "/available-units/2102/index.html"
-
-[[services.production.rewrites]]
 from = "/available-units/2407"
 to = "/available-units/2407/index.html"
 
 [[services.production.rewrites]]
 from = "/available-units/2407/"
 to = "/available-units/2407/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/2705"
+to = "/available-units/2705/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/2705/"
+to = "/available-units/2705/index.html"
 
 [[services.production.rewrites]]
 from = "/available-units/2801"

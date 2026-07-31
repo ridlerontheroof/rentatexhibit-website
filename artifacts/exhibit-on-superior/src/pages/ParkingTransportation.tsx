@@ -19,7 +19,7 @@ export function ParkingTransportation() {
       <div>
         <PageHero
           image="/images/image-055-dji-20230620092832-0149-d-yrh5eg.jpg"
-          alt="Parking and Transportation | Exhibit On Superior in Chicago, Illinois"
+          alt="Aerial drone view of the outdoor lap pool and landscaped terrace at Exhibit On Superior in River North Chicago"
           titleScript="Getting Around"
           title="Parking & Transportation"
           subtitle="Parking & Transportation"

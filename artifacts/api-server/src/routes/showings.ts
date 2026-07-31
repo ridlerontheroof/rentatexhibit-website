@@ -19,7 +19,8 @@
 import { Router, type IRouter } from "express";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
-import { listableUidFromListingUrl } from "../lib/appfolio";
+import { listableUidFromListingUrl, resolveTourUnitListableUid } from "../lib/appfolio";
+import { isTourUnitRequest } from "../lib/tourUnit";
 import {
   bookShowing,
   createShowingGuestCard,
@@ -79,8 +80,16 @@ export function resetShowingHeartbeatForTests(): void {
   heartbeat.reset();
 }
 
-/** Resolve an advertised unit to its posted listing UID, or null. */
+/**
+ * Resolve an advertised unit to its posted listing UID, or null.
+ *
+ * The reserved "TOUR" token (the /schedule-a-tour "No specific apartment"
+ * path) resolves to the dedicated tour unit's UID instead — that unit is
+ * excluded from the availability feed by design (see lib/tourUnit.ts), so it
+ * must be resolved via the Unit Directory report, never the snapshot.
+ */
 async function resolveListableUid(unit: string): Promise<string | null> {
+  if (isTourUnitRequest(unit)) return resolveTourUnitListableUid();
   const snapshot = await getAvailabilitySnapshot();
   const match = snapshot?.units.find((u) => u.unit === unit);
   return match?.listingUrl ? listableUidFromListingUrl(match.listingUrl) : null;

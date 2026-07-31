@@ -20,6 +20,12 @@ vi.mock("../lib/showings", async (importOriginal) => {
 vi.mock("./availability", () => ({
   getAvailabilitySnapshot: vi.fn(),
 }));
+// The dedicated tour unit resolves via the Unit Directory report (it has no
+// public listing by design); mock only that resolver, keep the rest real.
+vi.mock("../lib/appfolio", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/appfolio")>();
+  return { ...actual, resolveTourUnitListableUid: vi.fn() };
+});
 // Live-traffic escalation is fire-and-forget from the routes; mock it so
 // these tests only assert the wiring (what counts, what doesn't).
 vi.mock("../lib/showingLiveFailureAlert", () => ({
@@ -44,6 +50,7 @@ import {
   isIdentityVerificationEnabled,
 } from "../lib/showings";
 import { getAvailabilitySnapshot } from "./availability";
+import { resolveTourUnitListableUid } from "../lib/appfolio";
 import {
   recordLiveShowingFailure,
   recordLiveShowingSuccess,
@@ -90,9 +97,12 @@ const availabilities = {
   nearTermRecovery: null,
 };
 
+const TOUR_UID = "96a20390-f2a3-4806-b877-a758094c2a2b";
+
 beforeEach(() => {
   resetShowingHeartbeatForTests();
   vi.mocked(getAvailabilitySnapshot).mockResolvedValue(snapshot as never);
+  vi.mocked(resolveTourUnitListableUid).mockResolvedValue(TOUR_UID);
   vi.mocked(fetchShowingAvailabilities).mockResolvedValue(availabilities);
   vi.mocked(isIdentityVerificationEnabled).mockResolvedValue(false);
   vi.mocked(createShowingGuestCard).mockResolvedValue({ guestCardId: "77", jwt: "tok" });
@@ -191,6 +201,32 @@ describe("GET /showings/slots", () => {
       { unit: "2801" },
     );
     expect(vi.mocked(detectNearTermSkip)).toHaveReturnedWith(true);
+  });
+});
+
+describe("the dedicated tour unit (reserved TOUR token)", () => {
+  it("GET /showings/slots?unit=TOUR resolves via the Unit Directory, not the snapshot", async () => {
+    const res = await request(makeApp()).get("/showings/slots?unit=TOUR");
+    expect(res.status).toBe(200);
+    expect(vi.mocked(fetchShowingAvailabilities)).toHaveBeenCalledWith(TOUR_UID, expect.any(String));
+    expect(res.body.hostedUrl).toContain(`listable_uid=${TOUR_UID}`);
+  });
+
+  it("POST /showings/contact with TOUR books the guest card against the tour unit", async () => {
+    const res = await request(makeApp())
+      .post("/showings/contact")
+      .send({ firstName: "Jane", lastName: "Doe", email: "jane@example.com", phone: "3125550100", unit: "TOUR" });
+    expect(res.status).toBe(201);
+    expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
+      expect.objectContaining({ listableUid: TOUR_UID }),
+    );
+  });
+
+  it("404s unit_not_listed when the tour unit cannot be resolved (misconfigured in AppFolio)", async () => {
+    vi.mocked(resolveTourUnitListableUid).mockResolvedValue(null);
+    const res = await request(makeApp()).get("/showings/slots?unit=TOUR");
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("unit_not_listed");
   });
 });
 

@@ -637,11 +637,11 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Schedule a tour of Exhibit On Superior in River North Chicago — send a tour request to the leasing team, or book a specific apartment from Available Units.',
     quickAnswer:
-      'To schedule a tour of Exhibit On Superior, use the tour request form on this page with your preferred move-in date and floor plan, and the leasing team will arrange your showing directly. To tour a specific apartment, browse the Available Units page and book from its listing. You can also email exhibit@highlandptrs.com or call 312-450-0635.',
+      'To schedule a tour of Exhibit On Superior, use the tour form on this page with your preferred move-in date and floor plan, then pick a real day and time on the leasing calendar — with or without a specific apartment in mind. You can also email exhibit@highlandptrs.com or call 312-450-0635.',
     faqs: [
       {
         q: 'How do I schedule a tour?',
-        a: 'Use the tour request form on this page with your preferred move-in date and floor plan, and the leasing team will arrange a showing with you directly. To tour a specific apartment, open the Available Units page and book from its listing, or email exhibit@highlandptrs.com or call 312-450-0635.',
+        a: 'Use the tour form on this page with your preferred move-in date and floor plan, then pick a real day and time on the leasing calendar. You can book a specific apartment or a general tour of the building, or email exhibit@highlandptrs.com or call 312-450-0635.',
       },
       {
         q: 'Can I tour online first?',
@@ -1196,6 +1196,7 @@ export const APARTMENT_COMPLEX_NODE = {
     'https://www.facebook.com/exhibitonsuperior',
     'https://www.instagram.com/exhibitonsuperior',
     'https://www.youtube.com/@ExhibitonSuperior',
+    'https://www.google.com/maps?cid=15240815771270963454',
   ],
   amenityFeature: [
     'Full-floor amenity deck overlooking the city and private park',

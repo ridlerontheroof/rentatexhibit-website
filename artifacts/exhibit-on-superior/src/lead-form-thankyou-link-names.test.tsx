@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Router } from 'wouter';
 import { memoryLocation } from 'wouter/memory-location';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { AvailabilityData } from './hooks/use-availability';
 import type { CreateLeadPayload, LeadResponse } from './hooks/use-create-lead';
 import { domLabelOffenders, type LabelOffender } from './lib/link-name-lint';
@@ -82,10 +83,20 @@ afterEach(() => {
 
 function mountAt(path: string, ui: React.ReactElement) {
   const { hook, searchHook } = memoryLocation({ path });
+  // ScheduleTour routes into the showing scheduler on submit; its contact
+  // mutation needs a QueryClient. fetch is left failing (jsdom has none), so
+  // the scheduler's contact step errors and the page lands on the designed
+  // lead-capture fallback — which is exactly the post-submit thank-you /
+  // error surface this test lints.
+  const queryClient = new QueryClient({
+    defaultOptions: { mutations: { retry: false }, queries: { retry: false } },
+  });
   return render(
-    <Router hook={hook} searchHook={searchHook}>
-      {ui}
-    </Router>,
+    <QueryClientProvider client={queryClient}>
+      <Router hook={hook} searchHook={searchHook}>
+        {ui}
+      </Router>
+    </QueryClientProvider>,
   );
 }
 
