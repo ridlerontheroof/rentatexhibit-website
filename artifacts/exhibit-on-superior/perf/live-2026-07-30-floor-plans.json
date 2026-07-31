@@ -1,0 +1,22 @@
+{
+  "url": "https://www.rentatexhibit.com/floor-plans",
+  "date": "2026-07-30",
+  "liveBuildId": "ms855j8k-254aef79",
+  "formFactor": "mobile",
+  "note": "Live post-publish verification for the /floor-plans filter panel (visual stability). Lighthouse mobile runs against the published site; the filtered deep link was also functionally checked on a 390x844 mobile viewport via CDP: filters applied after hydration (1 studio ADA layout shown), ADA title variant served, inert SSR twins fully swapped out, and a buffered layout-shift PerformanceObserver recorded CLS 0 through hydration and the interactive swap. Field (CrUX/Search Console) CLS could not be fetched programmatically from the workspace: the CrUX API is disabled on the available Google Cloud project (key restricted / API not enabled) and the anonymous PageSpeed Insights quota is 0. Field confirmation for this page rests on the Search Console Core Web Vitals report once ~28 days of post-publish field data accumulate; page-level CrUX may never surface for this URL at current traffic, in which case the origin-level group in GSC is the source of truth.",
+  "runs": [
+    { "page": "/floor-plans", "score": 98, "lcpMs": 1905, "cls": 0.0009, "tbtMs": 112 },
+    { "page": "/floor-plans", "score": 97, "lcpMs": 1909, "cls": 0.0009, "tbtMs": 143 },
+    { "page": "/floor-plans?beds=studio&ada=1", "score": 99, "lcpMs": 1766, "cls": 0.0009, "tbtMs": 106 },
+    { "page": "/floor-plans?beds=studio&ada=1", "score": 99, "lcpMs": 1759, "cls": 0.0009, "tbtMs": 72 }
+  ],
+  "deepLinkFunctionalCheck": {
+    "url": "https://www.rentatexhibit.com/floor-plans?beds=studio&ada=1",
+    "viewport": "390x844 mobile",
+    "statusText": "1 layout shown",
+    "cards": ["Studio \u2014 484 Sq Ft"],
+    "title": "ADA-Accessible Floor Plan Layouts | Exhibit On Superior",
+    "inertTwinsRemaining": 0,
+    "observedCls": 0
+  }
+}
