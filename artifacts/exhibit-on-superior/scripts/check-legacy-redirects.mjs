@@ -107,7 +107,88 @@ for (const [from, to] of Object.entries(redirects)) {
   console.log(`ok    ${url} -> ${location} (301)`);
 }
 
-console.log(`\nChecked ${Object.keys(redirects).length} legacy redirects against ${BASE}`);
+// --- Legacy ?plan= deep links on /available-units ---------------------------
+// The production server 301s /available-units?plan=<known id> straight to the
+// matching /floor-plans/<slug> page using dist/plan-redirects.json (baked at
+// build time). A publish that ships without that map silently degrades to the
+// client-side redirect (extra hop + JS required), so probe one known id
+// (expect a single-hop 301 to the mapped landing page) and one unknown id
+// (expect 200 on /available-units — unknown ids must fall through).
+async function checkPlanRedirects() {
+  const distMapPath = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    '..',
+    'dist',
+    'plan-redirects.json',
+  );
+  let planMap;
+  try {
+    planMap = JSON.parse(await readFile(distMapPath, 'utf8'));
+  } catch (err) {
+    fail(
+      'plan-redirects.json',
+      `could not read ${distMapPath} (${err.code ?? err.message}) — build the site first; without the map the server cannot 301 ?plan= deep links.`,
+    );
+    return;
+  }
+  const entries = Object.entries(planMap);
+  if (entries.length === 0) {
+    fail('plan-redirects.json', 'map is empty — ?plan= deep links would never 301.');
+    return;
+  }
+
+  // Known id → single-hop 301 to the mapped /floor-plans/<slug> page.
+  const [knownId, target] = entries[0];
+  const knownUrl = `${BASE}/available-units?plan=${encodeURIComponent(knownId)}`;
+  try {
+    const res = await fetch(knownUrl, {
+      redirect: 'manual',
+      headers: { 'user-agent': 'legacy-redirect-smoke-check' },
+    });
+    if (res.status !== 301) {
+      fail(
+        knownUrl,
+        `HTTP ${res.status}, expected a single-hop 301 to ${target}. ` +
+          (res.status === 200
+            ? 'The published server has no plan-redirects.json (or an outdated one) — visitors fall back to the slower client-side redirect.'
+            : 'Plan-redirect wiring broken.'),
+      );
+    } else {
+      const location = res.headers.get('location') || '';
+      const expectedAbs = `${BASE}${target}`;
+      if (location !== target && location !== expectedAbs) {
+        fail(knownUrl, `301 points to "${location}", expected "${target}" (or "${expectedAbs}").`);
+      } else {
+        console.log(`ok    ${knownUrl} -> ${location} (301)`);
+      }
+    }
+  } catch (err) {
+    fail(knownUrl, `fetch error: ${err.message}`);
+  }
+
+  // Unknown id → 200 on /available-units (must fall through, never redirect
+  // or error).
+  const unknownUrl = `${BASE}/available-units?plan=smoke-check-unknown-id`;
+  try {
+    const res = await fetch(unknownUrl, {
+      redirect: 'manual',
+      headers: { 'user-agent': 'legacy-redirect-smoke-check' },
+    });
+    if (res.status !== 200) {
+      fail(
+        unknownUrl,
+        `HTTP ${res.status}, expected 200 — unknown ?plan= ids must fall through to the normal /available-units page.`,
+      );
+    } else {
+      console.log(`ok    ${unknownUrl} -> 200 (falls through)`);
+    }
+  } catch (err) {
+    fail(unknownUrl, `fetch error: ${err.message}`);
+  }
+}
+await checkPlanRedirects();
+
+console.log(`\nChecked ${Object.keys(redirects).length} legacy redirects (+2 ?plan= probes) against ${BASE}`);
 if (failures) {
   console.error(
     `\n${failures} redirect(s) FAILED. Legacy URLs must 301 in one hop — inspect the prerendered redirect stubs and their [[services.production.rewrites]] pairs in .replit-artifact/artifact.toml, then re-publish.`,
