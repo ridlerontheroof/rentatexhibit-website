@@ -14,6 +14,7 @@ import {
   renderLeadNotification,
   renderRedirectCheckAlert,
   renderRentedCheckAlert,
+  renderGeneralTourConfirmation,
   renderProspectConfirmation,
   renderSeedStaleAlert,
   renderShowingSchedulerAlert,
@@ -198,6 +199,53 @@ export async function sendProspectConfirmation(lead: LeadNotification): Promise<
     );
   } catch (err) {
     logger.error({ err }, "Error sending prospect confirmation email");
+  }
+}
+
+/**
+ * Send the Exhibit-branded confirmation for a general ("No specific
+ * apartment") tour booked through the site's scheduler.
+ *
+ * Why the site sends this itself: AppFolio's automatic prospect emails for
+ * this path (inquiry "Thank You" + showing reminder) come from the generic
+ * company-level template with Highland Partners corporate branding — the
+ * hidden tour unit has no advertised listing, and the guest-card/booking API
+ * carries no field that switches the template (verified live 2026-07-30).
+ *
+ * Best-effort and throttled like the lead prospect confirmation: a mail
+ * failure must never affect the booking already made in AppFolio.
+ */
+export async function sendGeneralTourConfirmation(opts: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  /** Booked slot wall time, "YYYY/MM/DD HH:mm" (property-local). */
+  slotTime: string;
+}): Promise<void> {
+  // Same distributed abuse defense as prospect confirmations: cap sends per
+  // recipient and globally before mailing an attacker-supplied address.
+  if (!(await allowProspectConfirmation(opts.email))) {
+    return;
+  }
+  try {
+    warnIfUnconfigured();
+    const fullName = `${opts.firstName} ${opts.lastName}`.trim();
+    const { subject, html: htmlBody, text: textBody } = renderGeneralTourConfirmation(opts);
+    const { contentType, body } = buildMimeBody("tourconfirm", textBody, htmlBody);
+    const headers = [
+      `To: ${encodeHeader(fullName)} <${sanitizeHeaderValue(opts.email)}>`,
+      // Sent as the website's dedicated account, but replies go to the
+      // leasing team's shared inbox so prospects always reach a human.
+      `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+      `Reply-To: ${encodeHeader(PROPERTY_NAME)} <${LEASING_INBOX_EMAIL}>`,
+      `Subject: ${encodeHeader(subject)}`,
+      "MIME-Version: 1.0",
+      `Content-Type: ${contentType}`,
+    ].join("\r\n");
+    await sendRawEmail(`${headers}\r\n\r\n${body}`, sanitizeHeaderValue(opts.email));
+    logger.info({ slotTime: opts.slotTime }, "Sent general-tour booking confirmation email");
+  } catch (err) {
+    logger.error({ err }, "Error sending general-tour booking confirmation email");
   }
 }
 

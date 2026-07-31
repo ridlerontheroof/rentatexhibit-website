@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { LeadNotification } from "./email";
 import {
+  renderGeneralTourConfirmation,
   renderLeadNotification,
   renderProspectConfirmation,
+  slotTimeLabels,
 } from "./emailTemplates";
 
 function lead(overrides: Partial<LeadNotification> = {}): LeadNotification {
@@ -100,6 +102,37 @@ describe("renderProspectConfirmation", () => {
     expect(r.html).toContain('alt="EXHIBIT ON SUPERIOR"');
     expect(r.html).not.toContain("<link");
     expect(r.html).not.toMatch(/<style[\s>]/);
+  });
+});
+
+describe("renderGeneralTourConfirmation", () => {
+  it("formats the booked slot into human-readable date and time", () => {
+    expect(slotTimeLabels("2026/08/01 16:45")).toEqual({
+      dateLabel: "Saturday, August 1",
+      timeLabel: "4:45 PM",
+    });
+    expect(slotTimeLabels("2026/08/03 09:00").timeLabel).toBe("9:00 AM");
+    expect(slotTimeLabels("2026/08/03 12:00").timeLabel).toBe("12:00 PM");
+    expect(slotTimeLabels("2026/08/03 00:15").timeLabel).toBe("12:15 AM");
+  });
+
+  it("renders the Exhibit-branded confirmation with the slot time", () => {
+    const r = renderGeneralTourConfirmation({ firstName: "Jamie", slotTime: "2026/08/01 16:45" });
+    expect(r.subject).toBe("Your tour is booked — Saturday, August 1 at 4:45 PM");
+    expect(r.html).toContain("Hi Jamie,");
+    expect(r.html).toContain("Saturday, August 1 at 4:45 PM");
+    expect(r.html).toContain("Exhibit on Superior");
+    expect(r.text).toContain("Saturday, August 1 at 4:45 PM");
+    // Branded shell, not the corporate mailer.
+    expect(r.html).toContain("cid:");
+  });
+
+  it("escapes HTML in the prospect-supplied name", () => {
+    const r = renderGeneralTourConfirmation({
+      firstName: '<script>alert("x")</script>',
+      slotTime: "2026/08/01 16:45",
+    });
+    expect(r.html).not.toContain("<script>");
   });
 });
 

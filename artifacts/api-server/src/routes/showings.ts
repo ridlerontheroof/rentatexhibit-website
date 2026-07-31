@@ -39,6 +39,7 @@ import {
 } from "../lib/showingLiveFailureAlert";
 import { detectNearTermSkip, detectSlotFormatDrift } from "../lib/showingFormatAlert";
 import { sanitizeLeadSource } from "../lib/leadSource";
+import { sendGeneralTourConfirmation } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -244,6 +245,14 @@ const BookBody = z.object({
   jwt: z.string().min(1).max(4096).nullish(),
   slotTime: z.string().regex(/^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}$/),
   agentId: z.number().int().positive(),
+  // Prospect contact info, re-sent by the page for the general ("TOUR") path
+  // only, so the site can send its own Exhibit-branded confirmation email —
+  // AppFolio's auto-emails for the non-listed tour unit carry the Highland
+  // corporate template (verified live 2026-07-30). Optional so unit-specific
+  // bookings (whose confirmations AppFolio owns) are unchanged.
+  firstName: z.string().min(1).max(100).optional(),
+  lastName: z.string().min(1).max(100).optional(),
+  email: z.string().email().max(200).optional(),
 });
 
 router.post("/showings/book", showingLimiter, async (req, res) => {
@@ -282,6 +291,27 @@ router.post("/showings/book", showingLimiter, async (req, res) => {
     });
     heartbeat.record(req.log, Date.now(), "book_ok");
     void recordLiveShowingSuccess(req.log);
+    // General-path bookings get the site's own Exhibit-branded confirmation
+    // (fire-and-forget — a mail failure never affects the booking AppFolio
+    // already made). Unit-specific bookings are untouched by design.
+    //
+    // Gated on GENERAL_TOUR_CONFIRMATION_EMAIL=1 (default off): AppFolio's
+    // own auto-emails for this path already carry the Highland corporate
+    // template; enabling this before the leasing team updates the AppFolio
+    // Communication settings would send three emails to every general-tour
+    // prospect. Flip the flag once AppFolio templates are updated.
+    if (
+      process.env.GENERAL_TOUR_CONFIRMATION_EMAIL === "1" &&
+      isTourUnitRequest(input.unit) &&
+      input.email
+    ) {
+      void sendGeneralTourConfirmation({
+        firstName: input.firstName ?? "",
+        lastName: input.lastName ?? "",
+        email: input.email,
+        slotTime: input.slotTime,
+      });
+    }
     req.log.info(
       { unit: input.unit, startAt: booked.startAt },
       "Booked showing in AppFolio scheduler",

@@ -250,6 +250,16 @@ export function ScheduleTour() {
         jwt: credentials.jwt,
         slotTime: selectedSlot.time,
         agentId: selectedSlot.agentId,
+        // General path only: the server sends the Exhibit-branded booking
+        // confirmation itself (AppFolio's auto-emails for this path carry
+        // corporate branding). Unit-specific bookings stay AppFolio-owned.
+        ...(isGeneral && tourData
+          ? {
+              firstName: tourData.firstName,
+              lastName: tourData.lastName,
+              email: tourData.email,
+            }
+          : {}),
       },
       {
         onSuccess: (res) => {

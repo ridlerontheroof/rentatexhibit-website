@@ -53,6 +53,12 @@ export interface ShowingBookPayload {
   jwt: string | null;
   slotTime: string;
   agentId: number;
+  // Re-sent for the general ("TOUR") path only: the server sends the
+  // Exhibit-branded confirmation email itself, because AppFolio's auto-emails
+  // for the non-listed tour unit carry corporate (non-Exhibit) branding.
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 }
 
 export interface BookedShowing {

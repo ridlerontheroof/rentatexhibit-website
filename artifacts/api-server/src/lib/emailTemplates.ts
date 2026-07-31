@@ -343,6 +343,81 @@ export function renderProspectConfirmation(lead: LeadNotification): RenderedEmai
 }
 
 // ---------------------------------------------------------------------------
+// General-tour booking confirmation (site-sent Exhibit branding)
+// ---------------------------------------------------------------------------
+
+/** "YYYY/MM/DD HH:mm" wall time → { dateLabel, timeLabel } for prospect copy. */
+export function slotTimeLabels(slotTime: string): { dateLabel: string; timeLabel: string } {
+  const [datePart, timePart] = slotTime.split(" ");
+  const [y, m, d] = datePart.split("/").map(Number);
+  const dateLabel = new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+  const [h, mi] = timePart.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return { dateLabel, timeLabel: `${hour12}:${String(mi).padStart(2, "0")} ${period}` };
+}
+
+/**
+ * Exhibit-branded confirmation for a general ("No specific apartment") tour
+ * booked through the site's scheduler. AppFolio's own auto-emails for this
+ * path carry the Highland corporate template (verified live 2026-07-30), so
+ * the site sends the property-branded confirmation itself.
+ */
+export function renderGeneralTourConfirmation(opts: {
+  firstName: string;
+  /** Slot wall time, "YYYY/MM/DD HH:mm" (property-local). */
+  slotTime: string;
+}): RenderedEmail {
+  const name = opts.firstName.trim();
+  const greeting = name ? `Hi ${name},` : "Hello,";
+  const { dateLabel, timeLabel } = slotTimeLabels(opts.slotTime);
+  const when = `${dateLabel} at ${timeLabel}`;
+
+  const subject = `Your tour is booked — ${when}`;
+  const preheader = `You're confirmed for ${when} at Exhibit on Superior. We'll meet you in the lobby.`;
+
+  const bodyHtml =
+    `<p style="${BODY_TEXT}">${escapeHtml(greeting)}</p>` +
+    `<p style="${BODY_TEXT}">Your tour of Exhibit on Superior is booked for <strong style="color:${BRAND.ink};">${escapeHtml(when)}</strong>. It&rsquo;s on our leasing calendar &mdash; no further confirmation needed.</p>` +
+    `<p style="${BODY_TEXT}"><strong style="color:${BRAND.ink};">Where to go:</strong> ${escapeHtml(BRAND.address)}. Street parking is available &mdash; come in the front door and let the doorman know you&rsquo;re here for a tour.</p>` +
+    `<p style="${BODY_TEXT}">What to expect: your tour takes about 15 minutes and covers the residences you&rsquo;re interested in and the full amenity floor. Have questions ready &mdash; we like them.</p>` +
+    goldButton(LINKS.availability, "Browse Available Residences") +
+    `<p style="margin:16px 0 0;font-family:${BRAND.font};font-size:15px;line-height:1.8;color:${BRAND.inkSoft};">Need to change or cancel your time? Just reply to this email or call ${escapeHtml(BRAND.phone)}.</p>`;
+
+  const text = [
+    greeting,
+    "",
+    `Your tour of Exhibit on Superior is booked for ${when}. It's on our leasing calendar — no further confirmation needed.`,
+    "",
+    `Where to go: ${BRAND.address}. Street parking is available — come in the front door and let the doorman know you're here for a tour.`,
+    "",
+    "What to expect: your tour takes about 15 minutes and covers the residences you're interested in and the full amenity floor.",
+    "",
+    `Browse available residences: ${LINKS.availability}`,
+    "",
+    `Need to change or cancel your time? Reply to this email or call ${BRAND.phone}.`,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  return {
+    subject,
+    html: renderEmailShell({
+      preheader,
+      kicker: "Tour Confirmed",
+      heading: "We'll see you soon",
+      bodyHtml,
+    }),
+    text,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Leasing-team lead notification
 // ---------------------------------------------------------------------------
 

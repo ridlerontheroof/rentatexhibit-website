@@ -34,6 +34,12 @@ vi.mock("../lib/showingLiveFailureAlert", () => ({
 }));
 // The drift alarm's log/email side effects have their own tests; here we
 // assert only the route wiring (when it is consulted, what it changes).
+// The site-sent general-tour confirmation is fire-and-forget from the book
+// route; mock the sender to assert wiring only (TOUR path sends, unit
+// bookings never do).
+vi.mock("../lib/email", () => ({
+  sendGeneralTourConfirmation: vi.fn(async () => {}),
+}));
 vi.mock("../lib/showingFormatAlert", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/showingFormatAlert")>();
   return {
@@ -56,6 +62,7 @@ import {
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
 import { detectNearTermSkip, detectSlotFormatDrift } from "../lib/showingFormatAlert";
+import { sendGeneralTourConfirmation } from "../lib/email";
 import showingsRouter, { resetShowingHeartbeatForTests } from "./showings";
 
 const LISTING_URL =
@@ -416,5 +423,82 @@ describe("POST /showings/book", () => {
       .post("/showings/book")
       .send({ ...booking, slotTime: "2026-07-28T13:15" });
     expect(res.status).toBe(400);
+  });
+
+  describe("general-tour site confirmation (GENERAL_TOUR_CONFIRMATION_EMAIL flag)", () => {
+    afterEach(() => {
+      delete process.env.GENERAL_TOUR_CONFIRMATION_EMAIL;
+    });
+
+    it("sends the Exhibit-branded confirmation when the flag is enabled", async () => {
+      process.env.GENERAL_TOUR_CONFIRMATION_EMAIL = "1";
+      const res = await request(makeApp())
+        .post("/showings/book")
+        .send({
+          ...booking,
+          unit: "TOUR",
+          firstName: "Jamie",
+          lastName: "Prospect",
+          email: "jamie@example.com",
+        });
+      expect(res.status).toBe(201);
+      expect(vi.mocked(sendGeneralTourConfirmation)).toHaveBeenCalledWith({
+        firstName: "Jamie",
+        lastName: "Prospect",
+        email: "jamie@example.com",
+        slotTime: booking.slotTime,
+      });
+    });
+
+    it("does not send when the flag is absent (default off — avoids duplicate emails)", async () => {
+      const res = await request(makeApp())
+        .post("/showings/book")
+        .send({
+          ...booking,
+          unit: "TOUR",
+          firstName: "Jamie",
+          lastName: "Prospect",
+          email: "jamie@example.com",
+        });
+      expect(res.status).toBe(201);
+      expect(vi.mocked(sendGeneralTourConfirmation)).not.toHaveBeenCalled();
+    });
+
+    it("never sends the site confirmation for unit-specific bookings even when flag is on", async () => {
+      process.env.GENERAL_TOUR_CONFIRMATION_EMAIL = "1";
+      const res = await request(makeApp())
+        .post("/showings/book")
+        .send({
+          ...booking,
+          firstName: "Jamie",
+          lastName: "Prospect",
+          email: "jamie@example.com",
+        });
+      expect(res.status).toBe(201);
+      expect(vi.mocked(sendGeneralTourConfirmation)).not.toHaveBeenCalled();
+    });
+
+    it("skips the site confirmation when the TOUR booking carries no email", async () => {
+      process.env.GENERAL_TOUR_CONFIRMATION_EMAIL = "1";
+      const res = await request(makeApp()).post("/showings/book").send({ ...booking, unit: "TOUR" });
+      expect(res.status).toBe(201);
+      expect(vi.mocked(sendGeneralTourConfirmation)).not.toHaveBeenCalled();
+    });
+
+    it("does not send the site confirmation when the TOUR booking fails", async () => {
+      process.env.GENERAL_TOUR_CONFIRMATION_EMAIL = "1";
+      vi.mocked(bookShowing).mockRejectedValue(new Error("boom"));
+      const res = await request(makeApp())
+        .post("/showings/book")
+        .send({
+          ...booking,
+          unit: "TOUR",
+          email: "jamie@example.com",
+          firstName: "J",
+          lastName: "P",
+        });
+      expect(res.status).toBe(502);
+      expect(vi.mocked(sendGeneralTourConfirmation)).not.toHaveBeenCalled();
+    });
   });
 });
