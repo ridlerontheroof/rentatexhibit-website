@@ -121,3 +121,5 @@ channel = "stable-25_05"
 
 [userenv.production]
 CSP_ENFORCE = "1"
+
+[userenv.shared]
