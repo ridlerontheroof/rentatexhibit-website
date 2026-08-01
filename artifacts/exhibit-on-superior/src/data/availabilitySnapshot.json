@@ -7,26 +7,37 @@
       "sqft": 1003,
       "rent": 4222,
       "availableOn": "2026-09-09",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/67543757-4bcb-4508-8561-6f917ff148a2/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/470f46a7-1997-4125-8675-5ecce1b33486/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/8be3af4a-fc32-4bd9-9157-655b914ee77e",
       "videoUrl": null,
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/67543757-4bcb-4508-8561-6f917ff148a2/large.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/96b6fe99-587c-41aa-b406-e06e59b18f7e/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -65,86 +76,12 @@
             "Microwave",
             "Dishwasher",
             "Range",
-            "Full-Size Stacked Washer/Dryer",
             "In-Unit Washer and Dryer"
           ]
         }
       ],
       "marketingTitle": "A Kitchen Island, Split Bedrooms, and a Balcony to Unwind",
-      "description": "Step into sophisticated city living with this bright 2-bedroom, 2-bath apartment in a modern 34-story tower at the heart of River North. Bask in natural light, enjoy central AC, and the convenience of an in-unit washer and dryer. Unwind after a long day with luxury amenities like a sauna, pool, hot tub, and a fully equipped fitness center. Parking is available for your convenience. Located just steps from art galleries, boutiques, spas, and top sushi spots, you’ll experience the vibrant energy of downtown living at its finest. Utilities include a $115 fee covering water, sewer, trash, and gas, with electricity billed to tenants. Live where city life meets sophistication—this is more than an apartment; it’s your masterpiece."
-    },
-    {
-      "unit": "0610",
-      "bedrooms": 0,
-      "bathrooms": 1,
-      "sqft": 450,
-      "rent": 2271,
-      "availableOn": "2026-10-01",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/b949bca0-a1ae-4ee4-95a0-d9a433465594/medium.jpg",
-      "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
-      "videoUrl": "https://www.youtube.com/watch?v=ZC8_gb9stKU",
-      "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/b949bca0-a1ae-4ee4-95a0-d9a433465594/large.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
-      ],
-      "details": [
-        {
-          "title": "Rental Terms",
-          "items": [
-            "Rent: $2,271",
-            "Application Fee: $60",
-            "Available 10/1/26"
-          ]
-        },
-        {
-          "title": "Pet Policy",
-          "items": [
-            "Cats allowed",
-            "Dogs allowed"
-          ]
-        },
-        {
-          "title": "Amenities",
-          "items": [
-            "Balcony",
-            "Quartz Countertops",
-            "Stainless Steel Appliances",
-            "Modern Kitchen",
-            "Driftwood Plank Floors",
-            "Tiled Backsplash",
-            "Floor-to-Ceiling Windows"
-          ]
-        },
-        {
-          "title": "Appliances",
-          "items": [
-            "Refrigerator",
-            "Microwave",
-            "Range",
-            "Oven",
-            "In-Unit Washer and Dryer",
-            "Full-Size Stacked Washer/Dryer",
-            "Dishwasher"
-          ]
-        }
-      ],
-      "marketingTitle": "Sleep Defined, Living Open, and a Private Balcony Beyond",
-      "description": "Defined sleeping space makes this sixth-floor junior convertible feel organized and easy to use. A dedicated sleeping alcove separates rest from the main living area, while a private balcony adds valuable outdoor space in the heart of River North.\r\nAn entry foyer opens to a connected living and dining area that can support seating, meals, or a compact work-from-home setup. The residence includes an in-unit washer and dryer, quartz countertops, stainless steel appliances, contemporary cabinetry, and plank flooring.\r\nFifth-floor amenities at Exhibit include an outdoor lap pool, hot tub, sauna, fitness spaces, and private work rooms. The first floor offers a dog spa and outdoor dog run. At Superior and Wells, the community is near CTA train service and the Chicago Riverwalk.\r\nThe required $95 monthly Utility and Service Amenity Fee covers heat, air conditioning, water, and natural gas for cooking and the clothes dryer. One-time fees: $500 administrative per apartment and $60 application per applicant. Electricity, cable, and internet are paid separately.\r\nSchedule your tour of apartment 0610 today to experience the sleeping alcove, private balcony, junior-convertible layout, and Exhibit amenities in person."
+      "description": "Step into sophisticated city living with this bright 2-bedroom, 2-bath apartment in a modern 34-story tower at the heart of River North. Bask in natural light, enjoy central AC, and the convenience of an in-unit washer and dryer. Unwind after a long day with luxury amenities like a sauna, pool, hot tub, and a fully equipped fitness center. Parking is available for your convenience. This pet-friendly residence welcomes your furry friends. Located just steps from art galleries, boutiques, spas, and top sushi spots, you’ll experience the vibrant energy of downtown living at its finest. Utilities include a $115 fee covering water, sewer, trash, and gas, with electricity billed to tenants. Live where city life meets sophistication—this is more than an apartment; it’s your masterpiece."
     },
     {
       "unit": "0807",
@@ -153,26 +90,37 @@
       "sqft": 665,
       "rent": 2873,
       "availableOn": "2026-08-01",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/45961c8c-9c07-4fb1-aa52-4cc8e9e1eb92/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/9a8c3baa-a623-49af-ba50-5f67e0e4c25c/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/bd818383-dbaf-43a3-a383-2a5c3e9fc6f7",
       "videoUrl": "https://www.youtube.com/watch?v=4zM9PbNBufM",
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/45961c8c-9c07-4fb1-aa52-4cc8e9e1eb92/large.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/31eca6ee-19f0-4f54-a551-83f3d0adc361/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -181,7 +129,7 @@
           "items": [
             "Rent: $2,873",
             "Application Fee: $60",
-            "Available 8/1/26"
+            "Available Now"
           ]
         },
         {
@@ -226,26 +174,37 @@
       "sqft": 899,
       "rent": 4281,
       "availableOn": "2026-10-01",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/af49b2bd-ab4b-4846-ab6f-72db5f305451/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/4ae2d6b2-3a9b-41be-9ca5-3202b648be95/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/da2e16cc-672e-46d5-83c2-211cb01d052d",
       "videoUrl": "https://www.youtube.com/watch?v=duNAzExkXiQ",
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/af49b2bd-ab4b-4846-ab6f-72db5f305451/large.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/fe8d9d86-2677-4822-a97b-7855c6b61b9d/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -284,13 +243,12 @@
             "Range",
             "Oven",
             "Dishwasher",
-            "In-Unit Washer and Dryer",
-            "Full-Size Stacked Washer/Dryer"
+            "In-Unit Washer and Dryer"
           ]
         }
       ],
       "marketingTitle": "10th-Floor River North Two-Bedroom with Private Balcony and Split-Bedroom Design",
-      "description": "Step into sophisticated city living with this bright 2-bedroom, 2-bath apartment in a modern 34-story tower at the heart of River North. Bask in natural light, enjoy central AC, and the convenience of an in-unit washer and dryer. Unwind after a long day with luxury amenities like a sauna, pool, hot tub, and a fully equipped fitness center. Parking is available for your convenience. Located just steps from art galleries, boutiques, spas, and top sushi spots, you’ll experience the vibrant energy of downtown living at its finest. Utilities include a $115 fee covering water, sewer, trash, and gas, with electricity billed to tenants. Live where city life meets sophistication—this is more than an apartment; it’s your masterpiece."
+      "description": "Step into sophisticated city living with this bright 2-bedroom, 2-bath apartment in a modern 34-story tower at the heart of River North. Bask in natural light, enjoy central AC, and the convenience of an in-unit washer and dryer. Unwind after a long day with luxury amenities like a sauna, pool, hot tub, and a fully equipped fitness center. Parking is available for your convenience. Located just steps from art galleries, boutiques, spas, and top sushi spots, you’ll experience the vibrant energy of downtown living at its finest. Utilities include a $115 fee covering water, sewer, trash, and gas, with electricity billed to tenants. A $60 application fee per person and $500 admin fee per apartment applies. Live where city life meets sophistication—this is more than an apartment; it’s your masterpiece."
     },
     {
       "unit": "1301",
@@ -299,26 +257,37 @@
       "sqft": 899,
       "rent": 4142,
       "availableOn": "2026-09-01",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/af49b2bd-ab4b-4846-ab6f-72db5f305451/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/4ae2d6b2-3a9b-41be-9ca5-3202b648be95/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/e47ad502-3eb4-4c98-b48f-39aa2a12d870",
       "videoUrl": "https://www.youtube.com/watch?v=duNAzExkXiQ",
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/af49b2bd-ab4b-4846-ab6f-72db5f305451/large.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/fe8d9d86-2677-4822-a97b-7855c6b61b9d/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -357,13 +326,12 @@
             "Range",
             "Oven",
             "Dishwasher",
-            "In-Unit Washer and Dryer",
-            "Full-Size Stacked Washer/Dryer"
+            "In-Unit Washer and Dryer"
           ]
         }
       ],
       "marketingTitle": "Two Bedrooms Apart, Two Full Baths, One Smart Layout",
-      "description": "Step into sophisticated city living with this bright 2-bedroom, 2-bath apartment in a modern 34-story tower at the heart of River North. Bask in natural light, enjoy central AC, and the convenience of an in-unit washer and dryer. Unwind after a long day with luxury amenities like a sauna, pool, hot tub, and a fully equipped fitness center. Parking is available for your convenience. Located just steps from art galleries, boutiques, spas, and top sushi spots, you’ll experience the vibrant energy of downtown living at its finest. Utilities include a $115 fee covering water, sewer, trash, and gas, with electricity billed to tenants. Live where city life meets sophistication—this is more than an apartment; it’s your masterpiece."
+      "description": "Separation is the standout feature of this 13th-floor two-bedroom at Exhibit on Superior. The split-bedroom design places the bedrooms apart, two full bathrooms support smoother routines, and a private balcony adds outdoor space to the River North layout. The entry foyer opens to a connected living and dining area with room for meals, working from home, and entertaining. The residence includes an in-unit washer and dryer, quartz countertops, stainless steel appliances, contemporary cabinetry, and plank flooring. Exhibit’s fifth-floor amenities include an outdoor lap pool, hot tub, sauna, grilling areas, and private work rooms. The first floor offers a dog spa and outdoor dog run. Located at Superior and Wells, the community is near CTA service and the Chicago Riverwalk. The required $150 monthly Utility and Service Amenity Fee covers heat, air conditioning, water, and natural gas for cooking and the clothes dryer. One-time fees: $500 administrative per apartment and $60 application per applicant. Electricity, cable, and internet are paid separately. Schedule your tour of apartment 1301 today to experience the split-bedroom design, two full bathrooms, private balcony, and Exhibit amenities in person."
     },
     {
       "unit": "1510",
@@ -372,26 +340,36 @@
       "sqft": 478,
       "rent": 2350,
       "availableOn": "2026-09-23",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/6e0b584d-1a12-4344-84d4-d992773ec3ed/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/bbe9cf35-1a2c-4a50-8199-41a40644d1e5/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/6de3204c-c08e-4840-a542-bc1dae857094",
       "videoUrl": null,
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/6e0b584d-1a12-4344-84d4-d992773ec3ed/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -402,10 +380,40 @@
             "Application Fee: $75",
             "Available 9/23/26"
           ]
+        },
+        {
+          "title": "Pet Policy",
+          "items": [
+            "Cats allowed",
+            "Dogs allowed"
+          ]
+        },
+        {
+          "title": "Amenities",
+          "items": [
+            "Balcony",
+            "Quartz Countertops",
+            "Stainless Steel Appliances",
+            "Modern Kitchen",
+            "Driftwood Plank Floors",
+            "Tiled Backsplash",
+            "Floor-to-Ceiling Windows"
+          ]
+        },
+        {
+          "title": "Appliances",
+          "items": [
+            "Refrigerator",
+            "Oven",
+            "Range",
+            "Microwave",
+            "Dishwasher",
+            "In-Unit Washer and Dryer"
+          ]
         }
       ],
-      "marketingTitle": "Exhibit on Superior",
-      "description": "Smart Living on Display. Schedule Your Tour Today!\r\n\r\nExhibit on Superior is a sophisticated, modern 34-story tower located in the heart of River North. This amenity-rich residence blends smartly designed private apartments with warm, inviting communal spaces to create a uniquely elevated living experience.With 298 luxury rental apartments, including studios, convertibles, and one-, two-, and three-bedroom layouts, Exhibit offers breathtaking views of the Magnificent Mile, River North, and Downtown. Designed with an artistic vision, every detail reflects refined urban living.Situated at the corner of Superior and Wells, you're steps away from everything: art galleries, boutiques, spas, and sushi spots. You live in the city for a reasonExhibit lets you make the most of it.From expansive amenities to stunning skyline views, Exhibit on Superior redefines city living to an art form. After all, life is art, and you might as well make it a masterpiece.Schedule a tour today."
+      "marketingTitle": "A Sleeping Alcove, North-Facing Windows, and Room to Breathe",
+      "description": "A defined sleeping alcove separates rest from the main living area, while north-facing windows gives this convertible a stronger sense of place. A private balcony extends the living space outdoors.\r\nThe living and dining area is designed to support seating, meals, and a work-from-home setup. The residence includes an in-home washer and dryer, quartz countertops, stainless-steel appliances, modern cabinetry, and driftwood plank flooring.\r\nExhibit’s fifth-floor amenities include an outdoor lap pool, hot tub, sauna, fitness center, and private work rooms. At Superior and Wells, the River North location is near CTA service and the Chicago Riverwalk.\r\nThe required $95 monthly Utility and Service Amenity Fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. One-time fees are $500 administrative per apartment and $60 application per applicant. Electricity and internet are paid separately.\r\nSchedule a tour of apartment 1510 to experience the sleeping alcove, private balcony and north-facing windows and Exhibit amenities in person."
     },
     {
       "unit": "1808",
@@ -422,18 +430,29 @@
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -487,26 +506,37 @@
       "sqft": 672,
       "rent": 2873,
       "availableOn": "2026-09-03",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/e056ce1d-d33a-4cbf-9495-51347e7da166/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/7f5e12aa-28a3-4a4d-baa4-da4dc980c163/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/d8a23931-f6ee-460e-894e-bf4383a77520",
       "videoUrl": "https://www.youtube.com/watch?v=4zM9PbNBufM",
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/e056ce1d-d33a-4cbf-9495-51347e7da166/large.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/c5ff04bf-f3ca-4419-9773-53324d5e3634/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -545,13 +575,12 @@
             "Range",
             "Oven",
             "Dishwasher",
-            "In-Unit Washer and Dryer",
-            "Full-Size Stacked Washer/Dryer"
+            "In-Unit Washer and Dryer"
           ]
         }
       ],
-      "marketingTitle": "West-Facing City Views from a 24th-Floor Private Balcony",
-      "description": "Step into sophisticated city living with this bright 2-bedroom, 1-bath apartment in a modern 34-story tower at the heart of River North. Bask in natural light, enjoy central AC, and the convenience of an in-unit washer and dryer. Unwind after a long day with luxury amenities like a sauna, pool, hot tub, and a fully equipped fitness center. Parking is available for your convenience. Located just steps from art galleries, boutiques, spas, and top sushi spots, you’ll experience the vibrant energy of downtown living at its finest. Utilities include a $115 fee covering water, sewer, trash, and gas, with electricity billed to tenants. Live where city life meets sophistication—this is more than an apartment; it’s your masterpiece."
+      "marketingTitle": "Open Living, Quiet Sleeping, and Space That Works",
+      "description": "This one-bedroom pairs everyday privacy with an open living and dining area. A higher west-facing perspective across the city adds another reason to look closer. A private balcony extends the living space outdoors.\r\nInside, the layout leaves room for dining, relaxing, and working without losing definition between uses. Floor-to-ceiling windows, quartz countertops, stainless-steel appliances, and in-home laundry complete the apartment.\r\nBeyond the apartment, Exhibit offers a fifth-floor outdoor lap pool, hot tub, sauna, fitness spaces, and private work rooms. The Superior and Wells address keeps CTA connections and the Chicago Riverwalk within easy reach.\r\nThe required $115 monthly Utility and Service Amenity Fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. One-time fees are $500 administrative per apartment and $60 application per applicant. Electricity and internet are paid separately.\r\nSee how the private balcony and west-facing windows come together in apartment 2407. Contact the leasing team to arrange a tour."
     },
     {
       "unit": "2705",
@@ -560,26 +589,37 @@
       "sqft": 450,
       "rent": 2271,
       "availableOn": "2026-10-02",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/b949bca0-a1ae-4ee4-95a0-d9a433465594/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/eb9549e5-0008-45ba-9cda-d5bdc27480e9/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/835493b4-25d6-43be-8757-edeab95bdabe",
       "videoUrl": "https://www.youtube.com/watch?v=ZC8_gb9stKU",
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/b949bca0-a1ae-4ee4-95a0-d9a433465594/large.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/4edf9c08-fda0-486f-8bf4-df813e007bb1/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -633,26 +673,37 @@
       "sqft": 899,
       "rent": 4292,
       "availableOn": "2026-09-01",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/af49b2bd-ab4b-4846-ab6f-72db5f305451/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/4ae2d6b2-3a9b-41be-9ca5-3202b648be95/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/57dda21c-7fd6-446a-899a-c4776ceb4afa",
       "videoUrl": "https://www.youtube.com/watch?v=duNAzExkXiQ",
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/af49b2bd-ab4b-4846-ab6f-72db5f305451/large.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/fe8d9d86-2677-4822-a97b-7855c6b61b9d/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -691,13 +742,12 @@
             "Range",
             "Oven",
             "Dishwasher",
-            "In-Unit Washer and Dryer",
-            "Full-Size Stacked Washer/Dryer"
+            "In-Unit Washer and Dryer"
           ]
         }
       ],
-      "marketingTitle": "Split Bedrooms, Two Full Baths, and a 28th-Floor Balcony",
-      "description": "Step into sophisticated city living with this bright 2-bedroom, 2-bath apartment in a modern 34-story tower at the heart of River North. Bask in natural light, enjoy central AC, and the convenience of an in-unit washer and dryer. Unwind after a long day with luxury amenities like a sauna, pool, hot tub, and a fully equipped fitness center. Parking is available for your convenience. Located just steps from art galleries, boutiques, spas, and top sushi spots, you’ll experience the vibrant energy of downtown living at its finest. Utilities include a $115 fee covering water, sewer, trash, and gas, with electricity billed to tenants. Live where city life meets sophistication—this is more than an apartment; it’s your masterpiece."
+      "marketingTitle": "A Two-Bedroom Built Around Separation and a northeast-facing outlook",
+      "description": "Separation is the strength of this two-bedroom, with bedrooms placed apart and two full baths supporting a more flexible day-to-day rhythm. It also offers north- and east-facing corner exposure. A private balcony extends the living space outdoors.\r\nThe plan makes everyday furniture placement feel straightforward, with space to cook, dine, work, and unwind. Finishes include quartz countertops, stainless-steel appliances, contemporary cabinetry, plank flooring, and an in-home washer and dryer.\r\nThe fifth-floor amenity level brings together an outdoor lap pool, hot tub, sauna, fitness center, and work-from-home spaces. Exhibit is located at Superior and Wells in River North, near CTA train service and the Chicago Riverwalk.\r\nThe required $150 monthly Utility and Service Amenity Fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. One-time fees are $500 administrative per apartment and $60 application per applicant. Electricity and internet are paid separately.\r\nTour apartment 2801 to explore the separated-bedroom layout, private balcony and north- and east-facing windows, then visit Exhibit’s indoor and outdoor amenity spaces."
     },
     {
       "unit": "3108",
@@ -706,26 +756,37 @@
       "sqft": 478,
       "rent": 2495,
       "availableOn": "2026-10-15",
-      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/63ecbeab-ab5e-42ba-86a9-ebd95b43b3e8/medium.jpg",
+      "photoUrl": "https://images.cdn.appfolio.com/highlandrealestatepartners/images/077c0ee6-b87d-4c53-b0ea-cdfb48a67177/medium.png",
       "listingUrl": "https://highlandrealestatepartners.appfolio.com/listings/detail/820a0ef1-19b3-41e4-b8bd-77387556d480",
       "videoUrl": null,
       "photos": [
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/63ecbeab-ab5e-42ba-86a9-ebd95b43b3e8/large.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/images/76940cb8-965f-45e2-8d9d-d9b5f052f763/large.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/e4a58eed-2931-4fec-b780-419367b6d92b/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c9bc80a5-bb3f-46ee-866f-5129cdae9940/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/13deb950-360e-4874-8e76-2c99fb01c9d7/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/321b43bf-8ba5-4d6d-952d-e1ddcf3cfa5c/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/20da5d78-0ea7-406e-970e-352638bf68ae/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/4f66ab7f-48b7-4928-af4a-db5f44e447b4/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/023c4cee-9a43-4be5-8e95-f25e93a04c8e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/eb946fd0-5f85-47c4-a7b5-32e5ad9445b5/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/ef48b58f-a2d6-44c3-989c-e2fd24946b25/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/60ce2637-102b-4358-be7a-0dea5fab649d/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6609aca4-0f3d-4c98-a1c7-0e18347382ed/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a3c0c526-1c0c-428a-ae2d-17f94397a767/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/5334822b-278c-48cb-bb89-c74cf8e76247/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c25ac53e-7ea2-489a-8ade-8ea2400b5b74/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c0af0ae0-5612-44ba-bb51-44e8a0090c2f/original.jpg",
-        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/9ef9d940-348f-4446-a185-7d51e33c1d17/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/6cd9c676-5def-4d59-acd2-c105b9be55f1/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/dd0d29bf-4278-425a-b8eb-dc45b51aa0dd/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/fadd0cef-ce73-4075-8594-d32ec3389c16/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/75efddca-3188-439d-8faa-b4f39428bc3e/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/a6d30034-e6fa-46d7-a48e-f8b69609d8aa/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/1af53ccd-42dd-4512-b110-8bc9408a7a36/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/cee6ab31-3c8e-41a7-abd4-6e87aa9e027f/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/bd00aec8-c350-4d0e-a8c1-d29e550335cc/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/93cd8294-ef5d-42b3-97c0-2fcedd91985e/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/c794b1df-7561-47d7-b59d-bb035d0d0b01/original.jpg",
+        "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/3ecfe01f-4aa3-4120-bf8e-52f9dcb9fab2/original.jpg",
         "https://images.cdn.appfolio.com/highlandrealestatepartners/leads_marketing_photos/81e454c2-a511-468c-a4b1-cb2fefcf39de/original.jpg"
       ],
       "details": [
@@ -768,9 +829,9 @@
           ]
         }
       ],
-      "marketingTitle": "Rise Above River North: 31st-Floor Junior Convertible with Balcony",
-      "description": "Step into sophisticated city living with this bright studio apartment in a modern 34-story tower at the heart of River North. Bask in natural light, enjoy central AC, and the convenience of an in-unit washer and dryer. Unwind after a long day with luxury amenities like a sauna, pool, hot tub, and a fully equipped fitness center. Parking is available for your convenience. Located just steps from art galleries, boutiques, spas, and top sushi spots, you’ll experience the vibrant energy of downtown living at its finest. Utilities include a $115 fee covering water, sewer, trash, and gas, with electricity billed to tenants. Live where city life meets sophistication—this is more than an apartment; it’s your masterpiece."
+      "marketingTitle": "A Sleeping Alcove, North-Facing Windows, and Room to Breathe",
+      "description": "A defined sleeping alcove separates rest from the main living area, while a higher north-facing outlook gives this convertible a stronger sense of place. A private balcony extends the living space outdoors.\r\nThe living and dining area is designed to support seating, meals, and a work-from-home setup. The residence includes an in-home washer and dryer, quartz countertops, stainless-steel appliances, modern cabinetry, and driftwood plank flooring.\r\nExhibit’s fifth-floor amenities include an outdoor lap pool, hot tub, sauna, fitness center, and private work rooms. At Superior and Wells, the River North location is near CTA service and the Chicago Riverwalk.\r\nThe required $95 monthly Utility and Service Amenity Fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. One-time fees are $500 administrative per apartment and $60 application per applicant. Electricity and internet are paid separately.\r\nSchedule a tour of apartment 3108 to experience the sleeping alcove, private balcony and north-facing windows and Exhibit amenities in person."
     }
   ],
-  "updatedAt": "2026-07-31T16:49:04.384Z"
+  "updatedAt": "2026-08-01T23:12:34.733Z"
 }
