@@ -119,6 +119,12 @@
     <!-- lcp:end -->
     <link rel="preload" href="/fonts/ReenieBeanie-400-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/BarlowSemiCondensed-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Vimeo preconnect: reduces cold-connection penalty when the user activates
+         the video embed on /virtual-tour or a unit detail page. The iframe and
+         its thumbnail CDN both resolve from these origins. crossorigin is required
+         for i.vimeocdn.com because the thumbnail request uses CORS. -->
+    <link rel="preconnect" href="https://player.vimeo.com">
+    <link rel="preconnect" href="https://i.vimeocdn.com" crossorigin>
   </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
