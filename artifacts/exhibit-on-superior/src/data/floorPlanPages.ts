@@ -30,6 +30,7 @@ import { adaUnitsAmong, type AdaDesignation } from './ada';
 import {
   SITE_URL,
   ogCardUrl,
+  OG_CARD_VERSION,
   SITE_LAUNCH_DATE,
   WEBSITE_NODE,
   ORGANIZATION_NODE,
@@ -390,7 +391,7 @@ export function buildFloorPlanSeoModel(
   const title = floorPlanTitle(page);
   const description = floorPlanDescription(page);
   const canonical = floorPlanCanonical(page.slug);
-  const ogImage = `${SITE_URL}${page.plan.images.detail}`;
+  const ogImage = `${SITE_URL}/images/og/floor-plans/${page.slug}.jpg?v=${OG_CARD_VERSION}`;
 
   const metas: SeoMeta[] = [
     { name: 'description', content: description },
@@ -402,8 +403,8 @@ export function buildFloorPlanSeoModel(
     { property: 'og:description', content: description },
     { property: 'og:url', content: canonical },
     { property: 'og:image', content: ogImage },
-    { property: 'og:image:width', content: '1500' },
-    { property: 'og:image:height', content: '1941' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: title },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:site', content: TWITTER_SITE },

@@ -196,6 +196,51 @@ describe('floor-plan JSON-LD', () => {
   });
 });
 
+describe('floor-plan OG share cards', () => {
+  const ogDir = path.resolve(__dirname, '../../public/images/og/floor-plans');
+
+  it('has a committed landscape OG card for every floor-plan page', () => {
+    // scripts/generate-floor-plan-og-cards.mjs produces 1200×630 JPEGs in
+    // public/images/og/floor-plans/{slug}.jpg — one per landing page.
+    // If this fails, run: node scripts/generate-floor-plan-og-cards.mjs
+    const missing = FLOOR_PLAN_PAGES.filter(
+      (fp) => !fs.existsSync(path.join(ogDir, `${fp.slug}.jpg`)),
+    ).map((fp) => fp.slug);
+    expect(
+      missing,
+      `Missing floor-plan OG cards — run: node scripts/generate-floor-plan-og-cards.mjs ${missing.join(' ')}`,
+    ).toEqual([]);
+  });
+
+  it('has no orphan cards without a matching floor-plan page', () => {
+    if (!fs.existsSync(ogDir)) return;
+    const slugSet = new Set(FLOOR_PLAN_PAGES.map((fp) => fp.slug));
+    const orphans = fs
+      .readdirSync(ogDir)
+      .filter((f) => f.endsWith('.jpg'))
+      .map((f) => f.replace(/\.jpg$/, ''))
+      .filter((slug) => !slugSet.has(slug));
+    expect(
+      orphans,
+      `Orphan floor-plan OG cards with no matching page — delete them or update the script:\n  ${orphans.join('\n  ')}`,
+    ).toEqual([]);
+  });
+
+  it('every og:image in buildFloorPlanSeoModel points at the committed card', () => {
+    for (const fp of FLOOR_PLAN_PAGES) {
+      const model = buildFloorPlanSeoModel(fp, [], null);
+      const ogImg = model.metas.find((m) => m.property === 'og:image')?.content ?? '';
+      expect(ogImg, `og:image for ${fp.slug} should reference its landscape card`).toContain(
+        `/images/og/floor-plans/${fp.slug}.jpg`,
+      );
+      const w = model.metas.find((m) => m.property === 'og:image:width')?.content;
+      const h = model.metas.find((m) => m.property === 'og:image:height')?.content;
+      expect(w, `og:image:width for ${fp.slug}`).toBe('1200');
+      expect(h, `og:image:height for ${fp.slug}`).toBe('630');
+    }
+  });
+});
+
 describe('artifact.toml rewrite parity', () => {
   it('has a bare + trailing-slash rewrite pair for the hub and every plan page', () => {
     const toml = fs.readFileSync(
