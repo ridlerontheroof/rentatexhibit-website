@@ -149,6 +149,11 @@ export function Header() {
               label="Neighborhood"
               href="/neighborhood"
               items={[
+                { href: '/studio-apartments-river-north', label: 'Studio Apartments' },
+                { href: '/convertible-apartments-river-north', label: 'Convertible Apartments' },
+                { href: '/one-bedroom-apartments-river-north', label: '1-Bedroom Apartments' },
+                { href: '/two-bedroom-apartments-river-north', label: '2-Bedroom Apartments' },
+                { href: '/three-bedroom-apartments-river-north', label: '3-Bedroom Apartments' },
                 { href: '/parking-transportation', label: 'Parking + Transportation' },
                 { href: '/luxury-apartments-river-north', label: 'Luxury River North Living' },
                 { href: '/apartments-near-the-loop', label: 'Near the Loop' },
