@@ -256,21 +256,21 @@ export function PhotoGallery() {
             <button
               ref={closeButtonRef}
               onClick={closeLightbox}
-              className="absolute top-4 right-4 z-10 text-white/80 hover:text-white transition-colors"
+              className="absolute top-4 right-4 z-10 text-white/80 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               aria-label="Close"
             >
               <X className="w-8 h-8" strokeWidth={1.5} />
             </button>
             <button
               onClick={showPrev}
-              className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-primary hover:bg-primary hover:text-white"
+              className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-primary hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               aria-label="Previous photo"
             >
               <ChevronLeft className="w-6 h-6" strokeWidth={1.5} />
             </button>
             <button
               onClick={showNext}
-              className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-primary hover:bg-primary hover:text-white"
+              className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-sm transition-colors hover:border-primary hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               aria-label="Next photo"
             >
               <ChevronRight className="w-6 h-6" strokeWidth={1.5} />

@@ -235,7 +235,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
               href={contactUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="border border-white/60 px-4 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:border-white"
+              className="border border-white/60 px-4 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:border-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               Contact us
             </a>
@@ -246,7 +246,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
                application). */
             <Link
               href={`/start-application?unit=${unit.unit}`}
-              className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+              className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               Apply now
             </Link>
@@ -256,7 +256,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
             type="button"
             onClick={onClose}
             aria-label="Close photo gallery"
-            className="flex h-9 w-9 items-center justify-center text-white transition-opacity hover:opacity-70"
+            className="flex h-9 w-9 items-center justify-center text-white transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -300,7 +300,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
                 prev();
               }}
               aria-label="Previous photo"
-              className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50! text-white transition-colors hover:bg-black/80!"
+              className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50! text-white transition-colors hover:bg-black/80! focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
@@ -311,7 +311,7 @@ export function UnitGalleryLightbox({ unit, onClose }: UnitGalleryLightboxProps)
                 next();
               }}
               aria-label="Next photo"
-              className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50! text-white transition-colors hover:bg-black/80!"
+              className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50! text-white transition-colors hover:bg-black/80! focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <ChevronRight className="h-6 w-6" />
             </button>

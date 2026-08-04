@@ -425,7 +425,7 @@ export function PlanLightbox({
                 <button
                   type="button"
                   onClick={() => onNavigate(-1)}
-                  className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50 text-white transition-colors hover:bg-black/80"
+                  className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50 text-white transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                   aria-label="Previous floor plan"
                 >
                   <ChevronLeft className="h-6 w-6" />
@@ -433,7 +433,7 @@ export function PlanLightbox({
                 <button
                   type="button"
                   onClick={() => onNavigate(1)}
-                  className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50 text-white transition-colors hover:bg-black/80"
+                  className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50 text-white transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                   aria-label="Next floor plan"
                 >
                   <ChevronRight className="h-6 w-6" />
@@ -485,7 +485,7 @@ export function PlanLightbox({
                   }
                   setSheetSnap((s) => (s === SHEET_EXPANDED ? SHEET_COLLAPSED : SHEET_EXPANDED));
                 }}
-                className="mx-auto -mt-1 mb-1 flex h-6 w-full items-center justify-center"
+                className="mx-auto -mt-1 mb-1 flex h-6 w-full items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300"
               >
                 <span aria-hidden className="h-1 w-10 rounded-full bg-border" />
               </button>
@@ -571,7 +571,7 @@ export function PlanLightbox({
                       type="button"
                       aria-pressed={i === variantIndex}
                       onClick={() => onVariantChange(i)}
-                      className={`px-3 py-2 text-xs uppercase tracking-wide transition-colors ${
+                      className={`px-3 py-2 text-xs uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300 ${
                         i === variantIndex
                           ? 'bg-primary text-white'
                           : 'border border-border hover:border-primary'

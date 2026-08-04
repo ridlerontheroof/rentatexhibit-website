@@ -279,6 +279,11 @@
   @apply bg-primary text-white;
 }
 
+.btn-gold-outline:focus-visible {
+  outline: 2px solid var(--color-gold-300);
+  outline-offset: 2px;
+}
+
 /* On dark backgrounds, use the lighter gold token so the border/text are visible */
 .bg-footer .btn-gold-outline,
 .bg-dark-section .btn-gold-outline {
@@ -299,6 +304,11 @@
 
 .btn-dark-outline:hover {
   @apply bg-foreground text-white;
+}
+
+.btn-dark-outline:focus-visible {
+  outline: 2px solid var(--color-gold-300);
+  outline-offset: 2px;
 }
 
 .page-title {

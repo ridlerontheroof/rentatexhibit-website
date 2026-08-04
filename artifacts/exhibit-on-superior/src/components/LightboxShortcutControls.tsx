@@ -69,7 +69,7 @@ export function LightboxShortcutControls({
           e.stopPropagation();
           onZoomToggle();
         }}
-        className="absolute bottom-4 left-4 z-10 flex min-h-11 items-center gap-2 bg-black/60! px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80!"
+        className="absolute bottom-4 left-4 z-10 flex min-h-11 items-center gap-2 bg-black/60! px-3 py-2 text-xs uppercase tracking-wider text-white transition-colors hover:bg-black/80! focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         aria-label={zoomedIn ? 'Zoom out' : 'Zoom in'}
       >
         {zoomedIn ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
@@ -86,7 +86,7 @@ export function LightboxShortcutControls({
         aria-expanded={showShortcuts}
         aria-controls={legendId}
         aria-label={showShortcuts ? 'Hide keyboard shortcuts' : 'Show keyboard shortcuts'}
-        className="absolute bottom-4 left-[7.5rem] z-10 hidden min-h-11 min-w-11 items-center justify-center bg-black/60! px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-black/80! pointer-fine:lg:flex"
+        className="absolute bottom-4 left-[7.5rem] z-10 hidden min-h-11 min-w-11 items-center justify-center bg-black/60! px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-black/80! focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white pointer-fine:lg:flex"
       >
         ?
       </button>
@@ -106,7 +106,7 @@ export function LightboxShortcutControls({
               type="button"
               onClick={onDismissShortcuts}
               aria-label="Dismiss keyboard shortcuts"
-              className="-mr-1 -mt-1 px-1 text-white/60 transition-colors hover:text-white"
+              className="-mr-1 -mt-1 px-1 text-white/60 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               ×
             </button>
