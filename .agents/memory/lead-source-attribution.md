@@ -22,5 +22,12 @@ emails; the team wants one consistent, filterable prefix.
 only. Any new lead pathway (e.g. hidden channel pages) should reuse the web
 visit-source module and pass the label through untouched.
 
+**Google Ads gotchas (confirmed live 2026-08-01):** Google auto-tagging sends
+only click IDs (gclid/gbraid/wbraid), no utm_source — the web module now falls
+back to `Website (GoogleAds)` when a click ID is present without UTMs. Also,
+the registrar's apex→www 301 (Squarespace forwarding) STRIPS the entire query
+string, so ad final URLs must use `https://www.` and carry an explicit UTM
+suffix for campaign-level attribution.
+
 Gotcha: the leads route rate limiter needs `skip` in NODE_ENV=test or route
 tests accumulate 429s across cases (the showings limiter already had it).

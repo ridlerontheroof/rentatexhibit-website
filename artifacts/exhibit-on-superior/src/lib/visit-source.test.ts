@@ -44,6 +44,20 @@ describe('visitSourceFromUrl', () => {
     expect(visitSourceFromUrl('https://x.com/?utm_campaign=orphan')).toBeNull();
   });
 
+  it('falls back to "Website (GoogleAds)" for auto-tagged ad clicks (click IDs, no UTMs)', () => {
+    for (const id of ['gclid', 'gbraid', 'wbraid']) {
+      expect(visitSourceFromUrl(`https://x.com/?${id}=EAIaIQ-example123`)).toBe(
+        'Website (GoogleAds)',
+      );
+    }
+    // Empty click IDs don't count.
+    expect(visitSourceFromUrl('https://x.com/?gclid=')).toBeNull();
+    // Explicit UTMs still win over the click-ID fallback (campaign detail kept).
+    expect(
+      visitSourceFromUrl('https://x.com/?utm_source=google&utm_campaign=spring&gclid=abc'),
+    ).toBe('Website (GoogleAds-Spring)');
+  });
+
   it('strips junk from campaigns down to safe tokens', () => {
     expect(
       visitSourceFromUrl(

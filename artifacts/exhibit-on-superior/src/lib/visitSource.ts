@@ -63,7 +63,17 @@ export function visitSourceFromUrl(url: string): string | null {
     return null;
   }
   const utmSource = params.get('utm_source')?.trim().toLowerCase() ?? '';
-  if (!utmSource) return null;
+  if (!utmSource) {
+    // Google Ads auto-tagging appends only its own click IDs (gclid, or
+    // gbraid/wbraid on iOS) — no utm_source. Without this fallback, every
+    // ad click from a campaign missing an explicit UTM suffix lands as the
+    // default "Website (Exhibit)" and the leasing team can't tell it was
+    // paid traffic (confirmed live on 2026-08-01).
+    for (const clickId of ['gclid', 'gbraid', 'wbraid']) {
+      if (params.get(clickId)?.trim()) return sanitizeVisitSource('Website (GoogleAds)');
+    }
+    return null;
+  }
   const base = GOOGLE_SOURCES.has(utmSource) ? 'GoogleAds' : tokenize(utmSource);
   if (!base) return null;
   const campaign = tokenize(params.get('utm_campaign') ?? '');
