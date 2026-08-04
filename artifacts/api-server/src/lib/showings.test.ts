@@ -342,7 +342,7 @@ describe("createShowingGuestCard", () => {
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(jsonResponse({ guest_card_id: 12345 }));
     const out = await createShowingGuestCard(input);
-    expect(out).toEqual({ guestCardId: "12345", jwt: null });
+    expect(out).toEqual({ guestCardId: "12345", jwt: null, sourceDowngraded: false });
     const [url, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(String(url)).toContain("/listings/api/guest_cards");
     // AppFolio's hosted client snake_cases every request body; camelCase keys
@@ -387,7 +387,7 @@ describe("createShowingGuestCard", () => {
       ),
     );
     const out = await createShowingGuestCard(input);
-    expect(out).toEqual({ guestCardId: "12345", jwt: "tok-abc" });
+    expect(out).toEqual({ guestCardId: "12345", jwt: "tok-abc", sourceDowngraded: false });
   });
 
   it("includes status, content-type and body marker in failures", async () => {
@@ -397,6 +397,53 @@ describe("createShowingGuestCard", () => {
     await expect(createShowingGuestCard(input)).rejects.toThrow(
       /status 400.*content-type=application\/json.*body=<empty>/,
     );
+  });
+
+  it("retries a 422'd campaign source with the default label and flags the downgrade", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response("", { status: 422 }))
+      .mockResolvedValueOnce(jsonResponse({ guest_card_id: 777 }));
+    const out = await createShowingGuestCard({
+      ...input,
+      source: "Website (GoogleAds-SpringPromo)",
+    });
+    expect(out).toEqual({ guestCardId: "777", jwt: null, sourceDowngraded: true });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body)).source).toBe(
+      "Website (GoogleAds-SpringPromo)",
+    );
+    expect(JSON.parse(String((fetchMock.mock.calls[1][1] as RequestInit).body)).source).toBe(
+      "Website (Exhibit)",
+    );
+  });
+
+  it("does NOT retry a 422 when the source is already the default, and annotates the spam-throttle hint", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response("", { status: 422 }));
+    await expect(createShowingGuestCard(input)).rejects.toThrow(/spam throttle/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws with the spam-throttle hint when the default-source retry also 422s", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response("", { status: 422 }));
+    await expect(
+      createShowingGuestCard({ ...input, source: "Website (GoogleAds-SpringPromo)" }),
+    ).rejects.toThrow(/status 422.*body=<empty>.*spam throttle/);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not retry non-422 failures", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response("", { status: 500 }));
+    await expect(
+      createShowingGuestCard({ ...input, source: "Website (GoogleAds-SpringPromo)" }),
+    ).rejects.toThrow(/status 500/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
 

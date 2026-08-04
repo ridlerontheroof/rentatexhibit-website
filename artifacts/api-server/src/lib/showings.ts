@@ -391,20 +391,46 @@ export interface ShowingContactResult {
    * via guest_card_id alone — but keep forwarding it if it ever reappears.
    */
   jwt: string | null;
+  /**
+   * True when AppFolio 422'd the campaign source label and the card was
+   * accepted on the automatic retry with the default source — attribution
+   * was lost but the booking went through. Routes log this loudly.
+   */
+  sourceDowngraded?: boolean;
 }
+
+/**
+ * Diagnosis note appended to guest-card 422 failures. Verified live
+ * 2026-08-04: a 422 with an empty body is AppFolio's new-prospect spam
+ * throttle, not field validation or contract drift — after a burst of new
+ * guest-card creations (e.g. rapid test submissions), ALL new-card creations
+ * fail regardless of name/email/phone/source values, while submissions that
+ * match an existing card (same email or phone) keep returning 201. The
+ * throttle is keyed server-side (X-Forwarded-For is ignored) and wears off
+ * on its own.
+ */
+export const GUEST_CARD_422_HINT =
+  "422+empty body = AppFolio's new-prospect spam throttle (burst of new guest cards, often test submissions); " +
+  "merges to existing cards still succeed; it wears off on its own — avoid rapid re-tests";
 
 /**
  * Build a diagnosable error for a failed AppFolio response: status, content
  * type, request id, and a body snippet (even when empty — say so), so the
- * next contract drift is identifiable from production logs alone.
+ * next contract drift is identifiable from production logs alone. An
+ * optional hint annotates known failure signatures.
  */
-export async function appfolioResponseError(label: string, res: Response): Promise<Error> {
+export async function appfolioResponseError(
+  label: string,
+  res: Response,
+  hint?: string,
+): Promise<Error> {
   const detail = await res.text().catch(() => "");
   return new Error(
     `${label}: status ${res.status}` +
       ` content-type=${res.headers.get("content-type") ?? "none"}` +
       ` x-request-id=${res.headers.get("x-request-id") ?? "none"}` +
-      ` body=${detail ? JSON.stringify(detail.slice(0, 300)) : "<empty>"}`,
+      ` body=${detail ? JSON.stringify(detail.slice(0, 300)) : "<empty>"}` +
+      (hint ? ` hint=${JSON.stringify(hint)}` : ""),
   );
 }
 
@@ -422,25 +448,42 @@ export async function createShowingGuestCard(
   // Same 422 trap as the lead guest-card push: a first name containing a
   // space is rejected outright, so split extra words into the last name.
   const name = normalizeGuestCardName(input.firstName, input.lastName);
-  const res = await fetch(`${LISTINGS_BASE}/api/guest_cards`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "X-Requested-With": "XMLHttpRequest",
-    },
-    body: JSON.stringify({
-      first_name: name.firstName,
-      last_name: name.lastName,
-      email_address: input.email,
-      phone_number: input.phone,
-      listable_uid: input.listableUid,
-      source: input.source ?? SHOWING_SOURCE,
-      skip_cta_for_new_inquiries: true,
-    }),
-  });
+  const post = (source: string) =>
+    fetch(`${LISTINGS_BASE}/api/guest_cards`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: JSON.stringify({
+        first_name: name.firstName,
+        last_name: name.lastName,
+        email_address: input.email,
+        phone_number: input.phone,
+        listable_uid: input.listableUid,
+        source,
+        skip_cta_for_new_inquiries: true,
+      }),
+    });
+  const requestedSource = input.source ?? SHOWING_SOURCE;
+  let res = await post(requestedSource);
+  let sourceDowngraded = false;
+  if (res.status === 422 && requestedSource !== SHOWING_SOURCE) {
+    // Insurance against a campaign label AppFolio won't take: retry once
+    // with the long-standing default so a bad label can never break a
+    // booking. (The 2026-08-04 422 streak was NOT the label — see the
+    // spam-throttle note below — but this retry is cheap and only fires on
+    // 422 with a non-default source.)
+    res = await post(SHOWING_SOURCE);
+    sourceDowngraded = res.ok;
+  }
   if (!res.ok) {
-    throw await appfolioResponseError("AppFolio showing guest card failed", res);
+    throw await appfolioResponseError(
+      "AppFolio showing guest card failed",
+      res,
+      res.status === 422 ? GUEST_CARD_422_HINT : undefined,
+    );
   }
   const data = (await res.json().catch(() => ({}))) as Json;
   const guestCardId = data.guest_card_id ?? data.guestCardId;
@@ -448,7 +491,7 @@ export async function createShowingGuestCard(
   if (typeof guestCardId !== "string" && typeof guestCardId !== "number") {
     throw new Error("AppFolio showing guest card response missing guest_card_id");
   }
-  return { guestCardId: String(guestCardId), jwt };
+  return { guestCardId: String(guestCardId), jwt, sourceDowngraded };
 }
 
 export interface BookShowingInput {

@@ -215,6 +215,15 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
     heartbeat.record(req.log, Date.now(), "contact_ok");
     void recordAcceptedSubmission(req.log, Date.now(), "showing_contact");
     void recordLiveShowingSuccess(req.log);
+    if (result.sourceDowngraded) {
+      // The booking went through but the campaign attribution was dropped —
+      // AppFolio 422'd the label and accepted the default on retry. Loud so
+      // a systematically rejected label shows up in production logs.
+      req.log.error(
+        { unit: input.unit, source: sanitizeLeadSource(input.source) },
+        "AppFolio rejected the campaign source label; guest card created with the default source instead",
+      );
+    }
     req.log.info({ unit: input.unit }, "Created showing guest card in AppFolio");
     res.status(201).json({
       guestCardId: result.guestCardId,

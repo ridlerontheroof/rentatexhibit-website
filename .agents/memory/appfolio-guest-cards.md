@@ -29,6 +29,16 @@ logs "Pushed prospect guest card", AppFolio returned `{"guest_card_id":…}`. Go
   /api/v2/reports/guest_cards.json, Basic auth) exposes each card's `source` — both
   "Website (GoogleAds-Brand)" (UTM path) and default "Website (Exhibit)" landed correctly.
 
+- **Spam throttle (verified live 2026-08-04):** after a burst of NEW guest-card
+  creations (rapid test submissions), AppFolio 422s (empty body) ALL new-prospect
+  creations account-wide — regardless of name/email/phone/source, across listings —
+  while posts matching an existing card (same email OR phone) keep returning 201
+  (merge). X-Forwarded-For is ignored; the block persisted 35+ min. Do NOT read a
+  422-empty streak as contract drift or field validation — and never diagnose it by
+  firing more creation probes (each may extend the block). A campaign source label
+  like "Website (GoogleAds_IL-Chicago_Luxury-Apartments)" was proven ACCEPTED —
+  underscores and unregistered sources are fine.
+
 **How to apply:** resolve unit → listingUrl → listableUid server-side from the cached
 availability snapshot (never trust a client UID), fire-and-forget after the lead is
 persisted. The showing *booking* flow (/api/showings) needs a token + slot picking —

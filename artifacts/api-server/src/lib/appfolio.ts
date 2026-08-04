@@ -543,34 +543,48 @@ export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
   // NOTE: the endpoint requires a snake_case body — AppFolio's hosted client
   // snake_cases every request; camelCase now gets a bare 400 (empty body).
   const name = normalizeGuestCardName(input.firstName, input.lastName);
-  const res = await fetch(`https://${APPFOLIO_DB}.appfolio.com/listings/api/guest_cards`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "X-Requested-With": "XMLHttpRequest",
-    },
-    body: JSON.stringify({
-      first_name: name.firstName,
-      last_name: name.lastName,
-      email_address: input.email,
-      phone_number: input.phone,
-      listable_uid: input.listableUid,
-      // Lead attribution shown to the leasing team in AppFolio. Defaults to
-      // the site-wide label; visits with campaign tags carry their own
-      // sanitized source (see lib/leadSource.ts and the web app's
-      // lib/visitSource.ts).
-      source: input.source ?? DEFAULT_LEAD_SOURCE,
-      skip_cta_for_new_inquiries: true,
-    }),
-  });
+  const post = (source: string) =>
+    fetch(`https://${APPFOLIO_DB}.appfolio.com/listings/api/guest_cards`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: JSON.stringify({
+        first_name: name.firstName,
+        last_name: name.lastName,
+        email_address: input.email,
+        phone_number: input.phone,
+        listable_uid: input.listableUid,
+        // Lead attribution shown to the leasing team in AppFolio. Defaults to
+        // the site-wide label; visits with campaign tags carry their own
+        // sanitized source (see lib/leadSource.ts and the web app's
+        // lib/visitSource.ts).
+        source,
+        skip_cta_for_new_inquiries: true,
+      }),
+    });
+  const requestedSource = input.source ?? DEFAULT_LEAD_SOURCE;
+  let res = await post(requestedSource);
+  if (res.status === 422 && requestedSource !== DEFAULT_LEAD_SOURCE) {
+    // Insurance against a campaign label AppFolio won't take: retry once
+    // with the long-standing default so a bad label can never lose a lead.
+    // (See GUEST_CARD_422_HINT in lib/showings.ts — the observed 422 streak
+    // was AppFolio's new-prospect spam throttle, not the label, but this
+    // retry is cheap and only fires on 422 with a non-default source.)
+    res = await post(DEFAULT_LEAD_SOURCE);
+  }
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
     throw new Error(
       `AppFolio guest card failed: status ${res.status}` +
         ` content-type=${res.headers.get("content-type") ?? "none"}` +
         ` x-request-id=${res.headers.get("x-request-id") ?? "none"}` +
-        ` body=${detail ? JSON.stringify(detail.slice(0, 300)) : "<empty>"}`,
+        ` body=${detail ? JSON.stringify(detail.slice(0, 300)) : "<empty>"}` +
+        (res.status === 422
+          ? " hint=\"422+empty body = AppFolio's new-prospect spam throttle (burst of new guest cards); merges to existing cards still succeed; it wears off on its own\""
+          : ""),
     );
   }
   return true;

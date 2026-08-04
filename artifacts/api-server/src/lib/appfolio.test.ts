@@ -515,6 +515,62 @@ describe("createGuestCard", () => {
     expect(body.first_name).toBe("Mary");
     expect(body.last_name).toBe("Jane Watson");
   });
+
+  it("retries a 422'd campaign source once with the default label", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response("", { status: 422 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ guest_card_id: 2 }), { status: 201 }));
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(
+      createGuestCard({
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "jane@example.com",
+        phone: "3125550100",
+        listableUid: "b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+        source: "Website (GoogleAds-SpringPromo)",
+      }),
+    ).resolves.toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body as string).source).toBe(
+      "Website (GoogleAds-SpringPromo)",
+    );
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body as string).source).toBe(
+      "Website (Exhibit)",
+    );
+  });
+
+  it("does not retry a 422 on the default source and annotates the spam-throttle hint", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response("", { status: 422 }));
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(
+      createGuestCard({
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "jane@example.com",
+        phone: "3125550100",
+        listableUid: "b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+      }),
+    ).rejects.toThrow(/status 422.*body=<empty>.*spam throttle/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not retry non-422 failures even with a campaign source", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response("nope", { status: 500 }));
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(
+      createGuestCard({
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "jane@example.com",
+        phone: "3125550100",
+        listableUid: "b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+        source: "Website (GoogleAds-SpringPromo)",
+      }),
+    ).rejects.toThrow(/status 500/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("dedicated tour unit (feed hygiene + UID resolution)", () => {
