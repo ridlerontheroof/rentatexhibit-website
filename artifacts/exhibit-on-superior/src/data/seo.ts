@@ -51,7 +51,7 @@ export const SITE_LAUNCH_DATE = '2025-01-01';
  * fresh image. (v2: 2026-07 regeneration of nine stale cards, notably
  * reviews.jpg. v3: default og-card.jpg brought under the same guard.)
  */
-export const OG_CARD_VERSION = 7;
+export const OG_CARD_VERSION = 8;
 
 /** Site-wide fallback share card, cache-busted like the per-page cards. */
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg?v=${OG_CARD_VERSION}`;
@@ -459,6 +459,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/three-bedroom-apartments-river-north',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('three-bedroom-apartments-river-north'),
     label: '3 Bedroom Apartments in River North',
     title: '3 Bedroom Apartments in River North | Exhibit On Superior',
     description:

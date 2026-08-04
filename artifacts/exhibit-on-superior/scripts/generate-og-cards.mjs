@@ -164,6 +164,12 @@ export const CARDS = {
     src: 'image-011-20170808-0713-n8k48b.jpg',
     tagline: '2-bedroom apartments in River North, Chicago',
   },
+  'three-bedroom-apartments-river-north': {
+    src: 'image-057-dji-20230620092900-0153-d-oaedvz.jpg',
+    tagline: '3-bedroom penthouses in River North, Chicago',
+    gravity: 'west',
+    offsetX: 189,
+  },
   'apartments-near-northwestern-memorial': {
     src: 'image-082-bt7b3562-adimkf.jpg',
     tagline: 'About 0.6 miles from Northwestern Memorial',
