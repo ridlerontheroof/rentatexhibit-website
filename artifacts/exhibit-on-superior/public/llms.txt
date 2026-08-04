@@ -23,6 +23,18 @@
 - [About](https://www.rentatexhibit.com/about): Building history, management, and community overview.
 - [Map & Directions](https://www.rentatexhibit.com/map-directions): Driving and transit directions to 165 W Superior St.
 
+## Search-Intent Landing Pages
+
+- [Luxury Apartments River North](https://www.rentatexhibit.com/luxury-apartments-river-north): Full overview of luxury high-rise living at Exhibit On Superior.
+- [Studio Apartments River North](https://www.rentatexhibit.com/studio-apartments-river-north): Studio floor plans, pricing, and availability.
+- [Convertible Apartments River North](https://www.rentatexhibit.com/convertible-apartments-river-north): Convertible/junior-one-bedroom layouts and availability.
+- [One-Bedroom Apartments River North](https://www.rentatexhibit.com/one-bedroom-apartments-river-north): One-bedroom floor plans and availability.
+- [Two-Bedroom Apartments River North](https://www.rentatexhibit.com/two-bedroom-apartments-river-north): Two-bedroom floor plans and availability.
+- [Three-Bedroom Apartments River North](https://www.rentatexhibit.com/three-bedroom-apartments-river-north): Penthouse-band three-bedroom floor plans and availability.
+- [Apartments Near Northwestern Memorial](https://www.rentatexhibit.com/apartments-near-northwestern-memorial): Proximity guide for hospital staff and clinicians.
+- [Apartments Near the Merchandise Mart](https://www.rentatexhibit.com/apartments-near-merchandise-mart): Walkability guide for Mart-area workers.
+- [Apartments Near the Loop](https://www.rentatexhibit.com/apartments-near-the-loop): Transit and walkability guide for Loop commuters.
+
 ## Knowledge Center
 
 - [Knowledge Center](https://www.rentatexhibit.com/knowledge): Single-question pages answering renter questions with verified facts — pricing, fees, floor plans, amenities, pets, parking, leasing, utilities, and the neighborhood. Full page catalog: https://www.rentatexhibit.com/llms-full.txt
