@@ -301,16 +301,29 @@ async function main() {
         })();
       })`);
     await sleep(500); // let fonts/layout settle
-    return cdp.eval(`(() => {
-      const rows = document.querySelectorAll(${JSON.stringify(selector)});
-      const rect = rows[0].getBoundingClientRect();
-      return {
-        top: Math.round(rect.top),
-        height: Math.round(rect.height),
-        width: Math.round(rect.width),
-        count: rows.length,
-      };
-    })()`);
+    // The readiness poll above can race navigation (it may resolve against
+    // the pre-navigation document), so the measurement itself also polls
+    // until a row exists instead of assuming rows[0] is present.
+    return cdp.eval(`
+      new Promise((resolve, reject) => {
+        const started = Date.now();
+        (function poll() {
+          const rows = document.querySelectorAll(${JSON.stringify(selector)});
+          if (rows.length > 0) {
+            const rect = rows[0].getBoundingClientRect();
+            return resolve({
+              top: Math.round(rect.top),
+              height: Math.round(rect.height),
+              width: Math.round(rect.width),
+              count: rows.length,
+            });
+          }
+          if (Date.now() - started > 30000) {
+            return reject(new Error(${JSON.stringify(`Timed out measuring ${description} (${selector})`)}));
+          }
+          setTimeout(poll, 100);
+        })();
+      })`);
   }
 
   // Phase 1: skeleton rows must share the real rows' geometry, so the fold

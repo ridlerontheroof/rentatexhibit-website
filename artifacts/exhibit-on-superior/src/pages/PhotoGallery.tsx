@@ -8,7 +8,12 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { Link } from 'wouter';
 import { SplitHeadline } from '../components/SplitHeadline';
-import { galleryImages, galleryCategories as categories, photoGalleryJsonLd } from '../data/gallery';
+import {
+  galleryImages,
+  galleryCategories as categories,
+  galleryCategoryDescriptions,
+  photoGalleryJsonLd,
+} from '../data/gallery';
 import { useModalHistory } from '../hooks/use-modal-history';
 import { DOUBLE_TAP_SCALE, usePinchZoom } from '../hooks/use-pinch-zoom';
 import { clearLegendOnTouchGestures } from '../hooks/clear-legend-on-touch-gestures';
@@ -327,6 +332,34 @@ export function PhotoGallery() {
             </div>
           </div>
         )}
+
+        {/* Album guide — one factual description per album, shared with the
+            gallery data module so counts/content stay honest. */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl uppercase tracking-wider mb-8 text-center">A Guide To Each Album</h2>
+            <dl className="space-y-6 max-w-3xl mx-auto">
+              {categories
+                .filter((c) => c !== 'All')
+                .map((category) => (
+                  <div key={category}>
+                    <dt className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                      {category}{' '}
+                      <span className="font-normal normal-case text-muted-foreground">
+                        ({galleryImages.filter((img) => img.category === category).length}{' '}
+                        {galleryImages.filter((img) => img.category === category).length === 1
+                          ? 'photo'
+                          : 'photos'})
+                      </span>
+                    </dt>
+                    <dd className="mt-1 leading-relaxed text-muted-foreground">
+                      {galleryCategoryDescriptions[category]}
+                    </dd>
+                  </div>
+                ))}
+            </dl>
+          </div>
+        </section>
 
         {/* What the photos show */}
         <section className="py-16 px-4 bg-muted">

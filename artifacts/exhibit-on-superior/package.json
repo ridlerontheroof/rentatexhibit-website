@@ -26,6 +26,7 @@
     "check:csp": "node scripts/check-csp-violations.mjs",
     "check:prepublish": "pnpm run build && pnpm run check:fold:built && pnpm run check:link-names && pnpm run check:server:built && pnpm run check:csp",
     "check:perf": "node scripts/check-perf.mjs",
+    "generate:unit-map": "node scripts/generate-unit-map.mjs",
     "generate:unit-rewrites": "node scripts/generate-unit-rewrites.mjs",
     "generate:unit-rewrites:check": "node scripts/generate-unit-rewrites.mjs --check"
   },

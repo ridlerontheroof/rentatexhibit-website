@@ -25,6 +25,8 @@ import {
   variantPagesFor,
 } from '../data/floorPlanPages';
 import { planSqftLabel } from '../data/floorPlans';
+import { FLOOR_PLAN_COPY } from '../data/floorPlanCopy';
+import { planFactsFor, directionPhrase, facingAdjective } from '../data/planFacts';
 import { ADA_KEY, ADA_DISCLAIMER } from '../data/ada';
 import { useModalHistory } from '../hooks/use-modal-history';
 
@@ -215,6 +217,67 @@ export function FloorPlanDetail() {
       </div>
 
       <div className="container mx-auto px-4">
+        {/* Living in this layout — hand-written per-plan guidance (data/
+            floorPlanCopy.ts) plus sheet-derived facts from the unit map
+            (data/planFacts.ts). Coverage + fact discipline are guarded by
+            floorPlanCopy.test.ts. */}
+        {(() => {
+          const copy = FLOOR_PLAN_COPY[p.id];
+          const facts = planFactsFor(p.id);
+          if (!copy && !facts) return null;
+          const sheetFeatures = facts
+            ? [
+                facts.facing &&
+                  `${facts.facing}-facing windows \u2014 ${directionPhrase(facts.facing)}`,
+                facts.balcony ? 'Private balcony' : 'No private balcony (02/03 stacks, floors 6\u201329)',
+                facts.inHomeWd && 'In-home washer and dryer',
+                facts.kitchenIsland && 'Freestanding kitchen island',
+                facts.foyer && 'Foyer entry',
+                facts.openLivingDining && 'Open living and dining area',
+                facts.sleepingAlcove && 'Dedicated sleeping alcove',
+                facts.openStudioLayout && 'Open studio layout',
+                facts.splitBedroom && 'Separated-bedroom arrangement',
+                facts.dedicatedDen && 'Dedicated den',
+              ].filter((f): f is string => Boolean(f))
+            : [];
+          return (
+            <section className="mx-auto mt-16 max-w-3xl">
+              <h2 className="mb-6 text-center text-xl uppercase tracking-wider text-foreground">
+                Living in the {p.typeLabel}
+              </h2>
+              {copy && (
+                <div className="space-y-4 text-center leading-relaxed text-muted-foreground">
+                  {copy.paragraphs.map((para) => (
+                    <p key={para.slice(0, 40)}>{para}</p>
+                  ))}
+                </div>
+              )}
+              {facts && (
+                <div className="mt-8 border border-border bg-white px-6 py-6">
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                    On the plan sheet
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Features shown on this layout&rsquo;s architectural sheet
+                    {facts.facing ? ` \u2014 every home on this plan is ${facingAdjective(facts.facing)}` : ''}
+                    . {facts.unitCount === 1
+                      ? 'One home in the building has this exact plan.'
+                      : `${facts.unitCount} homes in the building share this plan.`}
+                  </p>
+                  <ul className="mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+                    {sheetFeatures.map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <span className="mt-2 h-1 w-1 shrink-0 bg-primary" aria-hidden="true" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
+          );
+        })()}
+
         {/* Live matching inventory — or the never-empty interest-list state. */}
         <div className="mx-auto mt-16 max-w-3xl">
           <h2 className="mb-6 text-center text-xl uppercase tracking-wider text-foreground">

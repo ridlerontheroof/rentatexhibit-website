@@ -1,6 +1,6 @@
 import { startTransition, useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
-import { BedDouble, Bath, Ruler, PawPrint } from 'lucide-react';
+import { UnitFactIcon, UnitFactIconDefs } from './UnitFactIcon';
 import {
   tourUrlForListing,
 } from './UnitGalleryLightbox';
@@ -288,24 +288,24 @@ export function UnitRow({
           <span className="col-span-2 flex min-w-0 flex-col gap-y-1 pt-0.5 lg:col-auto lg:flex-1">
             <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
-                <BedDouble className="h-4 w-4 text-primary" aria-hidden="true" />
+                <UnitFactIcon name="bed-double" className="h-4 w-4 text-primary" />
                 {bedBathLabel(u, group).split(' · ')[0] ?? ''}
               </span>
               {(u.bathrooms ?? group?.baths) != null && (
                 <span className="inline-flex items-center gap-1.5">
-                  <Bath className="h-4 w-4 text-primary" aria-hidden="true" />
+                  <UnitFactIcon name="bath" className="h-4 w-4 text-primary" />
                   {u.bathrooms ?? group?.baths} Bath
                 </span>
               )}
               {sqft !== null && (
                 <span className="inline-flex items-center gap-1.5">
-                  <Ruler className="h-4 w-4 text-primary" aria-hidden="true" />
+                  <UnitFactIcon name="ruler" className="h-4 w-4 text-primary" />
                   {sqft.toLocaleString()} sq ft
                 </span>
               )}
               {petsLabel(u) && (
                 <span className="inline-flex items-center gap-1.5">
-                  <PawPrint className="h-4 w-4 text-primary" aria-hidden="true" />
+                  <UnitFactIcon name="paw-print" className="h-4 w-4 text-primary" />
                   {petsLabel(u)}
                 </span>
               )}
@@ -453,6 +453,7 @@ export function AvailableUnits() {
             </div>
           )}
 
+          <UnitFactIconDefs />
           <ul className="divide-y divide-border">
             {(allRows ? visibleRows : visibleRows.slice(0, 3)).map((u, rowIndex) => {
               // Posted units link to their own AppFolio listing's showing

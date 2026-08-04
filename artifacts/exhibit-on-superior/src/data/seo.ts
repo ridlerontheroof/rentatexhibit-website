@@ -185,7 +185,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/photo-gallery': {
     path: '/photo-gallery',
-    dateModified: '2026-07-26',
+    dateModified: '2026-08-04',
     ogImage: ogCardUrl('photo-gallery'),
     label: 'Photo Gallery',
     title: 'Photo Gallery | Exhibit On Superior Chicago Apartments',

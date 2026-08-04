@@ -62,3 +62,4 @@
 - [GitHub mirror sync](github-mirror-sync.md) — protected main: gitPush says BRANCH_ALREADY_EXISTS; sync via branch+PR; Codex runs leave workspace on the scaffold branch — check current branch first.
 - [Dedicated "Tour" unit](dedicated-tour-unit.md) — general tours book via reserved TOUR token against a hidden AppFolio unit; unit_directory pick() needs exact needles (unit_address precedes unit_name).
 - [QA evidence package](qa-evidence-package.md) — evidence reports must be script-derived from source JSONs; concurrent perf runs otherwise make the package inconsistent.
+- [Unit map spreadsheet as fact source](unit-map-fact-source.md) — unitMap.json/planFacts/floorPlanCopy pipeline, sheet's floor-5 = 4M mezzanine, line-06 packet split alias, copy guarded by fact-discipline tests.

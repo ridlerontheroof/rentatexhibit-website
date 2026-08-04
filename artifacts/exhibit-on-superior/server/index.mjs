@@ -178,7 +178,7 @@ const CSP = [
   // Inline scripts (GTM bootstrap, availability prefetch, host redirect,
   // legacy-redirect stubs) are allowed by hash — collected from the build
   // output at startup — so 'unsafe-inline' is not needed.
-  `script-src 'self' ${inlineScriptHashes.join(' ')} ${gtmInjectedScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://analytics.ahrefs.com`,
+  `script-src 'self' ${inlineScriptHashes.join(' ')} ${gtmInjectedScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://maps.googleapis.com https://analytics.ahrefs.com`,
   // Google Maps JS injects its own stylesheet + font loads at runtime.
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
