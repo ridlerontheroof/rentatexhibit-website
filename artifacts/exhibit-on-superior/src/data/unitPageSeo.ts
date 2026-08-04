@@ -196,7 +196,10 @@ export function unitPageJsonLd(u: AvailableUnit, updatedAt?: string | null): Rec
     breadcrumb: { '@id': `${canonical}#breadcrumb` },
     // The availability snapshot's own timestamp — the same data the page
     // renders — NOT build time, so the claim stays truthful.
-    ...(updatedAt ? { dateModified: updatedAt } : {}),
+    // datePublished is required for E-E-A-T freshness signals; unit pages
+    // have no separate first-seen date, so the snapshot date doubles as
+    // both the publication anchor and the last-modified marker.
+    ...(updatedAt ? { datePublished: updatedAt, dateModified: updatedAt } : {}),
   };
 
   const breadcrumb = {

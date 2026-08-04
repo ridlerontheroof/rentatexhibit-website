@@ -82,6 +82,42 @@ export function buildReviewsPageModel(live?: GoogleReviewsData): ReviewsPageMode
 }
 
 /**
+ * AggregateRating-only JSON-LD for the homepage. Emits a LocalBusiness node
+ * (same @id as the site-wide ApartmentComplex) with just the aggregate rating
+ * and count — no individual Review nodes, because only the aggregate star
+ * display is visible on the homepage. Google requires every structured-data
+ * claim to be visible to users, so individual reviews must only appear in
+ * schema on pages that actually render those quotes.
+ */
+export function homepageAggregateRatingJsonLd(model?: Pick<ReviewsPageModel, 'rating' | 'reviewCount'>): Record<string, unknown> {
+  const rating = model?.rating ?? FALLBACK_RATING;
+  const reviewCount = model?.reviewCount ?? FALLBACK_REVIEW_COUNT;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${SITE_URL}#apartmentcomplex`,
+    name: 'Exhibit On Superior',
+    url: SITE_URL,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '165 W Superior St',
+      addressLocality: 'Chicago',
+      addressRegion: 'IL',
+      postalCode: '60654',
+      addressCountry: 'US',
+    },
+    telephone: '312-450-0635',
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: rating,
+      reviewCount,
+      bestRating: 5,
+      worstRating: 1,
+    },
+  };
+}
+
+/**
  * Review + AggregateRating JSON-LD for /reviews, derived from the SAME model
  * the page renders. Google requires that rating values in schema be visibly
  * displayed on the page and come from genuine reviews — so this must only ever

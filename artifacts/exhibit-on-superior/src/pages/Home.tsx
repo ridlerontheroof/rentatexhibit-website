@@ -1,7 +1,7 @@
 import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { Link } from 'wouter';
 
-import { ArrowRight, MapPin, Phone } from 'lucide-react';
+import { ArrowRight, MapPin, Phone, Star } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
@@ -10,6 +10,7 @@ import { SplitHeadline } from '../components/SplitHeadline';
 import { trackOutboundClick } from '../lib/analytics';
 import { SmartImg } from '../components/SmartImg';
 import { WALK_SCORE, TRANSIT_SCORE } from '../data/walkScores';
+import { FALLBACK_RATING, FALLBACK_REVIEW_COUNT, homepageAggregateRatingJsonLd } from '../data/reviews';
 
 // Home hero carousel — same photos and order as the source rentatexhibit.com hero.
 export const HERO_SLIDES: HeroSlide[] = [
@@ -27,7 +28,7 @@ export const HERO_SLIDES: HeroSlide[] = [
 export function Home() {
   return (
     <>
-      <Seo path="/" />
+      <Seo path="/" extraJsonLd={[homepageAggregateRatingJsonLd()]} />
       <div>
         {/* Hero Section */}
         <HeroSlider slides={HERO_SLIDES}>
@@ -253,6 +254,30 @@ export function Home() {
                   165 W Superior St, Chicago, IL 60654
                 </span>
               </div>
+            </div>
+            {/* Aggregate rating — visible display required by Google before
+                AggregateRating structured data can be emitted on this page. */}
+            <div className="flex justify-center mb-6">
+              <Link
+                href="/reviews"
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <span className="flex items-center gap-0.5" aria-hidden="true">
+                  {[1,2,3,4,5].map((i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4"
+                      fill={i <= Math.round(FALLBACK_RATING) ? 'currentColor' : 'none'}
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      style={{ color: 'var(--color-primary)' }}
+                    />
+                  ))}
+                </span>
+                <span>
+                  <strong>{FALLBACK_RATING}</strong> · {FALLBACK_REVIEW_COUNT} Google reviews
+                </span>
+              </Link>
             </div>
             <div className="mt-8 flex justify-center gap-4">
               <Link href="/contact-us" className="btn-gold-outline bg-primary text-white border-primary hover:bg-primary/90 inline-block">

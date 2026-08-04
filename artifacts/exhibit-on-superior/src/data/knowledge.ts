@@ -317,11 +317,17 @@ export function buildKnowledgeSeoModel(a: KnowledgeArticle): SeoModel {
   const canonical = `${SITE_URL}${knowledgePath(a.slug)}`;
   const ogImage = DEFAULT_OG_IMAGE;
 
+  const publishedTime = a.published ?? SITE_LAUNCH_DATE;
+  const modifiedTime = knowledgeUpdated(a);
+
   const metas: SeoMeta[] = [
     { name: 'description', content: description },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     { property: 'og:locale', content: 'en_US' },
-    { property: 'og:type', content: 'website' },
+    // og:type=article unlocks article:published_time/modified_time on
+    // Facebook and LinkedIn, enabling richer social previews with
+    // freshness signals — and matches the JSON-LD @type: ['Article','WebPage'].
+    { property: 'og:type', content: 'article' },
     { property: 'og:site_name', content: 'Exhibit On Superior' },
     { property: 'og:title', content: title },
     { property: 'og:description', content: description },
@@ -330,6 +336,8 @@ export function buildKnowledgeSeoModel(a: KnowledgeArticle): SeoModel {
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: title },
+    { property: 'article:published_time', content: publishedTime },
+    { property: 'article:modified_time', content: modifiedTime },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:site', content: TWITTER_SITE },
     { name: 'twitter:title', content: title },
