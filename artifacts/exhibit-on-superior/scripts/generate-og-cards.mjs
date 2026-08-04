@@ -142,6 +142,42 @@ export const CARDS = {
     tagline: 'A 34-story luxury tower in River North, Chicago',
     gravity: 'south',
   },
+  'luxury-apartments-river-north': {
+    src: 'image-009-34-southeast-levwhc.jpg',
+    tagline: 'Luxury apartments in River North, Chicago',
+    gravity: 'south',
+  },
+  'studio-apartments-river-north': {
+    src: 'image-014-exhibit-living-room-n5xrna.jpg',
+    tagline: 'Studio apartments in River North, Chicago',
+    gravity: 'south',
+  },
+  'convertible-apartments-river-north': {
+    src: 'image-015-work-spaces-with-blazing-fast-wifi-access-lzfatq.jpg',
+    tagline: 'Convertible apartments in River North, Chicago',
+  },
+  'one-bedroom-apartments-river-north': {
+    src: 'image-017-012417-6521-i8yuom.jpg',
+    tagline: '1-bedroom apartments in River North, Chicago',
+  },
+  'two-bedroom-apartments-river-north': {
+    src: 'image-011-20170808-0713-n8k48b.jpg',
+    tagline: '2-bedroom apartments in River North, Chicago',
+  },
+  'apartments-near-northwestern-memorial': {
+    src: 'image-082-bt7b3562-adimkf.jpg',
+    tagline: 'About 0.6 miles from Northwestern Memorial',
+  },
+  'apartments-near-merchandise-mart': {
+    src: 'image-055-dji-20230620092832-0149-d-yrh5eg.jpg',
+    tagline: 'About 0.5 miles from the Merchandise Mart',
+  },
+  'apartments-near-the-loop': {
+    src: 'image-057-dji-20230620092900-0153-d-oaedvz.jpg',
+    tagline: 'One L stop from the Loop, River North',
+    gravity: 'west',
+    offsetX: 189,
+  },
 };
 
 async function generateCard(page, spec, outDir) {

@@ -390,7 +390,7 @@ export function buildFloorPlanSeoModel(
   const title = floorPlanTitle(page);
   const description = floorPlanDescription(page);
   const canonical = floorPlanCanonical(page.slug);
-  const ogImage = ogCardUrl('floor-plans');
+  const ogImage = `${SITE_URL}${page.plan.images.detail}`;
 
   const metas: SeoMeta[] = [
     { name: 'description', content: description },
@@ -402,8 +402,8 @@ export function buildFloorPlanSeoModel(
     { property: 'og:description', content: description },
     { property: 'og:url', content: canonical },
     { property: 'og:image', content: ogImage },
-    { property: 'og:image:width', content: '1200' },
-    { property: 'og:image:height', content: '630' },
+    { property: 'og:image:width', content: '1500' },
+    { property: 'og:image:height', content: '1941' },
     { property: 'og:image:alt', content: title },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:site', content: TWITTER_SITE },

@@ -51,7 +51,7 @@ export const SITE_LAUNCH_DATE = '2025-01-01';
  * fresh image. (v2: 2026-07 regeneration of nine stale cards, notably
  * reviews.jpg. v3: default og-card.jpg brought under the same guard.)
  */
-export const OG_CARD_VERSION = 6;
+export const OG_CARD_VERSION = 7;
 
 /** Site-wide fallback share card, cache-busted like the per-page cards. */
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-card.jpg?v=${OG_CARD_VERSION}`;
@@ -328,6 +328,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/luxury-apartments-river-north',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('luxury-apartments-river-north'),
     label: 'Luxury River North Apartments',
     title: 'Luxury River North Apartments, Chicago | Exhibit On Superior',
     description: `Luxury River North apartments at 165 W Superior St \u2014 ${UNIT_TOTAL} residences with live pricing, a full amenity floor, Walk Score 99, and tours available.`,
@@ -352,6 +353,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/studio-apartments-river-north',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('studio-apartments-river-north'),
     label: 'Studio Apartments in River North',
     title: 'Studio Apartments in River North Chicago | Exhibit On Superior',
     description:
@@ -377,6 +379,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/convertible-apartments-river-north',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('convertible-apartments-river-north'),
     label: 'Convertible Apartments in River North',
     title: 'Convertible Apartments in River North | Exhibit On Superior',
     description:
@@ -403,6 +406,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/one-bedroom-apartments-river-north',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('one-bedroom-apartments-river-north'),
     label: '1 Bedroom Apartments in River North',
     title: '1 Bedroom Apartments in River North | Exhibit On Superior',
     description:
@@ -429,6 +433,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/two-bedroom-apartments-river-north',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('two-bedroom-apartments-river-north'),
     label: '2 Bedroom Apartments in River North',
     title: '2 Bedroom Apartments in River North | Exhibit On Superior',
     description:
@@ -454,6 +459,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/apartments-near-northwestern-memorial',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('apartments-near-northwestern-memorial'),
     label: 'Apartments Near Northwestern Memorial',
     title: 'Apartments Near Northwestern Memorial | Exhibit On Superior',
     description:
@@ -478,6 +484,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/apartments-near-merchandise-mart',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('apartments-near-merchandise-mart'),
     label: 'Apartments Near the Merchandise Mart',
     title: 'Apartments Near the Merchandise Mart | Exhibit On Superior',
     description:
@@ -503,6 +510,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     path: '/apartments-near-the-loop',
     datePublished: '2026-08-04',
     dateModified: '2026-08-04',
+    ogImage: ogCardUrl('apartments-near-the-loop'),
     label: 'Apartments Near the Loop',
     title: 'Apartments Near the Loop, Chicago | Exhibit On Superior',
     description:
