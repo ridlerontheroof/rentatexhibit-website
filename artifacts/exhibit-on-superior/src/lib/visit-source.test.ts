@@ -44,6 +44,31 @@ describe('visitSourceFromUrl', () => {
     expect(visitSourceFromUrl('https://x.com/?utm_campaign=orphan')).toBeNull();
   });
 
+  it('passes a label-safe ?source= token through verbatim (live Google Ads convention)', () => {
+    expect(
+      visitSourceFromUrl(
+        'https://www.rentatexhibit.com/amenities?source=GoogleAds_IL-Chicago_Luxury-Apartments',
+      ),
+    ).toBe('Website (GoogleAds_IL-Chicago_Luxury-Apartments)');
+  });
+
+  it('tokenizes an unsafe ?source= value instead of dropping it', () => {
+    expect(visitSourceFromUrl('https://x.com/?source=google%20ads%20spring!')).toBe(
+      'Website (GoogleAdsSpring)',
+    );
+    // A source with nothing salvageable falls through to UTM/click-ID handling.
+    expect(visitSourceFromUrl('https://x.com/?source=%22%27%3C%3E&gclid=abc')).toBe(
+      'Website (GoogleAds)',
+    );
+    expect(visitSourceFromUrl('https://x.com/?source=%22%27%3C%3E')).toBeNull();
+  });
+
+  it('?source= wins over UTM params when both are present', () => {
+    expect(
+      visitSourceFromUrl('https://x.com/?source=GoogleAds_Test&utm_source=google&utm_campaign=x'),
+    ).toBe('Website (GoogleAds_Test)');
+  });
+
   it('falls back to "Website (GoogleAds)" for auto-tagged ad clicks (click IDs, no UTMs)', () => {
     for (const id of ['gclid', 'gbraid', 'wbraid']) {
       expect(visitSourceFromUrl(`https://x.com/?${id}=EAIaIQ-example123`)).toBe(

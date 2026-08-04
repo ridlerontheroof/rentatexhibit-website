@@ -62,6 +62,20 @@ export function visitSourceFromUrl(url: string): string | null {
   } catch {
     return null;
   }
+  // The live Google Ads campaigns tag their final URLs with a ready-made
+  // token — e.g. ?source=GoogleAds_IL-Chicago_Luxury-Apartments — rather
+  // than UTM params (discovered 2026-08-04). When the token is already
+  // label-safe, pass it through verbatim so AppFolio shows exactly the
+  // label the marketing team configured on the ad.
+  const explicit = params.get('source')?.trim() ?? '';
+  if (explicit) {
+    const verbatim = sanitizeVisitSource(`Website (${explicit})`);
+    if (verbatim) return verbatim;
+    const tokenized = tokenize(explicit).slice(0, VISIT_SOURCE_MAX_LENGTH - 'Website ()'.length);
+    const cleaned = sanitizeVisitSource(`Website (${tokenized})`);
+    if (cleaned) return cleaned;
+    // Unusable ?source= value — fall through to UTM/click-ID handling.
+  }
   const utmSource = params.get('utm_source')?.trim().toLowerCase() ?? '';
   if (!utmSource) {
     // Google Ads auto-tagging appends only its own click IDs (gclid, or
