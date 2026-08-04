@@ -18,8 +18,8 @@ import {
   APARTMENT_COMPLEX_NODE,
   type SeoModel,
   type SeoMeta,
-  DEFAULT_OG_IMAGE,
   TWITTER_SITE,
+  ogCardUrl,
 } from './seo';
 import { KNOWLEDGE_ARTICLES } from './knowledgeArticles';
 // Lives in its own tiny module so site-wide components (FaqSection,
@@ -238,8 +238,8 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
     description: knowledgeDescription(a),
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
-    // Same site-wide share card the og:image meta uses (buildKnowledgeSeoModel).
-    primaryImageOfPage: DEFAULT_OG_IMAGE,
+    // Knowledge Center branded card (same as og:image in buildKnowledgeSeoModel).
+    primaryImageOfPage: ogCardUrl('knowledge'),
     author,
     publisher: { '@id': `${SITE_URL}#organization` },
     datePublished: a.published ?? SITE_LAUNCH_DATE,
@@ -315,7 +315,7 @@ export function buildKnowledgeSeoModel(a: KnowledgeArticle): SeoModel {
   const title = knowledgeTitle(a);
   const description = knowledgeDescription(a);
   const canonical = `${SITE_URL}${knowledgePath(a.slug)}`;
-  const ogImage = DEFAULT_OG_IMAGE;
+  const ogImage = ogCardUrl('knowledge');
 
   const publishedTime = a.published ?? SITE_LAUNCH_DATE;
   const modifiedTime = knowledgeUpdated(a);
