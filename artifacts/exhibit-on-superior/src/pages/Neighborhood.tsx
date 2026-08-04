@@ -177,6 +177,35 @@ export function Neighborhood() {
           </div>
         </section>
 
+        {/* Cross-links into the search-intent landing pages (data/landingPages.ts). */}
+        <section className="py-12 px-4">
+          <div className="container mx-auto max-w-3xl text-center">
+            <p className="eyebrow mb-3">Living Nearby</p>
+            <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+              <li>
+                <Link href="/luxury-apartments-river-north" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  Luxury Apartments in River North
+                </Link>
+              </li>
+              <li>
+                <Link href="/apartments-near-the-loop" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  Apartments Near the Loop
+                </Link>
+              </li>
+              <li>
+                <Link href="/apartments-near-merchandise-mart" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  Apartments Near the Merchandise Mart
+                </Link>
+              </li>
+              <li>
+                <Link href="/apartments-near-northwestern-memorial" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  Apartments Near Northwestern Memorial
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </section>
+
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
             <SplitHeadline script="Embrace Unbounded City Living" caps="At Exhibit On Superior" dark className="mb-6" />

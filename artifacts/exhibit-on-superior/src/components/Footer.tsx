@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="bg-footer text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Logo & Address */}
           <div>
             <img
@@ -77,6 +77,53 @@ export function Footer() {
               <li>
                 <Link href="/knowledge" className="hover:text-primary-on-dark transition-colors">
                   Knowledge Center
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Search-intent landing pages (see data/landingPages.ts) */}
+          <div>
+            <h3 className="uppercase tracking-wider font-semibold mb-4 text-sm">Find Apartments</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/luxury-apartments-river-north" className="hover:text-primary-on-dark transition-colors">
+                  Luxury River North Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/studio-apartments-river-north" className="hover:text-primary-on-dark transition-colors">
+                  Studio Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/convertible-apartments-river-north" className="hover:text-primary-on-dark transition-colors">
+                  Convertible Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/one-bedroom-apartments-river-north" className="hover:text-primary-on-dark transition-colors">
+                  1 Bedroom Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/two-bedroom-apartments-river-north" className="hover:text-primary-on-dark transition-colors">
+                  2 Bedroom Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/apartments-near-northwestern-memorial" className="hover:text-primary-on-dark transition-colors">
+                  Near Northwestern Memorial
+                </Link>
+              </li>
+              <li>
+                <Link href="/apartments-near-merchandise-mart" className="hover:text-primary-on-dark transition-colors">
+                  Near the Merchandise Mart
+                </Link>
+              </li>
+              <li>
+                <Link href="/apartments-near-the-loop" className="hover:text-primary-on-dark transition-colors">
+                  Near the Loop
                 </Link>
               </li>
             </ul>

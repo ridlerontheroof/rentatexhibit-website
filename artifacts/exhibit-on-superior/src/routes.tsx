@@ -113,6 +113,39 @@ export const routes: RouteDef[] = [
     path: '/floor-plans',
     load: () => import('./pages/FloorPlansHub').then((m) => m.FloorPlansHub),
   },
+  // Search-intent landing pages (data/landingPages.ts) — all share one chunk.
+  {
+    path: '/luxury-apartments-river-north',
+    load: () => import('./pages/SeoLanding').then((m) => m.LuxuryRiverNorth),
+  },
+  {
+    path: '/studio-apartments-river-north',
+    load: () => import('./pages/SeoLanding').then((m) => m.StudioRiverNorth),
+  },
+  {
+    path: '/convertible-apartments-river-north',
+    load: () => import('./pages/SeoLanding').then((m) => m.ConvertibleRiverNorth),
+  },
+  {
+    path: '/one-bedroom-apartments-river-north',
+    load: () => import('./pages/SeoLanding').then((m) => m.OneBedroomRiverNorth),
+  },
+  {
+    path: '/two-bedroom-apartments-river-north',
+    load: () => import('./pages/SeoLanding').then((m) => m.TwoBedroomRiverNorth),
+  },
+  {
+    path: '/apartments-near-northwestern-memorial',
+    load: () => import('./pages/SeoLanding').then((m) => m.NearNorthwesternMemorial),
+  },
+  {
+    path: '/apartments-near-merchandise-mart',
+    load: () => import('./pages/SeoLanding').then((m) => m.NearMerchandiseMart),
+  },
+  {
+    path: '/apartments-near-the-loop',
+    load: () => import('./pages/SeoLanding').then((m) => m.NearTheLoop),
+  },
   { path: '/photo-gallery', load: () => import('./pages/PhotoGallery').then((m) => m.PhotoGallery) },
   { path: '/virtual-tour', load: () => import('./pages/VirtualTour').then((m) => m.VirtualTour) },
   { path: '/amenities', load: () => import('./pages/Amenities').then((m) => m.Amenities) },

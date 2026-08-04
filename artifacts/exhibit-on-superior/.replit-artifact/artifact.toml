@@ -294,6 +294,70 @@ to = "/apartments/il/chicago/magellan-rewards/index.html"
 # code-derived (src/data/floorPlanPages.ts); the parity guard in
 # scripts/prerender.mjs fails the build if this block drifts.
 [[services.production.rewrites]]
+from = "/luxury-apartments-river-north"
+to = "/luxury-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/luxury-apartments-river-north/"
+to = "/luxury-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/studio-apartments-river-north"
+to = "/studio-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/studio-apartments-river-north/"
+to = "/studio-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/convertible-apartments-river-north"
+to = "/convertible-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/convertible-apartments-river-north/"
+to = "/convertible-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/one-bedroom-apartments-river-north"
+to = "/one-bedroom-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/one-bedroom-apartments-river-north/"
+to = "/one-bedroom-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/two-bedroom-apartments-river-north"
+to = "/two-bedroom-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/two-bedroom-apartments-river-north/"
+to = "/two-bedroom-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments-near-northwestern-memorial"
+to = "/apartments-near-northwestern-memorial/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments-near-northwestern-memorial/"
+to = "/apartments-near-northwestern-memorial/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments-near-merchandise-mart"
+to = "/apartments-near-merchandise-mart/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments-near-merchandise-mart/"
+to = "/apartments-near-merchandise-mart/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments-near-the-loop"
+to = "/apartments-near-the-loop/index.html"
+
+[[services.production.rewrites]]
+from = "/apartments-near-the-loop/"
+to = "/apartments-near-the-loop/index.html"
+
+[[services.production.rewrites]]
 from = "/floor-plans"
 to = "/floor-plans/index.html"
 

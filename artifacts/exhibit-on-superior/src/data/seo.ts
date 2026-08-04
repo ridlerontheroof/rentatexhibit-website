@@ -160,10 +160,10 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/floor-plans': {
     path: '/floor-plans',
-    dateModified: '2026-07-27',
+    dateModified: '2026-08-04',
     ogImage: ogCardUrl('floor-plans'),
     label: 'Floor Plans',
-    title: 'Floor Plan Layouts, Studio to 3 Bedroom | Exhibit On Superior',
+    title: 'River North Floor Plans, Studio to 3 Bed | Exhibit On Superior',
     description:
       'Every distinct floor-plan layout at Exhibit On Superior in River North Chicago — plan sheets, square footage, floor ranges, balconies, and live availability.',
     quickAnswer: `Exhibit On Superior offers 34 distinct floor-plan layouts across 27 residence lines — studios, convertibles, and one, two, and three-bedroom homes from about ${SQFT_MIN_DISPLAY} to ${SQFT_MAX_DISPLAY} square feet over 34 floors. Each layout below has its own page with the plan sheet, floor range, balcony and accessibility details, and any apartments of that plan available now.`,
@@ -235,10 +235,10 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/amenities': {
     path: '/amenities',
-    dateModified: '2026-07-30',
+    dateModified: '2026-08-04',
     ogImage: ogCardUrl('amenities'),
     label: 'Amenities',
-    title: 'Amenities | Exhibit On Superior River North Apartments',
+    title: 'Luxury Apartment Amenities in River North | Exhibit On Superior',
     description:
       'Explore Exhibit On Superior amenities, including a full-floor amenity deck, fitness center, pool, lounges, work areas, dog spa, and on-site lifestyle retail.',
     quickAnswer:
@@ -320,6 +320,207 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       {
         q: 'Are there breed or weight restrictions?',
         a: 'There are no weight limits. Breed restrictions do apply \u2014 please see a leasing consultant for the current details before applying.',
+      },
+    ],
+  },
+  // --- Search-intent landing pages (see data/landingPages.ts for page copy) ---
+  '/luxury-apartments-river-north': {
+    path: '/luxury-apartments-river-north',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: 'Luxury River North Apartments',
+    title: 'Luxury River North Apartments, Chicago | Exhibit On Superior',
+    description: `Luxury River North apartments at 165 W Superior St \u2014 ${UNIT_TOTAL} residences with live pricing, a full amenity floor, Walk Score 99, and tours available.`,
+    quickAnswer: `Exhibit On Superior offers luxury River North apartments at 165 W Superior St, Chicago \u2014 ${UNIT_TOTAL} studio, convertible, one-, two-, and three-bedroom residences from ${SQFT_MIN_DISPLAY} to ${SQFT_MAX_DISPLAY} square feet over 34 stories, with a full amenity floor (75-foot lap pool, fitness center, work rooms), a 24-hour front desk, and live availability with current pricing below.`,
+    faqs: [
+      {
+        q: 'What makes Exhibit On Superior a luxury building?',
+        a: 'A full floor of amenities \u2014 75-foot lap pool, hot tub, sauna, fitness center with two private training rooms and a boxing simulator, work and meeting rooms, a music studio, and a doggie spa \u2014 plus a 24-hour front desk and floor-to-ceiling windows in a 34-story River North tower.',
+      },
+      {
+        q: 'How much do luxury apartments in River North cost at Exhibit On Superior?',
+        a: PRICING_FAQ_ANSWER,
+        knowledgeSlug: 'how-much-is-rent',
+      },
+      {
+        q: 'Where in River North is Exhibit On Superior?',
+        a: 'At 165 W Superior St, Chicago, IL 60654 \u2014 the corner of Superior and Wells, two blocks from the Chicago Brown/Purple Line station, about 0.5 miles from THE MART and roughly a mile north of the Loop.',
+      },
+    ],
+  },
+  '/studio-apartments-river-north': {
+    path: '/studio-apartments-river-north',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: 'Studio Apartments in River North',
+    title: 'Studio Apartments in River North Chicago | Exhibit On Superior',
+    description:
+      'Studio apartments in River North Chicago at Exhibit On Superior \u2014 efficient luxury homes with live pricing, full amenity-floor access, and Walk Score 99.',
+    quickAnswer: `Exhibit On Superior offers studio apartments in River North, Chicago at 165 W Superior St. Studios are the most efficient layouts in the ${UNIT_TOTAL}-residence tower, and every studio includes full access to the amenity floor \u2014 75-foot lap pool, fitness center, work rooms \u2014 plus a 24-hour front desk. Current studio availability with live pricing is listed below.`,
+    faqs: [
+      {
+        q: 'How big are the studio apartments at Exhibit On Superior?',
+        a: 'Studios are the smallest layouts in the tower, starting at 448 square feet. Each floor-plan page shows the exact plan sheet, square footage, and floor range.',
+      },
+      {
+        q: 'What is the difference between a studio and a convertible?',
+        a: 'A studio is one open room; a convertible is larger and adds a defined sleeping alcove that separates the bed from the living area without a full wall. Exhibit On Superior offers both.',
+        knowledgeSlug: 'what-is-a-convertible',
+      },
+      {
+        q: 'Do studios get the same amenities as larger apartments?',
+        a: 'Yes. Every resident has access to the full amenity floor \u2014 75-foot lap pool, hot tub, sauna, fitness center, work and meeting rooms, music studio \u2014 and the 24-hour front desk.',
+      },
+    ],
+  },
+  '/convertible-apartments-river-north': {
+    path: '/convertible-apartments-river-north',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: 'Convertible Apartments in River North',
+    title: 'Convertible Apartments in River North | Exhibit On Superior',
+    description:
+      'Convertible apartments in River North Chicago \u2014 open layouts with a sleeping alcove, more space than a studio for less than a one-bedroom. Live pricing inside.',
+    quickAnswer:
+      'A convertible apartment is an open layout with a defined sleeping alcove \u2014 larger than a studio, priced below a true one-bedroom. Exhibit On Superior offers convertible apartments in River North at 165 W Superior St, with full amenity-floor access and live availability below. Note: the 02 and 03 convertible stacks on floors 6\u201329 are the only homes in the tower without a private balcony.',
+    faqs: [
+      {
+        q: 'What is a convertible apartment?',
+        a: 'An open layout with a defined sleeping alcove instead of a fully walled bedroom \u2014 a Chicago apartment type that sits between a studio and a one-bedroom in both space and price.',
+        knowledgeSlug: 'what-is-a-convertible',
+      },
+      {
+        q: 'Do convertible apartments have balconies?',
+        a: 'Most homes in the tower include a private balcony, but the 02 and 03 convertible stacks on floors 6\u201329 are the two exceptions \u2014 those are the only layouts without one.',
+      },
+      {
+        q: 'Who are convertibles a good fit for?',
+        a: 'Renters who want more living space than a studio and some separation for the bed, at a lower price point than a one-bedroom \u2014 common with first-time downtown renters and people who work from the building\u2019s work rooms rather than from home.',
+      },
+    ],
+  },
+  '/one-bedroom-apartments-river-north': {
+    path: '/one-bedroom-apartments-river-north',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: '1 Bedroom Apartments in River North',
+    title: '1 Bedroom Apartments in River North | Exhibit On Superior',
+    description:
+      '1 bedroom apartments in River North Chicago at Exhibit On Superior \u2014 walled-bedroom homes, most with private balconies, with live pricing and tour booking.',
+    quickAnswer:
+      'Exhibit On Superior offers one-bedroom apartments in River North, Chicago at 165 W Superior St \u2014 true one-bedroom homes with a separate walled bedroom, most with a private balcony, in a 34-story tower with a full amenity floor and 24-hour front desk. Current one-bedroom availability with live pricing is listed below.',
+    faqs: [
+      {
+        q: 'Do the one-bedroom apartments have balconies?',
+        a: 'Nearly all of them \u2014 the only homes in the tower without a private balcony are the 02 and 03 convertible stacks on floors 6\u201329, which are not one-bedroom layouts.',
+      },
+      {
+        q: 'How much is a one-bedroom at Exhibit On Superior?',
+        a: PRICING_FAQ_ANSWER,
+        knowledgeSlug: 'how-much-is-rent',
+      },
+      {
+        q: 'Can I see the exact floor plans for one-bedroom layouts?',
+        a: 'Yes \u2014 the Floor Plans page has a landing page for every distinct one-bedroom layout with the plan sheet, square footage, floor range, and that plan\u2019s live availability.',
+      },
+    ],
+  },
+  '/two-bedroom-apartments-river-north': {
+    path: '/two-bedroom-apartments-river-north',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: '2 Bedroom Apartments in River North',
+    title: '2 Bedroom Apartments in River North | Exhibit On Superior',
+    description:
+      '2 bedroom apartments in River North, downtown Chicago \u2014 space for roommates or a home office, one Brown Line stop from the Loop. Live pricing and tours.',
+    quickAnswer:
+      'Exhibit On Superior offers two-bedroom apartments in River North, Chicago at 165 W Superior St \u2014 homes sized for roommates, families, or a dedicated office, in a luxury tower one Brown Line stop from the Loop with a full amenity floor, work and meeting rooms, and a 24-hour front desk. Current two-bedroom availability with live pricing is listed below.',
+    faqs: [
+      {
+        q: 'How big are the two-bedroom apartments?',
+        a: 'Two-bedroom layouts are among the largest in the tower \u2014 the building\u2019s homes range up to 1,528 square feet, with the biggest floor plans in the upper bands. Each layout\u2019s page shows its exact square footage and floor range.',
+      },
+      {
+        q: 'Are two-bedroom apartments good for roommates?',
+        a: 'Yes \u2014 two-bedroom, two-bath layouts give each roommate a private bedroom and bath, and the building\u2019s work rooms, fitness floor, and 24-hour front desk are shared by every resident.',
+      },
+      {
+        q: 'How long is the commute to the Loop?',
+        a: 'About 10 minutes by L \u2014 one Brown/Purple Line stop from the Chicago station, a roughly 3-minute walk from the building \u2014 or about a 20-minute, one-mile walk down Wells Street.',
+      },
+    ],
+  },
+  '/apartments-near-northwestern-memorial': {
+    path: '/apartments-near-northwestern-memorial',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: 'Apartments Near Northwestern Memorial',
+    title: 'Apartments Near Northwestern Memorial | Exhibit On Superior',
+    description:
+      'Luxury apartments about 0.6 miles from Northwestern Memorial Hospital \u2014 walk to the Streeterville medical district from Exhibit On Superior in River North.',
+    quickAnswer: `Exhibit On Superior at 165 W Superior St is about 0.6 miles from Northwestern Memorial Hospital and the Northwestern Medicine Arkes Pavilion \u2014 a straight walk down Superior Street, with the #66 Chicago Ave bus one block north. The ${UNIT_TOTAL}-residence luxury tower offers studio through three-bedroom homes with live availability below.`,
+    faqs: [
+      {
+        q: 'How far is Exhibit On Superior from Northwestern Memorial Hospital?',
+        a: 'About 0.6 miles \u2014 both Northwestern Memorial Hospital and the Arkes Pavilion are a straight walk east along the Superior/Huron corridor from 165 W Superior St.',
+      },
+      {
+        q: 'Is there transit to the medical district?',
+        a: 'The #66 Chicago Ave bus stops one block north of the building, and the Chicago/State Red Line station is about a 7-minute walk \u2014 both connect River North to Streeterville.',
+      },
+      {
+        q: 'Do you offer flexible options for medical residents and fellows?',
+        a: 'The leasing team works with hospital start dates regularly \u2014 contact them at 312-450-0635 or exhibit@highlandptrs.com to discuss timing and current availability.',
+      },
+    ],
+  },
+  '/apartments-near-merchandise-mart': {
+    path: '/apartments-near-merchandise-mart',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: 'Apartments Near the Merchandise Mart',
+    title: 'Apartments Near the Merchandise Mart | Exhibit On Superior',
+    description:
+      'Luxury apartments about 0.5 miles from THE MART \u2014 walk to Merchandise Mart offices and showrooms from Exhibit On Superior in River North, Chicago.',
+    quickAnswer:
+      'Exhibit On Superior at 165 W Superior St is about half a mile from THE MART (Merchandise Mart) \u2014 roughly a 10-minute walk, or one Brown/Purple Line stop from the Chicago station two blocks from the building. The luxury River North tower offers studio through three-bedroom homes with a full amenity floor; live availability is listed below.',
+    faqs: [
+      {
+        q: 'How far is Exhibit On Superior from the Merchandise Mart?',
+        a: 'About 0.5 miles \u2014 roughly a 10-minute walk down Wells or Franklin Street, or one stop on the Brown/Purple Line from the Chicago station two blocks from the building.',
+      },
+      {
+        q: 'Can I commute to the Mart without a car?',
+        a: 'Yes \u2014 the walk is about 10 minutes, and the address rates Walk Score 99 and Transit Score 100, so most Mart commuters go on foot or take the L one stop.',
+      },
+      {
+        q: 'What apartment sizes are available?',
+        a: 'Studio, convertible, one-, two-, and three-bedroom homes from 448 to 1,528 square feet \u2014 current availability with live pricing is maintained on the Available Units page.',
+      },
+    ],
+  },
+  '/apartments-near-the-loop': {
+    path: '/apartments-near-the-loop',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: 'Apartments Near the Loop',
+    title: 'Apartments Near the Loop, Chicago | Exhibit On Superior',
+    description:
+      'Apartments near the Loop in downtown Chicago \u2014 one Brown Line stop from work, with River North dining at street level. Live pricing at Exhibit On Superior.',
+    quickAnswer:
+      'Exhibit On Superior at 165 W Superior St in River North is about a mile north of the Loop \u2014 roughly 10 minutes by L (one Brown/Purple Line stop from the Chicago station, a 3-minute walk away) or a 20-minute walk down Wells Street. The luxury tower offers studio through three-bedroom homes with a full amenity floor; live availability is below.',
+    faqs: [
+      {
+        q: 'How long is the commute from Exhibit On Superior to the Loop?',
+        a: 'About 10 minutes by L \u2014 one Brown/Purple Line stop from the Chicago station at Chicago & Franklin, roughly a 3-minute walk from the building \u2014 or about a 20-minute, one-mile walk.',
+      },
+      {
+        q: 'Why live in River North instead of the Loop itself?',
+        a: 'River North keeps restaurants, galleries, and nightlife at street level and stays lively on weekends, while the commute to Loop offices is one L stop. The address rates Walk Score 99 and Transit Score 100.',
+      },
+      {
+        q: 'Can I get to the airports by transit?',
+        a: 'Yes \u2014 O\u2019Hare is about 45\u201355 minutes via the Blue Line and Midway about 45\u201355 minutes via the Orange Line from the Loop; both are also reachable by car in under an hour in typical traffic.',
       },
     ],
   },

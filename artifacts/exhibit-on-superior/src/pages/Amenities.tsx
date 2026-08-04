@@ -17,8 +17,8 @@ export function Amenities() {
           image="/images/image-075-20170601-0036-z1fw1i.jpg"
           alt="Outdoor lap pool and sundeck with Chicago skyline views at Exhibit On Superior"
           titleScript="Endless Opportunities"
-          title="Your Urban Playground"
-          subtitle="Amenities"
+          title="Luxury River North Amenities"
+          subtitle="Your urban playground at Exhibit On Superior"
         />
 
         <QuickAnswer path="/amenities" />

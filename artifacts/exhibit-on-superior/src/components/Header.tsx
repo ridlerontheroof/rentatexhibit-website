@@ -148,7 +148,16 @@ export function Header() {
             <NavDropdown
               label="Neighborhood"
               href="/neighborhood"
-              items={[{ href: '/parking-transportation', label: 'Parking + Transportation' }]}
+              items={[
+                { href: '/parking-transportation', label: 'Parking + Transportation' },
+                { href: '/luxury-apartments-river-north', label: 'Luxury River North Living' },
+                { href: '/apartments-near-the-loop', label: 'Near the Loop' },
+                { href: '/apartments-near-merchandise-mart', label: 'Near the Merchandise Mart' },
+                {
+                  href: '/apartments-near-northwestern-memorial',
+                  label: 'Near Northwestern Memorial',
+                },
+              ]}
             />
 
             <NavDropdown
@@ -213,6 +222,10 @@ export function Header() {
               <Link href="/apartment-guide" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Apartment Guide</Link>
               <Link href="/neighborhood" className="text-sm uppercase tracking-wider py-2">Neighborhood</Link>
               <Link href="/parking-transportation" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Parking + Transportation</Link>
+              <Link href="/luxury-apartments-river-north" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Luxury River North Living</Link>
+              <Link href="/apartments-near-the-loop" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Near the Loop</Link>
+              <Link href="/apartments-near-merchandise-mart" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Near the Merchandise Mart</Link>
+              <Link href="/apartments-near-northwestern-memorial" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Near Northwestern Memorial</Link>
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/about" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">About</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>

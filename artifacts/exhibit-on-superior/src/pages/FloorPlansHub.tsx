@@ -119,7 +119,7 @@ export function FloorPlansHub() {
           <div className="container mx-auto max-w-3xl">
             <p className="eyebrow mb-3 text-primary">Floor Plans</p>
             <h1 className="text-3xl md:text-4xl uppercase tracking-wider text-white mb-4">
-              Every Floor Plan Layout in the Tower
+              River North Floor Plans &mdash; Studio to 3 Bedroom
             </h1>
             <p className="text-white/80 leading-relaxed">
               All {FLOOR_PLAN_PAGES.length} distinct layouts at Exhibit On Superior &mdash;
@@ -256,6 +256,40 @@ export function FloorPlansHub() {
                 See live availability &amp; pricing
               </Link>
             </div>
+          </div>
+        </section>
+
+        {/* Cross-links into the bedroom-type landing pages (data/landingPages.ts). */}
+        <section className="py-12 px-4">
+          <div className="container mx-auto max-w-3xl text-center">
+            <p className="eyebrow mb-3">Browse by Residence Type</p>
+            <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+              <li>
+                <Link href="/studio-apartments-river-north" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  Studio Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/convertible-apartments-river-north" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  Convertible Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/one-bedroom-apartments-river-north" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  1 Bedroom Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/two-bedroom-apartments-river-north" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  2 Bedroom Apartments
+                </Link>
+              </li>
+              <li>
+                <Link href="/luxury-apartments-river-north" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  Luxury Apartments in River North
+                </Link>
+              </li>
+            </ul>
           </div>
         </section>
 
