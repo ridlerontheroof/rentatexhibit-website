@@ -965,7 +965,8 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Privacy Policy',
     title: 'Privacy Policy | Exhibit On Superior Apartments Chicago',
     description:
-      'Read the privacy policy for Exhibit On Superior in River North Chicago, covering how we collect, use, and protect your information.',
+      'Read the privacy policy for Exhibit On Superior in River North Chicago. Learn how we collect, use, store, and protect your personal information.',
+    dateModified: '2026-08-04',
     quickAnswer:
       'This page explains how Exhibit On Superior collects, uses, and protects the information you share through the website.',
     faqs: [],
