@@ -286,6 +286,11 @@ export function FloorPlansHub() {
                 </Link>
               </li>
               <li>
+                <Link href="/three-bedroom-apartments-river-north" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
+                  3 Bedroom Apartments
+                </Link>
+              </li>
+              <li>
                 <Link href="/luxury-apartments-river-north" className="text-sm uppercase tracking-wider text-primary hover:opacity-80 transition-opacity">
                   Luxury Apartments in River North
                 </Link>

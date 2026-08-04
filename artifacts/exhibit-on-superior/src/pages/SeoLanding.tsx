@@ -257,6 +257,23 @@ export const TwoBedroomRiverNorth = () => {
     />
   );
 };
+export const ThreeBedroomRiverNorth = () => {
+  const def = pageFor('/three-bedroom-apartments-river-north');
+  return (
+    <SeoLanding
+      def={def}
+      hero={
+        <PageHero
+          image="/images/image-081-20170926-1450-wmbiod.jpg"
+          alt={def.heroAlt}
+          titleScript={def.heroScript}
+          title={def.heroTitle}
+          subtitle={def.heroSubtitle}
+        />
+      }
+    />
+  );
+};
 export const NearNorthwesternMemorial = () => {
   const def = pageFor('/apartments-near-northwestern-memorial');
   return (

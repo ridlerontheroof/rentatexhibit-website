@@ -455,6 +455,31 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
     ],
   },
+  '/three-bedroom-apartments-river-north': {
+    path: '/three-bedroom-apartments-river-north',
+    datePublished: '2026-08-04',
+    dateModified: '2026-08-04',
+    label: '3 Bedroom Apartments in River North',
+    title: '3 Bedroom Apartments in River North | Exhibit On Superior',
+    description:
+      '3 bedroom apartments in River North, Chicago \u2014 penthouse-band layouts from 1,455 to 1,528 sq\u202fft at 165 W Superior St. Live pricing, photos, and tours.',
+    quickAnswer:
+      'Exhibit On Superior offers three-bedroom apartments in River North, Chicago at 165 W Superior St \u2014 the largest homes in the tower, spanning 1,455 to 1,528 square feet across floors 30\u201334, each with three full baths, floor-to-ceiling windows, a private balcony, and in-home washer/dryer. The building\u2019s full amenity floor (75-foot lap pool, fitness center, work rooms) and a 24-hour front desk are included with every home. Current availability and live pricing are listed below.',
+    faqs: [
+      {
+        q: 'How big are the three-bedroom apartments at Exhibit On Superior?',
+        a: 'Three-bedroom layouts range from 1,455 to 1,528 square feet \u2014 the two largest floor-plan lines in the tower, both on floors 30\u201334. Each plan has three full baths, floor-to-ceiling windows, and a private balcony.',
+      },
+      {
+        q: 'Which floors are the three-bedroom apartments on?',
+        a: 'Three-bedroom homes occupy the penthouse band, floors 30 through 34, at the top of the 34-story tower. That position puts them above the rest of the building for the broadest views.',
+      },
+      {
+        q: 'Are three-bedroom apartments available in River North?',
+        a: 'Exhibit On Superior at 165 W Superior St is one of the few full-service high-rises in River North offering three-bedroom floor plans. Because these homes are the rarest in the tower, current availability is best confirmed directly with the leasing team.',
+      },
+    ],
+  },
   '/apartments-near-northwestern-memorial': {
     path: '/apartments-near-northwestern-memorial',
     datePublished: '2026-08-04',
@@ -937,7 +962,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   '/privacy-policy': {
     path: '/privacy-policy',
     label: 'Privacy Policy',
-    title: 'Privacy Policy | Exhibit On Superior',
+    title: 'Privacy Policy | Exhibit On Superior Apartments Chicago',
     description:
       'Read the privacy policy for Exhibit On Superior in River North Chicago, covering how we collect, use, and protect your information.',
     quickAnswer:

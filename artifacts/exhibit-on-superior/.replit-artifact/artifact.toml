@@ -333,6 +333,15 @@ to = "/two-bedroom-apartments-river-north/index.html"
 from = "/two-bedroom-apartments-river-north/"
 to = "/two-bedroom-apartments-river-north/index.html"
 
+
+[[services.production.rewrites]]
+from = "/three-bedroom-apartments-river-north"
+to = "/three-bedroom-apartments-river-north/index.html"
+
+[[services.production.rewrites]]
+from = "/three-bedroom-apartments-river-north/"
+to = "/three-bedroom-apartments-river-north/index.html"
+
 [[services.production.rewrites]]
 from = "/apartments-near-northwestern-memorial"
 to = "/apartments-near-northwestern-memorial/index.html"

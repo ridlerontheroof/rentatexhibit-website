@@ -135,6 +135,10 @@ export const routes: RouteDef[] = [
     load: () => import('./pages/SeoLanding').then((m) => m.TwoBedroomRiverNorth),
   },
   {
+    path: '/three-bedroom-apartments-river-north',
+    load: () => import('./pages/SeoLanding').then((m) => m.ThreeBedroomRiverNorth),
+  },
+  {
     path: '/apartments-near-northwestern-memorial',
     load: () => import('./pages/SeoLanding').then((m) => m.NearNorthwesternMemorial),
   },

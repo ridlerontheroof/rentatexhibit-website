@@ -83,6 +83,7 @@ const STUDIO_SQFT = categorySqftRange(['studio'])!;
 const CONVERTIBLE_SQFT = categorySqftRange(['convertible'])!;
 const ONE_BR_SQFT = categorySqftRange(['1br'])!;
 const TWO_BR_SQFT = categorySqftRange(['2br'])!;
+const THREE_BR_SQFT = categorySqftRange(['3br'])!;
 
 const AMENITY_HIGHLIGHTS: LandingHighlight[] = [
   {
@@ -105,6 +106,7 @@ const TYPE_RELATED: { href: string; label: string }[] = [
   { href: '/convertible-apartments-river-north', label: 'Convertible Apartments' },
   { href: '/one-bedroom-apartments-river-north', label: '1 Bedroom Apartments' },
   { href: '/two-bedroom-apartments-river-north', label: '2 Bedroom Apartments' },
+  { href: '/three-bedroom-apartments-river-north', label: '3 Bedroom Apartments' },
   { href: '/floor-plans', label: 'All Floor Plans' },
 ];
 
@@ -219,6 +221,25 @@ export const LANDING_PAGES: LandingPageDef[] = [
       'No two-bedrooms are posted at the moment. Contact the leasing team \u2014 two-bedroom homes move fast and the interest list hears first.',
     highlights: AMENITY_HIGHLIGHTS,
     related: relatedExcept(TYPE_RELATED, '/two-bedroom-apartments-river-north'),
+    knowledgeSlugs: ['largest-apartment', 'what-apartment-sizes', 'how-much-is-rent'],
+  },
+  {
+    path: '/three-bedroom-apartments-river-north',
+    heroImage: '/images/image-081-20170926-1450-wmbiod.jpg',
+    heroAlt: 'Panoramic Chicago downtown skyline view from Exhibit On Superior in River North — the vantage point from the three-bedroom penthouse-band floors',
+    heroScript: 'three bedrooms in',
+    heroTitle: 'River North',
+    heroSubtitle: '3 bedroom apartments at Exhibit On Superior, Chicago',
+    intro: [
+      `Three-bedroom apartments at Exhibit On Superior range ${sqftLabel(THREE_BR_SQFT)} across ${categoryLineCount(['3br'])} residence lines \u2014 the largest homes in the tower, occupying the penthouse band on floors 30\u201334 at 165 W Superior St in River North, Chicago.`,
+      'Each three-bedroom layout includes three full baths, floor-to-ceiling windows, driftwood plank floors, quartz countertops, stainless-steel appliances, an in-home washer and dryer, and a private balcony. Residents share a full amenity floor: 75-foot outdoor lap pool, fitness center, work and meeting rooms, and a 24-hour front desk.',
+    ],
+    categories: ['3br'],
+    availabilityHeading: '3 Bedroom Apartments Available Now',
+    emptyNote:
+      'No three-bedrooms are posted at the moment. Three-bedroom homes are the rarest in the tower \u2014 contact the leasing team to join the interest list.',
+    highlights: AMENITY_HIGHLIGHTS,
+    related: relatedExcept(TYPE_RELATED, '/three-bedroom-apartments-river-north'),
     knowledgeSlugs: ['largest-apartment', 'what-apartment-sizes', 'how-much-is-rent'],
   },
   {
