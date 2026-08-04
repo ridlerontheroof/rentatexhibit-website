@@ -38,6 +38,7 @@ import {
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
 import { detectNearTermSkip, detectSlotFormatDrift } from "../lib/showingFormatAlert";
+import { recordSlotsFetchFailure } from "../lib/showingSlotsFailureAlert";
 import { auditRawSource, auditSourceLabel, sanitizeLeadSource } from "../lib/leadSource";
 import { sendGeneralTourConfirmation } from "../lib/email";
 
@@ -142,6 +143,15 @@ router.get("/showings/slots", showingLimiter, async (req, res) => {
     });
   } catch (err) {
     heartbeat.record(req.log, Date.now(), "slots_failed");
+    // Real AppFolio slot-fetch failure (invalid-unit 400s and unlisted-unit
+    // 404s never reach here) — count it toward the windowed slots-outage
+    // escalation (3+ real-visitor failures in 10 minutes → one throttled
+    // alert email). Fire-and-forget: a DB or mail outage must never affect
+    // the response.
+    void recordSlotsFetchFailure(req.log, Date.now(), {
+      unit,
+      message: (err as Error).message,
+    });
     req.log.error({ err, unit }, "Showing slot fetch failed; page will use lead-capture fallback");
     res.status(502).json({ error: "slots_unavailable" });
   }

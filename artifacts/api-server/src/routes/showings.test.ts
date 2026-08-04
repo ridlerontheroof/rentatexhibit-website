@@ -32,6 +32,12 @@ vi.mock("../lib/showingLiveFailureAlert", () => ({
   recordLiveShowingFailure: vi.fn(async () => {}),
   recordLiveShowingSuccess: vi.fn(async () => {}),
 }));
+// The windowed slots-outage escalation is fire-and-forget from the slots
+// route; mock it so these tests only assert the wiring (real slot-fetch
+// failures count, visitor-input 400s and unlisted-unit 404s don't).
+vi.mock("../lib/showingSlotsFailureAlert", () => ({
+  recordSlotsFetchFailure: vi.fn(async () => {}),
+}));
 // The drift alarm's log/email side effects have their own tests; here we
 // assert only the route wiring (when it is consulted, what it changes).
 // The site-sent general-tour confirmation is fire-and-forget from the book
@@ -62,6 +68,7 @@ import {
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
 import { detectNearTermSkip, detectSlotFormatDrift } from "../lib/showingFormatAlert";
+import { recordSlotsFetchFailure } from "../lib/showingSlotsFailureAlert";
 import { sendGeneralTourConfirmation } from "../lib/email";
 import showingsRouter, { resetShowingHeartbeatForTests } from "./showings";
 
@@ -148,9 +155,26 @@ describe("GET /showings/slots", () => {
     expect(res.body.error).toBe("slots_unavailable");
   });
 
+  it("counts a real slot-fetch failure toward the windowed slots-outage escalation", async () => {
+    vi.mocked(fetchShowingAvailabilities).mockRejectedValue(new Error("status 502"));
+    await request(makeApp()).get("/showings/slots?unit=2801");
+    expect(vi.mocked(recordSlotsFetchFailure)).toHaveBeenCalledExactlyOnceWith(
+      expect.anything(),
+      expect.any(Number),
+      { unit: "2801", message: "status 502" },
+    );
+  });
+
+  it("does not count unlisted-unit 404s or successes toward the slots-outage escalation", async () => {
+    await request(makeApp()).get("/showings/slots?unit=9999"); // 404
+    await request(makeApp()).get("/showings/slots?unit=2801"); // 200
+    expect(vi.mocked(recordSlotsFetchFailure)).not.toHaveBeenCalled();
+  });
+
   it("400s a missing unit", async () => {
     const res = await request(makeApp()).get("/showings/slots");
     expect(res.status).toBe(400);
+    expect(vi.mocked(recordSlotsFetchFailure)).not.toHaveBeenCalled();
   });
 
   it("keeps the parser-internal slot counters out of the public response", async () => {

@@ -1003,7 +1003,7 @@ export function renderAcceptedSilenceAlert(opts: {
  * booking flow is broken until someone investigates.
  */
 export function renderShowingSchedulerAlert(opts: {
-  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slot_format_drift" | "near_term_skip" | "tour_unit_unresolved";
+  reason: "idv_enabled" | "sustained_failure" | "live_traffic_failure" | "slots_endpoint_failure" | "slot_format_drift" | "near_term_skip" | "tour_unit_unresolved";
   detail: string;
   failedRuns: number;
 }): RenderedEmail {
@@ -1013,6 +1013,8 @@ export function renderShowingSchedulerAlert(opts: {
       ? "Website alert: AppFolio identity verification now blocks the showing scheduler"
       : reason === "live_traffic_failure"
         ? "Website alert: real visitors' showing bookings keep failing"
+        : reason === "slots_endpoint_failure"
+        ? "Website alert: visitors can't see live tour times — the slot feed keeps erroring"
         : reason === "slot_format_drift"
           ? "Website alert: online showing times are not displaying — AppFolio changed its slot format"
           : reason === "near_term_skip"
@@ -1026,6 +1028,8 @@ export function renderShowingSchedulerAlert(opts: {
       ? "The automatic probe of AppFolio's showing scheduler found that identity verification (IDV) is now enabled for the listings database. Branded booking on the website requires a Persona ID check the site cannot proxy, so every visitor who tries to book is being handed off to AppFolio's hosted page instead."
       : reason === "live_traffic_failure"
         ? `${failedRuns} real visitors' showing requests in a row have failed at the AppFolio guest-card or booking step, with zero successes in between — this is no longer a single blip or one unlucky visitor. If the failures below say "status 422" with an empty body, this is AppFolio's spam protection on new prospect records: after a burst of new guest cards from the website (typically rapid test submissions), AppFolio temporarily rejects ALL new-prospect creations regardless of the visitor's details, while repeat inquiries from known prospects still go through. It wears off on its own (verified live 2026-08-04). Any other status suggests AppFolio changed the guest-card or booking endpoints the website's flow replicates (the hourly probe covers only the anonymous slot-fetch and IDV endpoints, so it may still look green).`
+        : reason === "slots_endpoint_failure"
+        ? `Real visitors repeatedly failed to load live showing times: ${failedRuns} slot-loading requests errored within a short window (details below name the window and count). Each of those visitors saw the "we've got your request" fallback instead of the live calendar, so online self-booking was effectively down for them — their contact requests were still captured, but nobody could pick a time. This means AppFolio's availabilities endpoint itself was erroring or timing out (a 502/timeout, not a format problem — a format drift has its own alert), and the hourly probe may have looked green between runs.`
         : reason === "slot_format_drift"
           ? "AppFolio is sending showing time slots in a format the website no longer recognizes: every slot it sent was dropped, so the schedule-showing page is showing \"no online showing times\" even though openings exist. Visitors cannot self-book until the website's slot parser is updated to AppFolio's new format."
           : reason === "near_term_skip"
@@ -1046,6 +1050,8 @@ export function renderShowingSchedulerAlert(opts: {
         ? "What to do: this needs a website-side code fix — compare the raw availabilities response from AppFolio's hosted \"Schedule a Showing\" page against the site's slot parser and update it to accept the new format. Until then, expect tour requests to arrive as standard leads instead of self-booked showings. This alert is sent at most once per day."
         : reason === "tour_unit_unresolved"
           ? 'What to do: check AppFolio for a unit named "Tour" (or "General Tour") at the property. If it was renamed, either rename it back or update the website\'s TOUR_UNIT_NAMES setting to match; if it was deleted, recreate it (not posted to the website) so general tours can book showing times again. This alert is sent at most once per day.'
+          : reason === "slots_endpoint_failure"
+            ? "What to do: check whether AppFolio's hosted \"Schedule a Showing\" page loads time slots right now. If the hosted page also fails, it is an AppFolio outage — no website fix needed, but expect tour requests to arrive as standard leads until it recovers. If the hosted page works, AppFolio likely changed its availabilities endpoint; compare its requests (browser dev tools) against the site's showing client and update the client to match. This alert is sent at most once per day."
           : reason === "live_traffic_failure"
             ? "What to do: for 422-with-empty-body failures, stop submitting test bookings and wait — the throttle clears on its own, and real prospects were still captured as standard leads. For any other failure, open AppFolio's hosted \"Schedule a Showing\" page with browser dev tools and compare its requests against the site's showing client (availabilities, guest card, booking), then update the client to match. This alert is sent at most once per day."
             : "What to do: open AppFolio's hosted \"Schedule a Showing\" page with browser dev tools and compare its requests against the site's showing client (availabilities, guest card, booking). Update the client to match, or leave the page on its fallback until fixed. This alert is sent at most once per day.";
