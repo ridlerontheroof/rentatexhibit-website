@@ -226,6 +226,11 @@ export function Header() {
               <Link href="/apartments-near-the-loop" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Near the Loop</Link>
               <Link href="/apartments-near-merchandise-mart" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Near the Merchandise Mart</Link>
               <Link href="/apartments-near-northwestern-memorial" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Near Northwestern Memorial</Link>
+              <Link href="/studio-apartments-river-north" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Studio Apartments</Link>
+              <Link href="/convertible-apartments-river-north" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Convertible Apartments</Link>
+              <Link href="/one-bedroom-apartments-river-north" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">1 Bedroom Apartments</Link>
+              <Link href="/two-bedroom-apartments-river-north" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">2 Bedroom Apartments</Link>
+              <Link href="/three-bedroom-apartments-river-north" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">3 Bedroom Apartments</Link>
               <Link href="/contact-us" className="text-sm uppercase tracking-wider py-2">Contact Us</Link>
               <Link href="/about" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">About</Link>
               <Link href="/map-directions" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">Map + Directions</Link>

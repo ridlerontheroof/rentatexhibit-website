@@ -112,6 +112,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/three-bedroom-apartments-river-north" className="hover:text-primary-on-dark transition-colors">
+                  3 Bedroom Apartments
+                </Link>
+              </li>
+              <li>
                 <Link href="/apartments-near-northwestern-memorial" className="hover:text-primary-on-dark transition-colors">
                   Near Northwestern Memorial
                 </Link>
