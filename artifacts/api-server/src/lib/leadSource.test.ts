@@ -5,7 +5,13 @@
  * parentheses); everything else falls back to the default label.
  */
 import { describe, expect, it } from "vitest";
-import { DEFAULT_LEAD_SOURCE, LEAD_SOURCE_MAX_LENGTH, sanitizeLeadSource } from "./leadSource";
+import {
+  auditRawSource,
+  auditSourceLabel,
+  DEFAULT_LEAD_SOURCE,
+  LEAD_SOURCE_MAX_LENGTH,
+  sanitizeLeadSource,
+} from "./leadSource";
 
 describe("sanitizeLeadSource", () => {
   it("passes through a convention-shaped campaign label", () => {
@@ -54,5 +60,67 @@ describe("sanitizeLeadSource", () => {
 
   it("the default label itself is stable under validation", () => {
     expect(sanitizeLeadSource(DEFAULT_LEAD_SOURCE)).toBe(DEFAULT_LEAD_SOURCE);
+  });
+});
+
+describe("auditRawSource (PII-safe audit rendering)", () => {
+  it("never echoes client content — sanitizer-accepted values reduce to <accepted>", () => {
+    expect(auditRawSource("Website (GoogleAds_IL-Chicago_Luxury-Apartments)")).toBe("<accepted>");
+    expect(auditRawSource("Website (GoogleAds-SpringPromo)")).toBe("<accepted>");
+    // Even name/phone-shaped tokens wrapped in the accepted grammar are not
+    // echoed by the audit field; the sanitized `source` field carries any
+    // accepted label.
+    expect(auditRawSource("Website (JaneDoe)")).toBe("<accepted>");
+    expect(auditRawSource("Website (3125550100)")).toBe("<accepted>");
+  });
+
+  it("fingerprints everything else — names, tokens, emails, phones, addresses, free text", () => {
+    for (const raw of [
+      "jane.doe@example.com",
+      "312-555-0100",
+      "3125550100",
+      "John",
+      "JaneDoe",
+      "Mary-Jane",
+      "John Smith",
+      "165 W Superior St, Chicago",
+      "please call me about apt 2801",
+      "<script>alert(1)</script>",
+      "Website (two words)",
+      // Bare tokens (not full labels) are also client content — fingerprint.
+      "GoogleAds_IL-Chicago_Luxury-Apartments",
+    ]) {
+      const out = auditRawSource(raw);
+      expect(out).toMatch(
+        /^<rejected len=\d+ digits=\d+ hasAt=(true|false) hasSpace=(true|false) labelPrefixed=(true|false)>$/,
+      );
+      expect(out).not.toContain(raw);
+    }
+  });
+
+  it("auditSourceLabel is contentless: default marker or non-reversible hash", () => {
+    expect(auditSourceLabel(DEFAULT_LEAD_SOURCE)).toBe("default");
+    const label = "Website (GoogleAds_IL-Chicago_Luxury-Apartments)";
+    const out = auditSourceLabel(label);
+    expect(out).toMatch(/^campaign sha256=[0-9a-f]{12} len=48$/);
+    expect(out).not.toContain("GoogleAds");
+    // Deterministic — the expected campaign's hash can be computed offline
+    // and compared against deployment logs.
+    expect(auditSourceLabel(label)).toBe(out);
+    // Name/phone-shaped accepted labels never appear in the audit output.
+    expect(auditSourceLabel("Website (JaneDoe)")).not.toContain("JaneDoe");
+    expect(auditSourceLabel("Website (3125550100)")).not.toContain("3125550100");
+  });
+
+  it("marks absent, empty, and non-string values distinctly", () => {
+    expect(auditRawSource(undefined)).toBeNull();
+    expect(auditRawSource(null)).toBeNull();
+    expect(auditRawSource("   ")).toBe("<empty>");
+    expect(auditRawSource(42)).toBe("<non-string number>");
+  });
+
+  it("never logs over-long values verbatim", () => {
+    const long = `Website (${"A".repeat(LEAD_SOURCE_MAX_LENGTH)})`;
+    expect(auditRawSource(long)).toMatch(/^<rejected /);
   });
 });

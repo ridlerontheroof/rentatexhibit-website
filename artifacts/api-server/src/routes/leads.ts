@@ -7,7 +7,7 @@ import { sendLeadNotification, sendProspectConfirmation } from "../lib/email";
 import { createGuestCard, listableUidFromListingUrl } from "../lib/appfolio";
 import { getAvailabilitySnapshot } from "./availability";
 import { inspectSubmission, withoutBotGuardFields } from "../lib/botGuard";
-import { DEFAULT_LEAD_SOURCE, sanitizeLeadSource } from "../lib/leadSource";
+import { auditRawSource, auditSourceLabel, DEFAULT_LEAD_SOURCE, sanitizeLeadSource } from "../lib/leadSource";
 import { recordAcceptedSubmission, recordBotRejection } from "../lib/botGuardAlert";
 import { reportGuestCardFailure } from "../lib/guestCardAlert";
 
@@ -64,6 +64,18 @@ router.post("/leads", leadLimiter, async (req, res) => {
   // the server is the trust boundary for what reaches AppFolio and the
   // leasing team's screens; anything unexpected falls back to the default.
   const source = sanitizeLeadSource(input.source);
+  // Attribution audit line (one per accepted lead, PII-free): what the
+  // browser actually sent vs. the sanitized label pushed to AppFolio, so a
+  // wrong label in AppFolio can be pinned to client capture vs transit vs
+  // sanitizer from deployment logs alone.
+  req.log.info(
+    {
+      type: input.type,
+      rawSource: auditRawSource(input.source),
+      sourceLabel: auditSourceLabel(source),
+    },
+    "Lead-source attribution (lead submission)",
+  );
   try {
     const [row] = await db
       .insert(leadsTable)

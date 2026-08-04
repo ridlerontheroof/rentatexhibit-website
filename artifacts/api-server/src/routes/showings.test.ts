@@ -69,12 +69,12 @@ const LISTING_URL =
   "https://highlandrealestatepartners.appfolio.com/listings/detail/57dda21c-7fd6-446a-899a-c4776ceb4afa";
 const UID = "57dda21c-7fd6-446a-899a-c4776ceb4afa";
 
-function makeApp() {
+function makeApp(log?: { info?: (...args: unknown[]) => void }) {
   const app = express();
   app.use(express.json());
   app.use((req, _res, next) => {
     (req as unknown as { log: object }).log = {
-      info: () => {},
+      info: log?.info ?? (() => {}),
       warn: () => {},
       error: () => {},
     };
@@ -272,6 +272,66 @@ describe("POST /showings/contact", () => {
     expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
       expect.objectContaining({ source: "Website (GoogleAds-SpringPromo)" }),
     );
+  });
+
+  it("writes one attribution audit log line with raw and sanitized source", async () => {
+    const info = vi.fn();
+    await request(makeApp({ info }))
+      .post("/showings/contact")
+      .send({ ...contact, source: "Website (GoogleAds_IL-Chicago_Luxury-Apartments)" });
+    const call = info.mock.calls.find(
+      (c) => c[1] === "Lead-source attribution (showing contact)",
+    );
+    expect(call?.[0].unit).toBe("2801");
+    expect(call?.[0].rawSource).toBe("<accepted>");
+    expect(call?.[0].sourceLabel).toMatch(/^campaign sha256=[0-9a-f]{12} len=48$/);
+    expect(JSON.stringify(call?.[0])).not.toContain("GoogleAds");
+  });
+
+  it("audit line stays contentless even for accepted name/phone-shaped labels", async () => {
+    for (const wrapped of ["Website (JaneDoe)", "Website (3125550100)"]) {
+      const info = vi.fn();
+      await request(makeApp({ info }))
+        .post("/showings/contact")
+        .send({ ...contact, source: wrapped });
+      const call = info.mock.calls.find(
+        (c) => c[1] === "Lead-source attribution (showing contact)",
+      );
+      expect(call?.[0].rawSource).toBe("<accepted>");
+      const serialized = JSON.stringify(call?.[0]);
+      expect(serialized).not.toContain("JaneDoe");
+      expect(serialized).not.toContain("3125550100");
+    }
+  });
+
+  it("audit line shows the raw junk value alongside the defaulted label", async () => {
+    const info = vi.fn();
+    await request(makeApp({ info }))
+      .post("/showings/contact")
+      .send({ ...contact, source: "<script>alert(1)</script>" });
+    const calls = info.mock.calls.filter(
+      (c) => c[1] === "Lead-source attribution (showing contact)",
+    );
+    expect(calls).toHaveLength(1);
+    expect(calls[0][0]).toMatchObject({
+      rawSource: "<rejected len=25 digits=1 hasAt=false hasSpace=false labelPrefixed=false>",
+      sourceLabel: "default",
+    });
+    expect(JSON.stringify(calls[0][0])).not.toContain("alert(1)");
+  });
+
+  it("audit line never carries PII-shaped raw sources (emails, phones, names)", async () => {
+    for (const pii of ["call me at 312-555-0100", "jane.doe@example.com", "John Smith"]) {
+      const info = vi.fn();
+      await request(makeApp({ info }))
+        .post("/showings/contact")
+        .send({ ...contact, source: pii });
+      const call = info.mock.calls.find(
+        (c) => c[1] === "Lead-source attribution (showing contact)",
+      );
+      expect(call?.[0].rawSource).toMatch(/^<rejected /);
+      expect(JSON.stringify(call?.[0])).not.toContain(pii);
+    }
   });
 
   it("sanitizes a junk source back to the default before AppFolio sees it", async () => {

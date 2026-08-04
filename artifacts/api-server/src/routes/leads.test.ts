@@ -36,12 +36,12 @@ import { createGuestCard, listableUidFromListingUrl } from "../lib/appfolio";
 import { getAvailabilitySnapshot } from "./availability";
 import leadsRouter from "./leads";
 
-function makeApp() {
+function makeApp(log?: { info?: (...args: unknown[]) => void }) {
   const app = express();
   app.use(express.json());
   app.use((req, _res, next) => {
     (req as unknown as { log: object }).log = {
-      info: () => {},
+      info: log?.info ?? (() => {}),
       warn: () => {},
       error: () => {},
     };
@@ -276,6 +276,65 @@ describe("POST /leads visit-source attribution", () => {
     await flush();
     expect(vi.mocked(createGuestCard)).toHaveBeenCalled();
     expect(vi.mocked(reportGuestCardFailure)).not.toHaveBeenCalled();
+  });
+
+  it("writes one attribution audit log line with raw and sanitized source", async () => {
+    const info = vi.fn();
+    await request(makeApp({ info }))
+      .post("/leads")
+      .send({ ...tourLead, source: "Website (GoogleAds_IL-Chicago_Luxury-Apartments)" });
+    const call = info.mock.calls.find(
+      (c) => c[1] === "Lead-source attribution (lead submission)",
+    );
+    expect(call?.[0].rawSource).toBe("<accepted>");
+    expect(call?.[0].sourceLabel).toMatch(/^campaign sha256=[0-9a-f]{12} len=48$/);
+    expect(JSON.stringify(call?.[0])).not.toContain("GoogleAds");
+  });
+
+  it("audit line stays contentless even for accepted name/phone-shaped labels", async () => {
+    for (const wrapped of ["Website (JaneDoe)", "Website (3125550100)"]) {
+      const info = vi.fn();
+      await request(makeApp({ info }))
+        .post("/leads")
+        .send({ ...tourLead, source: wrapped });
+      const call = info.mock.calls.find(
+        (c) => c[1] === "Lead-source attribution (lead submission)",
+      );
+      expect(call?.[0].rawSource).toBe("<accepted>");
+      const serialized = JSON.stringify(call?.[0]);
+      expect(serialized).not.toContain("JaneDoe");
+      expect(serialized).not.toContain("3125550100");
+    }
+  });
+
+  it("audit line shows the raw junk value alongside the defaulted label", async () => {
+    const info = vi.fn();
+    await request(makeApp({ info }))
+      .post("/leads")
+      .send({ ...tourLead, source: "<script>alert(1)</script>" });
+    const calls = info.mock.calls.filter(
+      (c) => c[1] === "Lead-source attribution (lead submission)",
+    );
+    expect(calls).toHaveLength(1);
+    expect(calls[0][0]).toMatchObject({
+      rawSource: "<rejected len=25 digits=1 hasAt=false hasSpace=false labelPrefixed=false>",
+      sourceLabel: "default",
+    });
+    expect(JSON.stringify(calls[0][0])).not.toContain("alert(1)");
+  });
+
+  it("audit line never carries PII-shaped raw sources (emails, phones, names)", async () => {
+    for (const pii of ["jane.doe@example.com", "312-555-0100", "John Smith"]) {
+      const info = vi.fn();
+      await request(makeApp({ info }))
+        .post("/leads")
+        .send({ ...tourLead, source: pii });
+      const call = info.mock.calls.find(
+        (c) => c[1] === "Lead-source attribution (lead submission)",
+      );
+      expect(call?.[0].rawSource).toMatch(/^<rejected /);
+      expect(JSON.stringify(call?.[0])).not.toContain(pii);
+    }
   });
 
   it("sanitizes a junk source back to the default", async () => {

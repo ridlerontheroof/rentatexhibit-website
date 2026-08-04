@@ -38,7 +38,7 @@ import {
   recordLiveShowingSuccess,
 } from "../lib/showingLiveFailureAlert";
 import { detectNearTermSkip, detectSlotFormatDrift } from "../lib/showingFormatAlert";
-import { sanitizeLeadSource } from "../lib/leadSource";
+import { auditRawSource, auditSourceLabel, sanitizeLeadSource } from "../lib/leadSource";
 import { sendGeneralTourConfirmation } from "../lib/email";
 
 const router: IRouter = Router();
@@ -207,10 +207,20 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
       res.status(409).json({ error: "idv_required", hostedUrl: hostedShowingsUrl(listableUid) });
       return;
     }
+    const source = sanitizeLeadSource(input.source);
+    // Attribution audit line (one per booking attempt, PII-safe: raw values
+    // that look like emails/phone numbers are redacted): what the browser
+    // sent vs. the sanitized label pushed to AppFolio, so a wrong label in
+    // AppFolio can be pinned to client capture vs transit vs sanitizer from
+    // deployment logs alone.
+    req.log.info(
+      { unit: input.unit, rawSource: auditRawSource(input.source), sourceLabel: auditSourceLabel(source) },
+      "Lead-source attribution (showing contact)",
+    );
     const result = await createShowingGuestCard({
       ...input,
       listableUid,
-      source: sanitizeLeadSource(input.source),
+      source,
     });
     heartbeat.record(req.log, Date.now(), "contact_ok");
     void recordAcceptedSubmission(req.log, Date.now(), "showing_contact");
@@ -220,7 +230,7 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
       // AppFolio 422'd the label and accepted the default on retry. Loud so
       // a systematically rejected label shows up in production logs.
       req.log.error(
-        { unit: input.unit, source: sanitizeLeadSource(input.source) },
+        { unit: input.unit, source },
         "AppFolio rejected the campaign source label; guest card created with the default source instead",
       );
     }
@@ -228,7 +238,7 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
     res.status(201).json({
       guestCardId: result.guestCardId,
       jwt: result.jwt,
-      hostedUrl: hostedShowingsUrl(listableUid, sanitizeLeadSource(input.source)),
+      hostedUrl: hostedShowingsUrl(listableUid, source),
     });
   } catch (err) {
     heartbeat.record(req.log, Date.now(), "contact_failed");
