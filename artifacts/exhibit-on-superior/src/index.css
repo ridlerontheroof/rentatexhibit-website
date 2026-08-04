@@ -280,8 +280,10 @@
 }
 
 .btn-gold-outline:focus-visible {
-  outline: 2px solid var(--color-gold-300);
+  /* Dual-layer ring (WCAG 2.4.7): white gap + black outer ring — 21:1 on light/page backgrounds */
+  outline: 2px solid transparent;
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
 }
 
 /* On dark backgrounds, use the lighter gold token so the border/text are visible */
@@ -295,6 +297,11 @@
   background-color: hsl(var(--primary-on-dark));
   color: white;
 }
+/* Dark-context focus override: dark gap + white outer ring — 21:1 on #1c1c1c / #3c3c3e */
+.bg-footer .btn-gold-outline:focus-visible,
+.bg-dark-section .btn-gold-outline:focus-visible {
+  box-shadow: 0 0 0 2px #1c1c1c, 0 0 0 4px #fff;
+}
 
 .btn-dark-outline {
   @apply border border-foreground text-foreground uppercase bg-transparent transition-colors duration-300;
@@ -307,8 +314,10 @@
 }
 
 .btn-dark-outline:focus-visible {
-  outline: 2px solid var(--color-gold-300);
+  /* Dual-layer ring (WCAG 2.4.7): white gap + black outer ring — 21:1 on light/page backgrounds */
+  outline: 2px solid transparent;
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
 }
 
 .page-title {
