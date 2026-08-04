@@ -33,7 +33,7 @@ import { FloorPlanDetail } from './pages/FloorPlanDetail';
 import { planGroups } from './data/floorPlans';
 import { liveUnitPlanGroups, unitAvailabilityJsonLd } from './data/unitJsonLd';
 import { getBakedAvailability, getBakedSnapshotStatus } from './data/availabilitySnapshot';
-import { buildReviewsPageModel, reviewsJsonLd, homepageAggregateRatingJsonLd } from './data/reviews';
+import { buildReviewsPageModel, reviewsJsonLd, aggregateRatingFragment } from './data/reviews';
 import { photoGalleryJsonLd } from './data/gallery';
 import { virtualToursJsonLd, virtualTourVideoJsonLd } from './data/virtualTours';
 import { feesOfferCatalogJsonLd } from './data/fees';
@@ -105,14 +105,6 @@ export const ROUTE_PATHS: string[] = routes.map((r) => r.path);
 // Page-specific JSON-LD that isn't derivable from PAGE_SEO. Mirrors what the
 // page component passes to <Seo extraJsonLd>; keep in sync with that page.
 const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
-  // AggregateRating on the homepage: emitted as a LocalBusiness node that
-  // merges into the ApartmentComplex via shared @id. Google requires the
-  // rating to be visibly displayed on the same page — the star row in the
-  // CTA section satisfies this requirement.
-  // At prerender time the model resolves to the curated fallback (same as
-  // the /reviews page at prerender time); the client re-emits from the
-  // live-merged model after hydration on both pages.
-  '/': () => [homepageAggregateRatingJsonLd()],
   '/available-units': () => [unitAvailabilityJsonLd()],
   '/fees': () => [feesOfferCatalogJsonLd()],
   '/floor-plans': () => [floorPlanHubItemListJsonLd()],
@@ -224,7 +216,13 @@ export async function render(pathname: string): Promise<RenderResult> {
     </QueryClientProvider>,
   );
 
-  const model = buildSeoModel(pathname, { extraJsonLd: EXTRA_JSONLD[pathname]?.() });
+  // For the homepage, merge the AggregateRating into the main @graph's
+  // ApartmentComplex node (not as a second root-level JSON-LD document).
+  const aggregateRating = pathname === '/' ? aggregateRatingFragment() : undefined;
+  const model = buildSeoModel(pathname, {
+    extraJsonLd: EXTRA_JSONLD[pathname]?.(),
+    ...(aggregateRating ? { aggregateRating } : {}),
+  });
   const head = model ? renderHeadTags(model) : '';
 
   return { html, head };

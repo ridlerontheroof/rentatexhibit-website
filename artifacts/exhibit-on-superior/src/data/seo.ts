@@ -1467,7 +1467,7 @@ export const APARTMENT_COMPLEX_NODE = {
 };
 
 /** Build the JSON-LD @graph for a page path. */
-export function buildJsonLd(path: string): Record<string, unknown> {
+export function buildJsonLd(path: string, aggregateRating?: Record<string, unknown>): Record<string, unknown> {
   const page = PAGE_SEO[path];
   const canonical = canonicalFor(path);
   const idBase = path === '/' ? `${SITE_URL}/` : `${SITE_URL}${path}`;
@@ -1508,7 +1508,7 @@ export function buildJsonLd(path: string): Record<string, unknown> {
   const graph: Record<string, unknown>[] = [
     WEBSITE_NODE,
     ORGANIZATION_NODE,
-    APARTMENT_COMPLEX_NODE,
+    aggregateRating ? { ...APARTMENT_COMPLEX_NODE, aggregateRating } : APARTMENT_COMPLEX_NODE,
     webPage,
     breadcrumb,
   ];
@@ -1559,6 +1559,13 @@ export interface SeoOptions {
   noindex?: boolean;
   /** Extra JSON-LD objects appended after the base @graph (e.g. floor-plan ItemList). */
   extraJsonLd?: Record<string, unknown>[];
+  /**
+   * AggregateRating fragment to merge into the main @graph's ApartmentComplex
+   * node. Pass the object returned by aggregateRatingFragment() from reviews.ts.
+   * Emitting it here (inside the @graph) rather than as a second root-level
+   * JSON-LD document avoids GSC duplicate-entity warnings.
+   */
+  aggregateRating?: Record<string, unknown>;
 }
 
 export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | null {
@@ -1571,7 +1578,7 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
   // Only known routes self-canonicalize; a 404 must not canonicalize a bad URL.
   const canonical = page ? canonicalFor(path) : undefined;
   const ogImage = page?.ogImage ?? DEFAULT_OG_IMAGE;
-  const baseJsonLd = page && !isNoindex ? buildJsonLd(path) : null;
+  const baseJsonLd = page && !isNoindex ? buildJsonLd(path, opts.aggregateRating) : null;
   const jsonLd = [...(baseJsonLd ? [baseJsonLd] : []), ...(opts.extraJsonLd ?? [])];
 
   const metas: SeoMeta[] = [

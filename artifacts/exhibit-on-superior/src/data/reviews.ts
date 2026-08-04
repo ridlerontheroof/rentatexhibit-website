@@ -82,6 +82,29 @@ export function buildReviewsPageModel(live?: GoogleReviewsData): ReviewsPageMode
 }
 
 /**
+ * AggregateRating fragment for the homepage — returns just the AggregateRating
+ * object (no @context, no standalone entity) so it can be merged directly into
+ * the main @graph's ApartmentComplex node via buildJsonLd's aggregateRating
+ * option. Only the aggregate star display is visible on the homepage, so no
+ * individual Review nodes are included here.
+ */
+export function aggregateRatingFragment(
+  model?: Pick<ReviewsPageModel, 'rating' | 'reviewCount'>,
+): Record<string, unknown> {
+  return {
+    '@type': 'AggregateRating',
+    ratingValue: model?.rating ?? FALLBACK_RATING,
+    reviewCount: model?.reviewCount ?? FALLBACK_REVIEW_COUNT,
+    bestRating: 5,
+    worstRating: 1,
+  };
+}
+
+/**
+ * @deprecated Use aggregateRatingFragment() and pass it via buildSeoModel's
+ * aggregateRating option so it merges into the main @graph ApartmentComplex
+ * node rather than emitting a second root-level JSON-LD document.
+ *
  * AggregateRating-only JSON-LD for the homepage. Emits a LocalBusiness node
  * (same @id as the site-wide ApartmentComplex) with just the aggregate rating
  * and count — no individual Review nodes, because only the aggregate star

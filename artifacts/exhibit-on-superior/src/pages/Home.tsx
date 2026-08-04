@@ -10,7 +10,7 @@ import { SplitHeadline } from '../components/SplitHeadline';
 import { trackOutboundClick } from '../lib/analytics';
 import { SmartImg } from '../components/SmartImg';
 import { WALK_SCORE, TRANSIT_SCORE } from '../data/walkScores';
-import { FALLBACK_RATING, FALLBACK_REVIEW_COUNT, homepageAggregateRatingJsonLd } from '../data/reviews';
+import { FALLBACK_RATING, FALLBACK_REVIEW_COUNT, aggregateRatingFragment } from '../data/reviews';
 
 // Home hero carousel — same photos and order as the source rentatexhibit.com hero.
 export const HERO_SLIDES: HeroSlide[] = [
@@ -28,7 +28,7 @@ export const HERO_SLIDES: HeroSlide[] = [
 export function Home() {
   return (
     <>
-      <Seo path="/" extraJsonLd={[homepageAggregateRatingJsonLd()]} />
+      <Seo path="/" aggregateRating={aggregateRatingFragment()} />
       <div>
         {/* Hero Section */}
         <HeroSlider slides={HERO_SLIDES}>
