@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'wouter';
 import {
-  ArrowLeft,
   Accessibility,
   Bath,
   BedDouble,
@@ -88,12 +87,28 @@ export function FloorPlanDetail() {
       />
 
       <div className="container mx-auto px-4">
-        <Link
-          href="/floor-plans"
-          className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All floor plans
-        </Link>
+        {/* Semantic breadcrumb — mirrors the BreadcrumbList JSON-LD so visible
+            and structured breadcrumbs never disagree (same pattern as
+            KnowledgeArticle). ArrowLeft kept for sighted users only. */}
+        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+          <ol className="flex flex-wrap items-center gap-2">
+            <li>
+              <Link href="/" className="hover:text-primary underline-offset-4 hover:underline">
+                Home
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li>
+              <Link href="/floor-plans" className="hover:text-primary underline-offset-4 hover:underline">
+                Floor Plans
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page" className="text-muted-foreground/60">
+              {floorPlanH1(page)}
+            </li>
+          </ol>
+        </nav>
 
         {/* Fact-first header: the first ~60 words answer "what is this floor
             plan?" directly for visitors, crawlers, and AI assistants. */}

@@ -4,6 +4,7 @@ import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
+import { KnowledgeLinks } from '../components/KnowledgeLinks';
 import { Input } from '../components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
 import { PlanFilters } from '../components/floor-plans/PlanFilters';
@@ -292,6 +293,21 @@ export function FloorPlansHub() {
             </ul>
           </div>
         </section>
+
+        {/* Knowledge Center cross-links: surfaces floor-plan-relevant articles
+            so users browsing layouts can find informational answers, increasing
+            pages-per-session and distributing link equity to Knowledge Center
+            content that targets featured-snippet queries. */}
+        <KnowledgeLinks
+          slugs={[
+            'what-apartment-sizes',
+            'which-units-have-balconies',
+            'what-is-a-convertible',
+            'ada-accessible-apartments',
+            'utility-fee-by-floor-plan',
+          ]}
+          title="Floor Plan Questions"
+        />
 
         {/* Visible mirror of the page's FAQPage JSON-LD — Google penalizes
             FAQ markup whose Q&A isn't readable on the page. */}

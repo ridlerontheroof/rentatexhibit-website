@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'wouter';
-import { BedDouble, Bath, Ruler, Images, ArrowLeft } from 'lucide-react';
+import { BedDouble, Bath, Ruler, Images } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { useAvailability, type AvailableUnit } from '../hooks/use-availability';
 import {
@@ -135,12 +135,28 @@ export function UnitDetail() {
       />
 
       <div className="container mx-auto px-4">
-        <Link
-          href="/available-units"
-          className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All available residences
-        </Link>
+        {/* Semantic breadcrumb — mirrors the BreadcrumbList JSON-LD so visible
+            and structured breadcrumbs never disagree (same pattern as
+            KnowledgeArticle). */}
+        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+          <ol className="flex flex-wrap items-center gap-2">
+            <li>
+              <Link href="/" className="hover:text-primary underline-offset-4 hover:underline">
+                Home
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li>
+              <Link href="/available-units" className="hover:text-primary underline-offset-4 hover:underline">
+                Available Units
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page" className="text-muted-foreground/60">
+              Apartment {unit.unit}
+            </li>
+          </ol>
+        </nav>
 
         {/* Fact-first header: the first ~100 words of the page answer "what is
             this apartment?" directly for visitors, crawlers, and AI assistants

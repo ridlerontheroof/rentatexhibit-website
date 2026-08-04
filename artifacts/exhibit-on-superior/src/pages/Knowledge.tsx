@@ -131,6 +131,42 @@ export function Knowledge() {
           </div>
         </section>
 
+        {/* Cross-links to conversion pages: the hub aggregates link equity from
+            67+ article pages; routing some of that equity toward Available Units
+            and Floor Plans benefits the most commercially important pages on
+            the site and gives users an onward path after reading answers. */}
+        <section className="py-12 px-4 border-t border-border">
+          <div className="container mx-auto max-w-3xl">
+            <p className="eyebrow mb-4 text-center">Ready to Take the Next Step?</p>
+            <ul className="grid gap-3 sm:grid-cols-3">
+              <li>
+                <Link
+                  href="/available-units"
+                  className="block border border-border p-4 text-center text-sm uppercase tracking-wider hover:border-primary hover:text-primary transition-colors"
+                >
+                  See Available Apartments
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/floor-plans"
+                  className="block border border-border p-4 text-center text-sm uppercase tracking-wider hover:border-primary hover:text-primary transition-colors"
+                >
+                  Explore Floor Plans
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/fees"
+                  className="block border border-border p-4 text-center text-sm uppercase tracking-wider hover:border-primary hover:text-primary transition-colors"
+                >
+                  View Fees &amp; Costs
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </section>
+
         <section className="py-16 px-4 bg-dark-section">
           <div className="container mx-auto max-w-3xl text-center">
             <SplitHeadline script="Seen Enough?" caps="Come See It in Person" dark className="mb-6" />
