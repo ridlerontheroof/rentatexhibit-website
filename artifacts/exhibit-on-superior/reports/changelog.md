@@ -73,6 +73,23 @@ work, what is still open, and what needs owner/business action.
 - Knowledge Center answers to be re-verified before review dates expire in
   late November 2026.
 
+## Bing duplicate-canonical flag (2026-08-05)
+
+- Bing Webmaster Tools flagged "large number of pages pointing to the same
+  canonical URL (http://rentatexhibit.com/)" — a relic of the pre-prerender
+  SPA era. A full crawl of all 143 sitemap URLs on 2026-08-05 confirmed every
+  live page serves a unique self-referencing canonical, 404s are noindex, and
+  apex/http 301 to https://www — the flag reflects stale crawl data, not a
+  current defect.
+- **Resubmission ran 2026-08-05 19:06 UTC**: all 143 sitemap URLs were bulk
+  submitted to IndexNow (accepted). Rerun after major publishes with
+  `pnpm --filter @workspace/api-server run resubmit:indexnow`.
+- A validation-suite guard (`src/prerender-canonicals.test.ts`) now fails the
+  build if any two indexable prerendered pages share a canonical or any
+  page's canonical isn't self-referencing.
+- **Recheck the flag in Bing Webmaster Tools ~2–4 weeks after 2026-08-05
+  (late August / early September 2026)** — owner-side account.
+
 ## Items requiring business/owner confirmation (owner-side accounts)
 
 - **Google Search Console**: verify property, submit sitemap, request
