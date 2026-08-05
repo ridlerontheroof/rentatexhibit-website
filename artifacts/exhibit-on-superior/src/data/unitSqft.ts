@@ -20,12 +20,7 @@ import { parseUnitNumber, plans, type Plan } from './floorPlans';
  * consistency test in unitSqft.test.ts while the leasing team corrects the
  * record in AppFolio. The floor-plan value is still what renders.
  */
-export const KNOWN_BAD_APPFOLIO_SQFT: Record<string, number> = {
-  // Line 10, floors 6–29 = 478 SF per the approved unit map; AppFolio began
-  // reporting 450 on 2026-07-26 (possibly the 2705 correction applied to the
-  // wrong unit). Flagged to the leasing team for correction in AppFolio.
-  '0610': 450,
-};
+export const KNOWN_BAD_APPFOLIO_SQFT: Record<string, number> = {};
 
 /**
  * The floor-plan variant a specific apartment number is built from: matching
