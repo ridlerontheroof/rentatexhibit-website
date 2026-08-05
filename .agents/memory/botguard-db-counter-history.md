@@ -9,4 +9,6 @@ The durable record is the production `email_throttle_counters` table: `botguard:
 
 **Why:** verified 2026-08-04 for the Safari-autofill false-positive re-check — logs only reached back hours, but DB rows covered the whole week (accepted rows every day, rejected rows only pre-fix).
 
+**Update 2026-08-05:** the per-day counter rows are now written with a 45-day expiry (`DAILY_COUNTER_RETENTION_DAYS` in botGuardAlert.ts, test-guarded ≥30 days), so the history no longer depends on the sweep being lazy. Rows written before this deploy still carried 2-day expiries.
+
 **How to apply:** any "did the bot guard reject anyone" / lead-volume verification — query prod read-only `SELECT key, count, expires_at FROM email_throttle_counters WHERE key LIKE 'botguard%'`; alert claim rows (`botguard-spike…`) prove whether alert emails fired.

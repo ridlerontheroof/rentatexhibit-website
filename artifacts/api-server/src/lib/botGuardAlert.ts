@@ -112,6 +112,16 @@ const silenceClaim = createDailyClaim({
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * How long the per-day accept/reject counter rows stay in the shared table
+ * before the throttle sweep may remove them. These rows double as the only
+ * durable day-by-day bot-guard history (deployment log retention resets on
+ * every publish), so they must outlive any reasonable audit window — the
+ * 2026-08-04 week-of-traffic re-check would have been impossible with a
+ * tight sweep and the previous 2-day expiry. Do not shorten below ~30 days.
+ */
+export const DAILY_COUNTER_RETENTION_DAYS = 45;
+
 function utcDay(now: number): string {
   return new Date(now).toISOString().slice(0, 10);
 }
@@ -138,12 +148,12 @@ let memoryLastAcceptedAt: number | null = null;
 
 /**
  * Bump the shared per-day rejection counter and return the day's total.
- * Keyed by UTC day so the count naturally resets at midnight; rows expire
- * via the throttle sweep after two days.
+ * Keyed by UTC day so the count naturally resets at midnight; rows are
+ * retained for DAILY_COUNTER_RETENTION_DAYS as durable audit history.
  */
 async function bumpRejectionShared(now: number): Promise<number> {
   const key = `botguard:rejected:${utcDay(now)}`;
-  const expiresAt = new Date(now + 2 * DAY_MS);
+  const expiresAt = new Date(now + DAILY_COUNTER_RETENTION_DAYS * DAY_MS);
   const result = await db.execute(sql`
     INSERT INTO email_throttle_counters (key, count, expires_at)
     VALUES (${key}, 1, ${expiresAt})
@@ -159,7 +169,7 @@ async function bumpRejectionShared(now: number): Promise<number> {
 /** Bump the shared per-day accepted counter and return the day's total. */
 async function bumpAcceptedShared(now: number): Promise<number> {
   const key = `botguard:accepted:${utcDay(now)}`;
-  const expiresAt = new Date(now + 2 * DAY_MS);
+  const expiresAt = new Date(now + DAILY_COUNTER_RETENTION_DAYS * DAY_MS);
   const result = await db.execute(sql`
     INSERT INTO email_throttle_counters (key, count, expires_at)
     VALUES (${key}, 1, ${expiresAt})

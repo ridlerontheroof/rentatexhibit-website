@@ -55,6 +55,7 @@ vi.mock("@workspace/db", () => ({
 
 import {
   ACCEPTED_SILENCE_ALERT_HOURS,
+  DAILY_COUNTER_RETENTION_DAYS,
   ACCEPTED_SPIKE_ALERT_THRESHOLD,
   BOT_REJECTION_ALERT_THRESHOLD,
   checkAcceptedSilence,
@@ -204,6 +205,53 @@ describe("bot-guard rejection spike alert", () => {
       }),
       "Lead-form bot-guard heartbeat",
     );
+  });
+});
+
+describe("daily counter retention", () => {
+  beforeEach(() => {
+    __resetBotGuardAlertForTests();
+    sharedClaims.clear();
+    sharedCounts.clear();
+    sharedLastAcceptedSec = null;
+    dbDown = false;
+    vi.clearAllMocks();
+    mailerConfiguredMock.mockReturnValue(true);
+  });
+
+  /**
+   * Extract the expires_at Date param from the db.execute call that upserted
+   * the given counter key. Dates serialize as ISO strings in the stringified
+   * query; the counter upsert carries exactly one.
+   */
+  async function expiresAtFor(keyPattern: RegExp): Promise<number> {
+    const { db } = await import("@workspace/db");
+    const call = vi
+      .mocked(db.execute)
+      .mock.calls.map((c) => JSON.stringify(c[0]))
+      .find((text) => keyPattern.test(text));
+    expect(call).toBeDefined();
+    const iso = call?.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/)?.[0];
+    expect(iso).toBeDefined();
+    return Date.parse(iso as string);
+  }
+
+  it("retention constant covers the ~30-day audit window", () => {
+    // These rows are the ONLY durable day-by-day bot-guard history —
+    // deployment log retention resets on every publish. Do not shorten.
+    expect(DAILY_COUNTER_RETENTION_DAYS).toBeGreaterThanOrEqual(30);
+  });
+
+  it("rejected-counter rows are written with at least 30 days of expiry", async () => {
+    await recordBotRejection(logger, DAY1, "leads", "honeypot");
+    const expiresAt = await expiresAtFor(/botguard:rejected:2026-07-26/);
+    expect(expiresAt - DAY1).toBeGreaterThanOrEqual(30 * 24 * 60 * 60 * 1000);
+  });
+
+  it("accepted-counter rows are written with at least 30 days of expiry", async () => {
+    await recordAcceptedSubmission(logger, DAY1, "leads");
+    const expiresAt = await expiresAtFor(/botguard:accepted:2026-07-26/);
+    expect(expiresAt - DAY1).toBeGreaterThanOrEqual(30 * 24 * 60 * 60 * 1000);
   });
 });
 
