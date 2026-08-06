@@ -20,6 +20,7 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
+import { visitSourceFromUrl } from '../lib/visitSource';
 
 const root = path.resolve(__dirname, '..', '..');
 const publicDir = path.join(root, 'dist', 'public');
@@ -264,6 +265,58 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     const res = await get('/floorplans.aspx?plan=a1');
     expect(res.status).toBe(301);
     expect(res.headers.get('location')).toBe('/floor-plans?plan=a1');
+  });
+
+  // -------------------------------------------------------------------------
+  // Hidden channel short URLs (QR codes / print ads): /go/* → 301 with a
+  // ?source= tag the client turns into the visit's lead-source label. The
+  // post-redirect landing URL is fed through visitSourceFromUrl — the exact
+  // code path a real browser follows — so these assert PRODUCTION attribution,
+  // not just the redirect string.
+  // -------------------------------------------------------------------------
+  it('301s /go/lobby-qr (and trailing-slash form) to /available-units?source=LobbyQR in one hop', async () => {
+    for (const p of ['/go/lobby-qr', '/go/lobby-qr/']) {
+      const res = await get(p);
+      expect(res.status).toBe(301);
+      const location = res.headers.get('location')!;
+      expect(location).toBe('/available-units?source=LobbyQR');
+      expect(visitSourceFromUrl(`https://x.com${location}`)).toBe('Website (LobbyQR)');
+    }
+    const print = await get('/go/print');
+    expect(print.status).toBe(301);
+    expect(visitSourceFromUrl(`https://x.com${print.headers.get('location')}`)).toBe(
+      'Website (Print)',
+    );
+  });
+
+  it('incoming campaign attribution on a channel URL outranks the channel tag post-redirect', async () => {
+    // UTM tags win: the channel's baked ?source= must be dropped, or the
+    // browser would label the visit LobbyQR instead of the ad campaign.
+    const utm = await get('/go/lobby-qr?utm_source=google&utm_campaign=x');
+    expect(utm.status).toBe(301);
+    expect(visitSourceFromUrl(`https://x.com${utm.headers.get('location')}`)).toBe(
+      'Website (GoogleAds-X)',
+    );
+    // Google Ads click-ID (auto-tagging) wins.
+    const gclid = await get('/go/lobby-qr?gclid=abc');
+    expect(gclid.status).toBe(301);
+    expect(visitSourceFromUrl(`https://x.com${gclid.headers.get('location')}`)).toBe(
+      'Website (GoogleAds)',
+    );
+    // An explicit ?source= on the scanned URL wins over the baked one.
+    const explicit = await get('/go/lobby-qr?source=GoogleAds_Test');
+    expect(explicit.status).toBe(301);
+    expect(visitSourceFromUrl(`https://x.com${explicit.headers.get('location')}`)).toBe(
+      'Website (GoogleAds_Test)',
+    );
+    // Non-attribution query params ride along without disturbing the tag.
+    const other = await get('/go/lobby-qr?foo=1');
+    expect(other.status).toBe(301);
+    const loc = other.headers.get('location')!;
+    expect(loc).toContain('source=LobbyQR');
+    expect(loc).toContain('foo=1');
+    expect(loc.match(/\?/g)!.length).toBe(1);
+    expect(visitSourceFromUrl(`https://x.com${loc}`)).toBe('Website (LobbyQR)');
   });
 
   // -------------------------------------------------------------------------

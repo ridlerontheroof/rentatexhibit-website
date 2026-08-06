@@ -11,3 +11,5 @@ The production Express server scans dist/public at startup for meta-refresh redi
 - `.aspx` legacy paths work the same way (stub dir literally named `floorplans.aspx/`).
 - The stubs remain in the build as belt-and-braces for any non-301 serving path; client-side `<Redirect>` routes in App.tsx remain too.
 - Guard tests live in `src/server/production-server.test.ts` (redirect map + soft-404 guard for unknown `/apartments/il/chicago/*` and `.aspx` paths).
+
+**Channel short URLs:** hidden QR/print paths reuse the legacy-redirect machinery with `?source=Token` targets; incoming campaign params (utm/source/click-ID) must always outrank the baked channel tag when the server merges queries on the 301.

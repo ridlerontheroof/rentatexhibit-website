@@ -105,6 +105,46 @@ describe('visitSourceFromUrl', () => {
   });
 });
 
+describe('hidden channel short URLs (QR / print)', () => {
+  it('maps a channel landing path to its channel label', () => {
+    expect(visitSourceFromUrl('https://www.rentatexhibit.com/go/lobby-qr')).toBe(
+      'Website (LobbyQR)',
+    );
+    expect(visitSourceFromUrl('https://www.rentatexhibit.com/go/print')).toBe('Website (Print)');
+    expect(visitSourceFromUrl('https://www.rentatexhibit.com/go/banner')).toBe('Website (Banner)');
+  });
+
+  it('accepts the trailing-slash form (printed QR codes may include it)', () => {
+    expect(visitSourceFromUrl('https://x.com/go/lobby-qr/')).toBe('Website (LobbyQR)');
+  });
+
+  it('post-redirect landing (?source= tag) yields the same label', () => {
+    expect(visitSourceFromUrl('https://x.com/available-units?source=LobbyQR')).toBe(
+      'Website (LobbyQR)',
+    );
+  });
+
+  it('explicit campaign tags on the URL still win over the channel path', () => {
+    expect(visitSourceFromUrl('https://x.com/go/lobby-qr?utm_source=google&utm_campaign=x')).toBe(
+      'Website (GoogleAds-X)',
+    );
+    expect(visitSourceFromUrl('https://x.com/go/lobby-qr?source=GoogleAds_Test')).toBe(
+      'Website (GoogleAds_Test)',
+    );
+    expect(visitSourceFromUrl('https://x.com/go/lobby-qr?gclid=abc')).toBe('Website (GoogleAds)');
+  });
+
+  it('ordinary legacy redirects (no ?source= in target) attribute nothing', () => {
+    expect(visitSourceFromUrl('https://x.com/availableunits')).toBeNull();
+    expect(visitSourceFromUrl('https://x.com/apartments/il/chicago/amenities')).toBeNull();
+  });
+
+  it('captures the channel label for the visit', () => {
+    captureVisitSource('https://x.com/go/lobby-qr');
+    expect(getVisitSource()).toBe('Website (LobbyQR)');
+  });
+});
+
 describe('sanitizeVisitSource', () => {
   it('accepts only the Website (Token) convention', () => {
     expect(sanitizeVisitSource('Website (GoogleAds-SpringPromo)')).toBe(

@@ -191,6 +191,33 @@ to = "/accessibility-statement/index.html"
 from = "/accessibility-statement/"
 to = "/accessibility-statement/index.html"
 
+# Hidden channel short URLs (QR codes, print ads): meta-refresh stubs whose
+# targets carry a ?source= tag so leads from those visits are attributed
+# (e.g. "Website (LobbyQR)"). Source of truth: src/data/legacyRedirects.ts.
+[[services.production.rewrites]]
+from = "/go/lobby-qr"
+to = "/go/lobby-qr/index.html"
+
+[[services.production.rewrites]]
+from = "/go/lobby-qr/"
+to = "/go/lobby-qr/index.html"
+
+[[services.production.rewrites]]
+from = "/go/print"
+to = "/go/print/index.html"
+
+[[services.production.rewrites]]
+from = "/go/print/"
+to = "/go/print/index.html"
+
+[[services.production.rewrites]]
+from = "/go/banner"
+to = "/go/banner/index.html"
+
+[[services.production.rewrites]]
+from = "/go/banner/"
+to = "/go/banner/index.html"
+
 # Legacy Wix-era URLs and the former /floor-plans canonical: serve build-time
 # generated no-JS meta-refresh redirect stubs (see scripts/prerender.mjs) so
 # crawlers never receive homepage content on these paths.

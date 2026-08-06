@@ -178,7 +178,7 @@ const CSP = [
   // Inline scripts (GTM bootstrap, availability prefetch, host redirect,
   // legacy-redirect stubs) are allowed by hash — collected from the build
   // output at startup — so 'unsafe-inline' is not needed.
-  `script-src 'self' ${inlineScriptHashes.join(' ')} ${gtmInjectedScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://maps.googleapis.com https://analytics.ahrefs.com`,
+  `script-src 'self' ${inlineScriptHashes.join(' ')} ${gtmInjectedScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://maps.googleapis.com https://analytics.ahrefs.com https://www.clarity.ms https://scripts.clarity.ms`,
   // Google Maps JS injects its own stylesheet + font loads at runtime.
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
@@ -190,7 +190,7 @@ const CSP = [
   // sends measurement hits to www.google.com (/g/collect, /ccm/collect),
   // analytics.google.com, and the doubleclick collect hosts. Ahrefs Analytics
   // (GTM tag) beacons to analytics.ahrefs.com.
-  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://analytics.ahrefs.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com",
+  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://analytics.ahrefs.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com https://*.clarity.ms https://c.bing.com",
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://my.matterport.com https://www.google.com https://maps.google.com https://www.googletagmanager.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
@@ -365,7 +365,24 @@ app.use((req, res) => {
     if (target) {
       const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
       res.set('Cache-Control', 'public, max-age=3600');
-      return res.redirect(301, /^https?:\/\//i.test(target) ? target : target + qs);
+      if (/^https?:\/\//i.test(target)) return res.redirect(301, target);
+      let joined = target + qs;
+      if (qs && target.includes('?')) {
+        // Channel short-URL targets carry a baked `?source=` tag. Merge the
+        // incoming query properly (never a second '?'), and when the incoming
+        // query ALREADY carries campaign attribution (?source=, UTM tags, or
+        // a Google click-ID) drop the baked tag — explicit campaign
+        // attribution must always outrank the channel fallback, and
+        // visitSourceFromUrl resolves ?source= first.
+        const [targetPath, targetQuery] = target.split('?');
+        const merged = new URLSearchParams(targetQuery);
+        const incoming = new URLSearchParams(qs.slice(1));
+        const attribution = ['source', 'utm_source', 'gclid', 'gbraid', 'wbraid'];
+        if (attribution.some((p) => incoming.get(p)?.trim())) merged.delete('source');
+        for (const [k, v] of incoming.entries()) merged.append(k, v);
+        joined = `${targetPath}?${merged.toString()}`;
+      }
+      return res.redirect(301, joined);
     }
   }
 

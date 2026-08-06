@@ -646,7 +646,7 @@ for (const [from, to] of Object.entries(LEGACY_REDIRECT_STUBS)) {
     <meta charset="utf-8" />
     <title>Exhibit On Superior</title>
     <meta name="robots" content="noindex" />${
-      isExternal ? '' : `\n    <link rel="canonical" href="${canonicalFor(to)}" />`
+      isExternal ? '' : `\n    <link rel="canonical" href="${canonicalFor(to.split('?')[0])}" />`
     }
     <meta http-equiv="refresh" content="0;url=${to}" />
   </head>

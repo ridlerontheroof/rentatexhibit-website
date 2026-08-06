@@ -19,6 +19,8 @@
  * convenience, not the trust boundary.
  */
 
+import { LEGACY_REDIRECTS } from '../data/legacyRedirects';
+
 const STORAGE_KEY = 'exhibit-visit-source';
 
 /** Max length of a full source label — it renders in AppFolio's lead list. */
@@ -52,16 +54,37 @@ function tokenize(raw: string): string {
 }
 
 /**
+ * Hidden channel short URLs (QR codes, print ads): when the landing path is a
+ * channel redirect (e.g. /go/lobby-qr → /available-units?source=LobbyQR in
+ * legacyRedirects.ts), derive the source label from the redirect target's
+ * `?source=` tag. This covers the pre-redirect moment (dev server / client-
+ * side <Redirect>) where the app boots on the /go/… path itself before the
+ * query tag exists; in production the server 301s first and the normal
+ * `?source=` capture applies. Strictly a LAST-RESORT fallback — explicit
+ * `?source=`, UTM tags and ad click-IDs on the URL always win.
+ */
+function channelSourceFromPath(pathname: string): string | null {
+  const bare = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  const target = LEGACY_REDIRECTS[bare];
+  if (!target || /^https?:\/\//i.test(target)) return null;
+  const qIdx = target.indexOf('?');
+  if (qIdx === -1) return null;
+  const token = new URLSearchParams(target.slice(qIdx)).get('source')?.trim();
+  return token ? sanitizeVisitSource(`Website (${token})`) : null;
+}
+
+/**
  * Build the visit source label ("Website (GoogleAds-SpringPromo)") from a
  * landing URL's UTM params, or null when the URL carries no usable tags.
  */
 export function visitSourceFromUrl(url: string): string | null {
-  let params: URLSearchParams;
+  let parsed: URL;
   try {
-    params = new URL(url).searchParams;
+    parsed = new URL(url);
   } catch {
     return null;
   }
+  const params = parsed.searchParams;
   // The live Google Ads campaigns tag their final URLs with a ready-made
   // token — e.g. ?source=GoogleAds_IL-Chicago_Luxury-Apartments — rather
   // than UTM params (discovered 2026-08-04). When the token is already
@@ -86,10 +109,12 @@ export function visitSourceFromUrl(url: string): string | null {
     for (const clickId of ['gclid', 'gbraid', 'wbraid']) {
       if (params.get(clickId)?.trim()) return sanitizeVisitSource('Website (GoogleAds)');
     }
-    return null;
+    // No campaign tags at all — a hidden channel landing path (QR/print
+    // short URL) is the only remaining attribution.
+    return channelSourceFromPath(parsed.pathname);
   }
   const base = GOOGLE_SOURCES.has(utmSource) ? 'GoogleAds' : tokenize(utmSource);
-  if (!base) return null;
+  if (!base) return channelSourceFromPath(parsed.pathname);
   const campaign = tokenize(params.get('utm_campaign') ?? '');
   // Keep the label under the cap even with a long campaign — trim the
   // campaign token, never the base channel; a trailing hyphen is dropped.

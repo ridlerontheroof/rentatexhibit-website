@@ -52,4 +52,17 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/knowledge/internet-options': '/knowledge',
   '/video.aspx': '/virtual-tour',
   '/apartmentphotos.aspx': '/photo-gallery',
+  // -------------------------------------------------------------------------
+  // Hidden channel short URLs (2026-08): printable/QR-friendly paths that 301
+  // to a real page with a `?source=Token` tag. visitSource.ts turns that tag
+  // into the visit's AppFolio lead-source label — e.g. scanning the lobby QR
+  // code lands on /available-units and every lead from that visit reaches the
+  // leasing team as "Website (LobbyQR)". Token rules: alphanumerics/hyphens
+  // only (the strict `Website (Token)` convention — see api-server
+  // leadSource.ts). To add a channel: one entry here + the artifact.toml
+  // rewrite pair (bare + trailing slash); the prerender parity guard enforces
+  // the pair. These paths are noindex redirect stubs, never indexable pages.
+  '/go/lobby-qr': '/available-units?source=LobbyQR',
+  '/go/print': '/available-units?source=Print',
+  '/go/banner': '/available-units?source=Banner',
 };
