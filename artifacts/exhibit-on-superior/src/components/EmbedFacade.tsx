@@ -24,6 +24,8 @@ interface EmbedFacadeProps {
    * prerender tests can keep asserting the page mirrors its JSON-LD.
    */
   embedUrl?: string;
+  /** Notifies the owner the embed just mounted (e.g. to wire postMessage APIs). */
+  onActivate?: () => void;
 }
 
 /**
@@ -39,6 +41,7 @@ export function EmbedFacade({
   actionText,
   children,
   embedUrl,
+  onActivate,
 }: EmbedFacadeProps) {
   const [activated, setActivated] = useState(false);
 
@@ -48,7 +51,10 @@ export function EmbedFacade({
   return (
     <button
       type="button"
-      onClick={() => setActivated(true)}
+      onClick={() => {
+        setActivated(true);
+        onActivate?.();
+      }}
       aria-label={buttonLabel}
       data-embed-url={embedUrl}
       className="group relative block h-full w-full cursor-pointer overflow-hidden p-0 text-left"

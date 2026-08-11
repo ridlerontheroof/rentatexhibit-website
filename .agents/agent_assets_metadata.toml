@@ -138,3 +138,31 @@ id = "Ow1mkhrKCrYsEd_l_lYTK"
 uri = "file://exports/exhibit-on-superior-knowledge-file.md"
 type = "text"
 title = "Exhibit On Superior — Custom GPT Knowledge File"
+
+[[outputs]]
+id = "xMfRZq4E156et0GdjTCBq"
+uri = "file://screenshots/sightmap-desktop-collapsed.jpg"
+type = "image"
+title = "Desktop — collapsed (poster + button)"
+description = "Map section leads under the hero; full residence list below."
+
+[[outputs]]
+id = "epb-wBGAxpV7aN_zQQJ9V"
+uri = "file://screenshots/sightmap-desktop-expanded.jpg"
+type = "image"
+title = "Desktop — map open + selected-unit CTA bar"
+description = "Live Engrain map with Exhibit's own Details / Tour / Apply buttons for the selected apartment."
+
+[[outputs]]
+id = "3GM8LTLbACsmxIuYBYU7n"
+uri = "file://screenshots/sightmap-mobile-collapsed.jpg"
+type = "image"
+title = "Mobile — collapsed"
+description = "Poster with availability caption; full list below."
+
+[[outputs]]
+id = "6bial1l-wuByP4lcOgbCh"
+uri = "file://screenshots/sightmap-mobile-expanded.jpg"
+type = "image"
+title = "Mobile — map open (fixed)"
+description = "Portrait map on mobile: floor selector, plan view, and selected-unit CTA bar all visible."

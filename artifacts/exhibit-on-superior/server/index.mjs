@@ -178,7 +178,7 @@ const CSP = [
   // Inline scripts (GTM bootstrap, availability prefetch, host redirect,
   // legacy-redirect stubs) are allowed by hash — collected from the build
   // output at startup — so 'unsafe-inline' is not needed.
-  `script-src 'self' ${inlineScriptHashes.join(' ')} ${gtmInjectedScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://maps.googleapis.com https://analytics.ahrefs.com https://www.clarity.ms https://scripts.clarity.ms`,
+  `script-src 'self' ${inlineScriptHashes.join(' ')} ${gtmInjectedScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://maps.googleapis.com https://analytics.ahrefs.com https://www.clarity.ms https://scripts.clarity.ms https://sightmap.com`,
   // Google Maps JS injects its own stylesheet + font loads at runtime.
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
@@ -191,7 +191,9 @@ const CSP = [
   // analytics.google.com, and the doubleclick collect hosts. Ahrefs Analytics
   // (GTM tag) beacons to analytics.ahrefs.com.
   "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://analytics.ahrefs.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com https://*.clarity.ms https://c.bing.com",
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://my.matterport.com https://www.google.com https://maps.google.com https://www.googletagmanager.com",
+  // sightmap.com: the Engrain interactive property map on /available-units
+  // (iframe) and its IFrame API SDK (script-src) — see src/lib/sightmap.ts.
+  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://my.matterport.com https://www.google.com https://maps.google.com https://www.googletagmanager.com https://sightmap.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
 ].join('; ');

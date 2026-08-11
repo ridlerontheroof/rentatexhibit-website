@@ -196,6 +196,31 @@ export function trackLead(
  * browser flushes even after the page unloads. Without it, the request could
  * be dropped mid-navigation and the highest-intent action undercounted.
  */
+/**
+ * Report a SightMap interaction (unit selected, filters changed, apply click)
+ * forwarded from the Engrain Metrics API — see src/lib/sightmap.ts. Same
+ * no-op-when-disabled and attribution model as the other trackers; events
+ * fired before gtag.js arrives are buffered by the window.gtag stub created
+ * in initAnalytics (the map only mounts on a click, which is also the gesture
+ * that triggers the deferred gtag.js injection). Never any PII.
+ */
+export function trackSightMap(
+  eventName:
+    | 'sightmap_impression'
+    | 'sightmap_unit_selected'
+    | 'sightmap_filter_change'
+    | 'sightmap_apply_click'
+    | 'sightmap_outbound_click',
+  extra: Record<string, string | number | boolean> = {}
+): void {
+  if (!analyticsEnabled() || !window.gtag) return;
+  window.gtag('event', eventName, {
+    ...extra,
+    page_path: currentPath ?? window.location.pathname,
+    ...getStoredUtmParams(),
+  });
+}
+
 export function trackOutboundClick(
   linkType: 'apply' | 'availability' | 'social' | 'tour',
   linkUrl: string,

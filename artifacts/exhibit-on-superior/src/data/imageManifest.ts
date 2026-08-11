@@ -1645,6 +1645,27 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
       }
     ]
   },
+  "/images/sightmap-embed-poster.png": {
+    "width": 1920,
+    "height": 993,
+    "variants": [
+      {
+        "src": "/images/sightmap-embed-poster-800w.webp",
+        "avif": "/images/sightmap-embed-poster-800w.avif",
+        "w": 800
+      },
+      {
+        "src": "/images/sightmap-embed-poster-1280w.webp",
+        "avif": "/images/sightmap-embed-poster-1280w.avif",
+        "w": 1280
+      },
+      {
+        "src": "/images/sightmap-embed-poster-1920w.webp",
+        "avif": "/images/sightmap-embed-poster-1920w.avif",
+        "w": 1920
+      }
+    ]
+  },
   "/images/vimeo-poster-life-at-exhibit.jpg": {
     "width": 1920,
     "height": 1080,

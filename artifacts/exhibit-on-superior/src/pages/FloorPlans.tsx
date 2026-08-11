@@ -8,6 +8,7 @@ import { QuickAnswer } from '../components/QuickAnswer';
 import { FaqSection } from '../components/FaqSection';
 import { SplitHeadline } from '../components/SplitHeadline';
 import { AvailableUnits } from '../components/floor-plans/AvailableUnits';
+import { SightMapSection } from '../components/floor-plans/SightMapSection';
 import { useAvailability } from '../hooks/use-availability';
 import { SmartImg } from '../components/SmartImg';
 import { planGroups, resolveDeepLink } from '../data/floorPlans';
@@ -113,6 +114,11 @@ export function FloorPlans() {
           subtitle="Live Pricing & Availability, Studio to 3 Bedroom Apartments in River North Chicago"
           compact
         />
+
+        {/* Map-first (user-approved mockup): the interactive SightMap leads
+            the page; the full unit list follows immediately below. The embed
+            itself is click-to-load, so only a local poster affects paint. */}
+        <SightMapSection />
 
         <AvailableUnits />
 

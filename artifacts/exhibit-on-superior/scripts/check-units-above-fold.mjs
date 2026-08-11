@@ -1,10 +1,19 @@
 // Above-the-fold guard for the Available Units strip (/available-units).
 //
 // Task 185 compacted the page hero + strip heading so the first unit card is
-// visible without scrolling on short laptop viewports (~520px tall). Nothing
-// in the unit tests can measure real layout, so this script renders the page
-// in headless Chromium and asserts the top of the first unit row inside
-// #available-units sits within the initial viewport at:
+// visible without scrolling on short laptop viewports (~520px tall).
+//
+// Task 592 (user-approved mockup) made the page map-first: the SightMap
+// facade now leads and the unit strip follows. The guard therefore asserts,
+// per viewport:
+//   1. the SightMap section (#explore-the-building) starts within the
+//      initial viewport — the page's primary interactive content is visible
+//      without scrolling, and
+//   2. the first unit row inside #available-units starts within 2.25x the
+//      viewport height — one natural scroll away, so pricing never drifts
+//      down the page as sections get added.
+// Nothing in the unit tests can measure real layout, so this script renders
+// the page in headless Chromium at:
 //   - 1024x520 (short laptop)
 //   - 390x844  (phone)
 //
@@ -404,23 +413,48 @@ async function main() {
 
     const m = await cdp.eval(`(() => {
       const row = document.querySelector('#available-units ul li');
-      const rect = row.getBoundingClientRect();
-      return { top: Math.round(rect.top), scrollY: Math.round(window.scrollY), innerHeight: window.innerHeight };
+      const map = document.querySelector('#explore-the-building');
+      return {
+        top: Math.round(row.getBoundingClientRect().top),
+        mapTop: map ? Math.round(map.getBoundingClientRect().top) : null,
+        scrollY: Math.round(window.scrollY),
+        innerHeight: window.innerHeight,
+      };
     })()`);
 
     if (m.scrollY !== 0) {
       failures.push(`[${vp.name} ${vp.width}x${vp.height}] page loaded pre-scrolled (scrollY=${m.scrollY}); measurement invalid.`);
       continue;
     }
-    if (m.top >= vp.height) {
+    // Map-first (task 592): the SightMap section must start above the fold.
+    if (m.mapTop === null) {
       failures.push(
-        `[${vp.name} ${vp.width}x${vp.height}] first unit card in #available-units starts at ` +
-          `${m.top}px from the top — ${m.top - vp.height + 1}px below the ${vp.height}px fold. ` +
-          `A hero/heading/spacing change pushed the cards out of the initial viewport.`,
+        `[${vp.name} ${vp.width}x${vp.height}] no #explore-the-building section rendered on /available-units — ` +
+          `did the SightMap section move or get renamed?`,
+      );
+    } else if (m.mapTop >= vp.height) {
+      failures.push(
+        `[${vp.name} ${vp.width}x${vp.height}] the SightMap section starts at ${m.mapTop}px — ` +
+          `${m.mapTop - vp.height + 1}px below the ${vp.height}px fold. ` +
+          `A hero/heading/spacing change pushed the map out of the initial viewport.`,
       );
     } else {
       console.log(
-        `✓ [${vp.name} ${vp.width}x${vp.height}] first unit card top at ${m.top}px — above the ${vp.height}px fold.`,
+        `✓ [${vp.name} ${vp.width}x${vp.height}] SightMap section top at ${m.mapTop}px — above the ${vp.height}px fold.`,
+      );
+    }
+    // The unit strip follows the map; it must stay within one natural scroll.
+    const UNITS_MAX_FACTOR = 2.25;
+    const unitsLimit = Math.round(vp.height * UNITS_MAX_FACTOR);
+    if (m.top >= unitsLimit) {
+      failures.push(
+        `[${vp.name} ${vp.width}x${vp.height}] first unit card in #available-units starts at ` +
+          `${m.top}px from the top — beyond the ${unitsLimit}px (${UNITS_MAX_FACTOR}x viewport) budget. ` +
+          `Content added above the unit strip pushed pricing too far down the page.`,
+      );
+    } else {
+      console.log(
+        `✓ [${vp.name} ${vp.width}x${vp.height}] first unit card top at ${m.top}px — within the ${unitsLimit}px budget.`,
       );
     }
   }
