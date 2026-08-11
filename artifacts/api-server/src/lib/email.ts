@@ -12,6 +12,7 @@ import {
   renderFloorPlanCheckAlert,
   renderKnowledgeCheckAlert,
   renderLeadNotification,
+  renderGtmCheckAlert,
   renderRedirectCheckAlert,
   renderRentedCheckAlert,
   renderGeneralTourConfirmation,
@@ -385,6 +386,32 @@ export async function sendRentedCheckAlert(opts: {
  * action. Throws when the mailer is unconfigured or the send fails;
  * deduping lives in the caller (redirectCheck).
  */
+/**
+ * Alert that the published GTM container no longer carries the GA4
+ * measurement ID — visitor tracking is silently off. Sent by the gtmCheck
+ * watchdog, at most once per UTC day.
+ */
+export async function sendGtmCheckAlert(opts: {
+  summary: string;
+  outputTail: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderGtmCheckAlert(opts);
+  const { contentType, body } = buildMimeBody("gtmalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent GA4 tracking check failure alert email",
+  );
+}
+
 export async function sendRedirectCheckAlert(opts: {
   summary: string;
   outputTail: string;

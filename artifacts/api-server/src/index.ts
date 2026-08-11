@@ -11,6 +11,7 @@ import { startTourUnitCheck } from "./lib/tourUnitCheck";
 import { startApplyLinkCheck } from "./lib/applyLinkCheck";
 import { startRentedNoindexCheck } from "./lib/rentedCheck";
 import { startLegacyRedirectCheck } from "./lib/redirectCheck";
+import { startGtmTrackingCheck } from "./lib/gtmCheck";
 import { startAcceptedVolumeWatch } from "./lib/botGuardAlert";
 
 const rawPort = process.env["PORT"];
@@ -90,6 +91,13 @@ app.listen(port, (err) => {
   // URL must 301 in one hop to its mapped target) on startup (= post-publish)
   // and every 6 hours, alerting (once/day) on definitive failures.
   startLegacyRedirectCheck(logger);
+
+  // Watchdog: run the web artifact's GTM/GA4 tracking check (the published
+  // GTM container must carry the expected GA4 measurement ID) on startup
+  // and every 6 hours, alerting (once/day) on definitive failures. A
+  // GTM-side republish never restarts this server, so the interval is the
+  // real detection path for a container published without the tag.
+  startGtmTrackingCheck(logger);
 
   // Watchdog: hourly check of the shared last-accepted-submission timestamp;
   // alerts (once/day) when no lead has been accepted for an unusually long

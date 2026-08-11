@@ -731,6 +731,54 @@ export function renderRentedCheckAlert(opts: {
 }
 
 /**
+ * Operational alert: the always-on GA4 tracking check (gtmCheck) found the
+ * published GTM container missing the GA4 measurement ID — visitor tracking
+ * is silently off, exactly the failure that once went unnoticed for weeks.
+ */
+export function renderGtmCheckAlert(opts: {
+  summary: string;
+  outputTail: string;
+}): RenderedEmail {
+  const { summary, outputTail } = opts;
+  const subject =
+    "Website alert: visitor tracking (GA4) looks OFF — GTM container check failed";
+
+  const intro = `The automatic GA4 tracking check of the published Google Tag Manager container reported a problem: ${summary}`;
+  const remedy =
+    "What to do: open Google Tag Manager, check that the GA4 configuration tag is present in the container, and publish it again. Then run `pnpm --filter @workspace/exhibit-on-superior run check:gtm` from the workspace to confirm. Until fixed, NO visitor data is being recorded. This alert is sent at most once per day.";
+
+  const tail = outputTail.trim();
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    (tail
+      ? `<p style="${BODY_TEXT}"><strong>Check output (tail):</strong></p>` +
+        `<pre style="margin:0 0 16px;font-size:12px;line-height:1.5;white-space:pre-wrap;">${escapeHtml(tail)}</pre>`
+      : "") +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+      "open Google Tag Manager, restore the GA4 tag in the container, publish it, then run check:gtm from the workspace to confirm. Until fixed, no visitor data is being recorded. This alert is sent at most once per day.",
+    )}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...(tail ? ["Check output (tail):", tail, ""] : []),
+    remedy,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader:
+      "The published GTM container is missing the GA4 tag — no visitor data is being recorded.",
+    kicker: "Website Alert",
+    heading: "Visitor Tracking Check Failed",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
  * Operational alert: the always-on legacy-redirect check (redirectCheck)
  * found a legacy URL that no longer answers a single-hop 301 to its mapped
  * target — Google-indexed legacy URLs are soft-404ing into the SPA shell.
