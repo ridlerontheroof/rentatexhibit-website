@@ -1,34 +1,34 @@
 # Performance report — before/after (Lighthouse lab)
 
-Generated: 2026-07-27T05:01:46.789Z — derived from perf/baseline.json and perf/latest.json by scripts/generate-qa-evidence.mjs (regenerate after any perf run so this report always matches the source data).
+Generated: 2026-08-11T18:28:50.185Z — derived from perf/baseline.json and perf/latest.json by scripts/generate-qa-evidence.mjs (regenerate after any perf run so this report always matches the source data).
 
 Source: the repo perf suite (`pnpm --filter @workspace/exhibit-on-superior run check:perf`), Lighthouse against the local production build (dist/public via vite preview) with default throttling — simulated Slow-4G / 4x CPU for mobile, desktop preset for desktop. TBT is the lab proxy for INP.
 
-- **Before**: baseline run 2026-07-26T23:15:14.389Z
-- **After**: latest run 2026-07-27T05:01:17.401Z
+- **Before**: baseline run 2026-07-27T13:33:22.041Z
+- **After**: latest run 2026-08-11T18:26:50.262Z
 
 | FF | Page | Score before → after | LCP before → after (ms) | CLS after | TBT after (ms) | Threshold check |
 |---|---|---|---|---|---|---|
-| mobile | / | 86 → 88 | 4215 → 3844 | 0.000 | 68 | ✅ |
-| mobile | /available-units | 80 → 78 | 4963 → 5576 | 0.000 | 100 | ✅ |
-| mobile | /available-units/0208 | 77 → 83 | 5732 → 4293 | 0.043 | 69 | ✅ |
-| mobile | /available-units/2705 | 78 → 78 | 5597 → 5579 | 0.042 | 66 | ✅ |
-| mobile | /amenities | 78 → 86 | 5569 → 3992 | 0.000 | 87 | ✅ |
-| mobile | /photo-gallery | 80 → 83 | 5120 → 4525 | 0.000 | 71 | ✅ |
-| mobile | /virtual-tour | 82 → 85 | 4661 → 4214 | 0.000 | 87 | ✅ |
-| mobile | /knowledge | 78 → 81 | 5573 → 4886 | 0.000 | 44 | ✅ |
-| mobile | /knowledge/application-fee | 83 → 78 | 4491 → 5563 | 0.000 | 43 | ✅ |
-| mobile | /contact-us | 81 → 82 | 4895 → 4591 | 0.000 | 114 | ✅ |
-| desktop | / | 98 → 97 | 1181 → 1329 | 0.000 | 0 | ✅ |
-| desktop | /available-units | 98 → 97 | 1156 → 1220 | 0.000 | 0 | ✅ |
-| desktop | /available-units/0208 | 92 → 95 | 1857 → 1552 | 0.001 | 0 | ✅ |
-| desktop | /available-units/2705 | 98 → 96 | 1171 → 1407 | 0.001 | 0 | ✅ |
-| desktop | /amenities | 95 → 93 | 1474 → 1774 | 0.000 | 0 | ✅ |
-| desktop | /photo-gallery | 100 → 89 | 701 → 2188 | 0.000 | 1 | ✅ |
-| desktop | /virtual-tour | 90 → 97 | 2060 → 1295 | 0.000 | 0 | ✅ |
-| desktop | /knowledge | 91 → 98 | 1940 → 1147 | 0.000 | 0 | ✅ |
-| desktop | /knowledge/application-fee | 98 → 98 | 1124 → 1046 | 0.000 | 0 | ✅ |
-| desktop | /contact-us | 97 → 97 | 1257 → 1338 | 0.000 | 0 | ✅ |
+| mobile | / | 88 → 80 | 3912 → 5114 | 0.000 | 76 | ✅ |
+| mobile | /available-units | 91 → 94 | 3311 → 2687 | 0.085 | 90 | ✅ |
+| mobile | /available-units/0208 | 80 → 96 | 4974 → 2407 | 0.005 | 65 | ✅ |
+| mobile | /available-units/3108 | — → 97 | — → 2301 | 0.005 | 63 | ✅ |
+| mobile | /amenities | 91 → 95 | 3309 → 2783 | 0.000 | 28 | ✅ |
+| mobile | /photo-gallery | 85 → 97 | 4227 → 2481 | 0.000 | 55 | ✅ |
+| mobile | /virtual-tour | 93 → 96 | 3163 → 2557 | 0.000 | 16 | ✅ |
+| mobile | /knowledge | 91 → 98 | 3316 → 2256 | 0.001 | 49 | ✅ |
+| mobile | /knowledge/application-fee | 88 → 98 | 3789 → 2255 | 0.000 | 14 | ✅ |
+| mobile | /contact-us | 91 → 93 | 3308 → 3067 | 0.000 | 80 | ✅ |
+| desktop | / | 99 → 94 | 1013 → 1598 | 0.000 | 0 | ✅ |
+| desktop | /available-units | 95 → 100 | 1503 → 607 | 0.034 | 0 | ✅ |
+| desktop | /available-units/0208 | 90 → 100 | 2053 → 779 | 0.002 | 0 | ✅ |
+| desktop | /available-units/3108 | — → 100 | — → 486 | 0.003 | 0 | ✅ |
+| desktop | /amenities | 95 → 99 | 1464 → 847 | 0.000 | 0 | ✅ |
+| desktop | /photo-gallery | 98 → 100 | 1173 → 707 | 0.000 | 0 | ✅ |
+| desktop | /virtual-tour | 98 → 100 | 1178 → 687 | 0.000 | 0 | ✅ |
+| desktop | /knowledge | 97 → 100 | 1213 → 445 | 0.001 | 0 | ✅ |
+| desktop | /knowledge/application-fee | 92 → 100 | 1893 → 451 | 0.000 | 0 | ✅ |
+| desktop | /contact-us | 97 → 100 | 1235 → 687 | 0.000 | 0 | ✅ |
 
 All pages pass the calibrated per-page thresholds in perf/thresholds.json.
 

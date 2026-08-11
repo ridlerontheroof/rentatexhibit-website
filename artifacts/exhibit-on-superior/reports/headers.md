@@ -1,6 +1,6 @@
 # Header report — https://www.rentatexhibit.com
 
-Generated: 2026-07-27T05:01:47.437Z
+Generated: 2026-08-11T18:28:50.898Z
 
 Collected with `fetch` (redirects followed manually), `accept-encoding` negotiated by the runtime (gzip/br). "Redirect chain" lists every hop and its status.
 
@@ -11,10 +11,10 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `text/html; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"2059-19fa1aa62b0"`
-- last-modified: `Mon, 27 Jul 2026 03:42:06 GMT`
+- etag: `W/"2750-19fd811ad68"`
+- last-modified: `Thu, 06 Aug 2026 17:14:25 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 - canonical (in HTML): `https://www.rentatexhibit.com/`
 
 ## /available-units
@@ -24,10 +24,10 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `text/html; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"310a-19fa1aa5ec8"`
-- last-modified: `Mon, 27 Jul 2026 03:42:05 GMT`
+- etag: `W/"2c9a-19fd811a598"`
+- last-modified: `Thu, 06 Aug 2026 17:14:23 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 - canonical (in HTML): `https://www.rentatexhibit.com/available-units`
 
 ## /available-units/0208
@@ -37,10 +37,10 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `text/html; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"1aea-19fa1aa5ae0"`
-- last-modified: `Mon, 27 Jul 2026 03:42:04 GMT`
+- etag: `W/"1ffb-19fd811a1b0"`
+- last-modified: `Thu, 06 Aug 2026 17:14:22 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 - canonical (in HTML): `https://www.rentatexhibit.com/available-units/0208`
 
 ## /knowledge
@@ -50,10 +50,10 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `text/html; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"2542-19fa1aa6698"`
-- last-modified: `Mon, 27 Jul 2026 03:42:07 GMT`
+- etag: `W/"2e7d-19fd811b538"`
+- last-modified: `Thu, 06 Aug 2026 17:14:27 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 - canonical (in HTML): `https://www.rentatexhibit.com/knowledge`
 
 ## /floor-plans
@@ -63,10 +63,10 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `text/html; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"191a-19fa1aa5ec8"`
-- last-modified: `Mon, 27 Jul 2026 03:42:05 GMT`
+- etag: `W/"28b0-19fd811a598"`
+- last-modified: `Thu, 06 Aug 2026 17:14:23 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 - canonical (in HTML): `https://www.rentatexhibit.com/floor-plans`
 
 ## /apartments/il/chicago/floor-plans
@@ -76,10 +76,10 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `text/html; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"191a-19fa1aa5ec8"`
-- last-modified: `Mon, 27 Jul 2026 03:42:05 GMT`
+- etag: `W/"28b0-19fd811a598"`
+- last-modified: `Thu, 06 Aug 2026 17:14:23 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 - canonical (in HTML): `https://www.rentatexhibit.com/floor-plans`
 
 ## /sitemap.xml
@@ -89,10 +89,10 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `application/xml; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"503-19fa1aa6e68"`
-- last-modified: `Mon, 27 Jul 2026 03:42:09 GMT`
+- etag: `W/"52e-19fd811c0f0"`
+- last-modified: `Thu, 06 Aug 2026 17:14:30 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 
 ## /robots.txt
 
@@ -101,10 +101,10 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `text/plain; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"b8-19fa1aa6e68"`
-- last-modified: `Mon, 27 Jul 2026 03:42:09 GMT`
+- etag: `W/"c5-19fd811bd08"`
+- last-modified: `Thu, 06 Aug 2026 17:14:29 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 
 ## https://rentatexhibit.com/
 
@@ -113,9 +113,9 @@ Collected with `fetch` (redirects followed manually), `accept-encoding` negotiat
 - content-type: `text/html; charset=utf-8`
 - content-encoding: `br`
 - cache-control: `private, max-age=300, must-revalidate`
-- etag: `W/"2059-19fa1aa62b0"`
-- last-modified: `Mon, 27 Jul 2026 03:42:06 GMT`
+- etag: `W/"2750-19fd811ad68"`
+- last-modified: `Thu, 06 Aug 2026 17:14:25 GMT`
 - strict-transport-security: `max-age=63072000; includeSubDomains, max-age=31536000; includeSubDomains`
-- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-K/xibzV+gwVKETjO5KWF1P6XDvc5ERkddO…`
+- content-security-policy: `default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' 'sha256-60Q2JojuL6erkpt7ngHDS3Pp22ZSHFxPzn…`
 - canonical (in HTML): `https://www.rentatexhibit.com/`
 

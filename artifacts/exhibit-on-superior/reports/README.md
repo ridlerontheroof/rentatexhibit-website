@@ -1,14 +1,14 @@
 # Final QA evidence package — Exhibit On Superior
 
-Date: July 27, 2026 · Site: https://www.rentatexhibit.com (live production)
+Date: August 11, 2026 (refreshed; first issued July 27, 2026) · Site: https://www.rentatexhibit.com (live production)
 
 ## Plain-language summary
 
 The website passed its final quality check. Here is what that means:
 
-1. **Every page works.** All 134 pages listed in the sitemap load correctly
+1. **Every page works.** All 143 pages listed in the sitemap load correctly
    (status 200), have the right title and heading, and tell Google to index
-   them. All 21 old website addresses (from the previous Wix/WordPress site)
+   them. All 28 old website addresses (from the previous Wix/WordPress site)
    correctly forward visitors — in a single hop — to the right new page, so
    no old Google links or bookmarks are broken. → `url-crawl.csv`
 
@@ -19,7 +19,7 @@ The website passed its final quality check. Here is what that means:
    the Knowledge Center. → `structured-data.md`
 
 3. **The site is fast.** Lighthouse lab scores are strong on desktop
-   (89–98) and healthy on mobile (78–88), with essentially zero layout
+   (94–100) and healthy on mobile (80–98), with essentially zero layout
    shift anywhere. Every page passes its calibrated load-time limits in
    the latest lab run. → `performance.md`
 
@@ -42,7 +42,7 @@ The website passed its final quality check. Here is what that means:
 
 | File | Deliverable |
 | --- | --- |
-| `url-crawl.csv` | Crawl of all 134 sitemap URLs + 21 legacy URLs: status, redirect destination, canonical, indexability, title, H1, sitemap membership |
+| `url-crawl.csv` | Crawl of all 143 sitemap URLs + 28 legacy URLs: status, redirect destination, canonical, indexability, title, H1, sitemap membership |
 | `structured-data.md` | JSON-LD extraction + validation for 7 representative live pages |
 | `performance.md` | Lighthouse before/after, mobile + desktop, 10 representative pages |
 | `accessibility.md` | Findings summary + keyboard test results (full doc: `docs/a11y-audit-2026-07.md`) |

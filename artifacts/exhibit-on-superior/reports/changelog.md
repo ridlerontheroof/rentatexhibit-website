@@ -1,4 +1,4 @@
-# Change log — SEO/QA programme, July 2026
+# Change log — SEO/QA programme, July 2026 (refreshed August 11, 2026)
 
 Final QA evidence package, item 6. Summarises what changed across the merged
 work, what is still open, and what needs owner/business action.
@@ -18,14 +18,15 @@ work, what is still open, and what needs owner/business action.
   redirect) with one landing page per distinct plan layout
   (`/floor-plans/<slug>`).
 - **Static content pages** added: fees, apartment guide, parking &
-  transportation, application guide, FAQ, about, reviews, and more — 134 URLs
-  in the sitemap.
+  transportation, application guide, FAQ, about, reviews, and more — 143 URLs
+  in the sitemap (134 at the July 27 package; growth since is unit churn,
+  floor-plan pages, and new knowledge articles).
 - **Markdown twins (AEO)** — every indexable page has a `.md` variant
   generated from the rendered HTML for AI crawlers.
 
 ## Redirects added
 
-- **21 legacy URL 301s** (Wix/WordPress `/apartments/il/chicago/*` paths and
+- **28 legacy URL 301s** (Wix/WordPress `/apartments/il/chicago/*` paths and
   RentCafe-era `.aspx` URLs) — all answer single-hop 301s to their canonical
   targets (see `url-crawl.csv`); source of truth is
   `src/data/legacyRedirects.ts`, guarded by a build-time parity check and the
@@ -60,11 +61,11 @@ work, what is still open, and what needs owner/business action.
 
 - Bing ping on unit rent/re-price — confirmation pending.
 - Stale prerendered head override on next rent event — verification pending.
-- Temporary square-footage override for unit 0610 (awaiting AppFolio fix).
 - Homepage starting-price accuracy after next publish — verification pending.
 - Lead-volume alert thresholds need tuning once real traffic exists.
-- Remaining server watchdogs (beyond floor-plan and legacy-redirect) should
-  confirm their runs in deployment logs.
+- Remaining quiet server watchdogs (apex redirect, apply-link, showing
+  scheduler, tour unit) should confirm healthy runs in deployment logs
+  (floor-plan, legacy-redirect and rented-unit checks already do).
 - Stale "478 sq ft" search snippet for apartment 2705 — verify it drops out
   of results.
 - Social share cards to be regenerated to mention convertibles.
@@ -72,6 +73,21 @@ work, what is still open, and what needs owner/business action.
 - Review dates in structured data (rich-result trust improvement).
 - Knowledge Center answers to be re-verified before review dates expire in
   late November 2026.
+
+## Evidence refresh — August 11, 2026
+
+- Re-ran `scripts/generate-qa-evidence.mjs` against the live site after the
+  post-July publishes (floor-plan hub growth, unit churn, new knowledge
+  articles, `/go/*` channel short URLs). Note: the workspace availability
+  snapshot is ahead of production (0610/1705/2002 pending the next publish);
+  this crawl reflects the live site.
+- **143/143 sitemap URLs** answer a single-hop 200, indexable, with unique
+  self-referencing canonicals; **28/28 legacy URLs** answer single-hop 301s.
+- **Structured data: 0 errors** on all 7 representative pages.
+- **Performance: all 20 audits (10 pages × mobile/desktop) pass** their
+  calibrated thresholds (perf run 2026-08-11). A first run showed one TBT
+  miss on the second-audited page (298 ms vs 83 ms baseline) — re-run once
+  per the warm-up-contention guidance; the re-run passed with 90 ms.
 
 ## Bing duplicate-canonical flag (2026-08-05)
 
