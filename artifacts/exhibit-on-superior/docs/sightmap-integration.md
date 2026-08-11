@@ -43,10 +43,20 @@ arrives.**
 
 `sightmap_impression`, `sightmap_unit_selected` (params: unit_number, matched,
 floor_plan), `sightmap_filter_change` (filters summary),
-`sightmap_apply_click`, `sightmap_outbound_click`. Events buffer in the
-`window.gtag` stub until gtag.js loads; nothing loads eagerly. DebugView
-verification requires `VITE_GA_MEASUREMENT_ID` (production build — see the GA
-re-activation task).
+`sightmap_apply_click`, `sightmap_outbound_click`.
+
+**GA4 routing:** production uses the GTM container (GTM-MDPWH532) which owns
+the GA4 Configuration tag. `VITE_GA_MEASUREMENT_ID` is **not** set. The
+tracking guards in `analytics.ts` check `window.gtag != null` (set by GTM)
+rather than `analyticsEnabled()`, so events reach GTM's GA4 stream regardless.
+The map only mounts on a click, and GTM loads on page load — `window.gtag` is
+always available by the time the first Metrics API event fires.
+
+**DebugView verification:** open the live site with `?gtm_debug=x` or GA4
+DebugView (activate debug mode for your browser via the GA Debugger Chrome
+extension or by appending `&gtm_debug=x`). Click a unit and change a filter
+and confirm `sightmap_unit_selected` and `sightmap_filter_change` appear in
+DebugView / the GTM preview pane.
 
 ## Post-publish verification (first publish with the map)
 

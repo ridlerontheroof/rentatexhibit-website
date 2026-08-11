@@ -286,6 +286,80 @@ describe('UTM capture and persistence across SPA navigation', () => {
   });
 });
 
+describe('GTM-managed mode (no VITE_GA_MEASUREMENT_ID, window.gtag stub from index.html)', () => {
+  /**
+   * Simulate the index.html stub: window.gtag = function() { dataLayer.push(arguments); }
+   * This is what the live site has — no VITE_GA_MEASUREMENT_ID, but a gtag stub
+   * installed in the page head before any JS module runs.
+   */
+  async function loadGtmMode(): Promise<Analytics> {
+    window.history.replaceState(null, '', '/');
+    vi.resetModules();
+    // No VITE_GA_MEASUREMENT_ID set — analyticsEnabled() returns false
+    window.dataLayer = [];
+    window.gtag = function gtag() {
+      (window.dataLayer as unknown[]).push(arguments);
+    } as unknown as typeof window.gtag;
+    gtagSpy = vi.fn(window.gtag);
+    window.gtag = gtagSpy as unknown as typeof window.gtag;
+    const analytics = await import('./analytics');
+    // initAnalytics is a no-op (analyticsEnabled() false), which is correct —
+    // GTM's GA4 Configuration tag owns the gtag.js load.
+    analytics.initAnalytics();
+    return analytics;
+  }
+
+  it('trackPageView fires when only the GTM stub is present', async () => {
+    const analytics = await loadGtmMode();
+    analytics.trackPageView('/available-units');
+    const call = gtagSpy.mock.calls.find((a) => a[0] === 'event' && a[1] === 'page_view');
+    expect(call).toBeDefined();
+    expect((call![2] as Record<string, unknown>).page_path).toBe('/available-units');
+  });
+
+  it('trackLead fires when only the GTM stub is present', async () => {
+    const analytics = await loadGtmMode();
+    analytics.trackPageView('/schedule-a-tour');
+    analytics.trackLead('tour');
+    const call = gtagSpy.mock.calls.find((a) => a[0] === 'event' && a[1] === 'generate_lead');
+    expect(call).toBeDefined();
+    expect((call![2] as Record<string, unknown>).form_type).toBe('tour');
+  });
+
+  it('trackOutboundClick fires when only the GTM stub is present', async () => {
+    const analytics = await loadGtmMode();
+    analytics.trackPageView('/');
+    analytics.trackOutboundClick('apply', 'https://example.com/apply', 'nav');
+    const call = gtagSpy.mock.calls.find((a) => a[0] === 'event' && a[1] === 'outbound_click');
+    expect(call).toBeDefined();
+    expect((call![2] as Record<string, unknown>).link_type).toBe('apply');
+  });
+
+  it('trackSightMap fires when only the GTM stub is present', async () => {
+    const analytics = await loadGtmMode();
+    analytics.trackPageView('/available-units');
+    analytics.trackSightMap('sightmap_unit_selected', { unit_number: '2301', matched: true });
+    const call = gtagSpy.mock.calls.find(
+      (a) => a[0] === 'event' && a[1] === 'sightmap_unit_selected'
+    );
+    expect(call).toBeDefined();
+    expect((call![2] as Record<string, unknown>).unit_number).toBe('2301');
+  });
+
+  it('all trackers are silent no-ops when window.gtag is absent (no GTM, no direct GA)', async () => {
+    window.history.replaceState(null, '', '/');
+    vi.resetModules();
+    delete window.gtag;
+    const analytics = await import('./analytics');
+    analytics.initAnalytics();
+    // none of these should throw
+    analytics.trackPageView('/');
+    analytics.trackLead('contact');
+    analytics.trackOutboundClick('apply', 'https://example.com', 'nav');
+    analytics.trackSightMap('sightmap_impression');
+  });
+});
+
 describe('deferred gtag.js loading', () => {
   /** Load analytics without replacing window.gtag, keeping the real loader wiring. */
   async function loadDeferred(): Promise<void> {

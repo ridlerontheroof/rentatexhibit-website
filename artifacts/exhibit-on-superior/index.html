@@ -26,6 +26,14 @@
       (function (w, d) {
         w.dataLayer = w.dataLayer || [];
         w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        // Standard window.gtag stub: queues events into dataLayer so every
+        // track*() call made before GTM's GA4 Configuration tag loads gtag.js
+        // is buffered and delivered once gtag.js drains the queue. Without
+        // this, all custom events (SightMap, lead, outbound-click) are dropped
+        // because the helpers guard on `window.gtag != null`.  The stub must
+        // not overwrite the real gtag when gtag.js has already installed it
+        // (unlikely in head position but safe).
+        w.gtag = w.gtag || function gtag() { w.dataLayer.push(arguments); };
         var loaded = false;
         // Real user gestures only. Deliberately NOT the 'scroll' event: the
         // browser fires synthetic scroll events from scroll anchoring when

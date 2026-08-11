@@ -1,7 +1,18 @@
 /**
- * GA4 analytics, env-configured (VITE_GA_MEASUREMENT_ID). When the ID is not
- * set, every function is a silent no-op so development/preview builds ship no
- * third-party scripts. Nothing here runs during SSR/prerender.
+ * GA4 analytics helpers. Two operating modes:
+ *
+ * 1. Direct gtag — when VITE_GA_MEASUREMENT_ID is set at build time, this
+ *    module initialises a deferred gtag.js loader (no third-party scripts in
+ *    the startup window).
+ *
+ * 2. GTM-managed — when VITE_GA_MEASUREMENT_ID is not set (production uses
+ *    the GTM container GTM-MDPWH532 to own the GA4 Configuration tag),
+ *    initAnalytics is a no-op but the tracking helpers still fire because GTM's
+ *    GA4 tag installs window.gtag itself. Guards use `window.gtag != null`
+ *    rather than analyticsEnabled(), so events reach whatever GA4 stream GTM
+ *    has configured.
+ *
+ * Nothing here runs during SSR/prerender.
  */
 
 declare global {
@@ -128,7 +139,9 @@ export function trackPageView(path: string): void {
     previousPath = currentPath;
     currentPath = path;
   }
-  if (!analyticsEnabled() || !window.gtag) return;
+  // Fire when window.gtag is available — whether set by our own initAnalytics
+  // (direct-gtag mode) or by GTM's GA4 Configuration tag (GTM mode).
+  if (!window.gtag) return;
   window.gtag('event', 'page_view', {
     page_path: path,
     page_location: window.location.href,
@@ -151,7 +164,7 @@ export function trackLead(
   formType: 'contact' | 'tour' | 'apply',
   attribution?: { floorPlanPreference?: string }
 ): void {
-  if (!analyticsEnabled() || !window.gtag) return;
+  if (!window.gtag) return;
 
   let referringPage = previousPath ?? '';
   if (!referringPage && document.referrer) {
@@ -181,6 +194,33 @@ export function trackLead(
 }
 
 /**
+ * Report a SightMap interaction (unit selected, filters changed, apply click)
+ * forwarded from the Engrain Metrics API — see src/lib/sightmap.ts.
+ *
+ * Works in both operating modes (direct-gtag and GTM-managed): the map only
+ * mounts on a click, which is the same gesture that triggers deferred gtag.js
+ * injection in direct-gtag mode, so window.gtag is always available by the
+ * time the first Metrics API event fires. In GTM mode GTM's GA4 Configuration
+ * tag has already installed window.gtag by page-load time. Never any PII.
+ */
+export function trackSightMap(
+  eventName:
+    | 'sightmap_impression'
+    | 'sightmap_unit_selected'
+    | 'sightmap_filter_change'
+    | 'sightmap_apply_click'
+    | 'sightmap_outbound_click',
+  extra: Record<string, string | number | boolean> = {}
+): void {
+  if (!window.gtag) return;
+  window.gtag('event', eventName, {
+    ...extra,
+    page_path: currentPath ?? window.location.pathname,
+    ...getStoredUtmParams(),
+  });
+}
+
+/**
  * Report a click on a high-intent outbound CTA (Apply Now / View Availability
  * on RentCafe). Same attribution model as trackLead — page path, referring
  * page, and stored UTM params; never any PII.
@@ -196,38 +236,13 @@ export function trackLead(
  * browser flushes even after the page unloads. Without it, the request could
  * be dropped mid-navigation and the highest-intent action undercounted.
  */
-/**
- * Report a SightMap interaction (unit selected, filters changed, apply click)
- * forwarded from the Engrain Metrics API — see src/lib/sightmap.ts. Same
- * no-op-when-disabled and attribution model as the other trackers; events
- * fired before gtag.js arrives are buffered by the window.gtag stub created
- * in initAnalytics (the map only mounts on a click, which is also the gesture
- * that triggers the deferred gtag.js injection). Never any PII.
- */
-export function trackSightMap(
-  eventName:
-    | 'sightmap_impression'
-    | 'sightmap_unit_selected'
-    | 'sightmap_filter_change'
-    | 'sightmap_apply_click'
-    | 'sightmap_outbound_click',
-  extra: Record<string, string | number | boolean> = {}
-): void {
-  if (!analyticsEnabled() || !window.gtag) return;
-  window.gtag('event', eventName, {
-    ...extra,
-    page_path: currentPath ?? window.location.pathname,
-    ...getStoredUtmParams(),
-  });
-}
-
 export function trackOutboundClick(
   linkType: 'apply' | 'availability' | 'social' | 'tour',
   linkUrl: string,
   ctaLocation: string,
   attribution?: { floorPlan?: string }
 ): void {
-  if (!analyticsEnabled() || !window.gtag) return;
+  if (!window.gtag) return;
 
   const params: Record<string, string> = {
     link_type: linkType,
