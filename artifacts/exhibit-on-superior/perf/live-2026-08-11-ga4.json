@@ -1,0 +1,14 @@
+{
+  "url": "https://www.rentatexhibit.com/",
+  "date": "2026-08-11",
+  "check": "GA4 collect verification (follow-up to live-2026-07-27.json note)",
+  "note": "Container GTM-MDPWH532 is no longer empty: published gtm.js now includes GA4 measurement ID G-1S66YHBN91. Idle headless load (CDP network watch) of the live homepage fired /g/collect within ~10s of navigation.",
+  "gtmContainer": "GTM-MDPWH532",
+  "ga4MeasurementId": "G-1S66YHBN91",
+  "gtmJsLoadedAfterMs": 5697,
+  "collectHits": [
+    { "afterMs": 6001, "host": "analytics.google.com", "path": "/g/collect", "tid": "G-1S66YHBN91" },
+    { "afterMs": 6002, "host": "stats.g.doubleclick.net", "path": "/g/collect", "tid": "G-1S66YHBN91" }
+  ],
+  "method": "headless Chromium via raw CDP Network.requestWillBeSent watch, 30s window"
+}

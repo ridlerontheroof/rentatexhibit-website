@@ -30,10 +30,29 @@ try {
   if (!payload || !Array.isArray(payload.units) || typeof payload.updatedAt !== 'string') {
     throw new Error('unexpected payload shape (expected { units: [], updatedAt })');
   }
-  await fs.writeFile(outPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-  console.log(
-    `Availability snapshot refreshed: ${payload.units.length} unit(s), updatedAt ${payload.updatedAt}.`,
-  );
+  // Skip the write when only updatedAt moved: rewriting an otherwise-identical
+  // snapshot dirties the working tree on every build, which blocks task merges
+  // ("cannot apply changes") and produces noise commits. Compare the payload
+  // against the committed snapshot with updatedAt normalized out.
+  let unchanged = false;
+  try {
+    const existing = JSON.parse(await fs.readFile(outPath, 'utf8'));
+    unchanged =
+      JSON.stringify({ ...existing, updatedAt: null }) ===
+      JSON.stringify({ ...payload, updatedAt: null });
+  } catch {
+    /* missing/malformed existing snapshot — write the fresh one */
+  }
+  if (unchanged) {
+    console.log(
+      `Availability snapshot unchanged (${payload.units.length} unit(s)); keeping committed updatedAt to avoid dirtying the tree.`,
+    );
+  } else {
+    await fs.writeFile(outPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+    console.log(
+      `Availability snapshot refreshed: ${payload.units.length} unit(s), updatedAt ${payload.updatedAt}.`,
+    );
+  }
   // Keep the per-unit rewrite block in artifact.toml in lockstep with the
   // snapshot we just wrote, so the "unit-rewrites" check stays green without a
   // manual regenerate step. Failures here propagate: a refreshed snapshot with
