@@ -34,6 +34,11 @@ approved via canvas mockup).
    below the filter dropdowns on desktop (user request; presumed
    non-configurable).
 
+**Status:** request emailed 2026-08-11 from leasingexhibit@highlandptrs.com to
+support@engrain.com (cc + reply-to exhibit@highlandptrs.com), covering both
+items above. **Awaiting Engrain's reply — record their answer here when it
+arrives.**
+
 ## GA4 events (via the deferred analytics module, `trackSightMap`)
 
 `sightmap_impression`, `sightmap_unit_selected` (params: unit_number, matched,
