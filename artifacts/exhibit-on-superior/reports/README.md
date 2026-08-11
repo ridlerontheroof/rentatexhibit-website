@@ -1,12 +1,12 @@
 # Final QA evidence package — Exhibit On Superior
 
-Date: August 11, 2026 (refreshed; first issued July 27, 2026) · Site: https://www.rentatexhibit.com (live production)
+Date: August 11, 2026 (refreshed ×2; first issued July 27, 2026) · Site: https://www.rentatexhibit.com (live production)
 
 ## Plain-language summary
 
 The website passed its final quality check. Here is what that means:
 
-1. **Every page works.** All 143 pages listed in the sitemap load correctly
+1. **Every page works.** All 144 pages listed in the sitemap load correctly
    (status 200), have the right title and heading, and tell Google to index
    them. All 28 old website addresses (from the previous Wix/WordPress site)
    correctly forward visitors — in a single hop — to the right new page, so
@@ -42,7 +42,7 @@ The website passed its final quality check. Here is what that means:
 
 | File | Deliverable |
 | --- | --- |
-| `url-crawl.csv` | Crawl of all 143 sitemap URLs + 28 legacy URLs: status, redirect destination, canonical, indexability, title, H1, sitemap membership |
+| `url-crawl.csv` | Crawl of all 144 sitemap URLs + 28 legacy URLs: status, redirect destination, canonical, indexability, title, H1, sitemap membership |
 | `structured-data.md` | JSON-LD extraction + validation for 7 representative live pages |
 | `performance.md` | Lighthouse before/after, mobile + desktop, 10 representative pages |
 | `accessibility.md` | Findings summary + keyboard test results (full doc: `docs/a11y-audit-2026-07.md`) |

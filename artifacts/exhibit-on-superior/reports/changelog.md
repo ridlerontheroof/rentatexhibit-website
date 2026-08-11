@@ -1,4 +1,4 @@
-# Change log — SEO/QA programme, July 2026 (refreshed August 11, 2026)
+# Change log — SEO/QA programme, July 2026 (refreshed August 11, 2026 ×2)
 
 Final QA evidence package, item 6. Summarises what changed across the merged
 work, what is still open, and what needs owner/business action.
@@ -74,13 +74,32 @@ work, what is still open, and what needs owner/business action.
 - Knowledge Center answers to be re-verified before review dates expire in
   late November 2026.
 
-## Evidence refresh — August 11, 2026
+## Evidence refresh — August 11, 2026 (second run, post-publish)
+
+Re-ran after the unit-churn publish went live (build `msp11p7j-3b282064`,
+2026-08-11 ~19:04 UTC) — the publish that added units 0610, 1705, and 2002
+to the sitemap.
+
+- **144/144 sitemap URLs** answer a single-hop 200, indexable, with unique
+  self-referencing canonicals; **28/28 legacy URLs** answer single-hop 301s.
+- **Structured data: 0 errors** on all 7 representative pages (incl. the two
+  new unit pages 0610 and 1705).
+- **Performance: all 20 audits (10 pages × mobile/desktop) pass.** First run
+  showed 2 warm-up misses; re-run passed cleanly (consistent with the
+  documented warm-up-contention pattern).
+- **Side fix**: `scripts/check-floor-plan-pages.mjs` had a stale hardcoded
+  expected title for `/floor-plans` ("Floor Plan Layouts, Studio to 3 Bedroom")
+  that no longer matched the live page after the title was updated in seo.ts
+  to "River North Floor Plans, Studio to 3 Bed". Updated to match; all floor-
+  plan page checks now pass.
+
+## Evidence refresh — August 11, 2026 (first run)
 
 - Re-ran `scripts/generate-qa-evidence.mjs` against the live site after the
   post-July publishes (floor-plan hub growth, unit churn, new knowledge
   articles, `/go/*` channel short URLs). Note: the workspace availability
-  snapshot is ahead of production (0610/1705/2002 pending the next publish);
-  this crawl reflects the live site.
+  snapshot was ahead of production (0610/1705/2002 pending the next publish);
+  this crawl reflected the live site at that time (143 sitemap URLs).
 - **143/143 sitemap URLs** answer a single-hop 200, indexable, with unique
   self-referencing canonicals; **28/28 legacy URLs** answer single-hop 301s.
 - **Structured data: 0 errors** on all 7 representative pages.

@@ -98,7 +98,7 @@ const hasCanonical = (body, canonical) =>
     if (status !== 200) fail(url, `HTTP ${status}`);
     else {
       const title = titleOf(body);
-      const expected = 'Floor Plan Layouts, Studio to 3 Bedroom | Exhibit On Superior';
+      const expected = 'River North Floor Plans, Studio to 3 Bed | Exhibit On Superior';
       if (title !== expected) {
         fail(
           url,
