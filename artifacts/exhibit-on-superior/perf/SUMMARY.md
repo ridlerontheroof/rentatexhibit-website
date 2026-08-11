@@ -1,30 +1,30 @@
 # Page-speed lab report
 
-Generated: 2026-08-11T19:18:56.626Z
+Generated: 2026-07-29T23:55:53.108Z
 
-Target: local production build (dist/public via the production server, server/index.mjs)
+Target: local production build (dist/public via `vite preview`)
 
 Lab metrics with Lighthouse default throttling (simulated Slow-4G/4x-CPU mobile; desktop preset). TBT is the lab proxy for INP. Byte figures are transfer sizes.
 
 | FF | Page | Score | LCP | CLS | TBT | JS | Images | 3rd-party | Result |
 |---|---|---|---|---|---|---|---|---|---|
-| mobile | / | 93 | 3096 ms | 0.000 | 40 ms | 126 KB | 479 KB | 0 KB | ✅ |
-| mobile | /available-units | 93 | 2823 ms | 0.085 | 75 ms | 159 KB | 2043 KB | 2017 KB | ✅ |
-| mobile | /available-units/0208 | 97 | 2407 ms | 0.005 | 30 ms | 181 KB | 1809 KB | 1802 KB | ✅ |
-| mobile | /available-units/3108 | 97 | 2406 ms | 0.005 | 50 ms | 181 KB | 1804 KB | 1800 KB | ✅ |
-| mobile | /amenities | 96 | 2559 ms | 0.000 | 21 ms | 125 KB | 144 KB | 0 KB | ✅ |
-| mobile | /photo-gallery | 96 | 2484 ms | 0.000 | 95 ms | 130 KB | 109 KB | 0 KB | ✅ |
-| mobile | /virtual-tour | 97 | 2482 ms | 0.000 | 15 ms | 123 KB | 147 KB | 0 KB | ✅ |
-| mobile | /knowledge | 98 | 2258 ms | 0.001 | 14 ms | 149 KB | 4 KB | 0 KB | ✅ |
-| mobile | /knowledge/application-fee | 98 | 2255 ms | 0.000 | 8 ms | 147 KB | 4 KB | 0 KB | ✅ |
-| mobile | /contact-us | 98 | 2258 ms | 0.000 | 36 ms | 146 KB | 25 KB | 0 KB | ✅ |
-| desktop | / | 97 | 1222 ms | 0.000 | 0 ms | 126 KB | 1451 KB | 0 KB | ✅ |
-| desktop | /available-units | 99 | 1020 ms | 0.034 | 0 ms | 159 KB | 3580 KB | 3497 KB | ✅ |
-| desktop | /available-units/0208 | 98 | 1094 ms | 0.002 | 0 ms | 181 KB | 1809 KB | 1802 KB | ✅ |
-| desktop | /available-units/3108 | 100 | 487 ms | 0.003 | 0 ms | 181 KB | 1808 KB | 1800 KB | ✅ |
-| desktop | /amenities | 99 | 847 ms | 0.000 | 0 ms | 125 KB | 372 KB | 0 KB | ✅ |
-| desktop | /photo-gallery | 100 | 706 ms | 0.000 | 0 ms | 130 KB | 385 KB | 0 KB | ✅ |
-| desktop | /virtual-tour | 100 | 667 ms | 0.000 | 0 ms | 123 KB | 293 KB | 0 KB | ✅ |
-| desktop | /knowledge | 100 | 622 ms | 0.001 | 0 ms | 149 KB | 4 KB | 0 KB | ✅ |
-| desktop | /knowledge/application-fee | 100 | 629 ms | 0.000 | 0 ms | 147 KB | 7 KB | 0 KB | ✅ |
-| desktop | /contact-us | 100 | 686 ms | 0.000 | 0 ms | 146 KB | 108 KB | 0 KB | ✅ |
+| mobile | / | 75 | 5587 ms | 0.000 | 215 ms | 495 KB | 461 KB | 335 KB | ❌ lcpMs 5587 > limit 5300; tbtMs 215 > limit 200 |
+| mobile | /available-units | 92 | 2722 ms | 0.000 | 202 ms | 544 KB | 671 KB | 472 KB | ❌ tbtMs 202 > limit 200 |
+| mobile | /available-units/0208 | 87 | 3553 ms | 0.046 | 166 ms | 500 KB | 910 KB | 782 KB | ✅ |
+| mobile | /available-units/2705 | 93 | 2717 ms | 0.000 | 174 ms | 500 KB | 463 KB | 334 KB | ✅ |
+| mobile | /amenities | 84 | 3846 ms | 0.000 | 197 ms | 495 KB | 544 KB | 333 KB | ✅ |
+| mobile | /photo-gallery | 85 | 3764 ms | 0.000 | 191 ms | 500 KB | 559 KB | 333 KB | ✅ |
+| mobile | /virtual-tour | 91 | 3162 ms | 0.000 | 118 ms | 494 KB | 597 KB | 333 KB | ✅ |
+| mobile | /knowledge | 79 | 4968 ms | 0.000 | 143 ms | 490 KB | 461 KB | 333 KB | ✅ |
+| mobile | /knowledge/application-fee | 88 | 3613 ms | 0.000 | 119 ms | 489 KB | 461 KB | 333 KB | ✅ |
+| mobile | /contact-us | 88 | 3315 ms | 0.000 | 182 ms | 519 KB | 480 KB | 334 KB | ✅ |
+| desktop | / | 91 | 1933 ms | 0.000 | 3 ms | 495 KB | 1433 KB | 333 KB | ✅ |
+| desktop | /available-units | 91 | 1955 ms | 0.000 | 6 ms | 544 KB | 1752 KB | 524 KB | ✅ |
+| desktop | /available-units/0208 | 90 | 2077 ms | 0.001 | 9 ms | 500 KB | 1882 KB | 782 KB | ✅ |
+| desktop | /available-units/2705 | 92 | 1877 ms | 0.000 | 1 ms | 500 KB | 1435 KB | 333 KB | ✅ |
+| desktop | /amenities | 96 | 1444 ms | 0.000 | 2 ms | 495 KB | 1741 KB | 333 KB | ✅ |
+| desktop | /photo-gallery | 91 | 1957 ms | 0.000 | 0 ms | 500 KB | 1792 KB | 333 KB | ✅ |
+| desktop | /virtual-tour | 90 | 2122 ms | 0.000 | 0 ms | 494 KB | 1717 KB | 333 KB | ✅ |
+| desktop | /knowledge | 98 | 1158 ms | 0.000 | 0 ms | 489 KB | 1433 KB | 333 KB | ✅ |
+| desktop | /knowledge/application-fee | 95 | 1472 ms | 0.000 | 0 ms | 489 KB | 1435 KB | 333 KB | ✅ |
+| desktop | /contact-us | 95 | 1569 ms | 0.000 | 1 ms | 518 KB | 1536 KB | 333 KB | ✅ |

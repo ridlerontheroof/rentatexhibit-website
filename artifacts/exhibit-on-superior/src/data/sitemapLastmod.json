@@ -1,578 +1,550 @@
 {
   "/": {
-    "hash": "d3588f4c3604e2e94c3837970fe3c582c0f1e3b3f5333c87f503bdf630e43f23",
-    "lastmod": "2026-08-04"
+    "hash": "eedb58909d13b66d5dc713f6c3a19d04bd874d291955fd4bb1c81e412703ae4c",
+    "lastmod": "2026-07-27"
   },
   "/available-units": {
-    "hash": "ecfd54a64875f68e091cda2a5ec9e622857024459a0e7a031de33d0b566942c1",
-    "lastmod": "2026-08-11"
+    "hash": "2d77d7d69df5c4f06c20890ad892ca33ceb31928b80589e1aa31554e9e3c28d5",
+    "lastmod": "2026-07-29"
   },
   "/floor-plans": {
-    "hash": "cfc77e73b995628f560bc57368708eab4c6a9f2137b0d65fc377eaa241ec6082",
-    "lastmod": "2026-08-04"
+    "hash": "ce885163ed7222ded108900830e54e0af510a5f698ba10af985947e4aa6e812d",
+    "lastmod": "2026-07-27"
   },
   "/photo-gallery": {
-    "hash": "e0481a99d6b86771c103796e1583612ad154cc76ed68f50ab5709f493b084b6a",
-    "lastmod": "2026-08-04"
+    "hash": "0cb9dbee136ac244cfeaf23da3fe2124a3944a6899e8833d998653162944f063",
+    "lastmod": "2026-07-26"
   },
   "/virtual-tour": {
-    "hash": "8f23ded9a1752ebccc4f20afea2e9f848bab67687f293113ddc23c66762b3787",
-    "lastmod": "2026-08-04"
+    "hash": "66bb961e337ab8e2eab40e1dd109a679e9c079b8bdb96edcbb63cc22e983172e",
+    "lastmod": "2026-07-26"
   },
   "/amenities": {
-    "hash": "8724880812c7823147e86173e1131e42643da3d4ba7b1388655f25d57e647e8a",
-    "lastmod": "2026-08-04"
+    "hash": "31f93e9a38a14c814b713507ef328932806a7df1396259d6115215598876cb62",
+    "lastmod": "2026-07-26"
   },
   "/pet-friendly": {
-    "hash": "4f1e1e9c4e808b74df7aa5e1205463c723d6923441cfa68b5252c4f479b8c3b7",
-    "lastmod": "2026-08-04"
-  },
-  "/luxury-apartments-river-north": {
-    "hash": "8cab1f9261cf4ab35040c9b67ac2c005d6c9149e9fcbdc22f14d97c80146c3ed",
-    "lastmod": "2026-08-11"
-  },
-  "/studio-apartments-river-north": {
-    "hash": "f3dcc01a25ecb29d2d34a9471fa84905580732fa3c3a56d681f956b01136c84f",
-    "lastmod": "2026-08-04"
-  },
-  "/convertible-apartments-river-north": {
-    "hash": "f3a0bd4a88592a9d1ff0aeac929b9625a7e2543c2bffd346eccd2a120b55bdf2",
-    "lastmod": "2026-08-11"
-  },
-  "/one-bedroom-apartments-river-north": {
-    "hash": "bd58d242b8c49a0746d5fd4edd4fc6484c0e488e9ea5b6af754b0ac9e1dfee01",
-    "lastmod": "2026-08-04"
-  },
-  "/two-bedroom-apartments-river-north": {
-    "hash": "f83afee1f0921554aa87a2232de7bafd4e1fb320bdd80cc63a30050885bbbde2",
-    "lastmod": "2026-08-04"
-  },
-  "/three-bedroom-apartments-river-north": {
-    "hash": "d4db909e6eb3496dc07040a05b1d222de5f7480f82443502372276164f9b52c2",
-    "lastmod": "2026-08-04"
-  },
-  "/apartments-near-northwestern-memorial": {
-    "hash": "1a0784febff02efbf5d2cc57d6a3129c4abc6934d71feeea2d7752d1d26e2114",
-    "lastmod": "2026-08-11"
-  },
-  "/apartments-near-merchandise-mart": {
-    "hash": "ad130a38f0c9a6c6cb703143b00ee340f57b2bbcff057b261e2f1fb9ad0276df",
-    "lastmod": "2026-08-11"
-  },
-  "/apartments-near-the-loop": {
-    "hash": "539d6a18af28a40926319f4dbba182a132a444c5e5b89922e4190850f8693521",
-    "lastmod": "2026-08-11"
+    "hash": "7c8051903ded1873d97137baeb00d5af300c3480282cd14c41a31cf1836bb358",
+    "lastmod": "2026-07-26"
   },
   "/neighborhood": {
-    "hash": "26be27679b885676582ce91243581f9e6c45b1b27c56eb8122669c050948cba0",
-    "lastmod": "2026-08-04"
+    "hash": "bfcf047d0eeeb2074b01aa425e2064e92f34534f998a961a03130671f28dd53d",
+    "lastmod": "2026-07-27"
   },
   "/apartment-guide": {
-    "hash": "2dcf2afff1fb54eae14b2938368ba4f5291beab19bd97af7e9741f1b3aae2c03",
-    "lastmod": "2026-08-04"
+    "hash": "e4a0d3f580d012047c205fd543f4291822795bf2fe88d9a5a78e5f784777e8fc",
+    "lastmod": "2026-07-26"
   },
   "/fees": {
-    "hash": "5f769635e28ff82f23e1684fc76b2ab4ee48c7ec5da77129df93c414fc404597",
-    "lastmod": "2026-08-04"
+    "hash": "67fc29de0aa33f8f7814c356f715c06b3fe04d56164b25d78cd451713a644bba",
+    "lastmod": "2026-07-28"
   },
   "/parking-transportation": {
-    "hash": "d049d2950b1fa3401af31b31d46bdee3bc7496a03bc09a142cf5f38f6efd5da9",
-    "lastmod": "2026-08-04"
+    "hash": "5a43476f2a19273174fbebe90e570a9a2cbe89ac6f6e3ac7fce03e11c8f20083",
+    "lastmod": "2026-07-26"
   },
   "/application-guide": {
-    "hash": "e63e676adc4ac76a360b9542ace865ad9ffcb27f6d67058831029b2e8fb9bb55",
-    "lastmod": "2026-08-04"
+    "hash": "cb0380254b5c5fd5bccc321d30d9936e104c268e9b749a06120ed7a2ff2f8208",
+    "lastmod": "2026-07-26"
   },
   "/faq": {
-    "hash": "78389d13f6ab92926d552128df1075cf1bcc51fd8d0d10930d119d4b642f77a9",
-    "lastmod": "2026-08-04"
+    "hash": "6d3bf8b931d6a285b65ead7ea6581daa72c0c1b7f5714145f1e11a773dbad6be",
+    "lastmod": "2026-07-28"
   },
   "/knowledge": {
-    "hash": "8fc33895bd83421d783d8293cff131780fa166825a4e96057c0b9f1ce8f9f512",
-    "lastmod": "2026-08-04"
+    "hash": "82f6c9f512d5c999a6dd6d075bf7091464d7e18f82f3e13df5c77f9b9eb0cbf0",
+    "lastmod": "2026-07-28"
   },
   "/contact-us": {
     "hash": "317ed604d2dab2fd537435094b91ba5d13ca4bb2682025b537d1fea3afe1f8a8",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/map-directions": {
-    "hash": "534fca4a397888c5fe882a5dc209aee4bd41188f64bdaa8183fb2a070ec02918",
-    "lastmod": "2026-08-04"
+    "hash": "fe31bf5114bfbeae9ea7de767d675d67e1789d208c1d917d7915a92b2dbd6ff9",
+    "lastmod": "2026-07-27"
   },
   "/residents": {
-    "hash": "adf0e7312f1d4ec8dfc6b6f33a1c03c864c031929d8cecd86c249fc8f29aacf6",
-    "lastmod": "2026-08-04"
+    "hash": "cdfbf984fe79a9e9ee95648a95231eefb4428b5734c989f85967b78c505f0c45",
+    "lastmod": "2026-07-26"
   },
   "/schedule-a-tour": {
-    "hash": "e8b9644cdc31b0770bc4a6edf859a90de57c692fafcbf49ebf88dbeffa5c05cb",
-    "lastmod": "2026-08-04"
+    "hash": "2600428797ecb03935b4217a1805bcdb3638977dadda728aeb1479dcc90bef5e",
+    "lastmod": "2026-07-29"
   },
   "/about": {
     "hash": "526a7568e836b746163ec18866a087ae05d081275d8639ae81b87bc3e777697f",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-27"
   },
   "/reviews": {
-    "hash": "3d10400d8efbf85f7f6da8d0093837afc6eeeaec5eb8d5a8b04ba32ae59ab96d",
-    "lastmod": "2026-08-04"
+    "hash": "53d800512db82c841ccf1dc90c21aecd81ed1b294169f25317c53e020d39d09a",
+    "lastmod": "2026-07-26"
   },
   "/privacy-policy": {
-    "hash": "c08afda52d1f9b47e39b7b023278ee6ccab96941f21e817b9b2a13cefdc6ef08",
-    "lastmod": "2026-08-04"
+    "hash": "e19ce03760122f1646de7387d38fb849dd5e18f49fd5a34b97aab9bad63dd274",
+    "lastmod": "2026-07-26"
   },
   "/available-units/0208": {
-    "hash": "d493adf72f7a73ae362c7ac77f6ef28dfc74aa9ca77ecf244b030e231bf552c9",
-    "lastmod": "2026-08-11"
+    "hash": "7226aaaee71dd55868e8887494fb26ee3425ad4c42aef6cbfe5d031a280c695a",
+    "lastmod": "2026-07-29"
   },
   "/available-units/0610": {
-    "hash": "43c95e1c2c8872767a433d5225e70d4ed13d80b9320f156ea99753792c53a83d",
-    "lastmod": "2026-08-11"
+    "hash": "8d5335bc78885a86f7bbdf16e41d15b37fb920678dfa51592516b8a702bc4ba1",
+    "lastmod": "2026-07-29"
+  },
+  "/available-units/0807": {
+    "hash": "b52228f4f0d4ba878e763a87580dfb47adeac9ea4e163bc42965f332b60ebce9",
+    "lastmod": "2026-07-29"
   },
   "/available-units/1001": {
-    "hash": "fae4e80f5e46af1e73b160a0c04c41468c60d58e11f00d20633899728adfc4c6",
-    "lastmod": "2026-08-11"
+    "hash": "f332244fb2794a52df357d4f22411f9ce89208978f532de12c2f7053ae9a39ff",
+    "lastmod": "2026-07-29"
   },
   "/available-units/1301": {
-    "hash": "63e5329ecaa5e078c174f12c5a455e26bb141985d13e23d2601f67a3571eaf13",
-    "lastmod": "2026-08-11"
+    "hash": "68ae69ea40ecf10dbc477bab7d4d66b21722802d18750c8a9718887da910e665",
+    "lastmod": "2026-07-29"
   },
-  "/available-units/1705": {
-    "hash": "58329dc155e0a33ce4b054908f0f040de69e8798024c15545f1c8a079a10026f",
-    "lastmod": "2026-08-11"
+  "/available-units/1510": {
+    "hash": "e42a9037dfd0345ed914ae99b67676c2416c6c895f2a73bacc4bc8996862df58",
+    "lastmod": "2026-07-29"
   },
   "/available-units/1808": {
-    "hash": "9a06bbea115ea634774f973ed0b5164b45c90771e7c6b9fd0e4b12e3a63bd534",
-    "lastmod": "2026-08-11"
+    "hash": "945cddc7d1fcc133d64623be314be7494434094f01bb0a3dd53771ac455a48a0",
+    "lastmod": "2026-07-29"
   },
-  "/available-units/2002": {
-    "hash": "d4fea2321a10d678a17352f8cfbd81abd38a270fed4bb9f93f04239a9c8f306f",
-    "lastmod": "2026-08-11"
+  "/available-units/2102": {
+    "hash": "722fda100948b46c7e1564321018c79590748cbefd8a702de136b1e7287892f3",
+    "lastmod": "2026-07-29"
   },
   "/available-units/2407": {
-    "hash": "3431fb38deadb93e29d57dee081de900884b50b49ea4c668b73f8c1f8b363eb7",
-    "lastmod": "2026-08-11"
+    "hash": "95f1870c9922c3de0f22b2c0ebd7fcd39d10196f4a82824ae46bdd6420288c9c",
+    "lastmod": "2026-07-29"
   },
   "/available-units/2801": {
-    "hash": "31571768a427a1028d6713eedfb0666b532bb29d34e106ee5825ef4533971d06",
-    "lastmod": "2026-08-11"
+    "hash": "d92fe621cf8b62e35ecf9f8e8cd768ef429edbc7e1f452cd0213f23559066541",
+    "lastmod": "2026-07-29"
   },
   "/available-units/3108": {
-    "hash": "e6cd523f550af86d7b080cd0db9917d0683cbc78aae034c48de18d1a653b5cd8",
-    "lastmod": "2026-08-11"
+    "hash": "cf1537d3038a57da82ec66acaecbe8e165705634703d106fba17c6e86794c8db",
+    "lastmod": "2026-07-29"
   },
   "/knowledge/how-much-is-rent": {
     "hash": "4136833b5d059224abc4106b985be55a655bad41208ad5dc61e0f67ad17ad556",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/what-fees-in-addition-to-rent": {
     "hash": "826720df90c0660aac2a86d12c1ecd565d5573b9f7c0cb890d231d5d4bad2804",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-28"
   },
   "/knowledge/is-there-a-security-deposit": {
     "hash": "01d88362639de86043db853aeefd516faeeb4e5578b3413336e03771c93b6a38",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/application-fee": {
     "hash": "aee05e58308eab909295d8c7ccdf5d8046bc7d09e582315cc29deafe629bad16",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/administration-fee": {
     "hash": "c96391618822f9347610dfbc64b403b7a5a8726e0ff02503e300a729109968b9",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/move-in-specials": {
     "hash": "1193e6127d1eee31b41a8877666c96dd90f9c67a7df6bf12749de9db1df37b64",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/how-much-is-storage": {
     "hash": "8cfa848ced655cf046894b73c0d09852c9e47e991fa259d0ce4999fb34bc6576",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/total-move-in-cost": {
-    "hash": "7f3ce06c49e84e3bdc7f3404c9b8f281f705b2479ec851848019677334eacc69",
-    "lastmod": "2026-08-04"
+    "hash": "4b3224fbf69d185f8e67177d37e48a1d59e94e13851b1a981f1e46793d961b54",
+    "lastmod": "2026-07-26"
   },
   "/knowledge/what-apartment-sizes": {
     "hash": "bf66d58b3258bd7f81ebcde725902d1271524f367c8947218ccab4bf43eeb062",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/do-studios-exist": {
     "hash": "a067cc121ec987ad0ab460e75d51e98aac0fdf791339c42a9008e989ae7773ec",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/what-is-a-convertible": {
     "hash": "d5419bfdd2f746e1cb9c3a0affcd2db6b47112520d6eeff65f97fca1384befd3",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/largest-apartment": {
     "hash": "ef134367ae767c582f38ece5889a627d8df8a0b5e582772ab7800024441d7c25",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-28"
   },
   "/knowledge/which-units-have-balconies": {
     "hash": "f1a32c8fd15c4308359da7b3aab72e1e2f4cef239a9a004c715d88b266702b2f",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/are-apartments-furnished": {
     "hash": "1d2ae9bb3e01c4d9c4d1c00c38e87d348ba0dc3dbffc09299e38db77f6aa7679",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/in-unit-laundry": {
     "hash": "a1b422a99b9ef811a19a04edc23473cb1f94a7e16662f2e8904e23843c80c5d6",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-28"
   },
   "/knowledge/apartment-finishes": {
-    "hash": "e922082dfc41870ac53a1be95a5218184a53bfe29110db59f658315dad156a27",
-    "lastmod": "2026-08-04"
+    "hash": "56264206fdc500879c1354903b2cde8024563291d43c6db8ab62d2c5106da74e",
+    "lastmod": "2026-07-26"
   },
   "/knowledge/views-and-windows": {
     "hash": "70933c7c793767aca04bc93468ec3739c1bde1eecb01b83ac319afb6901b47e6",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/ada-accessible-apartments": {
     "hash": "b98085d5519002733d4f66ebc56c3558c5e9b5cc99fbd4b88bb3b78f596f3b2a",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/full-amenity-list": {
     "hash": "a872e8843d54a58b3bf94aa846025e427957f300bdb1d30fafdf64841a76ee68",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/is-there-a-pool": {
     "hash": "e12745a215438db2b044c377a13f5c0d21590aca29529a0a2dcea3b64dd88480",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/amenity-hours": {
     "hash": "11e44bf1db5cf8fdd5dd7f168c683af8f50fe74f0cde39173d395d0fc95db38c",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/fitness-center": {
     "hash": "f3e22fa569490de3a12e2daec847e88951e882c08bf356c1271d648dfdca25d3",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/work-from-home-spaces": {
-    "hash": "a2a1af98910e12b30763aa4af9473b9811fa759f63d393b83d0e062fc722b9f2",
-    "lastmod": "2026-08-04"
+    "hash": "941fc19d09b29cc3389e7e996572eb3f9cbb1449c835188be175e68700470678",
+    "lastmod": "2026-07-26"
   },
   "/knowledge/party-room-reservation": {
-    "hash": "16116b7f658613c2bd43143f2f12553471b046bf8068e6391dcce92839b16509",
-    "lastmod": "2026-08-04"
+    "hash": "ec7fc19b062b3c952f911f0008d61663161f55d217501a7db56f555881b93223",
+    "lastmod": "2026-07-26"
   },
   "/knowledge/grills-and-fire-pits": {
     "hash": "a8808c0dbb68b34bea68c99c8e2db2daf92cb849f737bbaf8de1bf3ee2c98d3e",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/private-park": {
     "hash": "503f4e22be3baeac291d9e34d4743332154329fa7345c5067838c64c76eff535",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/on-site-retail": {
     "hash": "395d164a0f55f8bc4320d0ae06a445424aa1cfdf37875ecf3992807e5a1afb7c",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/does-exhibit-allow-dogs": {
     "hash": "ccef1478a76aac9cc6436818b13a74e68de1e44ce5297278d8f87a71202e01b9",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/does-exhibit-allow-cats": {
     "hash": "33903c595feabf432931ca3a78d2887aeff7034cbaf9baffe3da24d2aa5d8309",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/what-are-pet-fees": {
     "hash": "b0f7f817b5db1084cdd597ce0f0011fce015b2bd3bad1a0317f37819f94c1cc8",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/breed-and-weight-rules": {
     "hash": "7117488a80126982186a92bd2c188f0977ddd41faa01d0739c085d59948903cc",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/pet-amenities": {
     "hash": "dba073f245537774c3d3447c3e86869b43bf973da0ce83c1fb3f378e1098ce06",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/how-many-pets": {
     "hash": "61997dd1de106a9fac0dc36fdfe7de5d26472374d85eea61fd18390a5a8dec68",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/how-much-does-parking-cost": {
     "hash": "c7adfb7f93e5fea49925691cbf218cdba84b769e062f287c77bb9db39f572034",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/is-there-ev-charging": {
     "hash": "b2357013c570bfd419c35af709b962b7911794e6d80cce49bbcc1d1ded9aa271",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/is-there-guest-parking": {
     "hash": "8d4461f05b9fae8497c6b1afdd85a636f345a6cb81b4f85848db808b98b0c46d",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/is-there-bike-storage": {
     "hash": "db51d60d3f885b47d7e1e0018e47c3abad272b107ec36b37580b8d93260d4d77",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/cta-proximity": {
     "hash": "c27ead6c486ac5922ed6f44ae7b5549b1913650c568288f28e7f8e5aa388f33f",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/car-free-living": {
     "hash": "e43bfb448941bc3d73b99fe537ab62cb67a9968299826725493534b4f1c11267",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/highway-access": {
     "hash": "3bfd959a84683063e8befe9606008e39606c541328f582cd793973926fd1a7b7",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/walk-to-the-loop": {
     "hash": "5d0c14928acfe8f98fd864b4c2ae0231698dd578b2351e7e671d146c44e44a54",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-27"
   },
   "/knowledge/how-do-i-apply": {
     "hash": "e078cb777eb503248195c953fa26c54800908ecd465306b11752a1f621070665",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/credit-score-required": {
     "hash": "8bfa74469c392f266c46d22e3deea16b8fc68053f13eb6fbee58b9ab8aa0acd6",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/co-signers-accepted": {
     "hash": "8d79e78170e313b431f0d865d00bf6b1a88bb031880630bfa1a597d933a9ca34",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/approval-time": {
     "hash": "08199d6754b5b58759645990b54ef4500e6edbfe58ef7e5f0365dc269e7eb308",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/lease-terms": {
     "hash": "05e98d339bc9597da921b10b3ac9700bef9a687fdaab917c1dc139cf228a2eb9",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/occupancy-limits": {
     "hash": "e08c4dbec6ef2e81b60e5d8fa6c58018d4fb4cc49b52766e67435129973af4e3",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/documents-needed": {
     "hash": "bb7d8b9d64bf561287133af09b5948784d3a6442c835a4bf2194bd45a3f75f84",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/renters-insurance-required": {
     "hash": "5f464ca9a339c5aac2f3ebdcddc9a89400a9c9d84c5af54f96b07e1ea9988682",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/schedule-a-tour": {
     "hash": "0f399a728ca5a6005b57daa619567d103f2dfb9967933c0485d4f61ac41426dc",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/virtual-tours": {
     "hash": "282b155aa17b7dd998c044c786b3a3a099c7899c32e634f85e51b81264884954",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/how-is-electricity-billed": {
-    "hash": "158a9b8e000c87858581d7a91d2ddbef1d85d155d13a0962e31802905ea8261f",
-    "lastmod": "2026-08-04"
+    "hash": "140f6e1795aedc37900d98c9f7caa518fb0162df1de2d8c1463774a78a5e8a7a",
+    "lastmod": "2026-07-28"
+  },
+  "/knowledge/internet-options": {
+    "hash": "4cdfdcb7167504993df01b248f6ec732c4530b7bba05081f0cd732f1555f0129",
+    "lastmod": "2026-07-28"
   },
   "/knowledge/what-utility-fee-covers": {
-    "hash": "0e35beb1d58c35957f8d1b05b51bf293c5a23d40b7287958df24d329926e7f24",
-    "lastmod": "2026-08-04"
+    "hash": "19e15516d737c9e2d0b3b31e72dd32b94c85421f3c24092a5ea8e4c7ddafb362",
+    "lastmod": "2026-07-28"
   },
   "/knowledge/utility-fee-by-floor-plan": {
     "hash": "b84bc154d87abf8fc38f4c9b8d4dbf889e1f0d0c9cb5fb749f7bfc9fedd977bd",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-28"
   },
   "/knowledge/what-neighborhood": {
     "hash": "aa8dc33fa4fda8356a8871b67a48c40fa8d80ddd4e4969ab6d655a46bc257f4d",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/neighborhood-groceries": {
     "hash": "7d06907b32bd52bcf8a92d1ce7bad880847ad98ca9f3f7e36a62a7d50c7c15fa",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/neighborhood-dog-parks": {
     "hash": "2017ec1823e3cfce8fbdcd07cb2e4e57de04e0630a5db0b644251449f96f35a7",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/neighborhood-gyms": {
     "hash": "905491649b50b21356bc686469e7a572d01257a8a74d1a6c5d17c5443eb900e5",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/neighborhood-parks": {
     "hash": "763189b469e949934e38a9d7bfd513694b4464314298c5c79d5953263a2915ae",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/whats-near-superior-and-wells": {
     "hash": "2916cc19bb434b316e73eba8c6dfa71315f4dd2acb951de2041b84fe2353cbff",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/neighborhood-dining": {
     "hash": "7458361fea15278eaa082d0b87d0d9331665367f2ce001d774e637865bea7fdf",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/how-many-apartments": {
     "hash": "e0d329f31d8811603e05fecb4a67aaff0e401b44fc96ac329b908b50da88012d",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/front-desk-hours": {
     "hash": "5bb9749a1a1be2aa9d3a2cd798fcac4a933ae71c66e70c80e841a14cc918786a",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-28"
   },
   "/knowledge/who-manages-exhibit": {
     "hash": "c747c67c4db69bd6b46f006c0987e4958e31bc3ff98f1821f9ff0e9eb62b449d",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-28"
   },
   "/knowledge/leasing-office-hours": {
     "hash": "1c7bcbac373ba5cbaa6c797360eab83ee6f0aa132871eee6d1d40d6272208630",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/building-address": {
     "hash": "941ea89d164786a570725676a78c85f1621a089274699c8e07f0531137c26a33",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/resident-portal": {
     "hash": "e64d942389eb3a78cab50aa606f115ce1eb0d7fda94899362486862acd260ce4",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-28"
   },
   "/knowledge/reviews-sources": {
     "hash": "6aebd98177e41f5bc505aafdf6e6571fb516e24fa102baef8ac8eb2b14c57f29",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/accessibility-contact": {
     "hash": "df82c1c367452748b1a657267a4d05864341dc7b49d6039e529913ebd2a6f1fb",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/knowledge/smoking-policy": {
     "hash": "18b993edd6e6d573a356b6094614732d98de6393e5d84629bd37b84e7651cd38",
-    "lastmod": "2026-08-04"
+    "lastmod": "2026-07-26"
   },
   "/floor-plans/two-bedroom-one-bath-821-sf": {
-    "hash": "f9b1fba6c5366eef169112f6eec2e832e855e66eb2a5c0e91b3faea0ee98e444",
-    "lastmod": "2026-08-04"
+    "hash": "eb027e9e2a727e36ad8d9e44aaf447cbad71007f28de530a7400681d7e67ae10",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-619-sf": {
-    "hash": "e87350b01a972ea2e9e55c175d7e662dee8b694926ee29d3b92303f2fbf72b23",
-    "lastmod": "2026-08-04"
+    "hash": "3ebd1a637b801abe1b339c851609f5ea3fddf8b8c2c0634afea92ee8aa22ca71",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-630-sf": {
-    "hash": "6626702a0638a5b5701decd12d6235f70b627b1f764d8e23500663c237da6027",
-    "lastmod": "2026-08-04"
+    "hash": "4e608e4b89a040062062f7b1775b743d7f353f861bb6f52fa00ed9b6e186022a",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-two-bath-1003-sf": {
-    "hash": "8a5518ba5707d1482675ae9a775e4695d2edac476081beb1ee9da8a3aae2f432",
-    "lastmod": "2026-08-04"
+    "hash": "e9760e2b47dc172c93183d25e0568adb88df2bbb056aa3d5cc6ed903904e4af7",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-two-bath-929-sf": {
-    "hash": "6511d524449ebaa6f3accc322e3164dbb7c21bbcdf7f1be1743b1614f11954da",
-    "lastmod": "2026-08-04"
+    "hash": "60b254a508f3d6fd3c715441a6c11b51dadb77adee82446719335f484c49fffb",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-two-bath-935-sf": {
-    "hash": "7ae5aef8e84df33977abcd5d4998b9ae7ceb4aa0afaac05bdb2de242f4978f44",
-    "lastmod": "2026-08-04"
+    "hash": "6a3ad68487b43b92bcc8f393e8473b20f8b880ff86665d7fbf469a8148f0e14a",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-two-bath-1135-sf": {
-    "hash": "4f8df4dce0a7b4c61f1be28756f75051cc3abf896c52203f91c74ad25ffd4e86",
-    "lastmod": "2026-08-04"
+    "hash": "3a55bff608babf7b04ebc2ddcd4bd685fcce55f02823d1549b8d8df4fb854571",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/studio-448-sf": {
-    "hash": "06d0d19c33a2857a1cbf1eb8056b660391526040cfff1b482a519a5e43753619",
-    "lastmod": "2026-08-04"
+    "hash": "40a3e39c9a30b7c3bdb032edd202ea5a1f91b30a9b98e7ce703cfa4e92313b7c",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-656-sf": {
-    "hash": "eb6f6223df3dd0e6ed60576db4f22cb1350bcbc353eb898cfda5115d6831f4ba",
-    "lastmod": "2026-08-04"
+    "hash": "9caa50f27db1afe23b05b01dd4fa7008e37f1401fc2fb9df0272b9c4e4baee4a",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-two-bath-1079-sf": {
-    "hash": "d42c6a265892d98fb4582e50fe2fb9d85960063056b392a6139cc0906a85fe48",
-    "lastmod": "2026-08-04"
+    "hash": "e7c9588cd6736e42ec0faf04c144e4d4578de261497930f31f204877f5e2b59f",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-768-sf": {
-    "hash": "861872b25563646fb6a49e40fecef57c1fbcf38da6b6bc382ec74ff19a9d858b",
-    "lastmod": "2026-08-04"
+    "hash": "ac4591a78126945b2c8839575b2f447b719a02d0fe1fbb7bf9457a50316ed699",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-628-sf": {
-    "hash": "7c2501a98ad1c00ab6279331b8531c4829c1b0ef41636a41b31c1dcd73b2b04f",
-    "lastmod": "2026-08-04"
+    "hash": "00d770f6f41f94439d098b94717627b2ab57a0a1e2ce188ac66320575b1ef903",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-two-bath-1026-sf": {
-    "hash": "3ee853a51892ec480daeba839ecaff309c2d1f7164307318c2d336dcfefdfbae",
-    "lastmod": "2026-08-04"
+    "hash": "d1af5d7e5d437a1d8889c49bee3f29714ba12d00fb5b5636b5f38a845c21591f",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-two-bath-1052-sf": {
-    "hash": "0abcf8f8724cd52d221c554104d12d853ce3d6d04da93e59ea42cb8900fd76d4",
-    "lastmod": "2026-08-04"
+    "hash": "38a9b4704d1712528b3fcc045e82d8a02c6629c944f054e171c10f4c89ec9d64",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-two-bath-899-sf": {
-    "hash": "665fb3fac132f116a3ea0cf46685e4a69eaad98ebcd0ac061eb61e3a1868c0a8",
-    "lastmod": "2026-08-04"
+    "hash": "7544f1f8299d8fbe0e5992ac93e2cb6c49dd582629055ab5ec3b003adad84454",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/convertible-554-sf": {
-    "hash": "3a571f14e1481a195c65bb710040764d0cdd353d2a02c726c583abb3a4a6b53b",
-    "lastmod": "2026-08-11"
+    "hash": "bb79123012f28ce418cdf93ac0d85e52a0b9947b1ad5f85f45b3a9fdb3bf0d3d",
+    "lastmod": "2026-07-29"
   },
   "/floor-plans/studio-484-sf": {
-    "hash": "79e3fdfc0e361aae9fa94026aa67988a51c31018e5c7a59ee78a9b035399aed6",
-    "lastmod": "2026-08-04"
+    "hash": "b7f5775e83739fc6115542835a38ab5bbfa02364753acaf6b78b5d115ddf2246",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-den-two-bath-983-sf": {
-    "hash": "83d93725bcc913adb268ad638a1079e3fab25425f8b711bd22ec54784ce643e1",
-    "lastmod": "2026-08-04"
+    "hash": "b7e5ab089a85cd4a7aa601c072d778cb8e72b3fb8bae8cb7f52e48d80ae96426",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/jr-convertible-450-sf": {
-    "hash": "a98ba6b276a4f818791e2babbe18bd1bba11d0451835c3d2d3239090a2816833",
-    "lastmod": "2026-08-10"
+    "hash": "2b15acf02fc2472004bf2c4472a718b42c4a5d62faff020feea8c2e1f7d2d4ea",
+    "lastmod": "2026-07-29"
   },
   "/floor-plans/two-bedroom-one-bath-769-776-sf": {
-    "hash": "9268a8b2b1ab50487780806dfe8435109fa9a604157b8a5f8553999f89a84b6a",
-    "lastmod": "2026-08-04"
+    "hash": "348e4bf67b36fdfcc0b5e5a3fc2e251d60394f242bda3caa1af78d726a3ed46f",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-665-sf": {
-    "hash": "cee28054bfa9a794229dc30e6c116c7c2b1ca11a5dc37fd91f99fbd917c82139",
-    "lastmod": "2026-08-04"
+    "hash": "a52cb196155ddf39f617defe05b1edfb2f8748e11e4c3dd9bff177194aad5701",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-645-sf": {
-    "hash": "eb89487cbea729a3661d7a5c106b24cc8b4b3b7bb3d3f87cd79b2e040d759923",
-    "lastmod": "2026-08-04"
+    "hash": "38c2f563f4fe214af7a05f500a43987c292a956a3d4242ead00b08497b71dfda",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-one-bath-779-sf-floors-6-29": {
-    "hash": "2c289165415da6a8365b985ef284d82432f4024101c5381c781e16cc22da824e",
-    "lastmod": "2026-08-04"
+    "hash": "bc695b366a819b0cea83643fd5e90378535c2ec27b9fab5428591dda50592c48",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/jr-convertible-478-sf-floors-6-29": {
-    "hash": "c059c7d2a4a6a9017e91fe4872d65f5022cd8df99d428988522cda5f1373b34b",
-    "lastmod": "2026-08-11"
+    "hash": "fc87390c90b8a6e04d0b1010ffcb98455936badd8ff9ae33b80faddf392433eb",
+    "lastmod": "2026-07-29"
   },
   "/floor-plans/three-bedroom-three-bath-1455-sf": {
-    "hash": "3f6413eac1df8ead63f3424adf9c0738eb17a155ed7dd58fefc0fa30f909f886",
-    "lastmod": "2026-08-04"
+    "hash": "acc533ebf6ed187db2efba32298a4ca6e641342c1cf4b328c805279cc06a4eda",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/three-bedroom-three-bath-1528-sf": {
-    "hash": "782e14657bcbcf9364fe000ebe1be37c7277f0913e23bd41d32a8dae730e3201",
-    "lastmod": "2026-08-04"
+    "hash": "0023715bd9a6d753131e5c92aff04e780658b349aeba85ea4752672dd14822ce",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/jr-convertible-456-sf": {
-    "hash": "219388cd8b1018914b6ae3ad4539e84cffed3b7eb03d9cf1f6a44ccaae01090a",
-    "lastmod": "2026-08-04"
+    "hash": "3325da3278551f54fd14e11406b1a07988f4654a4adf342c851f541cd456ce82",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-one-bath-767-sf": {
-    "hash": "fc956a6925909392fac19d9bed3fbc9656e055ba9d327c03618252a7a87d0bcc",
-    "lastmod": "2026-08-04"
+    "hash": "1dba4e78720d3d40ef1ac21dc8bb4590d037c9f4f594f7a7791641d4ce82c2fb",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-669-sf-floors-30-34": {
-    "hash": "d0b2a8abcd92046ed59dfe17b9e74a5d77e3ed6ee33bab3beed05ec897b092c8",
-    "lastmod": "2026-08-04"
+    "hash": "dc17538e7fb75cb95ff6d036ae4727e5e4470b471f0bbeea1b925e42ede1f0d8",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-651-sf": {
-    "hash": "9953ca3265dcf63d707bc715bd07a35611db8b2ac019992067ec464aa53679e8",
-    "lastmod": "2026-08-04"
+    "hash": "b719b212ca6b58fd2d4c4b991ad1f4abb19f202712e4b32f799a9322fb421812",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/two-bedroom-one-bath-779-sf-floors-30-34": {
-    "hash": "20b89b543eb50261989b2954ce5034a4043b58a4ef9988ef818c20876601686b",
-    "lastmod": "2026-08-04"
+    "hash": "dc63b559abc26a9b6ecd631dbd1158ad07a2e514bce3851631750d26d1c61b31",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/jr-convertible-478-sf-floors-30-34": {
-    "hash": "15c3cad89a9d250c378738db02e67551bbbb1b146f05d91cfe764d764fc8f4e7",
-    "lastmod": "2026-08-04"
+    "hash": "670f96ccc458704d786ea26ef58d869439337784e218a09db5733ac2de91b24e",
+    "lastmod": "2026-07-29"
   },
   "/floor-plans/one-bedroom-one-bath-672-sf": {
-    "hash": "4d3ec65f8bf5a507812b94228d5d085a0f00127f3c3a93e43c8ff97b239c208e",
-    "lastmod": "2026-08-04"
+    "hash": "29baac08379c5a44efecd254968bf7715f47185eb1d6c2f7d0483112ccd8f4af",
+    "lastmod": "2026-07-28"
   },
   "/floor-plans/one-bedroom-one-bath-669-sf-floors-17-21": {
-    "hash": "68ff8ed8ff13df4f80860d2a2d4824779da7b9a62f2ebde5da9750b1d78d2d12",
-    "lastmod": "2026-08-04"
+    "hash": "02007cedf2895ba05f795dbe3d67bff7f300d07b870d3c011a4bfc07907ab072",
+    "lastmod": "2026-07-28"
   }
 }
