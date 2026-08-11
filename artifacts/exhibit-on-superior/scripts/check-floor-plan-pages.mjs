@@ -48,6 +48,25 @@ if (!Array.isArray(FLOOR_PLAN_PAGES) || FLOOR_PLAN_PAGES.length === 0) {
   process.exit(1);
 }
 
+// Hub-page expected <title> comes from the same source the build uses
+// (src/data/seo.ts PAGE_SEO), so this check can never drift when the SEO
+// title is edited.
+let HUB_TITLE;
+try {
+  const { PAGE_SEO } = await tsImport(
+    pathToFileURL(path.join(pkgDir, 'src/data/seo.ts')).href,
+    import.meta.url,
+  );
+  HUB_TITLE = PAGE_SEO?.['/floor-plans']?.title;
+} catch (err) {
+  console.error(`Could not load src/data/seo.ts: ${err.message}`);
+  process.exit(1);
+}
+if (!HUB_TITLE) {
+  console.error('PAGE_SEO["/floor-plans"].title is missing — refusing to run a vacuous check.');
+  process.exit(1);
+}
+
 // Deterministic sample: first, last, and evenly spaced slugs in between.
 let sample = FLOOR_PLAN_PAGES;
 if (!checkAll) {
@@ -98,7 +117,7 @@ const hasCanonical = (body, canonical) =>
     if (status !== 200) fail(url, `HTTP ${status}`);
     else {
       const title = titleOf(body);
-      const expected = 'River North Floor Plans, Studio to 3 Bed | Exhibit On Superior';
+      const expected = HUB_TITLE;
       if (title !== expected) {
         fail(
           url,
