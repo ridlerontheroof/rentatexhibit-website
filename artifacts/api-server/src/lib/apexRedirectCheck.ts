@@ -147,7 +147,10 @@ export async function checkApexRedirectOnce(
   }
 
   if (result.healthy) {
-    log.debug(
+    // info (not debug): the check runs only every 6 hours, so deployment
+    // logs (INFO+) should show each healthy run — the once-daily heartbeat
+    // alone is too sparse to confirm a publish.
+    log.info(
       { status: result.status, location: result.location },
       "Apex redirect check passed",
     );

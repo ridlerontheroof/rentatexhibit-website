@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
 import { createDailyClaim } from "./dailyClaim";
-import { createDailyHeartbeat } from "./dailyHeartbeat";
+import { createDailyHeartbeat, createDailyInfoGate } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendShowingSchedulerAlert } from "./email";
 import { listableUidFromListingUrl } from "./appfolio";
@@ -78,6 +78,12 @@ const dailyClaim = createDailyClaim({
  * production (info-level) suppresses — so without this, a silently-dead
  * interval is indistinguishable from weeks of healthy probes.
  */
+// The probe is hourly; logging every healthy run at info would add ~24
+// near-identical lines a day, so only the first passing probe of each UTC
+// day is promoted to info (deployment logs are INFO+) and the rest stay debug.
+// Skipped runs never consume the gate — the first real pass of the day logs info.
+const passInfoGate = createDailyInfoGate();
+
 const heartbeat = createDailyHeartbeat({
   outcomes: ["healthy", "failed", "idv_enabled", "skipped"] as const,
   message: "Showing-scheduler watchdog heartbeat — still probing AppFolio's booking flow",
@@ -236,6 +242,8 @@ export async function checkShowingSchedulerOnce(
     probeUid = null;
   }
   if (!probeUid) {
+    // debug (not gated info): a skipped run must not consume the daily info
+    // gate, or a later same-day pass would lose its info-level confirmation.
     log.debug("Showing-scheduler probe skipped — no posted unit to probe against");
     heartbeat.record(log, now, "skipped");
     await recordRecoveredRun(log);
@@ -274,7 +282,10 @@ export async function checkShowingSchedulerOnce(
 
   // --- Healthy run ----------------------------------------------------------
   if (failures.length === 0) {
-    log.debug({ probeUid }, "Showing-scheduler probe passed");
+    log[passInfoGate.shouldInfo(now) ? "info" : "debug"](
+      { probeUid },
+      "Showing-scheduler probe passed",
+    );
     heartbeat.record(log, now, "healthy");
     await recordRecoveredRun(log);
     return;
@@ -320,4 +331,5 @@ export function __resetShowingSchedulerCheckForTests(): void {
   dailyClaim.reset();
   consecutiveFailedRuns = 0;
   heartbeat.reset();
+  passInfoGate.reset();
 }

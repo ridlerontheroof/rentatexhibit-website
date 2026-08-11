@@ -170,6 +170,28 @@ describe("checkTourUnitOnce", () => {
     }
   });
 
+  it("logs the first pass of a UTC day at info, later same-day passes at debug", async () => {
+    const passLines = (fn: typeof logger.info) =>
+      vi
+        .mocked(fn)
+        .mock.calls.filter(
+          ([, msg]) => msg === "Tour-unit check passed — TOUR token resolves",
+        );
+
+    await checkTourUnitOnce(logger, DAY1, healthy);
+    expect(passLines(logger.info)).toHaveLength(1);
+    expect(passLines(logger.debug)).toHaveLength(0);
+
+    // A second same-day pass stays at debug.
+    await checkTourUnitOnce(logger, DAY1_LATER, healthy);
+    expect(passLines(logger.info)).toHaveLength(1);
+    expect(passLines(logger.debug)).toHaveLength(1);
+
+    // A new UTC day promotes the first pass to info again.
+    await checkTourUnitOnce(logger, DAY2, healthy);
+    expect(passLines(logger.info)).toHaveLength(2);
+  });
+
   it("emits an info heartbeat on the first check, then a daily summary of outcomes", async () => {
     const heartbeats = () =>
       vi

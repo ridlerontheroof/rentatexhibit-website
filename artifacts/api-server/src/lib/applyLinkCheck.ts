@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
 import { createDailyClaim } from "./dailyClaim";
-import { createDailyHeartbeat } from "./dailyHeartbeat";
+import { createDailyHeartbeat, createDailyInfoGate } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendApplyLinkAlert } from "./email";
 import { applyUrlForListing } from "./appfolio";
@@ -65,6 +65,12 @@ const dailyClaim = createDailyClaim({
  * this a silently-dead interval would be indistinguishable from weeks of
  * healthy probes.
  */
+// The probe is hourly; logging every healthy run at info would add ~24
+// near-identical lines a day, so only the first passing probe of each UTC
+// day is promoted to info (deployment logs are INFO+) and the rest stay debug.
+// Skipped runs never consume the gate — the first real pass of the day logs info.
+const passInfoGate = createDailyInfoGate();
+
 const heartbeat = createDailyHeartbeat({
   outcomes: ["healthy", "failed", "skipped"] as const,
   message:
@@ -200,6 +206,8 @@ export async function checkApplyLinkOnce(
     target = null;
   }
   if (!target) {
+    // debug (not gated info): a skipped run must not consume the daily info
+    // gate, or a later same-day pass would lose its info-level confirmation.
     log.debug("Apply-link probe skipped — no posted unit to probe against");
     heartbeat.record(log, now, "skipped");
     await recordRecoveredRun(log);
@@ -220,7 +228,10 @@ export async function checkApplyLinkOnce(
 
   // --- Healthy run ----------------------------------------------------------
   if (!failure) {
-    log.debug({ unit: target.unit }, "Apply-link probe passed");
+    log[passInfoGate.shouldInfo(now) ? "info" : "debug"](
+      { unit: target.unit },
+      "Apply-link probe passed",
+    );
     heartbeat.record(log, now, "healthy");
     await recordRecoveredRun(log);
     return;
@@ -274,4 +285,5 @@ export function __resetApplyLinkCheckForTests(): void {
   dailyClaim.reset();
   consecutiveFailedRuns = 0;
   heartbeat.reset();
+  passInfoGate.reset();
 }

@@ -215,6 +215,29 @@ describe("checkShowingSchedulerOnce", () => {
     ).resolves.toBeUndefined();
   });
 
+  it("logs the first pass of a UTC day at info, later same-day passes at debug", async () => {
+    const passLines = (fn: typeof logger.info) =>
+      vi.mocked(fn).mock.calls.filter(([, msg]) => msg === "Showing-scheduler probe passed");
+
+    // A skipped run must NOT consume the daily info gate…
+    await checkShowingSchedulerOnce(logger, DAY1, deps({ resolveProbeUid: async () => null }));
+    expect(passLines(logger.info)).toHaveLength(0);
+
+    // …so the first real pass of the day still logs at info.
+    await checkShowingSchedulerOnce(logger, DAY1, deps());
+    expect(passLines(logger.info)).toHaveLength(1);
+    expect(passLines(logger.debug)).toHaveLength(0);
+
+    // A second same-day pass stays at debug.
+    await checkShowingSchedulerOnce(logger, DAY1_LATER, deps());
+    expect(passLines(logger.info)).toHaveLength(1);
+    expect(passLines(logger.debug)).toHaveLength(1);
+
+    // A new UTC day promotes the first pass to info again.
+    await checkShowingSchedulerOnce(logger, DAY2, deps());
+    expect(passLines(logger.info)).toHaveLength(2);
+  });
+
   it("emits an info heartbeat on the first probe, then a daily summary of outcomes", async () => {
     const heartbeats = () =>
       vi

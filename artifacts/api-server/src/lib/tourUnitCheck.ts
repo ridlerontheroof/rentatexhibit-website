@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
 import { createDailyClaim } from "./dailyClaim";
-import { createDailyHeartbeat } from "./dailyHeartbeat";
+import { createDailyHeartbeat, createDailyInfoGate } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendShowingSchedulerAlert } from "./email";
 import { resolveTourUnitListableUid } from "./appfolio";
@@ -55,6 +55,11 @@ const dailyClaim = createDailyClaim({
   claimFailedMessage:
     "Tour-unit alert database claim failed; falling back to in-memory dedupe",
 });
+
+// The check is hourly; logging every healthy run at info would add ~24
+// near-identical lines a day, so only the first pass of each UTC day is
+// promoted to info (deployment logs are INFO+) and the rest stay debug.
+const passInfoGate = createDailyInfoGate();
 
 const heartbeat = createDailyHeartbeat({
   outcomes: ["healthy", "failed"] as const,
@@ -175,7 +180,10 @@ export async function checkTourUnitOnce(
 
   // --- Healthy run ----------------------------------------------------------
   if (uid) {
-    log.debug({ tourUid: uid }, "Tour-unit check passed — TOUR token resolves");
+    log[passInfoGate.shouldInfo(now) ? "info" : "debug"](
+      { tourUid: uid },
+      "Tour-unit check passed — TOUR token resolves",
+    );
     heartbeat.record(log, now, "healthy");
     await recordRecoveredRun(log);
     return;
@@ -214,4 +222,5 @@ export function __resetTourUnitCheckForTests(): void {
   dailyClaim.reset();
   consecutiveFailedRuns = 0;
   heartbeat.reset();
+  passInfoGate.reset();
 }

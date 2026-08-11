@@ -221,4 +221,27 @@ describe("checkApplyLinkOnce", () => {
       "Failed to send apply-link broken alert",
     );
   });
+
+  it("logs the first pass of a UTC day at info, later same-day passes at debug", async () => {
+    const passLines = (fn: typeof logger.info) =>
+      vi.mocked(fn).mock.calls.filter(([, msg]) => msg === "Apply-link probe passed");
+
+    // A skipped run must NOT consume the daily info gate…
+    await checkApplyLinkOnce(log, DAY1, deps({ resolveTarget: async () => null }));
+    expect(passLines(logger.info)).toHaveLength(0);
+
+    // …so the first real pass of the day still logs at info.
+    await checkApplyLinkOnce(log, DAY1, deps());
+    expect(passLines(logger.info)).toHaveLength(1);
+    expect(passLines(logger.debug)).toHaveLength(0);
+
+    // A second same-day pass stays at debug.
+    await checkApplyLinkOnce(log, DAY1 + 60 * 60 * 1000, deps());
+    expect(passLines(logger.info)).toHaveLength(1);
+    expect(passLines(logger.debug)).toHaveLength(1);
+
+    // A new UTC day promotes the first pass to info again.
+    await checkApplyLinkOnce(log, DAY2, deps());
+    expect(passLines(logger.info)).toHaveLength(2);
+  });
 });

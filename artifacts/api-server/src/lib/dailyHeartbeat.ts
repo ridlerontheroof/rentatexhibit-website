@@ -28,6 +28,35 @@ export interface DailyHeartbeat<Outcome extends string> {
   reset(): void;
 }
 
+/**
+ * Once-per-UTC-day gate for promoting a high-frequency watchdog's
+ * healthy-run log line from debug to info. Hourly probes would produce ~24
+ * near-identical info lines a day if every pass logged at info; instead the
+ * first healthy outcome of each UTC day logs at info (so deployment logs
+ * always show a fresh confirmation) and the rest stay at debug.
+ */
+export interface DailyInfoGate {
+  /** True exactly once per UTC day (including the first call of the process). */
+  shouldInfo(now: number): boolean;
+  /** Test-only: clear the day marker. */
+  reset(): void;
+}
+
+export function createDailyInfoGate(): DailyInfoGate {
+  let day: string | null = null;
+  return {
+    shouldInfo(now: number): boolean {
+      const today = new Date(now).toISOString().slice(0, 10);
+      if (day === today) return false;
+      day = today;
+      return true;
+    },
+    reset(): void {
+      day = null;
+    },
+  };
+}
+
 export function createDailyHeartbeat<Outcome extends string>(options: {
   /** Outcome labels; each becomes a counter field in the heartbeat line. */
   outcomes: readonly Outcome[];
