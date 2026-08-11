@@ -73,11 +73,10 @@ const dailyClaim = createDailyClaim({
 
 /**
  * Daily liveness heartbeat (shared implementation — see dailyHeartbeat.ts),
- * mirroring the apex-redirect watchdog's. Healthy runs log at debug level,
- * which production (info-level) suppresses — so without this, a
- * silently-dead interval is indistinguishable from weeks of healthy checks.
- * Once per UTC day (after the first run of a new day) we emit a single
- * info-level line summarizing the runs since the previous heartbeat,
+ * mirroring the apex-redirect watchdog's. Each healthy run also logs a
+ * "Knowledge-page check passed" line at info level (visible in deployment
+ * logs), and once per UTC day (after the first run of a new day) we emit a
+ * single info-level line summarizing the runs since the previous heartbeat,
  * proving the watchdog is still checking.
  */
 const heartbeat = createDailyHeartbeat({
@@ -420,7 +419,7 @@ export async function checkKnowledgePagesOnce(
   );
 
   if (failures.length === 0) {
-    log.debug(
+    log.info(
       { checkedCount: result.checkedCount },
       "Knowledge-page check passed",
     );
