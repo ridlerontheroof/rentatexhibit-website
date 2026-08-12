@@ -6,11 +6,21 @@
  *    the startup window).
  *
  * 2. GTM-managed — when VITE_GA_MEASUREMENT_ID is not set (production uses
- *    the GTM container GTM-MDPWH532 to own the GA4 Configuration tag),
- *    initAnalytics is a no-op but the tracking helpers still fire because GTM's
- *    GA4 tag installs window.gtag itself. Guards use `window.gtag != null`
- *    rather than analyticsEnabled(), so events reach whatever GA4 stream GTM
- *    has configured.
+ *    the GTM container GTM-MDPWH532 to own the GA4 Google tag). Two hard-won
+ *    facts (verified live 2026-08-12 against the production site):
+ *      a. GTM does NOT install window.gtag, and gtag() commands queued into
+ *         the dataLayer are NOT processed by GTM's internal GA4 tag — not
+ *         even `config`. Custom events silently vanish unless the page loads
+ *         the real gtag.js itself.
+ *      b. Once gtag.js is loaded and configured on a page that also runs GTM,
+ *         `gtag('event', …)` only routes to GA4 when the event carries an
+ *         explicit `send_to`. Default fan-out drops the event.
+ *    So in GTM mode this module loads gtag.js itself (same deferred loader),
+ *    configures the container's GA4 stream with send_page_view:false, and
+ *    tags every event with send_to. page_views are entirely stream-owned in
+ *    this mode: the Google tag sends the initial one and enhanced
+ *    measurement's history tracking covers SPA navigations (verified live —
+ *    sending our own produced doubles).
  *
  * Nothing here runs during SSR/prerender.
  */
@@ -23,6 +33,20 @@ declare global {
 }
 
 const MEASUREMENT_ID: string | undefined = import.meta.env.VITE_GA_MEASUREMENT_ID;
+
+/**
+ * The GA4 stream owned by the production GTM container (GTM-MDPWH532, the ID
+ * hardcoded in index.html). Used only in GTM-managed mode; a build-time
+ * VITE_GA_MEASUREMENT_ID always takes precedence. Public by nature — it ships
+ * in gtm.js to every visitor.
+ */
+const GTM_GA4_ID = 'G-1S66YHBN91';
+
+/** True when GTM owns the GA4 stream (no build-time measurement ID). */
+const GTM_MANAGED = !MEASUREMENT_ID;
+
+/** The GA4 destination every event is explicitly routed to via send_to. */
+const EFFECTIVE_ID: string = MEASUREMENT_ID ?? GTM_GA4_ID;
 
 export const analyticsEnabled = (): boolean =>
   typeof window !== 'undefined' && Boolean(MEASUREMENT_ID);
@@ -76,18 +100,24 @@ function getStoredUtmParams(): Record<string, string> {
 
 /** Load gtag.js once and configure GA4. Page views are sent manually (SPA). */
 export function initAnalytics(): void {
-  if (typeof window !== 'undefined') captureUtmParams();
-  if (!analyticsEnabled() || initialized) return;
+  if (typeof window === 'undefined') return;
+  captureUtmParams();
+  if (initialized) return;
   initialized = true;
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer!.push(args);
-  };
+  // In GTM mode index.html already installed an identical stub — keep it.
+  if (!window.gtag) {
+    window.gtag = function gtag(...args: unknown[]) {
+      window.dataLayer!.push(args);
+    };
+  }
   window.gtag('js', new Date());
-  // send_page_view: false — the SPA router reports page views explicitly so
-  // client-side navigations are counted (see trackPageView in App.tsx).
-  window.gtag('config', MEASUREMENT_ID, { send_page_view: false });
+  // send_page_view: false — in direct mode the SPA router reports page views
+  // explicitly (see trackPageView in App.tsx); in GTM mode the container's
+  // Google tag sends the initial page_view and this config exists only to
+  // register the destination so send_to-routed events are delivered.
+  window.gtag('config', EFFECTIVE_ID, { send_page_view: false });
 
   // Defer the gtag.js script itself out of the startup window, mirroring the
   // inline GTM loader in index.html: first real user gesture, tab
@@ -105,7 +135,7 @@ export function initAnalytics(): void {
     document.removeEventListener('visibilitychange', onHidden);
     const script = document.createElement('script');
     script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(MEASUREMENT_ID!)}`;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(EFFECTIVE_ID)}`;
     document.head.appendChild(script);
   };
   // Short-bounce coverage: the moment the tab is backgrounded (app switch,
@@ -139,13 +169,17 @@ export function trackPageView(path: string): void {
     previousPath = currentPath;
     currentPath = path;
   }
-  // Fire when window.gtag is available — whether set by our own initAnalytics
-  // (direct-gtag mode) or by GTM's GA4 Configuration tag (GTM mode).
   if (!window.gtag) return;
+  // In GTM mode the GA4 stream owns every page_view: the container's Google
+  // tag sends the initial one, and enhanced measurement's history tracking
+  // (verified firing with _ee=1 once gtag.js is on the page) covers SPA
+  // navigations. Sending our own as well double-counted every SPA page_view.
+  if (GTM_MANAGED) return;
   window.gtag('event', 'page_view', {
     page_path: path,
     page_location: window.location.href,
     page_title: document.title,
+    send_to: EFFECTIVE_ID,
   });
 }
 
@@ -190,7 +224,11 @@ export function trackLead(
 
   // Sent with beacon transport so the conversion survives an immediate tab
   // close or navigation right after Submit (same rationale as outbound_click).
-  window.gtag('event', 'generate_lead', { ...params, transport_type: 'beacon' });
+  window.gtag('event', 'generate_lead', {
+    ...params,
+    transport_type: 'beacon',
+    send_to: EFFECTIVE_ID,
+  });
 }
 
 /**
@@ -217,6 +255,7 @@ export function trackSightMap(
     ...extra,
     page_path: currentPath ?? window.location.pathname,
     ...getStoredUtmParams(),
+    send_to: EFFECTIVE_ID,
   });
 }
 
@@ -254,5 +293,9 @@ export function trackOutboundClick(
   if (previousPath) params.referring_page = previousPath;
   if (attribution?.floorPlan) params.floor_plan = attribution.floorPlan.slice(0, 100);
 
-  window.gtag('event', 'outbound_click', { ...params, transport_type: 'beacon' });
+  window.gtag('event', 'outbound_click', {
+    ...params,
+    transport_type: 'beacon',
+    send_to: EFFECTIVE_ID,
+  });
 }

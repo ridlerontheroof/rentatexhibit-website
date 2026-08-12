@@ -24,6 +24,7 @@ const ALLOWED_LEAD_KEYS = new Set([
   'utm_campaign',
   'utm_term',
   'utm_content',
+  'send_to',
 ]);
 
 const PII_KEY_PATTERN = /name|email|phone|message|first|last|contact/i;
@@ -147,6 +148,7 @@ describe('trackOutboundClick payload whitelist (no PII)', () => {
     'utm_campaign',
     'utm_term',
     'utm_content',
+    'send_to',
   ]);
 
   function lastOutboundParams(): Record<string, unknown> {
@@ -303,18 +305,34 @@ describe('GTM-managed mode (no VITE_GA_MEASUREMENT_ID, window.gtag stub from ind
     gtagSpy = vi.fn(window.gtag);
     window.gtag = gtagSpy as unknown as typeof window.gtag;
     const analytics = await import('./analytics');
-    // initAnalytics is a no-op (analyticsEnabled() false), which is correct —
-    // GTM's GA4 Configuration tag owns the gtag.js load.
+    // In GTM mode initAnalytics registers the container's GA4 stream as a
+    // gtag destination (config with send_page_view: false) so send_to-routed
+    // events are delivered; GTM alone never processes page gtag() commands.
     analytics.initAnalytics();
     return analytics;
   }
 
-  it('trackPageView fires when only the GTM stub is present', async () => {
+  const GTM_GA4_ID = 'G-1S66YHBN91';
+
+  it('initAnalytics registers the GTM GA4 stream without sending a page_view', async () => {
+    await loadGtmMode();
+    const call = gtagSpy.mock.calls.find((a) => a[0] === 'config');
+    expect(call).toBeDefined();
+    expect(call![1]).toBe(GTM_GA4_ID);
+    expect((call![2] as Record<string, unknown>).send_page_view).toBe(false);
+  });
+
+  it('never sends page_view itself (GTM Google tag + enhanced measurement own them) but keeps path history', async () => {
     const analytics = await loadGtmMode();
     analytics.trackPageView('/available-units');
-    const call = gtagSpy.mock.calls.find((a) => a[0] === 'event' && a[1] === 'page_view');
-    expect(call).toBeDefined();
-    expect((call![2] as Record<string, unknown>).page_path).toBe('/available-units');
+    analytics.trackPageView('/floor-plans');
+    expect(gtagSpy.mock.calls.find((a) => a[0] === 'event' && a[1] === 'page_view')).toBeUndefined();
+    // Path history must still be tracked for lead attribution.
+    analytics.trackLead('contact');
+    const lead = gtagSpy.mock.calls.find((a) => a[0] === 'event' && a[1] === 'generate_lead');
+    const params = lead![2] as Record<string, unknown>;
+    expect(params.page_path).toBe('/floor-plans');
+    expect(params.referring_page).toBe('/available-units');
   });
 
   it('trackLead fires when only the GTM stub is present', async () => {
@@ -324,6 +342,8 @@ describe('GTM-managed mode (no VITE_GA_MEASUREMENT_ID, window.gtag stub from ind
     const call = gtagSpy.mock.calls.find((a) => a[0] === 'event' && a[1] === 'generate_lead');
     expect(call).toBeDefined();
     expect((call![2] as Record<string, unknown>).form_type).toBe('tour');
+    // Without an explicit send_to, GTM-mode events are silently dropped.
+    expect((call![2] as Record<string, unknown>).send_to).toBe(GTM_GA4_ID);
   });
 
   it('trackOutboundClick fires when only the GTM stub is present', async () => {
@@ -344,9 +364,10 @@ describe('GTM-managed mode (no VITE_GA_MEASUREMENT_ID, window.gtag stub from ind
     );
     expect(call).toBeDefined();
     expect((call![2] as Record<string, unknown>).unit_number).toBe('2301');
+    expect((call![2] as Record<string, unknown>).send_to).toBe(GTM_GA4_ID);
   });
 
-  it('all trackers are silent no-ops when window.gtag is absent (no GTM, no direct GA)', async () => {
+  it('trackers never throw when window.gtag is absent before init (stub is self-installed)', async () => {
     window.history.replaceState(null, '', '/');
     vi.resetModules();
     delete window.gtag;

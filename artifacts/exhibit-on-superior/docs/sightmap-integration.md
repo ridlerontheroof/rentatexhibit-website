@@ -46,11 +46,21 @@ floor_plan), `sightmap_filter_change` (filters summary),
 `sightmap_apply_click`, `sightmap_outbound_click`.
 
 **GA4 routing:** production uses the GTM container (GTM-MDPWH532) which owns
-the GA4 Configuration tag. `VITE_GA_MEASUREMENT_ID` is **not** set. The
-tracking guards in `analytics.ts` check `window.gtag != null` (set by GTM)
-rather than `analyticsEnabled()`, so events reach GTM's GA4 stream regardless.
-The map only mounts on a click, and GTM loads on page load — `window.gtag` is
-always available by the time the first Metrics API event fires.
+the GA4 Google tag (stream `G-1S66YHBN91`). `VITE_GA_MEASUREMENT_ID` is
+**not** set. Two facts verified against the live site on 2026-08-12:
+
+1. GTM does **not** install `window.gtag`, and gtag() commands queued into
+   the dataLayer (via the index.html stub) are **not** processed by GTM —
+   not even `config`. Relying on the stub alone silently dropped every
+   custom event.
+2. With gtag.js loaded + configured on a GTM page, `gtag('event', …)` only
+   routes to GA4 with an explicit `send_to`.
+
+So `analytics.ts` loads gtag.js itself (deferred), configures
+`G-1S66YHBN91` with `send_page_view: false` (GTM's Google tag owns the
+initial page_view — no duplicates, verified), tags every event with
+`send_to`, and skips the initial page_view while still reporting SPA
+navigations (which GTM was never catching).
 
 **DebugView verification:** open the live site with `?gtm_debug=x` or GA4
 DebugView (activate debug mode for your browser via the GA Debugger Chrome

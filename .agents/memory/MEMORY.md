@@ -45,6 +45,7 @@
 - [SPA per-page HTML for crawlers — Phase 1 done](spa-seo-prerender.md) — browserless SSG prerender; react-helmet-async breaks React 19 SSR, use shared SEO model + client-only <Seo>; clean URLs need explicit artifact.toml rewrites. Plan: SEO_PLAN.md.
 - [Alert-email inbox verification](alert-email-inbox-verification.md) — leasingexhibit@ is IMAP-readable with the same app password; bodies are base64 MIME; claim rows prove send timing.
 - [Sitemap lastmod content-hash map](sitemap-lastmod-map.md) — lastmod comes from a committed twin-hash→date map, not build date; map is seo-source-hash-excluded; sitemap gen must stay after twins.
+- [GA4 event routing under GTM](ga4-gtm-event-routing.md) — GTM ignores page gtag() stubs entirely; must self-load gtag.js + config + send_to on every event; stream owns all page_views (manual ones double SPA navs).
 - [GTM deferred loading](gtm-deferred-loading.md) — gtm.js AND analytics.ts gtag load on real gestures (never 'scroll') or shortly after `load`, never eagerly; ≤800w rungs cap ~60KB.
 - [Mobile TBT/LCP playbook](mobile-tbt-lcp-playbook.md) — data-module import trap, DeferBelowFold time-slicing (createRoot = no mismatch risk), fetchPriority=low on eager non-heroes, gtag ≈150ms fixed TBT floor.
 - [Perf lab suite (check:perf)](perf-lab-suite.md) — Lighthouse vs dist via the production server (vite preview serves wrong HTML per route); load-settle gate; run long checks as workflows.
