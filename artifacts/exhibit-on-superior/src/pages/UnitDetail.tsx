@@ -17,6 +17,7 @@ import { PlanLightbox } from '../components/floor-plans/PlanLightbox';
 import { variantIndexForUnit } from '../data/floorPlans';
 import { planPageForUnit, floorPlanPagePath, floorPlanH1 } from '../data/floorPlanPages';
 import { resolveUnitSqft } from '../data/unitSqft';
+import { SOLD_OUT_UNIT_TITLE } from '../data/seo';
 import { youTubeEmbedUrl, youTubeThumbnailUrl } from '../lib/youtube';
 import { EmbedFacade } from '../components/EmbedFacade';
 import { DeferBelowFold } from '../components/DeferBelowFold';
@@ -75,7 +76,7 @@ export function UnitDetail() {
     // page, never wrong facts presented as current.
     return (
       <div className="container mx-auto px-4 py-24 text-center">
-        <Seo path={`/available-units/${params.unit}`} title="Residence Not Available | Exhibit On Superior" noindex />
+        <Seo path={`/available-units/${params.unit}`} title={SOLD_OUT_UNIT_TITLE} noindex />
         <h1 className="text-2xl font-semibold uppercase tracking-wider text-foreground">
           Apartment {params.unit} has been rented
         </h1>

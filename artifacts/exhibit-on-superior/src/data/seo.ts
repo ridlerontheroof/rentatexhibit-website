@@ -35,6 +35,12 @@ const PRICING_FAQ_ANSWER = (() => {
 
 export const SITE_URL = 'https://www.rentatexhibit.com';
 
+// <title> for a unit URL that has left inventory (UnitDetail's sold-out
+// branch). Exported so the post-publish watchdog (scripts/
+// check-rented-noindex.mjs) asserts against the SAME string the build ships —
+// editing this copy can never desync the check.
+export const SOLD_OUT_UNIT_TITLE = 'Residence Not Available | Exhibit On Superior';
+
 /** X (Twitter) handle for the property, used in twitter:site card metadata. */
 export const TWITTER_SITE = '@ExhibitSuperior';
 /**

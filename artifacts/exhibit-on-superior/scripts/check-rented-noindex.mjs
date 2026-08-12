@@ -55,6 +55,8 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { tsImport } from 'tsx/esm/api';
 
 const args = process.argv.slice(2);
 const unitFlag = args.indexOf('--unit');
@@ -65,7 +67,24 @@ const BASE = (
   'https://www.rentatexhibit.com'
 ).replace(/\/$/, '');
 
-const SOLD_OUT_TITLE = 'Residence Not Available | Exhibit On Superior';
+// Sold-out <title> comes from the same source the build uses
+// (src/data/seo.ts SOLD_OUT_UNIT_TITLE), so this check can never drift when
+// the sold-out copy is edited.
+const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+let SOLD_OUT_TITLE;
+try {
+  ({ SOLD_OUT_UNIT_TITLE: SOLD_OUT_TITLE } = await tsImport(
+    pathToFileURL(path.join(pkgDir, 'src/data/seo.ts')).href,
+    import.meta.url,
+  ));
+} catch (err) {
+  console.error(`Could not load src/data/seo.ts: ${err.message}`);
+  process.exit(1);
+}
+if (!SOLD_OUT_TITLE) {
+  console.error('SOLD_OUT_UNIT_TITLE is missing from src/data/seo.ts — refusing to run a vacuous check.');
+  process.exit(1);
+}
 
 /** Locate a headless-capable Chromium/Chrome binary, or null if none exists. */
 function findChromium() {

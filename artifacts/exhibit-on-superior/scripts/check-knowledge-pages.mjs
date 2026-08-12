@@ -12,6 +12,9 @@
 //   default: a deterministic ~10-slug sample (first, last, every Nth);
 //   --all checks every article slug.
 
+import path from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { tsImport } from 'tsx/esm/api';
 import { loadKnowledgeArticles } from './lib/knowledge-slugs.mjs';
 
 const args = process.argv.slice(2);
@@ -20,11 +23,25 @@ const BASE = (args.find((a) => !a.startsWith('--')) || 'https://www.rentatexhibi
   /\/$/,
   '',
 );
-// Mirrors knowledgeTitle() in src/data/knowledge.ts: the question is the
-// title; a short brand suffix is added only when the question doesn't
-// already name the property.
-const expectedTitleFor = (question) =>
-  question.includes('Exhibit On Superior') ? question : `${question} | Exhibit On Superior`;
+// Expected titles come from the SAME function the build uses
+// (knowledgeTitle() in src/data/knowledge.ts, loaded via tsx's ESM import
+// API), so this check can never drift when the brand-suffix rule is edited.
+const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+let knowledgeTitle;
+try {
+  ({ knowledgeTitle } = await tsImport(
+    pathToFileURL(path.join(pkgDir, 'src/data/knowledge.ts')).href,
+    import.meta.url,
+  ));
+} catch (err) {
+  console.error(`Could not load src/data/knowledge.ts: ${err.message}`);
+  process.exit(1);
+}
+if (typeof knowledgeTitle !== 'function') {
+  console.error('knowledgeTitle() is missing from src/data/knowledge.ts — refusing to run a vacuous check.');
+  process.exit(1);
+}
+const expectedTitleFor = (question) => knowledgeTitle({ question });
 
 // --- Load slugs + questions from the source of truth (pure-data TS file). ---
 // Shared parser (scripts/lib/knowledge-slugs.mjs) validates the parsed count
