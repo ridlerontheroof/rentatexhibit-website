@@ -31,7 +31,6 @@ import {
   SITE_URL,
   ogCardUrl,
   OG_CARD_VERSION,
-  SITE_LAUNCH_DATE,
   WEBSITE_NODE,
   ORGANIZATION_NODE,
   APARTMENT_COMPLEX_NODE,
@@ -39,6 +38,13 @@ import {
   type SeoMeta,
   TWITTER_SITE,
 } from './seo';
+
+/**
+ * ISO date when the floor-plan landing pages were first published. The
+ * floor-plan hub launched in 2026, not at the original site launch in 2025,
+ * so using SITE_LAUNCH_DATE would be inaccurate for datePublished.
+ */
+const FLOOR_PLAN_PAGES_PUBLISHED_DATE = '2026-01-01';
 import { apartmentNode, offerPriceValidUntil, unitOfferNode } from './unitJsonLd';
 import { unitCanonical } from './unitPageSeo';
 import type { AvailableUnit } from '../lib/availabilityData';
@@ -379,7 +385,7 @@ export function floorPlanPageJsonLd(
     // Per-plan share card — same URL as the og:image meta (see buildFloorPlanSeoModel).
     primaryImageOfPage: `${SITE_URL}/images/og/floor-plans/${page.slug}.jpg?v=${OG_CARD_VERSION}`,
     breadcrumb: { '@id': `${canonical}#breadcrumb` },
-    datePublished: SITE_LAUNCH_DATE,
+    datePublished: FLOOR_PLAN_PAGES_PUBLISHED_DATE,
     ...(updatedAt ? { dateModified: updatedAt } : {}),
   };
 

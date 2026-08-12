@@ -790,6 +790,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/knowledge': {
     path: '/knowledge',
+    datePublished: '2026-07-01',
     dateModified: '2026-07-30',
     ogImage: ogCardUrl('knowledge'),
     label: 'Knowledge Center',
@@ -917,6 +918,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/reviews': {
     path: '/reviews',
+    datePublished: '2026-01-01',
     dateModified: '2026-07-30',
     ogImage: ogCardUrl('reviews'),
     label: 'Reviews',

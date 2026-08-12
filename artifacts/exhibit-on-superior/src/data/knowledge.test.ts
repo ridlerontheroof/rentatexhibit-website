@@ -9,7 +9,9 @@ import {
   knowledgeArticle,
   knowledgeDescription,
   knowledgeJsonLd,
+  knowledgeOgImage,
   knowledgeTitle,
+  buildKnowledgeSeoModel,
   reviewAgeDays,
   staleKnowledgeReviewDates,
   wordCount,
@@ -232,6 +234,47 @@ describe('knowledge center content rules', () => {
 // knowledgeQuestions.ts (lightweight slug → question index used by
 // KnowledgeLinks so site-wide pages don't bundle the full article content)
 // must stay in exact sync with the articles.
+// ---------------------------------------------------------------------------
+describe('per-category og:image and JSON-LD image consistency', () => {
+  it('every KnowledgeCategory maps to a non-empty OG image URL', () => {
+    // Grab one article per category and verify knowledgeOgImage returns a URL.
+    const byCategory = new Map(
+      KNOWLEDGE_CATEGORIES.map((c) => [c, KNOWLEDGE_ARTICLES.find((a) => a.category === c)!]),
+    );
+    for (const [cat, article] of byCategory) {
+      expect(article, `no article found for category "${cat}"`).toBeDefined();
+      const url = knowledgeOgImage(article);
+      expect(url, `${cat} → empty OG URL`).toBeTruthy();
+      expect(url, `${cat} → OG URL must start with https://`).toMatch(/^https:\/\//);
+    }
+  });
+
+  it('og:image in page metas matches primaryImageOfPage and image in JSON-LD for every category', () => {
+    const byCategory = new Map(
+      KNOWLEDGE_CATEGORIES.map((c) => [c, KNOWLEDGE_ARTICLES.find((a) => a.category === c)!]),
+    );
+    for (const [cat, article] of byCategory) {
+      if (!article) continue;
+      const model = buildKnowledgeSeoModel(article);
+      const ogImageMeta = model.metas.find((m) => 'property' in m && m.property === 'og:image');
+      const twitterImageMeta = model.metas.find((m) => 'name' in m && m.name === 'twitter:image');
+      const jsonLd = model.jsonLd[0] as Record<string, unknown>;
+      const graph = (jsonLd['@graph'] as Record<string, unknown>[]) ?? [];
+      const webPage = graph.find((n) => {
+        const t = n['@type'];
+        return Array.isArray(t) ? t.includes('WebPage') : t === 'WebPage';
+      });
+      const expectedImg = knowledgeOgImage(article);
+      expect(ogImageMeta && 'content' in ogImageMeta ? ogImageMeta.content : null,
+        `${cat} og:image mismatch`).toBe(expectedImg);
+      expect(twitterImageMeta && 'content' in twitterImageMeta ? twitterImageMeta.content : null,
+        `${cat} twitter:image mismatch`).toBe(expectedImg);
+      expect(webPage?.['primaryImageOfPage'], `${cat} primaryImageOfPage mismatch`).toBe(expectedImg);
+      expect(webPage?.['image'], `${cat} image mismatch`).toBe(expectedImg);
+    }
+  });
+});
+
 // ---------------------------------------------------------------------------
 import { KNOWLEDGE_QUESTIONS } from './knowledgeQuestions';
 

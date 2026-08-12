@@ -12,7 +12,6 @@
 // copy. Anything unconfirmed is deferred to the leasing office — no guesses.
 import {
   SITE_URL,
-  SITE_LAUNCH_DATE,
   WEBSITE_NODE,
   ORGANIZATION_NODE,
   APARTMENT_COMPLEX_NODE,
@@ -91,9 +90,10 @@ export interface KnowledgeArticle {
    */
   updated?: string;
   /**
-   * ISO date (YYYY-MM-DD) this article was first published. Defaults to the
-   * site launch date. Emitted as `datePublished` in the article JSON-LD so
-   * Google can distinguish new articles from re-reviewed ones.
+   * ISO date (YYYY-MM-DD) this article was first published. Defaults to
+   * KNOWLEDGE_PUBLISHED_DATE (the Knowledge Center launch date, 2026-07-01),
+   * NOT the site launch date. Emitted as `datePublished` in the article
+   * JSON-LD so Google can distinguish new articles from re-reviewed ones.
    */
   published?: string;
 }
@@ -104,6 +104,14 @@ export interface KnowledgeArticle {
  * re-verified in bulk; per-article `updated` overrides for later edits.
  */
 export const KNOWLEDGE_REVIEWED_DATE = '2026-07-26';
+
+/**
+ * ISO date when the Knowledge Center was first published. Used as the default
+ * `datePublished` for articles that don't set their own `published` field.
+ * Intentionally separate from SITE_LAUNCH_DATE — the Knowledge Center launched
+ * in 2026, not at the original site launch in 2025.
+ */
+export const KNOWLEDGE_PUBLISHED_DATE = '2026-07-01';
 
 /**
  * Freshness threshold: an article's effective review date (per-article
@@ -217,6 +225,28 @@ export function knowledgeDescription(a: KnowledgeArticle): string {
   return truncate(a.description ?? a.answer);
 }
 
+/**
+ * Category → OG share-card slug. Every KnowledgeCategory maps to an existing
+ * card in public/images/og/. Categories without a dedicated card fall through
+ * to the generic 'knowledge' fallback.
+ */
+const KNOWLEDGE_CATEGORY_OG: Record<KnowledgeCategory, string> = {
+  'Pricing & Fees': 'fees',
+  'Apartments & Floor Plans': 'floor-plans',
+  Amenities: 'amenities',
+  Pets: 'pet-friendly',
+  'Parking & Transportation': 'parking-transportation',
+  'Leasing & Applications': 'application-guide',
+  Utilities: 'knowledge',
+  Neighborhood: 'neighborhood',
+  'Building & Services': 'knowledge',
+};
+
+/** Returns the OG share-card URL for an article's category. */
+export function knowledgeOgImage(a: KnowledgeArticle): string {
+  return ogCardUrl(KNOWLEDGE_CATEGORY_OG[a.category]);
+}
+
 /** Self-contained FAQPage + WebPage + Breadcrumb @graph for one article. */
 export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
   const canonical = `${SITE_URL}${knowledgePath(a.slug)}`;
@@ -254,14 +284,14 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
     description: knowledgeDescription(a),
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
-    // Knowledge Center branded card (same as og:image in buildKnowledgeSeoModel).
-    primaryImageOfPage: ogCardUrl('knowledge'),
-    // Article rich results want `image` on the Article node itself (the
-    // branded Knowledge Center card, same as og:image).
-    image: ogCardUrl('knowledge'),
+    // Category-specific share card — matches the og:image emitted by
+    // buildKnowledgeSeoModel so structured data and social metadata stay in sync.
+    primaryImageOfPage: knowledgeOgImage(a),
+    // Article rich results want `image` on the Article node itself.
+    image: knowledgeOgImage(a),
     author,
     publisher,
-    datePublished: a.published ?? SITE_LAUNCH_DATE,
+    datePublished: a.published ?? KNOWLEDGE_PUBLISHED_DATE,
     dateModified: knowledgeUpdated(a),
     lastReviewed: knowledgeUpdated(a),
     reviewedBy: author,
@@ -334,9 +364,9 @@ export function buildKnowledgeSeoModel(a: KnowledgeArticle): SeoModel {
   const title = knowledgeTitle(a);
   const description = knowledgeDescription(a);
   const canonical = `${SITE_URL}${knowledgePath(a.slug)}`;
-  const ogImage = ogCardUrl('knowledge');
+  const ogImage = knowledgeOgImage(a);
 
-  const publishedTime = a.published ?? SITE_LAUNCH_DATE;
+  const publishedTime = a.published ?? KNOWLEDGE_PUBLISHED_DATE;
   const modifiedTime = knowledgeUpdated(a);
 
   const metas: SeoMeta[] = [
