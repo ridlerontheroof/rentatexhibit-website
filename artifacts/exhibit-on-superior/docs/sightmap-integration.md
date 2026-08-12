@@ -34,10 +34,25 @@ approved via canvas mockup).
    below the filter dropdowns on desktop (user request; presumed
    non-configurable).
 
-**Status:** request emailed 2026-08-11 from leasingexhibit@highlandptrs.com to
-support@engrain.com (cc + reply-to exhibit@highlandptrs.com), covering both
-items above. **Awaiting Engrain's reply — record their answer here when it
-arrives.**
+**Status:** answered. Request emailed 2026-08-11 from
+leasingexhibit@highlandptrs.com to support@engrain.com (cc + reply-to
+exhibit@highlandptrs.com). Engrain (Jamie Clifton, Technical Solutions)
+replied 2026-08-12 1:42 PM:
+
+1. **Outbound CTAs: disabled.** "We have disabled the outbound CTAs on the
+   SightMap for Exhibit on Superior." Verified 2026-08-12: the raw embed
+   (`https://sightmap.com/embed/r5v516ejwny`) shows no Apply/tour/contact CTA
+   in the unit panel (screenshot: `screenshots/sightmap-embed-2026-08-12.png`),
+   and GA4 shows **zero** `sightmap_apply_click` / `sightmap_outbound_click`
+   events since launch (2026-08-01 → 2026-08-12; only the expected
+   `sightmap_impression` / `sightmap_unit_selected` / `sightmap_filter_change`
+   appear). Keep `hide_apply_button=1` on the embed URL as belt-and-braces.
+2. **"Search apts" box placement:** Engrain asked for a screenshot of what
+   we're seeing before answering whether it can move below the filter
+   dropdowns on desktop. **Next step (leasing):** reply to Jamie's email with
+   `screenshots/sightmap-desktop-expanded.jpg` (or a fresh capture of
+   /available-units on desktop) pointing at the "SEARCH APTS" box to the right
+   of the filter row.
 
 ## GA4 events (via the deferred analytics module, `trackSightMap`)
 
