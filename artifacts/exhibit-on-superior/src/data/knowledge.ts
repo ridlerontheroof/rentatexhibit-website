@@ -224,10 +224,26 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
   // Author/publisher attribution + freshness date (E-E-A-T / AEO signals),
   // mirrored by the visible byline block in pages/KnowledgeArticle.tsx.
   // The author/reviewer is the Organization node itself (the on-site leasing
-  // team IS the organization's editorial voice) — referencing it by @id keeps
-  // the graph free of duplicate half-filled Organization nodes, which the
-  // recommended-properties validator would flag on every article.
-  const author = { '@id': `${SITE_URL}#organization` };
+  // team IS the organization's editorial voice). The nodes carry the @id of
+  // the full ORGANIZATION_NODE in this same @graph (the validator merges
+  // same-@id nodes before its recommended-properties pass, so these partial
+  // nodes never read as half-filled duplicates), plus an inline name/logo so
+  // scanners that don't resolve @id references still see Article author.name
+  // and publisher.name + publisher.logo directly on the node.
+  const author = {
+    '@type': 'Organization',
+    '@id': `${SITE_URL}#organization`,
+    name: ORGANIZATION_NODE.name,
+  };
+  const publisher = {
+    '@type': 'Organization',
+    '@id': `${SITE_URL}#organization`,
+    name: ORGANIZATION_NODE.name,
+    logo: {
+      '@type': 'ImageObject',
+      url: ORGANIZATION_NODE.logo,
+    },
+  };
 
   const webPage = {
     '@type': ['Article', 'WebPage'],
@@ -240,8 +256,11 @@ export function knowledgeJsonLd(a: KnowledgeArticle): Record<string, unknown> {
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
     // Knowledge Center branded card (same as og:image in buildKnowledgeSeoModel).
     primaryImageOfPage: ogCardUrl('knowledge'),
+    // Article rich results want `image` on the Article node itself (the
+    // branded Knowledge Center card, same as og:image).
+    image: ogCardUrl('knowledge'),
     author,
-    publisher: { '@id': `${SITE_URL}#organization` },
+    publisher,
     datePublished: a.published ?? SITE_LAUNCH_DATE,
     dateModified: knowledgeUpdated(a),
     lastReviewed: knowledgeUpdated(a),

@@ -179,6 +179,9 @@ export function SightMapSection() {
             actionText="Explore the interactive map"
             embedUrl={SIGHTMAP_EMBED_URL}
             onActivate={() => setActivated(true)}
+            // The map leads /available-units, above the fold — a lazy poster
+            // here means the page's primary content pops in late.
+            eagerPoster
           >
             {iframeState !== 'failed' && (
               <iframe

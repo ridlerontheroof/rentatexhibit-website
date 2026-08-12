@@ -117,6 +117,9 @@ export function Fees() {
                 </p>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
+                    <caption className="sr-only">
+                      Monthly Utility &amp; Service Amenity fee by floor plan
+                    </caption>
                     <thead>
                       <tr className="border-b border-border uppercase tracking-wider">
                         <th scope="col" className="py-2 pr-4">Type</th>

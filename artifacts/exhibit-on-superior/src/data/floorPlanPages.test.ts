@@ -109,6 +109,19 @@ describe('floor-plan page list', () => {
   });
 });
 
+describe('floor-plan meta descriptions', () => {
+  it('every page description lands in the 150–160 char band and is unique', () => {
+    const seen = new Map<string, string>();
+    for (const page of FLOOR_PLAN_PAGES) {
+      const d = floorPlanDescription(page);
+      expect(d.length, `${page.slug}: "${d}" (${d.length} chars)`).toBeGreaterThanOrEqual(150);
+      expect(d.length, `${page.slug}: "${d}" (${d.length} chars)`).toBeLessThanOrEqual(160);
+      expect(seen.get(d), `duplicate description between ${seen.get(d)} and ${page.slug}`).toBeUndefined();
+      seen.set(d, page.slug);
+    }
+  });
+});
+
 describe('availability matching', () => {
   it('matches units by residence line and floor range', () => {
     const page = floorPlanPage('one-bedroom-one-bath-665-sf')!; // unit 7, floors 6–16

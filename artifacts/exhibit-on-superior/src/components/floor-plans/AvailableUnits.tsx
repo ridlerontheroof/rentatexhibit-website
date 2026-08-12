@@ -99,6 +99,7 @@ function UnitRowsSkeleton() {
           onChange={() => {}}
           onClear={() => {}}
           shownCount={0}
+          inert
         />
       </div>
       <ul className="divide-y divide-border" aria-hidden="true" data-testid="units-skeleton">
@@ -432,6 +433,7 @@ export function AvailableUnits() {
                   onChange={() => {}}
                   onClear={() => {}}
                   shownCount={rows.length}
+                  inert
                 />
               </div>
             )

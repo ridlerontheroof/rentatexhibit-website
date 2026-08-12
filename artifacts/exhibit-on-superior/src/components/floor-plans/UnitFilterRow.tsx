@@ -77,6 +77,7 @@ export function UnitFilterRow({
   onChange,
   onClear,
   shownCount,
+  inert = false,
 }: {
   /** The full (unfiltered) live unit list — options derive from what's present. */
   units: FilterableUnit[];
@@ -84,7 +85,15 @@ export function UnitFilterRow({
   onChange: (next: UnitFilterState) => void;
   onClear: () => void;
   shownCount: number;
+  /**
+   * True for the SSR/skeleton twin rendered inside an `inert aria-hidden`
+   * wrapper: every focusable control also carries tabindex="-1" so no
+   * focusable element ever sits inside aria-hidden markup, even for
+   * browsers/scanners that don't honor the `inert` attribute.
+   */
+  inert?: boolean;
 }) {
+  const twinTabIndex = inert ? -1 : undefined;
   const beds = bedsOptions(units);
   const baths = bathsOptions(units);
   const bounds = sqftBounds(units);
@@ -109,7 +118,8 @@ export function UnitFilterRow({
       <Field label="Move-in">
         <span className="relative inline-flex">
           <select
-            aria-label="Filter by move-in date"
+            aria-label="Move-in date filter"
+            tabIndex={twinTabIndex}
             value={moveInValue(state.moveIn)}
             onChange={(e) => setMoveIn(e.target.value)}
             className={selectClass(state.moveIn.kind !== 'any')}
@@ -128,7 +138,8 @@ export function UnitFilterRow({
         <Field label="By">
           <input
             type="date"
-            aria-label="Show units available by this date"
+            aria-label="By this date — show units available by this date"
+            tabIndex={twinTabIndex}
             value={state.moveIn.date}
             onChange={(e) => onChange({ ...state, moveIn: { kind: 'date', date: e.target.value } })}
             className="h-9 rounded-md border border-primary bg-background px-2 text-xs shadow-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -140,7 +151,8 @@ export function UnitFilterRow({
         <Field label="Beds">
           <span className="relative inline-flex">
             <select
-              aria-label="Filter by bedroom type"
+              aria-label="Beds filter — bedroom type"
+              tabIndex={twinTabIndex}
               value={state.beds ?? 'all'}
               onChange={(e) => onChange({ ...state, beds: e.target.value === 'all' ? null : e.target.value })}
               className={selectClass(state.beds !== null)}
@@ -161,7 +173,8 @@ export function UnitFilterRow({
         <Field label="Baths">
           <span className="relative inline-flex">
             <select
-              aria-label="Filter by bathrooms"
+              aria-label="Baths filter — number of bathrooms"
+              tabIndex={twinTabIndex}
               value={state.baths === null ? 'all' : String(state.baths)}
               onChange={(e) =>
                 onChange({ ...state, baths: e.target.value === 'all' ? null : Number(e.target.value) })
@@ -186,7 +199,8 @@ export function UnitFilterRow({
             <input
               type="number"
               inputMode="numeric"
-              aria-label="Minimum square footage"
+              aria-label="Sq ft minimum"
+              tabIndex={twinTabIndex}
               placeholder={String(bounds[0])}
               min={bounds[0]}
               max={bounds[1]}
@@ -202,7 +216,8 @@ export function UnitFilterRow({
             <input
               type="number"
               inputMode="numeric"
-              aria-label="Maximum square footage"
+              aria-label="Sq ft maximum"
+              tabIndex={twinTabIndex}
               placeholder={String(bounds[1])}
               min={bounds[0]}
               max={bounds[1]}
@@ -230,6 +245,7 @@ export function UnitFilterRow({
           </span>
           <button
             type="button"
+            tabIndex={twinTabIndex}
             onClick={onClear}
             className="inline-flex min-h-9 items-center gap-1 text-xs uppercase tracking-wide text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >

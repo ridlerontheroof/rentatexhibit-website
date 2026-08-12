@@ -530,6 +530,8 @@ export function ScheduleTour() {
                         <input
                           type="text"
                           id="firstName"
+                          autoComplete="given-name"
+                          enterKeyHint="next"
                           {...register('firstName')}
                           aria-invalid={errors.firstName ? true : undefined}
                           aria-describedby={errors.firstName ? 'firstName-error' : undefined}
@@ -548,6 +550,8 @@ export function ScheduleTour() {
                         <input
                           type="text"
                           id="lastName"
+                          autoComplete="family-name"
+                          enterKeyHint="next"
                           {...register('lastName')}
                           aria-invalid={errors.lastName ? true : undefined}
                           aria-describedby={errors.lastName ? 'lastName-error' : undefined}
@@ -569,6 +573,8 @@ export function ScheduleTour() {
                       <input
                         type="email"
                         id="email"
+                        autoComplete="email"
+                        enterKeyHint="next"
                         {...register('email')}
                         aria-invalid={errors.email ? true : undefined}
                         aria-describedby={errors.email ? 'email-error' : undefined}
@@ -588,6 +594,8 @@ export function ScheduleTour() {
                       <input
                         type="tel"
                         id="phone"
+                        autoComplete="tel"
+                        enterKeyHint="next"
                         {...register('phone')}
                         aria-invalid={errors.phone ? true : undefined}
                         aria-describedby={errors.phone ? 'phone-error' : undefined}

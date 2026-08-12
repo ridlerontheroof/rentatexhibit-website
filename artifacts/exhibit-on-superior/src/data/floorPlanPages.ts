@@ -279,13 +279,39 @@ export function floorPlanSummary(page: FloorPlanPage): string {
   );
 }
 
+/**
+ * Building-wide finish facts (all from published site copy) used to pad the
+ * plan-specific base sentence into the 150–160 char band search engines
+ * display in full. Appended in order; a subset is chosen so the final length
+ * lands in-band without ever cutting a phrase mid-sentence.
+ */
+const DESCRIPTION_FILLERS = [
+  ' Floor-to-ceiling windows and in-home washer/dryer.',
+  ' Quartz countertops and stainless appliances.',
+  ' Driftwood plank floors.',
+  ' Pet-friendly tower.',
+  ' Tour today.',
+] as const;
+
 export function floorPlanDescription(page: FloorPlanPage): string {
   const p = page.plan;
-  const text =
+  const base =
     `${p.typeLabel} floor plan at Exhibit On Superior: ${planSqftLabel(p)} sq ft on ` +
     `${planFloorPhrase(p)}${page.balcony ? ', with private balcony' : ''}. River North, Chicago.`;
-  if (text.length <= 160) return text;
-  const cut = text.slice(0, 159);
+  // Pick the longest order-preserving subset of fillers that lands in
+  // [150, 160]; fall back to the longest subset that stays <= 160.
+  let best = base;
+  const n = DESCRIPTION_FILLERS.length;
+  for (let mask = 0; mask < 1 << n; mask++) {
+    let text = base;
+    for (let i = 0; i < n; i++) if (mask & (1 << i)) text += DESCRIPTION_FILLERS[i];
+    if (text.length > 160) continue;
+    const inBand = (t: string) => t.length >= 150 && t.length <= 160;
+    if (inBand(text) && (!inBand(best) || text.length > best.length)) best = text;
+    else if (!inBand(best) && text.length > best.length) best = text;
+  }
+  if (best.length <= 160) return best;
+  const cut = best.slice(0, 159);
   return `${cut.slice(0, cut.lastIndexOf(' '))}\u2026`;
 }
 

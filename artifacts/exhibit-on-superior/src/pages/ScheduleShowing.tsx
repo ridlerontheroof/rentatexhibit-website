@@ -356,10 +356,10 @@ export function ScheduleShowing() {
                   <div className="grid grid-cols-2 gap-4">
                     {(
                       [
-                        ['firstName', 'First Name', 'text'],
-                        ['lastName', 'Last Name', 'text'],
+                        ['firstName', 'First Name', 'text', 'given-name'],
+                        ['lastName', 'Last Name', 'text', 'family-name'],
                       ] as const
-                    ).map(([name, label, type]) => (
+                    ).map(([name, label, type, autoComplete]) => (
                       <div key={name}>
                         <label htmlFor={name} className="mb-2 block text-sm uppercase tracking-wider">
                           {label} *
@@ -367,6 +367,8 @@ export function ScheduleShowing() {
                         <input
                           type={type}
                           id={name}
+                          autoComplete={autoComplete}
+                          enterKeyHint="next"
                           {...register(name)}
                           aria-invalid={errors[name] ? true : undefined}
                           aria-describedby={errors[name] ? `${name}-error` : undefined}
@@ -387,6 +389,8 @@ export function ScheduleShowing() {
                     <input
                       type="email"
                       id="email"
+                      autoComplete="email"
+                      enterKeyHint="next"
                       {...register('email')}
                       aria-invalid={errors.email ? true : undefined}
                       aria-describedby={errors.email ? 'email-error' : undefined}
@@ -405,6 +409,8 @@ export function ScheduleShowing() {
                     <input
                       type="tel"
                       id="phone"
+                      autoComplete="tel"
+                      enterKeyHint="next"
                       {...register('phone')}
                       aria-invalid={errors.phone ? true : undefined}
                       aria-describedby={errors.phone ? 'phone-error' : undefined}

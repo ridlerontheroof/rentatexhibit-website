@@ -109,6 +109,23 @@ describe('parameterized page variants emit distinct head metadata', () => {
     expect(seo.description).toContain('0208');
   });
 
+  it('/start-application?unit= overrides title and description with the unit', async () => {
+    search = 'unit=0208';
+    const { StartApplication } = await import('./StartApplication');
+    renderPage(<StartApplication />);
+    const seo = lastSeo();
+    expect(seo.title).toContain('Apt 0208');
+    expect(seo.description).toContain('0208');
+  });
+
+  it('base start-application page keeps its base metadata', async () => {
+    const { StartApplication } = await import('./StartApplication');
+    renderPage(<StartApplication />);
+    const seo = lastSeo();
+    expect(seo.title).toBeUndefined();
+    expect(seo.description).toBeUndefined();
+  });
+
   it('base tour/showing pages keep their base metadata', async () => {
     const { ScheduleTour } = await import('./ScheduleTour');
     renderPage(<ScheduleTour />);

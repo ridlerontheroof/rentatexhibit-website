@@ -26,6 +26,13 @@ interface EmbedFacadeProps {
   embedUrl?: string;
   /** Notifies the owner the embed just mounted (e.g. to wire postMessage APIs). */
   onActivate?: () => void;
+  /**
+   * Eager-load the poster (loading="eager", fetchPriority="low"). Use when
+   * the facade sits above the fold — a lazy poster there delays what the
+   * visitor actually sees first. Kept at low priority so it never competes
+   * with the page's LCP hero (and never becomes the extracted LCP preload).
+   */
+  eagerPoster?: boolean;
 }
 
 /**
@@ -42,6 +49,7 @@ export function EmbedFacade({
   children,
   embedUrl,
   onActivate,
+  eagerPoster = false,
 }: EmbedFacadeProps) {
   const [activated, setActivated] = useState(false);
 
@@ -64,13 +72,15 @@ export function EmbedFacade({
           src={poster}
           alt={posterAlt}
           sizes="(min-width: 1024px) 960px, 100vw"
+          loading={eagerPoster ? 'eager' : 'lazy'}
+          fetchPriority={eagerPoster ? 'low' : undefined}
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : (
         <img
           src={poster}
           alt={posterAlt}
-          loading="lazy"
+          loading={eagerPoster ? 'eager' : 'lazy'}
           width={1280}
           height={720}
           className="absolute inset-0 h-full w-full object-cover"
