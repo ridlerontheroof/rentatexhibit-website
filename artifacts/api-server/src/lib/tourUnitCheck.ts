@@ -37,6 +37,15 @@ import { resolveTourUnitListableUid } from "./appfolio";
 
 const CHECK_INTERVAL_MS = 60 * 60 * 1000; // hourly — one cached report lookup
 
+/**
+ * Delay before the startup run. Deployment log ingestion drops the first
+ * ~25s of a fresh container's stdout; an immediate run risks reporting
+ * "Tour-unit check passed" into the void AND consuming the once-per-day
+ * info gate (the 2026-08-12 publish's line survived only by luck of a
+ * slow resolver call; same rationale as gtmCheck/redirectCheck).
+ */
+const STARTUP_DELAY_MS = 60 * 1000;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
@@ -203,16 +212,23 @@ export async function checkTourUnitOnce(
 
 /**
  * Start the periodic tour-unit watchdog. Production only — dev and test
- * runs would query the live AppFolio database and generate noise. Kicks
- * off an immediate check, then repeats every CHECK_INTERVAL_MS.
+ * runs would query the live AppFolio database and generate noise. Runs the
+ * first check STARTUP_DELAY_MS after boot (keeps its outcome — and the
+ * daily info gate — out of the dropped early-stdout window), then repeats
+ * every CHECK_INTERVAL_MS.
  */
 export function startTourUnitCheck(log: Logger = defaultLogger): void {
   if (process.env.NODE_ENV !== "production") return;
-  void checkTourUnitOnce(log);
+  const startupTimer = setTimeout(() => void checkTourUnitOnce(log), STARTUP_DELAY_MS);
+  startupTimer.unref?.();
   const timer = setInterval(() => void checkTourUnitOnce(log), CHECK_INTERVAL_MS);
   timer.unref?.();
   log.info(
-    { intervalHours: CHECK_INTERVAL_MS / 3_600_000, escalationRuns: ESCALATION_RUNS },
+    {
+      intervalHours: CHECK_INTERVAL_MS / 3_600_000,
+      escalationRuns: ESCALATION_RUNS,
+      startupDelaySeconds: STARTUP_DELAY_MS / 1000,
+    },
     "Tour-unit watchdog started",
   );
 }

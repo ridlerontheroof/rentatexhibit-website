@@ -29,6 +29,13 @@ import { sendApexRedirectAlert } from "./email";
 const APEX_CHECK_URL = "https://rentatexhibit.com/fees";
 const EXPECTED_HOST = "www.rentatexhibit.com";
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // every 6 hours
+/**
+ * Delay before the startup run. Deployment log ingestion drops the first
+ * ~25s of a fresh container's stdout, so an immediate run would report its
+ * "Apex redirect check passed" info line into the void (confirmed after the
+ * 2026-08-12 publish; same rationale as gtmCheck/redirectCheck).
+ */
+const STARTUP_DELAY_MS = 60 * 1000;
 const FETCH_TIMEOUT_MS = 15_000;
 
 /**
@@ -179,16 +186,22 @@ export async function checkApexRedirectOnce(
 
 /**
  * Start the periodic apex-redirect watchdog. Production only — dev and test
- * runs would hit the live domain and generate meaningless alerts. Kicks off
- * an immediate check, then repeats every CHECK_INTERVAL_MS.
+ * runs would hit the live domain and generate meaningless alerts. Runs the
+ * first check STARTUP_DELAY_MS after boot (keeps its outcome out of the
+ * dropped early-stdout window), then repeats every CHECK_INTERVAL_MS.
  */
 export function startApexRedirectCheck(log: Logger = defaultLogger): void {
   if (process.env.NODE_ENV !== "production") return;
-  void checkApexRedirectOnce(log);
+  const startupTimer = setTimeout(() => void checkApexRedirectOnce(log), STARTUP_DELAY_MS);
+  startupTimer.unref?.();
   const timer = setInterval(() => void checkApexRedirectOnce(log), CHECK_INTERVAL_MS);
   timer.unref?.();
   log.info(
-    { url: APEX_CHECK_URL, intervalHours: CHECK_INTERVAL_MS / 3_600_000 },
+    {
+      url: APEX_CHECK_URL,
+      intervalHours: CHECK_INTERVAL_MS / 3_600_000,
+      startupDelaySeconds: STARTUP_DELAY_MS / 1000,
+    },
     "Apex redirect watchdog started",
   );
 }

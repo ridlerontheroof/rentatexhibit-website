@@ -50,6 +50,15 @@ import { detectSlotFormatDrift } from "./showingFormatAlert";
  */
 
 const CHECK_INTERVAL_MS = 60 * 60 * 1000; // hourly — the probe is two cheap GETs
+/**
+ * Delay before the startup run. Deployment log ingestion drops the first
+ * ~25s of a fresh container's stdout; an immediate run reports
+ * "Showing-scheduler probe passed" into the void AND consumes the
+ * once-per-day info gate, so no confirmation appears until the next UTC
+ * day (confirmed after the 2026-08-12 publish; same rationale as
+ * gtmCheck/redirectCheck).
+ */
+const STARTUP_DELAY_MS = 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
@@ -310,18 +319,28 @@ export async function checkShowingSchedulerOnce(
 /**
  * Start the periodic showing-scheduler watchdog. Production only — dev and
  * test runs would probe the live AppFolio database and generate noise.
- * Kicks off an immediate probe, then repeats every CHECK_INTERVAL_MS.
+ * Runs the first probe STARTUP_DELAY_MS after boot (keeps its outcome —
+ * and the daily info gate — out of the dropped early-stdout window), then
+ * repeats every CHECK_INTERVAL_MS.
  */
 export function startShowingSchedulerCheck(log: Logger = defaultLogger): void {
   if (process.env.NODE_ENV !== "production") return;
-  void checkShowingSchedulerOnce(log);
+  const startupTimer = setTimeout(
+    () => void checkShowingSchedulerOnce(log),
+    STARTUP_DELAY_MS,
+  );
+  startupTimer.unref?.();
   const timer = setInterval(
     () => void checkShowingSchedulerOnce(log),
     CHECK_INTERVAL_MS,
   );
   timer.unref?.();
   log.info(
-    { intervalHours: CHECK_INTERVAL_MS / 3_600_000, escalationRuns: ESCALATION_RUNS },
+    {
+      intervalHours: CHECK_INTERVAL_MS / 3_600_000,
+      escalationRuns: ESCALATION_RUNS,
+      startupDelaySeconds: STARTUP_DELAY_MS / 1000,
+    },
     "Showing-scheduler watchdog started",
   );
 }

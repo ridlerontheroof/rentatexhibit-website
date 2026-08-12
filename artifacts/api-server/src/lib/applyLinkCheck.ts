@@ -38,6 +38,14 @@ import { getAvailabilitySnapshot } from "../routes/availability";
  */
 
 const CHECK_INTERVAL_MS = 60 * 60 * 1000; // hourly — the probe is one cheap GET
+/**
+ * Delay before the startup run. Deployment log ingestion drops the first
+ * ~25s of a fresh container's stdout; an immediate run reports "Apply-link
+ * probe passed" into the void AND consumes the once-per-day info gate, so
+ * no confirmation appears until the next UTC day (confirmed after the
+ * 2026-08-12 publish; same rationale as gtmCheck/redirectCheck).
+ */
+const STARTUP_DELAY_MS = 60 * 1000;
 const FETCH_TIMEOUT_MS = 20_000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const USER_AGENT = "exhibit-apply-link-check/1.0";
@@ -262,8 +270,10 @@ export async function checkApplyLinkOnce(
 
 /**
  * Start the periodic apply-link watchdog. Production only — dev and test
- * runs would probe the live AppFolio database and generate noise. Kicks off
- * an immediate probe, then repeats every CHECK_INTERVAL_MS.
+ * runs would probe the live AppFolio database and generate noise. Runs the
+ * first probe STARTUP_DELAY_MS after boot (keeps its outcome — and the
+ * daily info gate — out of the dropped early-stdout window), then repeats
+ * every CHECK_INTERVAL_MS.
  */
 export function startApplyLinkCheck(log: Logger = defaultLogger): void {
   if (process.env.NODE_ENV !== "production") return;
@@ -271,11 +281,16 @@ export function startApplyLinkCheck(log: Logger = defaultLogger): void {
     log.warn("Apply-link watchdog disabled via APPLY_LINK_CHECK_DISABLED=1");
     return;
   }
-  void checkApplyLinkOnce(log);
+  const startupTimer = setTimeout(() => void checkApplyLinkOnce(log), STARTUP_DELAY_MS);
+  startupTimer.unref?.();
   const timer = setInterval(() => void checkApplyLinkOnce(log), CHECK_INTERVAL_MS);
   timer.unref?.();
   log.info(
-    { intervalHours: CHECK_INTERVAL_MS / 3_600_000, escalationRuns: ESCALATION_RUNS },
+    {
+      intervalHours: CHECK_INTERVAL_MS / 3_600_000,
+      escalationRuns: ESCALATION_RUNS,
+      startupDelaySeconds: STARTUP_DELAY_MS / 1000,
+    },
     "Apply-link watchdog started",
   );
 }
