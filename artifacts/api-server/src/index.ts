@@ -11,6 +11,7 @@ import { startTourUnitCheck } from "./lib/tourUnitCheck";
 import { startApplyLinkCheck } from "./lib/applyLinkCheck";
 import { startRentedNoindexCheck } from "./lib/rentedCheck";
 import { startLegacyRedirectCheck } from "./lib/redirectCheck";
+import { startGa4DataCheck } from "./lib/ga4DataCheck";
 import { startGtmTrackingCheck } from "./lib/gtmCheck";
 import { startAcceptedVolumeWatch } from "./lib/botGuardAlert";
 
@@ -98,6 +99,13 @@ app.listen(port, (err) => {
   // GTM-side republish never restarts this server, so the interval is the
   // real detection path for a container published without the tag.
   startGtmTrackingCheck(logger);
+
+  // Watchdog: query the GA4 Data API for real recorded visitors (activeUsers
+  // over a trailing processed window) every 6 hours, alerting (once/day)
+  // when the count is ~zero — catches consent-mode misconfigurations, broken
+  // GA4 streams, and data filters that drop every hit while the tag-side
+  // gtmCheck still passes. Needs GA4_SERVICE_ACCOUNT_JSON + GA4_PROPERTY_ID.
+  startGa4DataCheck(logger);
 
   // Watchdog: hourly check of the shared last-accepted-submission timestamp;
   // alerts (once/day) when no lead has been accepted for an unusually long

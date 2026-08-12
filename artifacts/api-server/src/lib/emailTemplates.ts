@@ -779,6 +779,55 @@ export function renderGtmCheckAlert(opts: {
 }
 
 /**
+ * Operational alert: the GA4 visitor-data check (ga4DataCheck) found zero /
+ * implausibly-low recorded visitors over the trailing window even though
+ * the tag-side check passes — consent mode, a broken GA4 stream, or a data
+ * filter is dropping every hit.
+ */
+export function renderGa4DataAlert(opts: {
+  summary: string;
+  activeUsers: number | null;
+  window: string;
+}): RenderedEmail {
+  const { summary, activeUsers, window } = opts;
+  const subject =
+    "Website alert: real visitors are NOT showing up in Google Analytics";
+
+  const intro = `The automatic GA4 visitor-data check reported a problem: ${summary}`;
+  const remedyText =
+    "What to do: open Google Analytics for the website's property and check Reports → Realtime while browsing the live site. If your own visit does not appear, review consent-mode settings in Google Tag Manager, the GA4 web data stream, and any data filters on the property. The tag-side check (check:gtm) passing means the container itself still carries the GA4 tag — the problem is downstream of it. This alert is sent at most once per day.";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>Recorded active users (${escapeHtml(window)}):</strong> ${
+      activeUsers === null ? "unknown (check could not complete)" : String(activeUsers)
+    }</p>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+      "open GA4 Realtime while browsing the live site; if your visit does not appear, review consent mode in GTM, the GA4 web data stream, and property data filters. The container-side check passing means the problem is downstream of the tag. This alert is sent at most once per day.",
+    )}</p>`;
+
+  const text = [
+    intro,
+    "",
+    `Recorded active users (${window}): ${activeUsers === null ? "unknown" : activeUsers}`,
+    "",
+    remedyText,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader:
+      "GA4 recorded ~zero visitors over the trailing window — hits are being dropped after the tag.",
+    kicker: "Website Alert",
+    heading: "Visitors Missing From Analytics",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
+
+/**
  * Operational alert: the always-on legacy-redirect check (redirectCheck)
  * found a legacy URL that no longer answers a single-hop 301 to its mapped
  * target — Google-indexed legacy URLs are soft-404ing into the SPA shell.

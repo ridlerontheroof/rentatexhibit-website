@@ -12,6 +12,7 @@ import {
   renderFloorPlanCheckAlert,
   renderKnowledgeCheckAlert,
   renderLeadNotification,
+  renderGa4DataAlert,
   renderGtmCheckAlert,
   renderRedirectCheckAlert,
   renderRentedCheckAlert,
@@ -409,6 +410,34 @@ export async function sendGtmCheckAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL },
     "Sent GA4 tracking check failure alert email",
+  );
+}
+
+/**
+ * Alert that the GA4 Data API shows ~zero recorded visitors over the
+ * trailing window even though the container-side tag check passes — hits
+ * are being dropped downstream of the tag. Sent by the ga4DataCheck
+ * watchdog, at most once per UTC day.
+ */
+export async function sendGa4DataCheckAlert(opts: {
+  summary: string;
+  activeUsers: number | null;
+  window: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderGa4DataAlert(opts);
+  const { contentType, body } = buildMimeBody("ga4dataalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent GA4 visitor-data check failure alert email",
   );
 }
 
