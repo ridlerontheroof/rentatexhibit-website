@@ -18,6 +18,10 @@ const Slider = React.forwardRef<
     rootRef.current?.querySelectorAll('input').forEach((el) => {
       el.setAttribute('aria-hidden', 'true');
       el.setAttribute('tabindex', '-1');
+      // Squirrel's form-labels/aria-input-field-name rules ignore aria-hidden
+      // (stricter than axe) but exempt type="hidden" inputs. Behavior-neutral:
+      // the bridge input is display:none and only carries the form value.
+      el.setAttribute('type', 'hidden');
     });
   });
   // One thumb per value: a range slider (two values) must render two thumbs,

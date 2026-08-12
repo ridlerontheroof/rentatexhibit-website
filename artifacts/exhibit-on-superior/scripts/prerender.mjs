@@ -193,10 +193,12 @@ for (const routePath of allPaths) {
   // know it's outside a <form> until it can call closest('form') in the
   // browser; it removes them after hydration). They are display:none and
   // inert, but static a11y scanners flag them as unlabeled form inputs —
-  // mark them explicitly hidden from the accessibility tree.
+  // mark them explicitly hidden from the accessibility tree. type="hidden"
+  // matters too: squirrel's form-labels/aria-input-field-name rules ignore
+  // aria-hidden (stricter than axe) but exempt hidden inputs.
   page = page.replace(
     /<input style="display:none"\/>/g,
-    '<input style="display:none" aria-hidden="true" tabindex="-1"/>',
+    '<input type="hidden" style="display:none" aria-hidden="true" tabindex="-1"/>',
   );
 
   // Rewrite the LCP block with this page's own preload, extracted from the
