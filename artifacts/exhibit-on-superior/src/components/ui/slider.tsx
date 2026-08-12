@@ -9,6 +9,17 @@ const Slider = React.forwardRef<
     thumbLabels?: string[];
   }
 >(({ className, thumbLabels, ...props }, ref) => {
+  // Radix keeps hidden form-bridge <input>s in the live DOM after hydration
+  // (display:none, no type/name/label). Rendered-DOM a11y scanners flag them
+  // as unlabeled text inputs, so stamp them out of the accessibility tree.
+  // (The SSR copies are stamped the same way by prerender.mjs.)
+  const rootRef = React.useRef<HTMLElement | null>(null);
+  React.useEffect(() => {
+    rootRef.current?.querySelectorAll('input').forEach((el) => {
+      el.setAttribute('aria-hidden', 'true');
+      el.setAttribute('tabindex', '-1');
+    });
+  });
   // One thumb per value: a range slider (two values) must render two thumbs,
   // otherwise the second value has no thumb carrying aria-valuenow and the
   // control fails accessibility checks.
@@ -18,7 +29,11 @@ const Slider = React.forwardRef<
   const thumbCount = values.length;
   return (
     <SliderPrimitive.Root
-      ref={ref}
+      ref={(node) => {
+        rootRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      }}
       className={cn(
         'relative flex w-full touch-none select-none items-center',
         className,

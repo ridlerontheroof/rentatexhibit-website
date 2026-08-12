@@ -183,7 +183,11 @@ for (const routePath of allPaths) {
   // this is behavior-neutral, but auditing tools (and some crawlers) match
   // `fetchpriority`/`srcset` case-sensitively and report eager hero images
   // as "missing fetchpriority" when the attribute ships as `fetchPriority`.
-  page = page.replace(/ srcSet="/g, ' srcset="').replace(/ fetchPriority="/g, ' fetchpriority="');
+  page = page
+    .replace(/ srcSet="/g, ' srcset="')
+    .replace(/ fetchPriority="/g, ' fetchpriority="')
+    .replace(/ autoComplete="/g, ' autocomplete="')
+    .replace(/ enterKeyHint="/g, ' enterkeyhint="');
 
   // Radix Slider renders hidden form-bridge <input>s during SSR (it can't
   // know it's outside a <form> until it can call closest('form') in the

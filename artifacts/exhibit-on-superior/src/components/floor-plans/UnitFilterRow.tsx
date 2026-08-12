@@ -117,8 +117,10 @@ export function UnitFilterRow({
     <div className="mb-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-y border-border py-2.5">
       <Field label="Move-in">
         <span className="relative inline-flex">
+          {/* Accessible name comes from the wrapping <Field> label ("Move-in").
+              No aria-label: an aria-label that doesn't start with the visible
+              option text trips WCAG 2.5.3 label-in-name scanners. */}
           <select
-            aria-label="Move-in date filter"
             tabIndex={twinTabIndex}
             value={moveInValue(state.moveIn)}
             onChange={(e) => setMoveIn(e.target.value)}
@@ -151,7 +153,6 @@ export function UnitFilterRow({
         <Field label="Beds">
           <span className="relative inline-flex">
             <select
-              aria-label="Beds filter — bedroom type"
               tabIndex={twinTabIndex}
               value={state.beds ?? 'all'}
               onChange={(e) => onChange({ ...state, beds: e.target.value === 'all' ? null : e.target.value })}
@@ -173,7 +174,6 @@ export function UnitFilterRow({
         <Field label="Baths">
           <span className="relative inline-flex">
             <select
-              aria-label="Baths filter — number of bathrooms"
               tabIndex={twinTabIndex}
               value={state.baths === null ? 'all' : String(state.baths)}
               onChange={(e) =>
