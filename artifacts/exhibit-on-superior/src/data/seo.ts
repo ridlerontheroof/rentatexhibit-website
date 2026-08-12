@@ -968,6 +968,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/privacy-policy': {
     path: '/privacy-policy',
+    ogImage: DEFAULT_OG_IMAGE,
     label: 'Privacy Policy',
     title: 'Privacy Policy | Exhibit On Superior Apartments Chicago',
     description:
