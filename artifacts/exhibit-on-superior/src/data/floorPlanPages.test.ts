@@ -4,14 +4,17 @@ import path from 'node:path';
 import { plans, unitNumbersForPlan } from './floorPlans';
 import snapshot from './availabilitySnapshot.json';
 import {
+  DESCRIPTION_FILLERS,
   FLOOR_PLAN_PAGES,
   FLOOR_PLAN_PAGE_PATHS,
   buildFloorPlanSeoModel,
   floorPlanCanonical,
   floorPlanDescription,
+  floorPlanDescriptionBase,
   floorPlanH1,
   floorPlanPage,
   floorPlanPageJsonLd,
+  floorPlanSummary,
   floorPlanTitle,
   matchingUnitsForPlan,
   planPageForUnit,
@@ -118,6 +121,50 @@ describe('floor-plan meta descriptions', () => {
       expect(d.length, `${page.slug}: "${d}" (${d.length} chars)`).toBeLessThanOrEqual(160);
       expect(seen.get(d), `duplicate description between ${seen.get(d)} and ${page.slug}`).toBeUndefined();
       seen.set(d, page.slug);
+    }
+  });
+
+  it('never falls back to a mid-sentence truncated (…) description', () => {
+    for (const page of FLOOR_PLAN_PAGES) {
+      const base = floorPlanDescriptionBase(page);
+      expect(base.length, `${page.slug} base too long — ellipsis fallback would fire`).toBeLessThanOrEqual(160);
+      expect(floorPlanDescription(page)).not.toContain('\u2026');
+    }
+  });
+
+  it('filler subset sums cover every base length within a ±20-char safety margin', () => {
+    // Any order-preserving subset of DESCRIPTION_FILLERS may be appended; the
+    // generator lands in [150, 160] only if some subset-sum fits the gap. This
+    // guards the filler LIST itself: if a filler is edited/removed, or plan
+    // data drifts (sqft correction, new floor range, longer plan name — e.g.
+    // future 4BR/penthouse configs), every plausible base length must still
+    // be coverable, or this fails BEFORE a real plan lands out of band.
+    const sums = new Set<number>([0]);
+    for (const f of DESCRIPTION_FILLERS) {
+      for (const s of [...sums]) sums.add(s + f.length);
+    }
+    const bases = FLOOR_PLAN_PAGES.map((fp) => floorPlanDescriptionBase(fp).length);
+    const lo = Math.min(...bases) - 20;
+    const hi = Math.max(...bases) + 20;
+    const uncovered: number[] = [];
+    for (let L = lo; L <= hi; L++) {
+      const ok = [...sums].some((s) => L + s >= 150 && L + s <= 160);
+      if (!ok) uncovered.push(L);
+    }
+    expect(
+      uncovered,
+      `base lengths ${uncovered.join(', ')} cannot reach the 150–160 band with any filler subset — adjust DESCRIPTION_FILLERS`,
+    ).toEqual([]);
+  });
+
+  it('leaks no "undefined" from missing word maps into slugs or copy (new-config guard)', () => {
+    // If a 4BR or new-category plan is added without extending BED_WORDS /
+    // BATH_WORDS / CATEGORY_PHRASE, template literals silently interpolate
+    // "undefined" — catch it here across every generated surface.
+    for (const fp of FLOOR_PLAN_PAGES) {
+      for (const text of [fp.slug, floorPlanTitle(fp), floorPlanH1(fp), floorPlanDescription(fp), floorPlanSummary(fp)]) {
+        expect(text, `"undefined" leaked into output for ${fp.plan.id}`).not.toContain('undefined');
+      }
     }
   });
 });

@@ -781,6 +781,25 @@ console.log(`Prerendered ${allPaths.length} routes.`);
   }
 }
 
+// Meta-description band guard: floor-plan descriptions regenerate from plan
+// data (sqft, floor range, balcony) + filler phrases, so a data edit can push
+// one out of the 150–160 char band search engines display in full. Fail the
+// build loudly instead of silently shipping a short/truncated snippet.
+{
+  const bad = (FLOOR_PLAN_PAGE_META ?? []).filter(
+    (m) => m.description.length < 150 || m.description.length > 160,
+  );
+  if (bad.length) {
+    throw new Error(
+      `Prerender aborted: floor-plan meta description(s) outside the 150–160 char band.\n` +
+        bad
+          .map((m) => `  ${m.path} (${m.description.length} chars): "${m.description}"`)
+          .join('\n') +
+        '\nAdjust DESCRIPTION_FILLERS in src/data/floorPlanPages.ts (see the coverage test in floorPlanPages.test.ts).',
+    );
+  }
+}
+
 // Unknown-slug fallback: /floor-plans/* (after the per-slug rewrites) serves
 // this noindex stub instead of homepage HTML, so retired or mistyped plan
 // URLs are not soft-404 duplicates of the homepage for non-JS crawlers.

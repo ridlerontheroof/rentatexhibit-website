@@ -284,8 +284,17 @@ export function floorPlanSummary(page: FloorPlanPage): string {
  * plan-specific base sentence into the 150–160 char band search engines
  * display in full. Appended in order; a subset is chosen so the final length
  * lands in-band without ever cutting a phrase mid-sentence.
+ *
+ * Coverage contract (guarded by the "floor-plan meta descriptions" test
+ * suite): the subset sums of these filler lengths must be able to land ANY
+ * base sentence of up to ~148 chars in [150, 160]. Today's real bases run
+ * 89–125 chars, so there is >20 chars of headroom for sqft corrections, new
+ * floor ranges, or longer plan names. If a new plan configuration is ever
+ * added (e.g. 4BR or penthouse plans), also extend BED_WORDS / BATH_WORDS /
+ * CATEGORY_PHRASE — the tests fail on any "undefined" leaking into slugs or
+ * copy — and re-check the coverage test still passes.
  */
-const DESCRIPTION_FILLERS = [
+export const DESCRIPTION_FILLERS = [
   ' Floor-to-ceiling windows and in-home washer/dryer.',
   ' Quartz countertops and stainless appliances.',
   ' Driftwood plank floors.',
@@ -293,11 +302,17 @@ const DESCRIPTION_FILLERS = [
   ' Tour today.',
 ] as const;
 
-export function floorPlanDescription(page: FloorPlanPage): string {
+/** The plan-specific base sentence before fillers (exported for the coverage test). */
+export function floorPlanDescriptionBase(page: FloorPlanPage): string {
   const p = page.plan;
-  const base =
+  return (
     `${p.typeLabel} floor plan at Exhibit On Superior: ${planSqftLabel(p)} sq ft on ` +
-    `${planFloorPhrase(p)}${page.balcony ? ', with private balcony' : ''}. River North, Chicago.`;
+    `${planFloorPhrase(p)}${page.balcony ? ', with private balcony' : ''}. River North, Chicago.`
+  );
+}
+
+export function floorPlanDescription(page: FloorPlanPage): string {
+  const base = floorPlanDescriptionBase(page);
   // Pick the longest order-preserving subset of fillers that lands in
   // [150, 160]; fall back to the longest subset that stays <= 160.
   let best = base;
