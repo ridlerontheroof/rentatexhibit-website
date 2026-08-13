@@ -144,6 +144,7 @@ export const LANDING_PAGES: LandingPageDef[] = [
       { href: '/two-bedroom-apartments-river-north', label: '2 Bedroom Apartments' },
       { href: '/amenities', label: 'Amenities' },
       { href: '/neighborhood', label: 'Neighborhood Guide' },
+      { href: '/floor-plans', label: 'All Floor Plans' },
     ],
     knowledgeSlugs: ['full-amenity-list', 'how-much-is-rent'],
   },
