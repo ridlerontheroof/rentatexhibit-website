@@ -20,6 +20,7 @@ import {
   renderProspectConfirmation,
   renderSeedStaleAlert,
   renderShowingSchedulerAlert,
+  renderBlogDraftReviewNote,
 } from "./emailTemplates";
 import {
   EMAIL_LOGO_BASE64,
@@ -702,6 +703,62 @@ export async function sendAcceptedSilenceAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL, hoursSinceLast: opts.hoursSinceLast },
     "Sent accepted-lead silence alert email",
+  );
+}
+
+/**
+ * Review note to the leasing inbox: the AI article drafter has written a new
+ * `draft: true` blog guide and it is waiting for human review. Informational
+ * only — this email is never publish authority (publishing stays a reviewed
+ * code change: flip the draft flag + add the artifact.toml rewrite pair).
+ * Throws when the mailer is unconfigured or the send fails so the caller can
+ * report the failure loudly (the draft itself has already landed).
+ */
+export async function sendBlogDraftReviewNote(opts: {
+  slug: string;
+  title: string;
+  targetQuery: string;
+  authorName: string;
+  summary: string;
+  wordCount: number;
+  inboundHostSlug?: string;
+  /** Full readable draft text attached as <slug>.txt for offline review. */
+  draftText?: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderBlogDraftReviewNote(opts);
+  const inner = buildMimeBody("blogdraft", textBody, htmlBody);
+  let contentType = inner.contentType;
+  let body = inner.body;
+  if (opts.draftText) {
+    // Wrap the related part in multipart/mixed and attach the draft.
+    const mixed = `blogdraft_mix_${Date.now().toString(36)}`;
+    contentType = `multipart/mixed; boundary="${mixed}"`;
+    body = [
+      `--${mixed}`,
+      `Content-Type: ${inner.contentType}`,
+      "",
+      inner.body,
+      `--${mixed}`,
+      `Content-Type: text/plain; charset=UTF-8; name="${opts.slug}.txt"`,
+      "Content-Transfer-Encoding: base64",
+      `Content-Disposition: attachment; filename="${opts.slug}.txt"`,
+      "",
+      Buffer.from(opts.draftText, "utf-8").toString("base64"),
+      `--${mixed}--`,
+    ].join("\r\n");
+  }
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${LEASING_INBOX_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, LEASING_INBOX_EMAIL);
+  logger.info(
+    { recipient: LEASING_INBOX_EMAIL, slug: opts.slug },
+    "Sent blog draft review note email",
   );
 }
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { LeadNotification } from "./email";
 import {
+  renderBlogDraftReviewNote,
   renderGeneralTourConfirmation,
   renderLeadNotification,
   renderProspectConfirmation,
@@ -179,5 +180,61 @@ describe("renderLeadNotification", () => {
     expect(r.html).toContain("Jul 24, 2026, 10:30");
     expect(r.html).toContain("CT");
     expect(r.html).not.toContain("2026-07-24T15:30");
+  });
+});
+
+describe("renderBlogDraftReviewNote", () => {
+  const note = {
+    slug: "river-north-commute-guide",
+    title: "The River North Commute Guide",
+    targetQuery: "river north commute to the loop",
+    authorName: "Rebbekah Hallberg",
+    summary: "A short draft summary for review.",
+    wordCount: 640,
+  };
+
+  it("builds the subject from the draft title", () => {
+    const r = renderBlogDraftReviewNote(note);
+    expect(r.subject).toBe(
+      "Blog draft ready for review: The River North Commute Guide",
+    );
+  });
+
+  it("includes the slug, target query, byline, and length", () => {
+    const r = renderBlogDraftReviewNote(note);
+    for (const part of [
+      "/blog/river-north-commute-guide",
+      "river north commute to the loop",
+      "Rebbekah Hallberg",
+      "about 640 words",
+    ]) {
+      expect(r.html).toContain(part);
+      expect(r.text).toContain(part);
+    }
+  });
+
+  it("states that nothing is live and the email is not publish authority", () => {
+    const r = renderBlogDraftReviewNote(note);
+    expect(r.text).toContain("Nothing is live");
+    expect(r.text).toContain("heads-up only");
+    expect(r.text).toContain("artifact.toml");
+  });
+
+  it("names the article that must gain the inbound related link", () => {
+    const r = renderBlogDraftReviewNote({
+      ...note,
+      inboundHostSlug: "living-in-river-north-chicago",
+    });
+    expect(r.text).toContain("all three edits");
+    expect(r.text).toContain('related list of the "living-in-river-north-chicago" article');
+  });
+
+  it("escapes HTML in draft-supplied fields", () => {
+    const r = renderBlogDraftReviewNote({
+      ...note,
+      title: 'Draft <script>alert("x")</script>',
+    });
+    expect(r.html).not.toContain("<script>");
+    expect(r.html).toContain("&lt;script&gt;");
   });
 });

@@ -66,4 +66,5 @@
 - [QA evidence package](qa-evidence-package.md) — evidence reports must be script-derived from source JSONs; concurrent perf runs otherwise make the package inconsistent.
 - [Exact sliding-window alert counters](sliding-window-alerts.md) — "N failures in M minutes" alarms need per-event rows (expires_at = event+window); bucket sums get rejected in review.
 - [SightMap embed integration](sightmap-embed.md) — hide_apply_button+disable_structured_data params, SDK origin handling, EmbedFacade-children SSR trap, dual CSP entries.
+- [Blog draft publish-readiness](blog-article-drafter.md) — draft-gated content is exempt from the published-set guards; publishability must be proven by simulating the published set incl. the inbound related link.
 - [Unit map spreadsheet as fact source](unit-map-fact-source.md) — unitMap.json/planFacts/floorPlanCopy pipeline, sheet's floor-5 = 4M mezzanine, line-06 packet split alias, copy guarded by fact-discipline tests.

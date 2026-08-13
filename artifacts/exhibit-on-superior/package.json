@@ -29,7 +29,8 @@
     "check:perf": "node scripts/check-perf.mjs",
     "generate:unit-map": "node scripts/generate-unit-map.mjs",
     "generate:unit-rewrites": "node scripts/generate-unit-rewrites.mjs",
-    "generate:unit-rewrites:check": "node scripts/generate-unit-rewrites.mjs --check"
+    "generate:unit-rewrites:check": "node scripts/generate-unit-rewrites.mjs --check",
+    "generate:article": "tsx scripts/generate-article.ts"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",

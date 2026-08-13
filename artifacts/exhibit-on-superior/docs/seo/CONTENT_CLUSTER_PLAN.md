@@ -85,3 +85,66 @@ authorship, internal linking, and JSON-LD.
 3. Publishing a slug requires adding its rewrite pair to `artifact.toml` (the
    prerender parity guard fails the build otherwise) — a deliberate,
    human-reviewed code change. AI drafting may never publish on its own.
+
+## AI article drafter (`generate:article`)
+
+The drafter is live. From `artifacts/exhibit-on-superior`:
+
+```
+pnpm run generate:article              # drafts the next unwritten slug from the plan
+pnpm run generate:article -- --slug <slug>   # drafts a specific planned slug
+pnpm run generate:article -- --dry-run       # prints the validated JSON, writes nothing
+```
+
+What it does:
+
+1. Picks the highest-priority `planned` slug from `blogClusterPlan.ts` that is
+   not yet in `blogArticles.ts` (published or draft).
+2. Builds a fact pack from committed fact modules ONLY (`propertyFacts`,
+   `walkScores`, `commute`, `floorPlans`, `fees`) plus the plan brief and the
+   committed PAGE_SEO copy for the article's internal-link targets, and drafts
+   via the Replit AI proxy (`AI_INTEGRATIONS_OPENAI_BASE_URL` /
+   `AI_INTEGRATIONS_OPENAI_API_KEY`; `OPENAI_API_KEY` works as a fallback;
+   model override via `BLOG_DRAFT_MODEL`).
+3. Validates the draft against the same rules `blog.test.ts` enforces on
+   published articles (summary length, body depth, citation domains, filler
+   ban, link/related integrity, title/description bands), retrying with
+   validation feedback up to 3 times.
+4. Simulates the prospective published set (draft flipped + the inbound
+   related link added) against the published-set linking guards — including
+   the no-orphans inbound rule — and picks the published article that must
+   gain the inbound `related` reference at publish time. It then appends the
+   article to `src/data/blogArticles.ts` as a **`draft: true`** entry (with
+   the exact publish edits written in a comment above it) and runs the blog +
+   fact-discipline guard suites against the modified file — on any failure
+   the draft is reverted and the rejected JSON is saved under `/tmp`.
+5. Emails a review note to the leasing inbox (via
+   `pnpm --filter @workspace/api-server run send:blog-draft-review`). The
+   email is informational only — it is **never publish authority**.
+
+## Flip-to-publish flow (human review required)
+
+Drafts are invisible on every surface (routes, prerender, sitemap, llms.txt,
+the hub). To publish a reviewed draft:
+
+1. Review the entry in `src/data/blogArticles.ts` — verify every fact, fee,
+   and claim; edit freely. Drafts are ordinary code, so edits are normal PRs.
+2. Flip `draft: true` off (delete the line or set `false`).
+3. Add the inbound `related` link: append the new slug to the `related:` list
+   of the published article named in the comment above the draft. Every
+   published article needs at least one inbound related link (the no-orphans
+   guard in `blog.test.ts` fails otherwise), and existing articles cannot
+   reference the slug before it exists — so this edit always happens at
+   publish time.
+4. Add the article's rewrite pair to `artifact.toml`:
+   `/blog/<slug>` → `/blog/<slug>.html` (copy an existing `/blog/` pair).
+   The prerender parity guard fails the build if the pair is missing, and the
+   guard suites fail if the flag is flipped without it.
+
+All three code edits (steps 2–4) are mandatory; the drafter writes them as a
+checklist comment directly above each draft entry.
+
+5. Run the test suite (`pnpm --filter @workspace/exhibit-on-superior run test`)
+   and republish. Post-publish watchers and IndexNow handle the rest.
+
+To discard a draft, delete its object literal — nothing else references it.

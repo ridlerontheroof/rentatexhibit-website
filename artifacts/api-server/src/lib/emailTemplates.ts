@@ -1319,3 +1319,77 @@ export function renderLeadNotification(lead: LeadNotification): RenderedEmail {
     text,
   };
 }
+
+/**
+ * Review note: the AI article drafter added a new `draft: true` blog guide to
+ * the website code and it is waiting for a human editor. This email is purely
+ * informational — it is never publish authority. Publishing stays a reviewed
+ * code change (flip the draft flag + add the artifact.toml rewrite pair).
+ */
+export function renderBlogDraftReviewNote(opts: {
+  slug: string;
+  title: string;
+  targetQuery: string;
+  authorName: string;
+  summary: string;
+  wordCount: number;
+  /** Published article that must gain the inbound `related` link at publish time. */
+  inboundHostSlug?: string;
+}): RenderedEmail {
+  const { slug, title, targetQuery, authorName, summary, wordCount, inboundHostSlug } = opts;
+  const subject = `Blog draft ready for review: ${title}`;
+
+  const publishEdits = inboundHostSlug
+    ? `To publish, a developer makes all three edits (the build fails if any is missed): remove \`draft: true\`, add "${slug}" to the related list of the "${inboundHostSlug}" article, and add the /blog rewrite pair in artifact.toml. The exact steps are also written in a comment above the draft itself.`
+    : "To publish: a developer removes `draft: true`, adds the inbound related link named in the comment above the draft, and adds the /blog rewrite pair in artifact.toml. The build fails if any edit is missed.";
+
+  const steps = [
+    `Read the full draft in the attached ${slug}.txt (the same text lives in the website code at src/data/blogArticles.ts).`,
+    "Check every fact, fee, and claim. You can mark up the attached file and email it back to the team — a developer then applies those edits to the code entry. Replying with an edited file never publishes anything by itself.",
+    publishEdits,
+    "Not worth publishing? The draft can simply be deleted — it is invisible to visitors either way.",
+  ];
+
+  const html =
+    `<p style="${BODY_TEXT}">The article drafter wrote a new blog guide and parked it as an <strong>unpublished draft</strong> for your review. Nothing is live — drafts never appear on the website until a person publishes them.</p>` +
+    `<p style="${BODY_TEXT}"><strong>Title:</strong> ${escapeHtml(title)}<br>` +
+    `<strong>Slug:</strong> /blog/${escapeHtml(slug)}<br>` +
+    `<strong>Target search:</strong> ${escapeHtml(targetQuery)}<br>` +
+    `<strong>Byline:</strong> ${escapeHtml(authorName)}<br>` +
+    `<strong>Length:</strong> about ${wordCount} words</p>` +
+    `<p style="${BODY_TEXT}"><strong>Draft summary:</strong> ${escapeHtml(summary)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>Next steps:</strong></p>` +
+    `<ol>${steps.map((s) => `<li style="${BODY_TEXT}">${escapeHtml(s)}</li>`).join("")}</ol>` +
+    `<p style="${BODY_TEXT}">Reminder: this email is a heads-up only. It cannot publish anything, and replying to it does not publish anything.</p>`;
+
+  const text = [
+    "The article drafter wrote a new blog guide and parked it as an unpublished draft for your review.",
+    "Nothing is live — drafts never appear on the website until a person publishes them.",
+    "",
+    `Title: ${title}`,
+    `Slug: /blog/${slug}`,
+    `Target search: ${targetQuery}`,
+    `Byline: ${authorName}`,
+    `Length: about ${wordCount} words`,
+    "",
+    `Draft summary: ${summary}`,
+    "",
+    "Next steps:",
+    ...steps.map((s, i) => `${i + 1}. ${s}`),
+    "",
+    "Reminder: this email is a heads-up only. It cannot publish anything, and replying to it does not publish anything.",
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  return {
+    subject,
+    html: renderEmailShell({
+      preheader: `New unpublished blog draft awaiting review: ${title}`,
+      kicker: "Blog Draft",
+      heading: "New Draft Awaiting Review",
+      bodyHtml: html,
+    }),
+    text,
+  };
+}
