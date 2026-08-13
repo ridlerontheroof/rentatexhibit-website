@@ -10,5 +10,8 @@ description: How available-unit cards paint instantly (build snapshot + head pre
 - The API server runs a background cache warmer (interval just inside the 5-min TTL, `unref`ed, coalesced with the route's inflight) so a cold cache never hits a first visitor. In the workspace the warmer always fails (AppFolio egress blocked) — expected, verify only in production.
 - **Gotchas:** SSR must not render eager plain `<img>` (React 19 auto-preload fails the prerender guard) — gate eager on `!import.meta.env.SSR`. `renderToString` splits adjacent text nodes with `<!-- -->` (e.g. `Apt <!-- -->0208`), so plain greps for concatenated text miss real content. Tests that mock the availability fetch must also mock `getBakedAvailability()` to null or real snapshot units race the mock.
 
+
+## updatedAt half-life rewrite
+The fetch script skips writing when unit data is unchanged (to avoid dirtying the tree), but it must NOT keep a committed `updatedAt` older than 24h — the prerender guard hard-fails at 48h, so unchanged availability for two days would break every build. Past the 24h half-life, the script rewrites the snapshot with the fresh `updatedAt` (a legitimate tree change).
 ## Stamp-skip vs freshness guard (2026-08-13)
 The fetch script's "unchanged → keep committed updatedAt" optimization (added to stop tree-dirtying merge blocks) let the committed stamp age past the prerender guard's 48h limit during a quiet stretch with no unit changes, failing the deployment build. Fix: when units are unchanged but the committed stamp is >24h old, rewrite the stamp anyway. **Lesson:** any "skip the write when content is unchanged" optimization must still refresh timestamps that a freshness guard enforces, or quiet periods turn into build failures.
