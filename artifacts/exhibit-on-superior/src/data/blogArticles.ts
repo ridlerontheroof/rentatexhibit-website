@@ -100,6 +100,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       'moving-to-river-north-chicago-checklist',
       'river-north-vs-streeterville-renters',
       'river-north-commute-guide',
+      'river-north-with-a-dog',
     ],
     links: [
       { label: 'See current availability and pricing', href: '/available-units' },
@@ -473,6 +474,127 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       {
         label: 'CTA \u2014 train schedules and travel times',
         href: 'https://www.transitchicago.com/schedules/',
+      },
+    ],
+    ogCard: 'neighborhood',
+    published: '2026-08-13',
+    updated: '2026-08-13',
+  },
+
+  // ---------------------------------------------------------------------
+  // CLUSTER — river north dog friendly apartments
+  // AI DRAFT — awaiting human review. To publish, ALL THREE edits are
+  // required (guard tests fail if any is missed):
+  //   1. remove `draft: true` below
+  //   2. add 'river-north-with-a-dog' to the related: list of the
+  //      'living-in-river-north-chicago' article above (inbound-link guard)
+  //   3. add the /blog/river-north-with-a-dog rewrite pair in artifact.toml
+  // ---------------------------------------------------------------------
+  {
+    slug: 'river-north-with-a-dog',
+    title: 'Living in River North with a Dog: A Practical Guide',
+    metaTitle: 'River North Dog-Friendly Apartments',
+    targetQuery: 'river north dog friendly apartments',
+    role: 'cluster',
+    pillar: 'living-in-river-north-chicago',
+    authorId: 'rebbekah-hallberg',
+    summary:
+      'River North dog-friendly apartment searching should pair neighborhood routines with clear building policies. At Exhibit On Superior, we welcome cats and dogs, offer a dog spa and outdoor walk, and charge a one-time dog fee with no monthly pet rent. Our leasing team can help you confirm the details before touring.',
+    sections: [
+      {
+        heading: 'Start with the building\u2019s pet policy',
+        paragraphs: [
+          'As property manager, I encourage renters searching for River North dog-friendly apartments to begin with the details that shape everyday life. At Exhibit On Superior, cats and dogs are welcome, and the community offers a dog spa and outdoor walk. The amenity collection also includes private park access, so our leasing team can clarify how that access works for your household and pet.',
+          'We have a two-dog maximum, and the pet-friendly policy has no weight limits. Because a dog\u2019s routine is personal, we recommend discussing your specific needs with our leasing team rather than making assumptions based on a listing description.',
+        ],
+        list: [
+          'Dogs: $650 one-time fee for one dog or $750 one-time fee for two dogs',
+          'No pet deposit and no monthly pet rent',
+          'Cats: $325 one-time fee, with a two-cat maximum',
+        ],
+      },
+      {
+        heading: 'Plan a practical high-rise dog routine',
+        paragraphs: [
+          'High-rise living works best when the dog\u2019s walk schedule is part of the household schedule. Our leasing team recommends identifying your preferred departure times, keeping walk supplies organized near your door, and allowing enough time for the elevator trip before an outing. These small planning choices can make morning, midday, and evening routines easier to maintain.',
+          'The dog spa can be useful after a walk, while the outdoor walk gives residents an on-site option to discuss during a tour. We recommend asking about the features that matter most to you and your dog, including access routes and the spaces you expect to use regularly.',
+        ],
+        list: [
+          'Discuss your dog\u2019s daily routine during the tour',
+          'Ask our leasing team about the dog spa and outdoor walk',
+          'Confirm the current pet policy before submitting an application',
+        ],
+      },
+      {
+        heading: 'Use River North\u2019s walkable setting thoughtfully',
+        paragraphs: [
+          'Exhibit On Superior is at 165 W Superior St in Chicago\u2019s River North neighborhood. Walk Score rates the address 99/100 for walking, 100/100 for transit, and 86/100 for biking. For dog owners, our team recommends using that walkability as a reason to map your own preferred routes and everyday stops before choosing an apartment.',
+          'We do not make specific claims about nearby dog parks or pet access at individual neighborhood businesses. Instead, we suggest taking a walking tour of the immediate area with your own priorities in mind, then asking our leasing team questions about the building\u2019s pet amenities and access points.',
+        ],
+        list: [
+          'Walk Score: 99/100',
+          'Transit Score: 100/100',
+          'Bike Score: 86/100',
+        ],
+      },
+      {
+        heading: 'Choose a layout around your household routine',
+        paragraphs: [
+          'Exhibit On Superior has studio, convertible, one-, two-, and three-bedroom apartments. Apartment sizes range from about 448 to 1,528 square feet overall. Our leasing team recommends considering where you will keep food, supplies, towels, and any other dog-care items when comparing layouts.',
+          'Studios are about 448\u2013484 square feet, convertibles and Jr. Convertibles are about 450\u2013554 square feet, and one-bedroom homes are about 619\u2013768 square feet. Two-bedroom homes range from about 767\u20131,135 square feet, while three-bedroom homes are about 1,455\u20131,528 square feet. During a tour, we can help you compare available homes with your household\u2019s setup in mind.',
+        ],
+        list: [
+          'Studio: about 448\u2013484 sq ft',
+          'Convertible / Jr. Convertible: about 450\u2013554 sq ft',
+          '1 Bed: about 619\u2013768 sq ft',
+          '2 Bed: about 767\u20131,135 sq ft',
+          '3 Bed: about 1,455\u20131,528 sq ft',
+        ],
+      },
+      {
+        heading: 'Review application and move-in details early',
+        paragraphs: [
+          'Pet planning is only one part of the leasing process. Exhibit requires a minimum credit score of 700, or 600 with a qualified co-signer, and an approval decision is provided in 1\u20133 business days. Renters insurance is required with $300,000 liability-to-landlord coverage.',
+          'The application fee is $60 per applicant, and the administration fee is $500 per apartment. Exhibit does not currently collect a security deposit. The monthly Utility & Service Amenity fee ranges from $95 to $195 by floor plan and covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed directly to the resident by ComEd.',
+        ],
+        list: [
+          'Application fee: $60 per applicant, one-time',
+          'Administration fee: $500 per apartment, one-time',
+          'Security deposit: $0',
+          'Utility & Service Amenity fee: $95\u2013$195 monthly by floor plan',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How much is the dog fee at Exhibit On Superior?',
+        answer:
+          'The one-time dog fee is $650 for one dog or $750 for two dogs. Exhibit has a two-dog maximum, and there is no pet deposit or monthly pet rent.',
+      },
+      {
+        question: 'Are there weight limits for dogs?',
+        answer:
+          'No. Exhibit On Superior\u2019s pet-friendly policy has no weight limits for dogs. The community has a two-dog maximum, and our leasing team can confirm the current policy details before you apply.',
+      },
+      {
+        question: 'How can I tour a dog-friendly apartment in River North?',
+        answer:
+          'You can send our leasing team a tour request through the schedule-a-tour page or book a specific apartment from Available Units. Our office hours are Monday\u2013Friday, 9:00 AM\u20136:00 PM, and Saturday, 10:00 AM\u20135:00 PM; the office is closed Sunday.',
+      },
+    ],
+    related: ['living-in-river-north-chicago', 'moving-to-river-north-chicago-checklist'],
+    links: [
+      { label: 'Explore pet-friendly apartments at Exhibit On Superior', href: '/pet-friendly' },
+      { label: 'Schedule a tour with our leasing team', href: '/schedule-a-tour' },
+    ],
+    sources: [
+      {
+        label: 'Walk Score for 165 W Superior St',
+        href: 'https://www.walkscore.com/score/165-w-superior-st-chicago-il-60654',
+      },
+      {
+        label: 'ComEd \u2014 start, stop, or move electric service',
+        href: 'https://www.comed.com/my-account/customer-support/start-stop-move',
       },
     ],
     ogCard: 'neighborhood',

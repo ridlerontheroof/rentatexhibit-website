@@ -37,7 +37,7 @@ before touring.
 | 2 | `moving-to-river-north-chicago-checklist` | moving to river north chicago | decision-support | Leasing Team | **Published** |
 | 3 | `river-north-vs-streeterville-renters` | river north vs streeterville | comparison | Rebbekah | **Published** |
 | 4 | `river-north-commute-guide` | river north commute to the loop | informational | Leasing Team | **Published** |
-| 5 | `river-north-with-a-dog` | river north dog friendly apartments | informational | Rebbekah | Planned |
+| 5 | `river-north-with-a-dog` | river north dog friendly apartments | informational | Rebbekah | **Published** |
 
 ### Pillar 2 — How to Rent an Apartment in Chicago (process)
 Owns application/leasing-process queries where the leasing team's daily
