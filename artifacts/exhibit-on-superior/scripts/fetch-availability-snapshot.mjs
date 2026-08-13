@@ -13,6 +13,7 @@ import { promises as fs } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { refreshSnapshot } from './lib/availability-snapshot-refresh.mjs';
 
 const SNAPSHOT_URL = 'https://www.rentatexhibit.com/api/availability';
 const outPath = path.resolve(
@@ -24,12 +25,6 @@ const outPath = path.resolve(
 );
 
 try {
-  const res = await fetch(SNAPSHOT_URL, { signal: AbortSignal.timeout(20_000) });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const payload = await res.json();
-  if (!payload || !Array.isArray(payload.units) || typeof payload.updatedAt !== 'string') {
-    throw new Error('unexpected payload shape (expected { units: [], updatedAt })');
-  }
   // Skip the write when only updatedAt moved: rewriting an otherwise-identical
   // snapshot dirties the working tree on every build, which blocks task merges
   // ("cannot apply changes") and produces noise commits. Compare the payload
@@ -39,36 +34,17 @@ try {
   // stretch with zero unit changes must still refresh the stamp. Rewrite once
   // the committed stamp is older than half the max age (24h) — rare enough to
   // stay merge-friendly, early enough that a publish never hits the 48h wall.
-  const STAMP_REFRESH_AGE_MS = 24 * 60 * 60 * 1000;
-  let unchanged = false;
-  try {
-    const existing = JSON.parse(await fs.readFile(outPath, 'utf8'));
-    const sameUnits =
-      JSON.stringify({ ...existing, updatedAt: null }) ===
-      JSON.stringify({ ...payload, updatedAt: null });
-    const existingUpdated = Date.parse(existing?.updatedAt);
-    const stampFresh =
-      Number.isFinite(existingUpdated) && Date.now() - existingUpdated <= STAMP_REFRESH_AGE_MS;
-    unchanged = sameUnits && stampFresh;
-    if (sameUnits && !stampFresh) {
-      console.log(
-        'Availability snapshot units unchanged but committed updatedAt is >24h old; ' +
-          'rewriting the stamp so the prerender freshness guard (48h) cannot trip.',
-      );
-    }
-  } catch {
-    /* missing/malformed existing snapshot — write the fresh one */
-  }
-  if (unchanged) {
-    console.log(
-      `Availability snapshot unchanged (${payload.units.length} unit(s)); keeping committed updatedAt to avoid dirtying the tree.`,
-    );
-  } else {
-    await fs.writeFile(outPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-    console.log(
-      `Availability snapshot refreshed: ${payload.units.length} unit(s), updatedAt ${payload.updatedAt}.`,
-    );
-  }
+  // Decision logic lives in scripts/lib/availability-snapshot-refresh.mjs
+  // (unit-tested there) — a fetch/parse failure throws BEFORE any write, so
+  // the committed snapshot stays untouched.
+  await refreshSnapshot({
+    fetchPayload: async () => {
+      const res = await fetch(SNAPSHOT_URL, { signal: AbortSignal.timeout(20_000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    },
+    outPath,
+  });
   // Keep the per-unit rewrite block in artifact.toml in lockstep with the
   // snapshot we just wrote, so the "unit-rewrites" check stays green without a
   // manual regenerate step. Failures here propagate: a refreshed snapshot with
