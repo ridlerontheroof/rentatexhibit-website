@@ -101,6 +101,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       'river-north-vs-streeterville-renters',
       'river-north-commute-guide',
       'river-north-with-a-dog',
+      'how-to-rent-an-apartment-in-chicago',
     ],
     links: [
       { label: 'See current availability and pricing', href: '/available-units' },
@@ -598,6 +599,112 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       },
     ],
     ogCard: 'neighborhood',
+    published: '2026-08-13',
+    updated: '2026-08-13',
+  },
+
+  // ---------------------------------------------------------------------
+  // PILLAR — how to rent an apartment in chicago
+  // ---------------------------------------------------------------------
+  {
+    slug: 'how-to-rent-an-apartment-in-chicago',
+    title: 'How to Rent an Apartment in Chicago: The Complete Guide',
+    metaTitle: 'Rent an Apartment in Chicago',
+    targetQuery: 'how to rent an apartment in chicago',
+    role: 'pillar',
+    pillar: 'how-to-rent-an-apartment-in-chicago',
+    authorId: 'leasing-team',
+    summary:
+      'To rent an apartment in Chicago, narrow your preferred home, review the complete charges, tour, submit the building\u2019s online application, and plan utilities and insurance after approval. At Exhibit On Superior, our leasing team can explain the screening path, fees, available residences, and move-in questions for a River North lease.',
+    sections: [
+      {
+        heading: 'Start by defining the home and location you need',
+        paragraphs: [
+          'Our leasing team recommends beginning with the apartment type, space, and daily access that matter most to you. At Exhibit On Superior, residences include studio, convertible, one-, two-, and three-bedroom apartments. Overall apartment sizes range from 448\u20131,528 sq ft, with individual floor-plan sizes varying by layout.',
+          'Review current homes, photos, pricing, and move-in dates before deciding which layouts to tour. For a Chicago search, availability and lease details vary by building, so we recommend asking the leasing office about the specific residence you are considering.',
+        ],
+        list: [
+          'Studios are about 448\u2013484 sq ft.',
+          'Convertible and Jr. Convertible apartments are about 450\u2013554 sq ft.',
+          'One-bedroom apartments are about 619\u2013768 sq ft.',
+          'Two-bedroom apartments are about 767\u20131135 sq ft.',
+          'Three-bedroom apartments are about 1455\u20131528 sq ft.',
+        ],
+      },
+      {
+        heading: 'Tour the apartment and ask lease-specific questions',
+        paragraphs: [
+          'A tour is the time to compare the particular residence with your needs and to ask our leasing team about the application path, move-in timing, amenity access, and any building-specific questions. Exhibit On Superior has a full-floor amenity deck, fitness center, pool, hot tub, lounges, work and meeting rooms, dog spa, private park access, and on-site retail and wellness options.',
+          'We recommend reviewing the available-home details before your visit, then using the tour to confirm which features matter for your day-to-day routine. You can browse current residences through Available Units or send our team a tour request when you are ready.',
+        ],
+      },
+      {
+        heading: 'Review every upfront and monthly charge before applying',
+        paragraphs: [
+          'Before submitting an application, our leasing team recommends reading the charge list for the apartment you select. At Exhibit On Superior, the application fee is $60 per applicant and is shown on each unit\u2019s secure online application before payment. The administration fee is $500 per apartment and is refunded only if the application is denied.',
+          'Exhibit does not currently collect a security deposit. The monthly Utility & Service Amenity fee is $95\u2013$195 by floor plan and covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed directly to the resident by ComEd.',
+        ],
+        list: [
+          'Garage parking is $335 per space monthly, unreserved and subject to availability.',
+          'On-site storage is $25 monthly for a storage locker rental.',
+          'Dog fees are $650 for one dog or $750 for two dogs, with a two-dog maximum.',
+          'The cat fee is $325, with a two-cat maximum.',
+          'There is no pet deposit or monthly pet rent.',
+        ],
+      },
+      {
+        heading: 'Submit the application and plan for the decision',
+        paragraphs: [
+          'At Exhibit On Superior, the minimum credit score is 700, or 600 with a qualified co-signer. Our leasing team can clarify the application sequence and answer questions about your individual situation, while the approval decision is issued in 1\u20133 business days.',
+          'After approval, review the lease materials and confirm your required renters insurance. Renters insurance is required with $300,000 liability-to-landlord coverage. Requirements at other Chicago buildings vary by building, so we recommend confirming screening, insurance, fees, and next steps directly with that leasing office.',
+        ],
+      },
+      {
+        heading: 'Prepare utilities, transportation, and move-in logistics',
+        paragraphs: [
+          'For an Exhibit lease, plan for the utility items that are separate from the monthly Utility & Service Amenity fee. ComEd provides information for starting, stopping, or moving electric service. Exhibit also has complimentary bike storage on the ground floor.',
+          `If walkability or transit access is part of your Chicago rental decision, per Walk Score, 165 W Superior St rates ${WALK_SCORE_PHRASE}, ${TRANSIT_SCORE_PHRASE}, and ${BIKE_SCORE_PHRASE}. CTA schedules can help you check current train planning; the Chicago station for the Brown and Purple Lines is at Chicago Ave and Franklin St, and the Chicago/State station for the Red Line is at Chicago Ave and State St.`,
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How long does approval take at Exhibit On Superior?',
+        answer:
+          'At Exhibit On Superior, the approval decision is issued in 1\u20133 business days. Our leasing team can answer questions about the application sequence for the residence you select.',
+      },
+      {
+        question: 'What credit score is required to rent at Exhibit On Superior?',
+        answer:
+          'Exhibit On Superior requires a minimum credit score of 700, or 600 with a qualified co-signer. Ask our leasing team if you need clarification about your application path.',
+      },
+      {
+        question: 'What utilities are included in the monthly Utility & Service Amenity fee?',
+        answer:
+          'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. The fee is $95\u2013$195 by floor plan, while electricity is billed directly to the resident by ComEd.',
+      },
+    ],
+    related: ['moving-to-river-north-chicago-checklist', 'river-north-commute-guide'],
+    links: [
+      { label: 'Browse available apartments', href: '/available-units' },
+      { label: 'Review leasing fees and charges', href: '/fees' },
+      { label: 'Schedule a tour with our leasing team', href: '/schedule-a-tour' },
+    ],
+    sources: [
+      {
+        label: 'Walk Score for 165 W Superior St',
+        href: WALK_SCORE_SOURCE_URL,
+      },
+      {
+        label: 'CTA \u2014 train schedules and travel times',
+        href: 'https://www.transitchicago.com/schedules/',
+      },
+      {
+        label: 'ComEd \u2014 start, stop, or move electric service',
+        href: 'https://www.comed.com/my-account/customer-support/start-stop-move',
+      },
+    ],
+    ogCard: 'application-guide',
     published: '2026-08-13',
     updated: '2026-08-13',
   },
