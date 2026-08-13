@@ -19,6 +19,16 @@ import {
 } from './data/knowledge';
 import { KnowledgeArticle } from './pages/KnowledgeArticle';
 import {
+  BLOG_ARTICLES,
+  buildBlogSeoModel,
+  blogArticle,
+  blogDescription,
+  blogHubJsonLd,
+  blogPath,
+  blogTitle,
+} from './data/blog';
+import { BlogArticle } from './pages/BlogArticle';
+import {
   FLOOR_PLAN_PAGES,
   FLOOR_PLAN_PAGE_PATHS as FLOOR_PLAN_PATHS_INTERNAL,
   PLAN_DEEP_LINK_REDIRECTS as PLAN_DEEP_LINK_REDIRECTS_INTERNAL,
@@ -71,6 +81,18 @@ export const UNIT_PATHS: string[] = (getBakedAvailability()?.units ?? []).map((u
 // generate llms.txt / llms-full.txt entries.
 export const KNOWLEDGE_PATHS: string[] = KNOWLEDGE_ARTICLES.map((a) => knowledgePath(a.slug));
 
+// Blog articles: one prerendered route per PUBLISHED article (BLOG_ARTICLES
+// already excludes drafts). Same pattern as knowledge pages — dynamic route,
+// shared head builder in data/blog.ts; the meta list feeds llms.txt.
+export const BLOG_PATHS: string[] = BLOG_ARTICLES.map((a) => blogPath(a.slug));
+export const BLOG_META: Array<{ path: string; title: string; description: string; heading: string }> =
+  BLOG_ARTICLES.map((a) => ({
+    path: blogPath(a.slug),
+    title: blogTitle(a),
+    description: blogDescription(a),
+    heading: a.title,
+  }));
+
 // Floor-plan landing pages (/floor-plans/<slug>): one prerendered route per
 // distinct plan layout. Like unit/knowledge pages they live outside
 // PAGE_SEO/ROUTE_PATHS (dynamic route, shared head builder in
@@ -109,6 +131,7 @@ const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
   '/fees': () => [feesOfferCatalogJsonLd()],
   '/floor-plans': () => [floorPlanHubItemListJsonLd()],
   '/knowledge': () => [knowledgeHubJsonLd()],
+  '/blog': () => [blogHubJsonLd()],
   '/reviews': () => [reviewsJsonLd(buildReviewsPageModel())],
   '/photo-gallery': () => [photoGalleryJsonLd()],
   '/virtual-tour': () => [virtualToursJsonLd(), virtualTourVideoJsonLd()],
@@ -201,6 +224,27 @@ export async function render(pathname: string): Promise<RenderResult> {
       </QueryClientProvider>,
     );
     return { html, head: renderHeadTags(buildKnowledgeSeoModel(article)) };
+  }
+
+  // Blog article (/blog/<slug>): same dynamic-route pattern as knowledge
+  // pages — wouter <Route> so useParams resolves, shared head model. Only
+  // published (non-draft) articles are in BLOG_ARTICLES / blogArticle().
+  const blogMatch = pathname.match(/^\/blog\/([^/]+)$/);
+  if (blogMatch) {
+    const article = blogArticle(blogMatch[1]);
+    if (!article) {
+      throw new Error(`render(${pathname}): no blog article with slug ${blogMatch[1]}`);
+    }
+    const html = renderToString(
+      <QueryClientProvider client={new QueryClient()}>
+        <Router ssrPath={pathname}>
+          <Layout>
+            <Route path="/blog/:slug" component={BlogArticle} />
+          </Layout>
+        </Router>
+      </QueryClientProvider>,
+    );
+    return { html, head: renderHeadTags(buildBlogSeoModel(article)) };
   }
 
   const match = routes.find((r) => r.path === pathname);

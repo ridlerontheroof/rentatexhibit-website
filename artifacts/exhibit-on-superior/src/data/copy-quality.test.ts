@@ -15,6 +15,7 @@ import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { KNOWLEDGE_ARTICLES } from './knowledgeArticles';
+import { ALL_BLOG_ARTICLES } from './blogArticles';
 import { PAGE_SEO } from './seo';
 
 const MISSING_SPACE = /[a-z]\.[A-Z][a-z]/g;
@@ -51,6 +52,11 @@ describe('renter-facing copy quality: no missing space after a period', () => {
 
   it('page SEO copy (titles, descriptions, FAQ answers) is clean', () => {
     const bad = collectStrings(PAGE_SEO).flatMap(violations);
+    expect(bad, `missing space after period near: ${bad.join(' | ')}`).toEqual([]);
+  });
+
+  it('blog article copy is clean', () => {
+    const bad = collectStrings(ALL_BLOG_ARTICLES).flatMap(violations);
     expect(bad, `missing space after period near: ${bad.join(' | ')}`).toEqual([]);
   });
 

@@ -802,6 +802,19 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       'The Exhibit On Superior Knowledge Center answers the questions renters ask most, each on its own page with the direct answer first: pricing and fees, apartments and floor plans, amenities, pets, parking and transportation, leasing and applications, utilities, the River North neighborhood, and building services. Every answer uses verified facts from current listings and the leasing team.',
     faqs: [],
   },
+  '/blog': {
+    path: '/blog',
+    datePublished: '2026-08-13',
+    dateModified: '2026-08-13',
+    ogImage: ogCardUrl('neighborhood'),
+    label: 'Blog',
+    title: 'Blog: River North & Chicago Renter Guides | Exhibit On Superior',
+    description:
+      'Renter guides to River North living, renting in Chicago, and high-rise life — written by the property manager and leasing team at Exhibit On Superior.',
+    quickAnswer:
+      'The Exhibit On Superior blog publishes practical renter guides grouped into topic clusters: living in River North, how to rent an apartment in Chicago, and high-rise apartment living. Each guide leads with a self-contained answer, is written by a named member of the on-site team, and uses verified building facts and cited sources.',
+    faqs: [],
+  },
   '/contact-us': {
     path: '/contact-us',
     dateModified: '2026-07-26',

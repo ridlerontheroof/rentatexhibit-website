@@ -28,12 +28,14 @@ import {
 } from './propertyFacts';
 import { SQFT_MIN, SQFT_MAX } from './floorPlans';
 import { KNOWLEDGE_ARTICLES } from './knowledgeArticles';
+import { ALL_BLOG_ARTICLES } from './blogArticles';
 import { PAGE_SEO, APARTMENT_COMPLEX_NODE } from './seo';
 
 const pagesDir = join(__dirname, '..', 'pages');
 const pageSource = (name: string): string => readFileSync(join(pagesDir, name), 'utf8');
 const seoSource = readFileSync(join(__dirname, 'seo.ts'), 'utf8');
 const knowledgeSource = readFileSync(join(__dirname, 'knowledgeArticles.ts'), 'utf8');
+const blogSource = readFileSync(join(__dirname, 'blogArticles.ts'), 'utf8');
 const allPageFiles = readdirSync(pagesDir).filter((f) => f.endsWith('.tsx'));
 
 // The printable fact sheet (directory-listing cleanup) states the same facts;
@@ -57,6 +59,7 @@ const unescapeSource = (s: string): string =>
 const surfaces: Array<[string, string]> = [
   ['seo.ts', unescapeSource(seoSource)],
   ['knowledgeArticles.ts', unescapeSource(knowledgeSource)],
+  ['blogArticles.ts', unescapeSource(blogSource)],
   ...allPageFiles.map((f): [string, string] => [`pages/${f}`, unescapeSource(pageSource(f))]),
   ['scripts/generate-fact-sheet.ts', unescapeSource(generatorSource)],
   ['docs/directory-listings/fact-sheet.txt', factSheetTxt],
@@ -75,7 +78,15 @@ const seoText = Object.values(PAGE_SEO)
   .flatMap((p) => [p.title, p.description, p.quickAnswer, ...p.faqs.flatMap((f) => [f.q, f.a])])
   .join('\n');
 
-const allProse = `${knowledgeText}\n${seoText}`;
+/** Rendered blog prose (what visitors and crawlers actually read). */
+const blogText = ALL_BLOG_ARTICLES.flatMap((a) => [
+  a.title,
+  a.summary,
+  ...a.sections.flatMap((s) => [s.heading ?? '', ...s.paragraphs, ...(s.list ?? [])]),
+  ...a.faqs.flatMap((f) => [f.question, f.answer]),
+]).join('\n');
+
+const allProse = `${knowledgeText}\n${seoText}\n${blogText}`;
 
 // ---------------------------------------------------------------------------
 // 1. Office hours

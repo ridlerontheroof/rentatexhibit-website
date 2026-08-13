@@ -88,6 +88,18 @@ export async function preloadRoute(pathname: string): Promise<void> {
         // Fall back to React.lazy.
       }
     }
+    // Blog articles are prerendered too (one per published article), so the
+    // same CLS guard applies: cache their chunk before the first render.
+    if (/^\/blog\/[^/]+$/.test(path)) {
+      try {
+        preloadedComponents.set(
+          BLOG_ARTICLE_ROUTE,
+          (await import('./pages/BlogArticle')).BlogArticle,
+        );
+      } catch {
+        // Fall back to React.lazy.
+      }
+    }
     return;
   }
   try {
@@ -102,6 +114,9 @@ export const UNIT_DETAIL_ROUTE = '/available-units/:unit';
 
 /** Preload-map key for the dynamic knowledge-article route (see App.tsx). */
 export const KNOWLEDGE_ARTICLE_ROUTE = '/knowledge/:slug';
+
+/** Preload-map key for the dynamic blog-article route (see App.tsx). */
+export const BLOG_ARTICLE_ROUTE = '/blog/:slug';
 
 /** Preload-map key for the dynamic floor-plan landing-page route (see App.tsx). */
 export const FLOOR_PLAN_DETAIL_ROUTE = '/floor-plans/:slug';
@@ -168,6 +183,7 @@ export const routes: RouteDef[] = [
   },
   { path: '/faq', load: () => import('./pages/FaqHub').then((m) => m.FaqHub) },
   { path: '/knowledge', load: () => import('./pages/Knowledge').then((m) => m.Knowledge) },
+  { path: '/blog', load: () => import('./pages/Blog').then((m) => m.Blog) },
   { path: '/pet-friendly', load: () => import('./pages/PetFriendly').then((m) => m.PetFriendly) },
   { path: '/neighborhood', load: () => import('./pages/Neighborhood').then((m) => m.Neighborhood) },
   { path: '/contact-us', load: () => import('./pages/ContactUs').then((m) => m.ContactUs) },

@@ -8,6 +8,7 @@ import {
   getPreloadedComponent,
   UNIT_DETAIL_ROUTE,
   KNOWLEDGE_ARTICLE_ROUTE,
+  BLOG_ARTICLE_ROUTE,
   FLOOR_PLAN_DETAIL_ROUTE,
 } from './routes';
 import { LEGACY_REDIRECTS as SHARED_LEGACY_REDIRECTS } from './data/legacyRedirects';
@@ -59,6 +60,15 @@ const KnowledgeArticleLazy = lazy(
 function KnowledgeArticleRoute(_props: RouteComponentProps) {
   const Preloaded = getPreloadedComponent(KNOWLEDGE_ARTICLE_ROUTE);
   return Preloaded ? <Preloaded /> : <KnowledgeArticleLazy />;
+}
+
+const BlogArticleLazy = lazy(
+  () => import('./pages/BlogArticle').then((m) => ({ default: m.BlogArticle })),
+);
+/** Same boot-preload CLS guard as unit pages, for /blog/<slug>. */
+function BlogArticleRoute(_props: RouteComponentProps) {
+  const Preloaded = getPreloadedComponent(BLOG_ARTICLE_ROUTE);
+  return Preloaded ? <Preloaded /> : <BlogArticleLazy />;
 }
 
 /**
@@ -166,6 +176,10 @@ function App() {
           {/* Knowledge Center articles: static content data, prerendered per
               article at build time (scripts/prerender.mjs). */}
           <Route path={KNOWLEDGE_ARTICLE_ROUTE} component={KnowledgeArticleRoute} />
+
+          {/* Blog articles: static content data, prerendered per published
+              article at build time (scripts/prerender.mjs). */}
+          <Route path={BLOG_ARTICLE_ROUTE} component={BlogArticleRoute} />
 
           {/* Floor-plan landing pages: one per distinct plan layout, prerendered
               at build time (scripts/prerender.mjs). The /floor-plans hub itself

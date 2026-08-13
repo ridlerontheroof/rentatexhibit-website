@@ -35,6 +35,8 @@ const {
   BAKED_SNAPSHOT_STATUS,
   KNOWLEDGE_PATHS,
   KNOWLEDGE_META,
+  BLOG_PATHS,
+  BLOG_META,
   FLOOR_PLAN_PAGE_PATHS,
   FLOOR_PLAN_PAGE_META,
   PLAN_DEEP_LINK_REDIRECTS,
@@ -81,6 +83,11 @@ const unitPaths = UNIT_PATHS ?? [];
 // through a dynamic route — like unit pages they live outside PAGE_SEO, with
 // their head model coming from buildKnowledgeSeoModel.
 const knowledgePaths = KNOWLEDGE_PATHS ?? [];
+// Blog articles (/blog/<slug>): published static content rendered through a
+// dynamic route — like knowledge pages they live outside PAGE_SEO, with their
+// head model coming from buildBlogSeoModel. Draft articles are already
+// excluded upstream (BLOG_ARTICLES filters them), so they never reach here.
+const blogPaths = BLOG_PATHS ?? [];
 // Floor-plan landing pages (/floor-plans/<slug>): one per distinct plan
 // layout — code-derived slugs rendered through a dynamic route, with their
 // head model coming from buildFloorPlanSeoModel.
@@ -89,6 +96,7 @@ const allPaths = [
   ...Object.keys(PAGE_SEO),
   ...unitPaths,
   ...knowledgePaths,
+  ...blogPaths,
   ...floorPlanPagePaths,
 ];
 const outPathFor = (routePath) =>
@@ -274,6 +282,8 @@ const LCP_REQUIRED_ROUTES = [
 const LCP_NO_HERO_ROUTES = [
   // Knowledge Center hub: a text-first Q&A index with no hero image by design.
   '/knowledge',
+  // Blog hub: a text-first index of renter guides, no hero image by design.
+  '/blog',
   // Floor-plan hub: a directory of lazy plan-diagram cards, no hero by design.
   '/floor-plans',
 ];
@@ -725,6 +735,80 @@ console.log(`Prerendered ${allPaths.length} routes.`);
   console.log(`Knowledge articles verified: ${(KNOWLEDGE_META ?? []).length} article(s).`);
 }
 
+// Post-build guard: every published blog article must ship its answer-first
+// structure — title in <title> and H1, self-canonical, and an Article node in
+// the JSON-LD with author + datePublished. A refactor that ships article
+// pages with generic meta or drops the authorship signal fails the build.
+{
+  const problems = [];
+  for (const meta of BLOG_META ?? []) {
+    const page = await fs.readFile(outPathFor(meta.path), 'utf8');
+    const text = page.replaceAll('<!-- -->', '');
+    if (!page.includes(`rel="canonical" href="${SITE_URL}${meta.path}"`)) {
+      problems.push(`${meta.path}: missing self-canonical`);
+    }
+    const esc = (s) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    if (!text.includes(`<title>${esc(meta.title)}</title>`)) {
+      problems.push(`${meta.path}: <title> does not match the article title`);
+    }
+    const body = text.slice(text.indexOf('<body'));
+    if (!body.includes(esc(meta.heading))) {
+      problems.push(`${meta.path}: article title missing from page body/H1`);
+    }
+    const nodes = extractJsonLdPayloads(page).flatMap((raw) => {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed];
+    });
+    const article = nodes.find(
+      (n) => Array.isArray(n['@type']) && n['@type'].includes('Article'),
+    );
+    if (!article || !article.author || !article.datePublished) {
+      problems.push(`${meta.path}: Article JSON-LD missing or lacks author/datePublished`);
+    }
+    const crumbs = nodes.find((n) => n['@type'] === 'BreadcrumbList');
+    if (!crumbs || crumbs.itemListElement?.length !== 3) {
+      problems.push(`${meta.path}: BreadcrumbList missing or not 3 levels`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: blog article check failed:\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`Blog articles verified: ${(BLOG_META ?? []).length} article(s).`);
+}
+
+// Blog rewrite parity guard: same failure mode as knowledge/floor-plan pages —
+// the slugs live in code (blogArticles.ts) but their clean-URL rewrites are
+// duplicated in artifact.toml. Missing pair => homepage HTML for crawlers;
+// stale pair => rewrite to an unpublished/deleted page. Both directions fail.
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const expected = ['/blog', ...blogPaths];
+  const missing = [];
+  for (const p of expected) {
+    for (const form of [p, `${p}/`]) {
+      if (!toml.includes(`from = "${form}"\nto = "${p}/index.html"`)) missing.push(form);
+    }
+  }
+  const expectedSet = new Set(expected);
+  const stale = [...toml.matchAll(/from = "(\/blog\/[^"*]+?)\/?"/g)]
+    .map((m) => m[1])
+    .filter((p) => !expectedSet.has(p));
+  if (!toml.includes('from = "/blog/*"')) missing.push('/blog/* (not-found fallback)');
+  if (missing.length || stale.length) {
+    throw new Error(
+      `Prerender aborted: artifact.toml blog rewrites out of sync with blogArticles.ts.\n` +
+        (missing.length ? `  Missing rewrite(s): ${missing.join(', ')}\n` : '') +
+        (stale.length ? `  Stale rewrite(s) for removed/unpublished slug(s): ${[...new Set(stale)].join(', ')}\n` : '') +
+        'Regenerate the blog rewrite block (bare + trailing-slash pair per published slug, then the /blog/* not-found fallback, all ahead of the /* catch-all).',
+    );
+  }
+}
+
 // Knowledge rewrite parity guard: the article slugs live in code
 // (knowledgeArticles.ts) but their clean-URL rewrites are duplicated in
 // artifact.toml. A slug added/renamed without its rewrite pair would serve
@@ -836,6 +920,20 @@ console.log(`Prerendered ${allPaths.length} routes.`);
   console.log('Knowledge not-found stub written (noindex, served via /knowledge/* rewrite).');
 }
 
+// Unknown-slug fallback: /blog/* (after the per-slug rewrites) serves this
+// noindex stub instead of homepage HTML, so retired, mistyped, or still-draft
+// blog URLs are not soft-404 duplicates of the homepage for non-JS crawlers.
+{
+  const stubDir = path.join(publicDir, 'blog', 'not-found');
+  await fs.mkdir(stubDir, { recursive: true });
+  const stub = template.replace(
+    SEO_BLOCK,
+    `<!-- seo:start -->\n    <title>Page Not Found | Exhibit On Superior</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This blog page does not exist. Browse every renter guide at ${SITE_URL}/blog." />\n    <!-- seo:end -->`,
+  );
+  await fs.writeFile(path.join(stubDir, 'index.html'), stub, 'utf8');
+  console.log('Blog not-found stub written (noindex, served via /blog/* rewrite).');
+}
+
 // Site-wide 404 page: the production server (server/index.mjs) serves this
 // with a real 404 status for any unknown path, replacing the old static-host
 // soft-404 (200 + homepage HTML). noindex keeps it out of the index; the SPA
@@ -940,7 +1038,7 @@ const contentHashes = new Map();
     // First build with the mechanism: every page starts at today's date.
   }
   const today = new Date().toISOString().slice(0, 10);
-  const sitemapPaths = [...indexable, ...unitPaths, ...knowledgePaths, ...floorPlanPagePaths];
+  const sitemapPaths = [...indexable, ...unitPaths, ...knowledgePaths, ...blogPaths, ...floorPlanPagePaths];
   /** @type {Record<string, {hash: string, lastmod: string}>} */
   const lastmods = {};
   for (const p of sitemapPaths) {
@@ -969,6 +1067,11 @@ const contentHashes = new Map();
       (p) =>
         `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
     ),
+    // Blog articles: evergreen renter guides, refreshed periodically.
+    ...blogPaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
+    ),
     // Floor-plan landing pages: stable plan facts, availability list churns.
     ...floorPlanPagePaths.map(
       (p) =>
@@ -992,13 +1095,17 @@ const contentHashes = new Map();
   const llmsPath = path.join(publicDir, 'llms.txt');
   let llms = await fs.readFile(llmsPath, 'utf8');
   llms = llms.replace(/## Knowledge Center\n[\s\S]*?(?=\n## )/, '');
+  llms = llms.replace(/## Blog\n[\s\S]*?(?=\n## )/, '');
   const knowledgeSection = `## Knowledge Center\n\n- [Knowledge Center](${SITE_URL}/knowledge): ${
     (KNOWLEDGE_META ?? []).length
   } single-question pages answering renter questions with verified facts — pricing, fees, floor plans, amenities, pets, parking, leasing, utilities, and the neighborhood. Full page catalog: ${SITE_URL}/llms-full.txt\n\n`;
+  const blogSection = `## Blog\n\n- [Blog](${SITE_URL}/blog): ${
+    (BLOG_META ?? []).length
+  } renter guides grouped into topic clusters (River North living, renting in Chicago, high-rise living), each written by a named member of the on-site team with verified facts and cited sources. Full page catalog: ${SITE_URL}/llms-full.txt\n\n`;
   if (!llms.includes('\n## Contact')) {
     throw new Error('Prerender aborted: llms.txt is missing its "## Contact" section anchor.');
   }
-  llms = llms.replace('## Contact', `${knowledgeSection}## Contact`);
+  llms = llms.replace('## Contact', `${knowledgeSection}${blogSection}## Contact`);
   await fs.writeFile(llmsPath, llms, 'utf8');
 
   const lines = [
@@ -1026,6 +1133,12 @@ const contentHashes = new Map();
       (m) => `- [${m.question}](${SITE_URL}${m.path}): ${m.description} ([Markdown](${SITE_URL}${m.path}.md))`,
     ),
     '',
+    '## Blog (renter guides, topic clusters)',
+    '',
+    ...(BLOG_META ?? []).map(
+      (m) => `- [${m.heading}](${SITE_URL}${m.path}): ${m.description} ([Markdown](${SITE_URL}${m.path}.md))`,
+    ),
+    '',
     '## Floor Plan Layouts (one page per distinct plan)',
     '',
     ...(FLOOR_PLAN_PAGE_META ?? []).map(
@@ -1050,7 +1163,7 @@ const contentHashes = new Map();
     '## Machine-friendly content',
     '',
     `- \`/llms.txt\` — concise index of the site's primary pages.`,
-    `- \`/llms-full.txt\` — full page catalog: ${indexable.length} site pages, ${unitPaths.length} live unit pages, ${(KNOWLEDGE_META ?? []).length} Knowledge Center answers, and ${(FLOOR_PLAN_PAGE_META ?? []).length} floor-plan layout pages.`,
+    `- \`/llms-full.txt\` — full page catalog: ${indexable.length} site pages, ${unitPaths.length} live unit pages, ${(KNOWLEDGE_META ?? []).length} Knowledge Center answers, ${(BLOG_META ?? []).length} blog guides, and ${(FLOOR_PLAN_PAGE_META ?? []).length} floor-plan layout pages.`,
     '- Every page has a Markdown twin: append `.md` to the path',
     '  (e.g. `/amenities.md`, `/knowledge/pet-policy.md`, homepage at `/index.md`),',
     '  or send `Accept: text/markdown` to the page URL.',
@@ -1071,7 +1184,7 @@ const contentHashes = new Map();
 
   await fs.writeFile(path.join(publicDir, 'llms-full.txt'), lines.join('\n'), 'utf8');
   console.log(
-    `llms-full.txt written with ${indexable.length + unitPaths.length + (KNOWLEDGE_META ?? []).length + (FLOOR_PLAN_PAGE_META ?? []).length} pages; llms.txt Knowledge Center section ensured.`,
+    `llms-full.txt written with ${indexable.length + unitPaths.length + (KNOWLEDGE_META ?? []).length + (BLOG_META ?? []).length + (FLOOR_PLAN_PAGE_META ?? []).length} pages; llms.txt Knowledge Center + Blog sections ensured.`,
   );
 }
 

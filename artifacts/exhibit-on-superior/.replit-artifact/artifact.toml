@@ -1379,6 +1379,48 @@ to = "/knowledge/smoking-policy/index.html"
 from = "/knowledge/smoking-policy/"
 to = "/knowledge/smoking-policy/index.html"
 
+# Blog: hub + one prerendered page per PUBLISHED article (static content data
+# in src/data/blogArticles.ts; draft articles are excluded from the build and
+# must NOT have a rewrite pair). The parity guard in scripts/prerender.mjs
+# fails the build if this block drifts from the published set.
+[[services.production.rewrites]]
+from = "/blog"
+to = "/blog/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/"
+to = "/blog/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/living-in-river-north-chicago"
+to = "/blog/living-in-river-north-chicago/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/living-in-river-north-chicago/"
+to = "/blog/living-in-river-north-chicago/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/is-river-north-a-good-place-to-live"
+to = "/blog/is-river-north-a-good-place-to-live/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/is-river-north-a-good-place-to-live/"
+to = "/blog/is-river-north-a-good-place-to-live/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/moving-to-river-north-chicago-checklist"
+to = "/blog/moving-to-river-north-chicago-checklist/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/moving-to-river-north-chicago-checklist/"
+to = "/blog/moving-to-river-north-chicago-checklist/index.html"
+
+# Unknown /blog/<slug> URLs: serve the noindex not-found stub instead of
+# homepage HTML for retired, mistyped, or still-draft blog paths.
+[[services.production.rewrites]]
+from = "/blog/*"
+to = "/blog/not-found/index.html"
+
 # Per-unit listing pages (/available-units/<unit>): one prerendered directory
 # per unit in the baked availability snapshot. The production static host does
 # NOT resolve directory indexes for unmatched paths (verified live 2026-07-26:

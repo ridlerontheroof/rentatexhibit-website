@@ -26,6 +26,12 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
+# Google-Extended controls whether content is used for Gemini/Vertex AI
+# training and grounding — explicitly opted in so the site stays eligible for
+# Google's AI answer surfaces.
+User-agent: Google-Extended
+Allow: /
+
 # Traditional search engines.
 User-agent: Googlebot
 Allow: /

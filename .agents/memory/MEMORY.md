@@ -29,6 +29,7 @@
 - [Trust proxy on Replit](trust-proxy-replit.md) — edge strips client XFF but there are multiple internal hops; trust private/loopback CIDRs, never a numeric hop count (hop 1 keyed everyone to 127.0.0.1).
 - [Prerender + lazy routes CLS trap](prerender-lazy-cls.md) — boot must preload the current route chunk before first render or the prerendered page collapses to the Suspense fallback (0.31 CLS site-wide).
 - [Per-unit prerendered pages](unit-page-prerender.md) — dynamic /available-units/<unit> routes prerender via UNIT_PATHS; production needs explicit per-unit rewrite pairs (NO directory-index fallback), pinned to the snapshot by a prerender guard.
+- [Blog content engine](blog-content-engine.md) — /blog mirrors knowledge machinery; draft:true gates publish; toml rewrite parity guard; citations = CreativeWork.
 - [Knowledge Center article system](knowledge-center.md) — /knowledge Q&A pages are data-driven like unit pages; new slugs need artifact.toml rewrite pairs; llms.txt/llms-full.txt regenerate in prerender.
 - [Apex→www 301 via Squarespace forwarding](apex-www-redirect.md) — forwarding rules won't save until the Domain Connect presets holding apex records are deleted; verify with curl, no dig in workspace.
 - [Static-serve trailing-slash 301s](static-serve-trailing-slash.md) — platform directory-index 301 beats non-slash rewrites; use trailing-slash URLs when a zero-redirect link matters (ads).

@@ -91,6 +91,10 @@
     "hash": "59e33ddd12c5d2354b2aee192dca121beb000577c9bc8b6b014b060d86b3753a",
     "lastmod": "2026-08-13"
   },
+  "/blog": {
+    "hash": "83efa3b328f45e41c5a652be95bc9fbad988378c4b17502cbfa700b9883633ef",
+    "lastmod": "2026-08-13"
+  },
   "/contact-us": {
     "hash": "317ed604d2dab2fd537435094b91ba5d13ca4bb2682025b537d1fea3afe1f8a8",
     "lastmod": "2026-07-26"
@@ -437,6 +441,18 @@
   },
   "/knowledge/smoking-policy": {
     "hash": "df07b6bb379af395010f076e5bf7f90c4e8fb6d51aef24d22c16e533419befe6",
+    "lastmod": "2026-08-13"
+  },
+  "/blog/living-in-river-north-chicago": {
+    "hash": "beb721e4f6c65e649a531750377f62ef735eb8179fc301b2f658d1f053244247",
+    "lastmod": "2026-08-13"
+  },
+  "/blog/is-river-north-a-good-place-to-live": {
+    "hash": "fc46070ad71fb6fa42ada8dba70c3274da98e60a966da8d83dfd19d500734f48",
+    "lastmod": "2026-08-13"
+  },
+  "/blog/moving-to-river-north-chicago-checklist": {
+    "hash": "f971581729a3d35692f02a14597cd13acc75369c20b237b408b5f911956f7874",
     "lastmod": "2026-08-13"
   },
   "/floor-plans/two-bedroom-one-bath-821-sf": {
