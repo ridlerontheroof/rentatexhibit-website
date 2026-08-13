@@ -818,4 +818,231 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     published: '2026-08-13',
     updated: '2026-08-13',
   },
+
+  // ---------------------------------------------------------------------
+  // CLUSTER — apartment move in costs chicago
+  // AI DRAFT — awaiting human review. To publish, ALL THREE edits are
+  // required (guard tests fail if any is missed):
+  //   1. remove `draft: true` below
+  //   2. add 'chicago-move-in-costs-explained' to the related: list of the
+  //      'how-to-rent-an-apartment-in-chicago' article above (inbound-link guard)
+  //   3. add the /blog/chicago-move-in-costs-explained rewrite pair in artifact.toml
+  // ---------------------------------------------------------------------
+  {
+    slug: 'chicago-move-in-costs-explained',
+    title: 'Move-In Costs in Chicago: What Renters Actually Pay',
+    metaTitle: 'Chicago Apartment Move-In Costs',
+    targetQuery: 'apartment move in costs chicago',
+    role: 'cluster',
+    pillar: 'how-to-rent-an-apartment-in-chicago',
+    authorId: 'leasing-team',
+    summary:
+      'At Exhibit On Superior, upfront leasing costs include a $60 application fee per applicant and a $500 non-refundable administration fee per apartment, unless an application is denied. There is currently no security deposit. Monthly costs can include the Utility & Service Amenity fee, electricity, and selected optional services.',
+    sections: [
+      {
+        heading: 'Start by separating upfront and monthly costs',
+        paragraphs: [
+          'When renters ask our leasing team about apartment move-in costs in Chicago, we recommend separating charges due during the application process from recurring monthly charges. This makes it easier to compare a building\u2019s fee schedule with the apartment\u2019s live rent and with the services a household plans to use.',
+          'At Exhibit On Superior, the application fee is $60 per applicant and is shown on each unit\u2019s secure online application before payment. The administration fee is $500 per apartment, is non-refundable, and is refunded only if the application is denied. For current apartment availability, pricing, photos, and move-in dates, renters can browse our [available apartments](/available-units).',
+        ],
+      },
+      {
+        heading: 'What \u201cno security deposit\u201d means at Exhibit',
+        paragraphs: [
+          'Exhibit does not currently collect a security deposit: the listed security deposit is $0. That does not mean there are no upfront charges. Applicants should still plan for the application fee and administration fee, along with any selected one-time pet fee.',
+          'Our leasing team recommends asking each building whether it uses a deposit, a non-refundable administrative charge, or another model. Policies vary by building, so renters should review the fee schedule and application terms for the specific apartment they are considering. At Exhibit, the administration fee and security deposit are separate line items, with different terms.',
+        ],
+      },
+      {
+        heading: 'An itemized Exhibit move-in example',
+        paragraphs: [
+          'Here is a practical example for a one-bedroom applicant at Exhibit. The initial application-stage charges are the $60 application fee per applicant and the $500 administration fee per apartment. The security-deposit line is $0 because Exhibit does not currently collect a security deposit.',
+          'For that one-bedroom residence, the recurring Utility & Service Amenity fee is $115 monthly. It covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed directly to the resident by ComEd. Renters can review ComEd\u2019s guidance for starting, stopping, or moving electric service before move-in.',
+          'Optional choices can change the picture. Garage parking is $335 per space monthly, subject to availability, and an on-site storage locker is $25 monthly. A dog has a one-time fee of $650 for one or $750 for two; a cat has a $325 one-time fee. There is no pet deposit or monthly pet rent at Exhibit.',
+        ],
+        list: [
+          'Application fee: $60 per applicant, one-time',
+          'Administration fee: $500 per apartment, one-time',
+          'Security deposit: $0',
+          'One-bedroom Utility & Service Amenity fee: $115 monthly',
+          'Electricity: billed directly to the resident by ComEd',
+        ],
+      },
+      {
+        heading: 'Match the utility fee to the floor plan',
+        paragraphs: [
+          'The Utility & Service Amenity fee is not a single building-wide amount. It ranges from $95 to $195 monthly by floor plan. Studios and Jr. Convertibles are $95, Convertibles are $105, and one-bedrooms are $115.',
+          'For larger layouts, the fee is $125 for a two-bedroom or one-bath, $150 for a two-bedroom or two-bath, $165 for a two-bedroom plus den, and $195 for a three-bedroom or three-bath. We recommend that renters identify the exact floor plan first, then use the matching tier when planning monthly costs.',
+        ],
+        list: [
+          'Studio: $95',
+          'Jr. Convertible: $95',
+          'Convertible: $105',
+          '1 Bedroom: $115',
+          '2 Bedroom / 1 Bath: $125',
+          '2 Bedroom / 2 Bath: $150',
+          '2 Bedroom + Den: $165',
+          '3 Bedroom / 3 Bath: $195',
+        ],
+      },
+      {
+        heading: 'Build a move-in checklist before applying',
+        paragraphs: [
+          'Before submitting an application, our leasing team recommends reviewing the complete [Exhibit fee schedule](/fees), deciding whether parking, storage, or pets apply, and arranging renters insurance. Renters insurance is required with $300,000 liability-to-landlord coverage.',
+          'Applicants should also plan around the screening process. The minimum credit score is 700, or 600 with a qualified co-signer, and an approval decision is provided in 1\u20133 business days. Confirming these details before applying can help renters understand which charges are one-time, which are monthly, and which are optional for their household.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Does no security deposit mean there are no move-in costs?',
+        answer:
+          'No. At Exhibit On Superior, the security deposit is $0, but the application fee is $60 per applicant and the administration fee is $500 per apartment. Optional pet fees may also apply.',
+      },
+      {
+        question: 'Which utilities are included in the monthly Utility & Service Amenity fee?',
+        answer:
+          'The $95\u2013$195 monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed directly to the resident by ComEd.',
+      },
+      {
+        question: 'How long does an Exhibit application decision take?',
+        answer:
+          'An approval decision is provided in 1\u20133 business days. The minimum credit score is 700, or 600 with a qualified co-signer, and renters insurance with $300,000 liability-to-landlord coverage is required.',
+      },
+    ],
+    related: ['how-to-rent-an-apartment-in-chicago', 'chicago-apartment-application-documents'],
+    links: [
+      { label: 'available apartments', href: '/available-units' },
+      { label: 'Exhibit fee schedule', href: '/fees' },
+    ],
+    sources: [
+      {
+        label: 'ComEd \u2014 start, stop, or move electric service',
+        href: 'https://www.comed.com/my-account/customer-support/start-stop-move',
+      },
+    ],
+    ogCard: 'application-guide',
+    published: '2026-08-13',
+    updated: '2026-08-13',
+    draft: true,
+  },
+
+  // ---------------------------------------------------------------------
+  // CLUSTER — first apartment chicago tips
+  // AI DRAFT — awaiting human review. To publish, ALL THREE edits are
+  // required (guard tests fail if any is missed):
+  //   1. remove `draft: true` below
+  //   2. add 'first-apartment-chicago-guide' to the related: list of the
+  //      'how-to-rent-an-apartment-in-chicago' article above (inbound-link guard)
+  //   3. add the /blog/first-apartment-chicago-guide rewrite pair in artifact.toml
+  // ---------------------------------------------------------------------
+  {
+    slug: 'first-apartment-chicago-guide',
+    title: 'Renting Your First Chicago Apartment: A No-Surprises Guide',
+    metaTitle: 'First Chicago Apartment Guide',
+    targetQuery: 'first apartment chicago tips',
+    role: 'cluster',
+    pillar: 'how-to-rent-an-apartment-in-chicago',
+    authorId: 'leasing-team',
+    summary:
+      'Renting a first Chicago apartment is easier when you separate the tour, application, lease, move-in costs, and utility setup into clear steps. Our leasing team recommends asking direct questions early, reviewing every charge before applying, and confirming insurance and electricity responsibilities before your move.',
+    sections: [
+      {
+        heading: 'Start with a tour and a practical question list',
+        paragraphs: [
+          'For first-time renters, our leasing team recommends using a tour to understand both the apartment and the steps that follow. At Exhibit On Superior, you can send our team a tour request or book a specific apartment from the available units. During the visit, ask which home you are viewing, what is included in the monthly Utility & Service Amenity fee, and which costs are optional.',
+          'Exhibit On Superior is at 165 W Superior St in River North and has studio, convertible, one-, two-, and three-bedroom apartments. Available home sizes range from about 448\u20131,528 sq ft, so we recommend comparing the floor plan that fits your day-to-day needs rather than choosing based on bedroom count alone.',
+        ],
+        list: [
+          'Ask us to explain the application and approval steps.',
+          'Ask which fees apply to the apartment you select.',
+          'Ask about parking, storage, bike storage, and pet options if they matter to your move.',
+          'Use our tour page to schedule a tour or request follow-up from the leasing team.',
+        ],
+      },
+      {
+        heading: 'Understand the application and co-signer route',
+        paragraphs: [
+          'Before applying, our leasing team recommends reviewing the screening standard and having your questions ready. Exhibit On Superior requires a minimum credit score of 700, or 600 with a qualified co-signer. An approval decision is made in 1\u20133 business days.',
+          'A co-signer can be a useful path for a renter with a thinner credit file when the stated credit threshold is not met independently. Because qualification details matter, contact our leasing office before applying to discuss whether a co-signer may be appropriate for your situation. The $60 application fee is charged per applicant and is shown on each unit\u2019s secure online application before payment.',
+        ],
+        list: [
+          'Minimum credit score: 700.',
+          'Minimum credit score with a qualified co-signer: 600.',
+          'Application fee: $60 per applicant, one-time.',
+          'Administration fee: $500 per apartment, one-time; it is non-refundable and refunded only if the application is denied.',
+        ],
+      },
+      {
+        heading: 'Read the lease alongside the full cost list',
+        paragraphs: [
+          'A lease is the document to read slowly before you commit. Our leasing team recommends asking us to identify the charges connected to your selected apartment and any services you want to add. At Exhibit On Superior, the administration fee is $500 per apartment, and we do not currently collect a security deposit.',
+          'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. It is $95 for studios and ranges up to $195 for three-bedrooms. Electricity is billed directly to the resident by ComEd, so plan to arrange electric service as part of your move-in preparation.',
+        ],
+        list: [
+          'Garage parking: $335 per space monthly, unreserved and subject to availability.',
+          'On-site storage: $25 monthly.',
+          'Complimentary bike storage is available on the ground floor.',
+          'Review our detailed leasing costs and charges before you apply.',
+        ],
+      },
+      {
+        heading: 'Set up renters insurance before move-in',
+        paragraphs: [
+          'Renters insurance is required at Exhibit On Superior with $300,000 liability-to-landlord coverage. Our leasing team recommends confirming that your selected policy meets this requirement before move-in and keeping the policy information available if we request it.',
+          'Insurance questions can feel technical on a first lease, so it is reasonable to ask what documentation we need from you. We can explain the property\u2019s coverage requirement, while your insurance provider can address policy terms and what the policy covers. Confirm the requirement early rather than leaving it until the last stage of your move.',
+        ],
+        list: [
+          'Required liability-to-landlord coverage: $300,000.',
+          'Confirm your insurance documentation with the leasing office before move-in.',
+          'Plan for electricity to be billed directly to you by ComEd.',
+        ],
+      },
+      {
+        heading: 'Build a move-in checklist around your own timeline',
+        paragraphs: [
+          'Our leasing team recommends organizing your move in the same order as the rental process: tour, apply, review costs, complete lease requirements, secure insurance, and start electricity service. That approach helps first-time renters see what still needs attention without assuming that every step happens at once.',
+          'For an in-person conversation, our office hours are Monday\u2013Friday, 9:00 AM\u20136:00 PM, and Saturday, 10:00 AM\u20135:00 PM. The office is closed Sunday. If you are comparing neighborhoods or timing a move, use the published renter guides below alongside a conversation with our on-site leasing team.',
+        ],
+        list: [
+          'Schedule your apartment visit.',
+          'Review the applicable fees before submitting an application.',
+          'Ask about a qualified co-signer if needed.',
+          'Confirm renters insurance and ComEd electricity service before move-in.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'What credit score do I need to rent at Exhibit On Superior?',
+        answer:
+          'The minimum credit score is 700. A renter with a qualified co-signer may qualify with a credit score of 600. Contact our leasing office to discuss co-signer qualification questions before applying.',
+      },
+      {
+        question: 'Does Exhibit On Superior require a security deposit?',
+        answer:
+          'No. Exhibit On Superior does not currently collect a security deposit. The administration fee is $500 per apartment, is one-time and non-refundable, and is refunded only if the application is denied.',
+      },
+      {
+        question: 'Which utilities are included in the monthly fee?',
+        answer:
+          'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed directly to the resident by ComEd.',
+      },
+    ],
+    related: ['how-to-rent-an-apartment-in-chicago', 'chicago-apartment-application-documents'],
+    links: [
+      { label: 'Schedule a tour with our leasing team', href: '/schedule-a-tour' },
+      { label: 'Review Exhibit On Superior leasing fees', href: '/fees' },
+    ],
+    sources: [
+      {
+        label: 'ComEd \u2014 start, stop, or move electric service',
+        href: 'https://www.comed.com/my-account/customer-support/start-stop-move',
+      },
+    ],
+    ogCard: 'application-guide',
+    published: '2026-08-13',
+    updated: '2026-08-13',
+    draft: true,
+  },
 ];

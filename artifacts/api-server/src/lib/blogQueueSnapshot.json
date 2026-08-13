@@ -61,7 +61,16 @@
       "pillarTitle": "High-Rise Apartment Living in Chicago: What to Know Before You Sign"
     }
   ],
-  "pendingDrafts": [],
+  "pendingDrafts": [
+    {
+      "slug": "chicago-move-in-costs-explained",
+      "title": "Move-In Costs in Chicago: What Renters Actually Pay"
+    },
+    {
+      "slug": "first-apartment-chicago-guide",
+      "title": "Renting Your First Chicago Apartment: A No-Surprises Guide"
+    }
+  ],
   "publishedCount": 8,
   "plannedTotal": 18
 }
