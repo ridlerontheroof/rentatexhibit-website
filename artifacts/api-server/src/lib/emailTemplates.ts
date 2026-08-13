@@ -1393,3 +1393,261 @@ export function renderBlogDraftReviewNote(opts: {
     text,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Weekly SEO digest (seoWeeklyDigest watchdog)
+// ---------------------------------------------------------------------------
+
+/** Row shapes mirrored from seoWeeklyDigest.ts (kept structural to avoid a cycle). */
+export interface SeoDigestMoverRow {
+  key: string;
+  currentClicks: number;
+  previousClicks: number;
+  currentImpressions: number;
+  previousImpressions: number;
+  position: number;
+}
+
+export interface SeoDigestNearWinnerRow {
+  query: string;
+  impressions: number;
+  clicks: number;
+  position: number;
+}
+
+export interface SeoDigestBlogRow {
+  url: string;
+  currentClicks: number;
+  previousClicks: number;
+  currentImpressions: number;
+  previousImpressions: number;
+  position: number;
+}
+
+export interface SeoDigestGa4Row {
+  pagePath: string;
+  currentUsers: number;
+  previousUsers: number;
+}
+
+export interface SeoDigestEmailData {
+  windows: {
+    current: { start: string; end: string };
+    previous: { start: string; end: string };
+  };
+  siteUrl: string;
+  risingQueries: SeoDigestMoverRow[];
+  fallingQueries: SeoDigestMoverRow[];
+  risingPages: SeoDigestMoverRow[];
+  fallingPages: SeoDigestMoverRow[];
+  nearWinners: SeoDigestNearWinnerRow[];
+  blogPages: SeoDigestBlogRow[];
+  ga4Risers: SeoDigestGa4Row[] | null;
+  ga4Fallers: SeoDigestGa4Row[] | null;
+  notes: string[];
+}
+
+const TABLE_STYLE =
+  "width:100%;border-collapse:collapse;margin:0 0 20px;font-size:13px;line-height:1.5;";
+const TH_STYLE =
+  "text-align:left;padding:6px 8px;border-bottom:2px solid #d8d2c6;font-weight:600;white-space:nowrap;";
+const TD_STYLE = "padding:6px 8px;border-bottom:1px solid #eee9df;vertical-align:top;";
+const TD_NUM = `${TD_STYLE}text-align:right;white-space:nowrap;`;
+
+function fmtDelta(current: number, previous: number): string {
+  const d = current - previous;
+  if (d > 0) return `+${d}`;
+  return String(d);
+}
+
+function shortPage(key: string): string {
+  return key.replace(/^https?:\/\/[^/]+/, "") || "/";
+}
+
+function moverTableHtml(title: string, rows: SeoDigestMoverRow[], isPage: boolean): string {
+  if (rows.length === 0) {
+    return `<p style="${BODY_TEXT}"><strong>${escapeHtml(title)}:</strong> no week-over-week movement recorded.</p>`;
+  }
+  const body = rows
+    .map(
+      (r) =>
+        `<tr><td style="${TD_STYLE}">${escapeHtml(isPage ? shortPage(r.key) : r.key)}</td>` +
+        `<td style="${TD_NUM}">${r.previousClicks} → ${r.currentClicks} (${fmtDelta(r.currentClicks, r.previousClicks)})</td>` +
+        `<td style="${TD_NUM}">${r.previousImpressions} → ${r.currentImpressions}</td>` +
+        `<td style="${TD_NUM}">${r.position ? r.position.toFixed(1) : "—"}</td></tr>`,
+    )
+    .join("");
+  return (
+    `<p style="${BODY_TEXT}margin-bottom:6px;"><strong>${escapeHtml(title)}</strong></p>` +
+    `<table style="${TABLE_STYLE}"><tr>` +
+    `<th style="${TH_STYLE}">${isPage ? "Page" : "Query"}</th>` +
+    `<th style="${TH_STYLE}text-align:right;">Clicks (prev → now)</th>` +
+    `<th style="${TH_STYLE}text-align:right;">Impressions</th>` +
+    `<th style="${TH_STYLE}text-align:right;">Avg pos</th></tr>${body}</table>`
+  );
+}
+
+function moverTableText(title: string, rows: SeoDigestMoverRow[], isPage: boolean): string[] {
+  if (rows.length === 0) return [`${title}: no week-over-week movement recorded.`, ""];
+  return [
+    `${title}:`,
+    ...rows.map(
+      (r) =>
+        `  - ${isPage ? shortPage(r.key) : r.key} — clicks ${r.previousClicks} → ${r.currentClicks} (${fmtDelta(r.currentClicks, r.previousClicks)}), impressions ${r.previousImpressions} → ${r.currentImpressions}, avg pos ${r.position ? r.position.toFixed(1) : "n/a"}`,
+    ),
+    "",
+  ];
+}
+
+/**
+ * The weekly SEO movers digest sent to the leasing inbox: rising/falling
+ * queries and pages week-over-week, near-winner queries at position 8–20,
+ * per-blog-article search stats, and GA4 page movers when available.
+ */
+export function renderSeoWeeklyDigest(data: SeoDigestEmailData): RenderedEmail {
+  const { windows } = data;
+  const subject = `Weekly search digest: movers & near-winners (${windows.current.start} – ${windows.current.end})`;
+
+  const intro = `Here is the automatic weekly search digest for ${BRAND.propertyName}. It compares Google Search Console data for ${windows.current.start} – ${windows.current.end} against the previous week (${windows.previous.start} – ${windows.previous.end}).`;
+
+  let html = `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>`;
+  const text: string[] = [intro, ""];
+
+  html += moverTableHtml("Rising queries", data.risingQueries, false);
+  html += moverTableHtml("Falling queries", data.fallingQueries, false);
+  html += moverTableHtml("Rising pages", data.risingPages, true);
+  html += moverTableHtml("Falling pages", data.fallingPages, true);
+  text.push(...moverTableText("Rising queries", data.risingQueries, false));
+  text.push(...moverTableText("Falling queries", data.fallingQueries, false));
+  text.push(...moverTableText("Rising pages", data.risingPages, true));
+  text.push(...moverTableText("Falling pages", data.fallingPages, true));
+
+  // Near-winners
+  if (data.nearWinners.length === 0) {
+    html += `<p style="${BODY_TEXT}"><strong>Near-winners (position 8–20):</strong> none met the impressions threshold this week.</p>`;
+    text.push("Near-winners (position 8–20): none met the impressions threshold this week.", "");
+  } else {
+    const rows = data.nearWinners
+      .map(
+        (r) =>
+          `<tr><td style="${TD_STYLE}">${escapeHtml(r.query)}</td>` +
+          `<td style="${TD_NUM}">${r.impressions}</td>` +
+          `<td style="${TD_NUM}">${r.clicks}</td>` +
+          `<td style="${TD_NUM}">${r.position.toFixed(1)}</td></tr>`,
+      )
+      .join("");
+    html +=
+      `<p style="${BODY_TEXT}margin-bottom:6px;"><strong>Near-winners — queries at position 8–20</strong> (a content refresh could push these to page one)</p>` +
+      `<table style="${TABLE_STYLE}"><tr><th style="${TH_STYLE}">Query</th><th style="${TH_STYLE}text-align:right;">Impressions</th><th style="${TH_STYLE}text-align:right;">Clicks</th><th style="${TH_STYLE}text-align:right;">Avg pos</th></tr>${rows}</table>`;
+    text.push(
+      "Near-winners — queries at position 8–20 (a content refresh could push these to page one):",
+      ...data.nearWinners.map(
+        (r) =>
+          `  - "${r.query}" — ${r.impressions} impressions, ${r.clicks} clicks, avg pos ${r.position.toFixed(1)}`,
+      ),
+      "",
+    );
+  }
+
+  // Blog articles
+  if (data.blogPages.length > 0) {
+    const rows = data.blogPages
+      .map(
+        (r) =>
+          `<tr><td style="${TD_STYLE}"><a href="${escapeHtml(r.url)}" style="color:${BRAND.gold};">${escapeHtml(shortPage(r.url))}</a></td>` +
+          `<td style="${TD_NUM}">${r.previousClicks} → ${r.currentClicks}</td>` +
+          `<td style="${TD_NUM}">${r.previousImpressions} → ${r.currentImpressions}</td>` +
+          `<td style="${TD_NUM}">${r.position ? r.position.toFixed(1) : "—"}</td></tr>`,
+      )
+      .join("");
+    html +=
+      `<p style="${BODY_TEXT}margin-bottom:6px;"><strong>Blog guides</strong> (watch for decay — a guide whose clicks slide two weeks running is due a refresh)</p>` +
+      `<table style="${TABLE_STYLE}"><tr><th style="${TH_STYLE}">Article</th><th style="${TH_STYLE}text-align:right;">Clicks (prev → now)</th><th style="${TH_STYLE}text-align:right;">Impressions</th><th style="${TH_STYLE}text-align:right;">Avg pos</th></tr>${rows}</table>`;
+    text.push(
+      "Blog guides (watch for decay):",
+      ...data.blogPages.map(
+        (r) =>
+          `  - ${r.url} — clicks ${r.previousClicks} → ${r.currentClicks}, impressions ${r.previousImpressions} → ${r.currentImpressions}, avg pos ${r.position ? r.position.toFixed(1) : "n/a"}`,
+      ),
+      "",
+    );
+  }
+
+  // GA4 movers
+  if (data.ga4Risers !== null && data.ga4Fallers !== null) {
+    const ga4Line = (r: SeoDigestGa4Row) =>
+      `${shortPage(r.pagePath)} — visitors ${r.previousUsers} → ${r.currentUsers}`;
+    const list = (title: string, rows: SeoDigestGa4Row[]) =>
+      rows.length === 0
+        ? `<p style="${BODY_TEXT}"><strong>${escapeHtml(title)}:</strong> none.</p>`
+        : `<p style="${BODY_TEXT}margin-bottom:6px;"><strong>${escapeHtml(title)}</strong></p><table style="${TABLE_STYLE}">${rows
+            .map(
+              (r) =>
+                `<tr><td style="${TD_STYLE}">${escapeHtml(shortPage(r.pagePath))}</td><td style="${TD_NUM}">${r.previousUsers} → ${r.currentUsers} (${fmtDelta(r.currentUsers, r.previousUsers)})</td></tr>`,
+            )
+            .join("")}</table>`;
+    html += list("GA4 pages gaining visitors", data.ga4Risers);
+    html += list("GA4 pages losing visitors", data.ga4Fallers);
+    text.push(
+      "GA4 pages gaining visitors:",
+      ...(data.ga4Risers.length ? data.ga4Risers.map((r) => `  - ${ga4Line(r)}`) : ["  (none)"]),
+      "",
+      "GA4 pages losing visitors:",
+      ...(data.ga4Fallers.length ? data.ga4Fallers.map((r) => `  - ${ga4Line(r)}`) : ["  (none)"]),
+      "",
+    );
+  }
+
+  if (data.notes.length > 0) {
+    html += `<p style="${BODY_TEXT}"><strong>Notes:</strong> ${data.notes.map((n) => escapeHtml(n)).join(" ")}</p>`;
+    text.push("Notes:", ...data.notes.map((n) => `  - ${n}`), "");
+  }
+
+  const outro =
+    "This digest is sent automatically once a week. Windows end three days back because Search Console data lags ~2–3 days.";
+  html += `<p style="${BODY_TEXT}font-size:13px;color:#8a8377;">${escapeHtml(outro)}</p>`;
+  text.push(outro, "", TEXT_FOOTER);
+
+  const htmlShell = renderEmailShell({
+    preheader: `Search movers for ${windows.current.start} – ${windows.current.end}: rising, falling, and near-winner queries.`,
+    kicker: "Weekly Search Digest",
+    heading: "Search Movers & Near-Winners",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text: text.join("\n") };
+}
+
+/**
+ * Operational alert: the weekly SEO digest could not read Search Console —
+ * either the service account was never granted access (403 until the owner
+ * adds it in Search Console) or the check has failed repeatedly.
+ */
+export function renderSeoDigestFailureAlert(opts: {
+  serviceAccountEmail: string;
+  siteUrl: string;
+  detail: string;
+}): RenderedEmail {
+  const { serviceAccountEmail, siteUrl, detail } = opts;
+  const subject = "Website alert: the weekly search digest could not read Search Console";
+
+  const intro = `The automatic weekly search digest could not pull data from Google Search Console for ${siteUrl}. ${detail}`;
+  const remedyText = `What to do: open Google Search Console for the property (${siteUrl}), go to Settings → Users and permissions, and add ${serviceAccountEmail} with at least "Restricted" (read) access. If the site is verified as a different property type, set the GSC_SITE_URL environment variable to the exact property (e.g. "sc-domain:rentatexhibit.com" or "https://www.rentatexhibit.com/"). The digest retries automatically; this alert is sent at most once per week.`;
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+      `open Google Search Console for ${siteUrl}, go to Settings → Users and permissions, and add ${serviceAccountEmail} with at least "Restricted" (read) access. If the site is verified as a different property type, set GSC_SITE_URL to the exact property. The digest retries automatically; this alert is sent at most once per week.`,
+    )}</p>`;
+
+  const text = [intro, "", remedyText, "", TEXT_FOOTER].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "The weekly search digest needs Search Console access granted to the service account.",
+    kicker: "Website Alert",
+    heading: "Search Digest Needs Access",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}

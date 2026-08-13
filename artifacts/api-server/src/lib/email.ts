@@ -21,6 +21,9 @@ import {
   renderSeedStaleAlert,
   renderShowingSchedulerAlert,
   renderBlogDraftReviewNote,
+  renderSeoWeeklyDigest,
+  renderSeoDigestFailureAlert,
+  type SeoDigestEmailData,
 } from "./emailTemplates";
 import {
   EMAIL_LOGO_BASE64,
@@ -777,4 +780,54 @@ export async function sendLeadNotification(
     logger.error({ err }, "Error sending lead notification email");
     return false;
   }
+}
+
+/**
+ * The weekly SEO movers digest. This is a business report for the leasing
+ * team (not a technical alert), so it goes to the leasing inbox; override
+ * the recipient with SEO_DIGEST_EMAIL when the team wants it elsewhere.
+ */
+export async function sendSeoWeeklyDigest(data: SeoDigestEmailData): Promise<void> {
+  warnIfUnconfigured();
+  const recipient = sanitizeHeaderValue(
+    process.env.SEO_DIGEST_EMAIL?.trim() || LEASING_INBOX_EMAIL,
+  );
+  const { subject, html: htmlBody, text: textBody } = renderSeoWeeklyDigest(data);
+  const { contentType, body } = buildMimeBody("seodigest", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${recipient}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, recipient);
+  logger.info({ recipient }, "Sent weekly SEO movers digest email");
+}
+
+/**
+ * Operational alert: the weekly SEO digest cannot read Search Console
+ * (service account not yet granted access, or repeated failures). Routed to
+ * the ops alert inbox like every other technical alert.
+ */
+export async function sendSeoDigestFailureAlert(opts: {
+  serviceAccountEmail: string;
+  siteUrl: string;
+  detail: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderSeoDigestFailureAlert(opts);
+  const { contentType, body } = buildMimeBody("seodigestalert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL },
+    "Sent SEO-digest Search Console access alert email",
+  );
 }

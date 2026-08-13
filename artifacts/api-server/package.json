@@ -13,7 +13,8 @@
     "regenerate:email-logo": "node scripts/regenerate-email-logo.mjs",
     "preview:emails": "esbuild scripts/render-email-previews.ts --bundle --platform=node --format=esm --outfile=/tmp/render-email-previews.mjs --log-level=warning && node /tmp/render-email-previews.mjs",
     "resubmit:indexnow": "esbuild scripts/resubmit-sitemap-indexnow.ts --bundle --platform=node --format=esm --outfile=/tmp/resubmit-sitemap-indexnow.mjs --log-level=warning && node /tmp/resubmit-sitemap-indexnow.mjs",
-    "send:blog-draft-review": "esbuild scripts/send-blog-draft-review.ts --bundle --platform=node --format=cjs --outfile=/tmp/send-blog-draft-review.cjs --log-level=warning && NODE_ENV=production node /tmp/send-blog-draft-review.cjs"
+    "send:blog-draft-review": "esbuild scripts/send-blog-draft-review.ts --bundle --platform=node --format=cjs --outfile=/tmp/send-blog-draft-review.cjs --log-level=warning && NODE_ENV=production node /tmp/send-blog-draft-review.cjs",
+    "send:seo-digest": "esbuild scripts/send-seo-digest.ts --bundle --platform=node --format=cjs --outfile=/tmp/send-seo-digest.cjs --log-level=warning && NODE_ENV=production node /tmp/send-seo-digest.cjs"
   },
   "dependencies": {
     "@replit/connectors-sdk": "^0.4.1",

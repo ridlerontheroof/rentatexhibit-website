@@ -14,6 +14,7 @@ import { startLegacyRedirectCheck } from "./lib/redirectCheck";
 import { startGa4DataCheck } from "./lib/ga4DataCheck";
 import { startGtmTrackingCheck } from "./lib/gtmCheck";
 import { startAcceptedVolumeWatch } from "./lib/botGuardAlert";
+import { startSeoWeeklyDigest } from "./lib/seoWeeklyDigest";
 
 const rawPort = process.env["PORT"];
 
@@ -111,4 +112,10 @@ app.listen(port, (err) => {
   // alerts (once/day) when no lead has been accepted for an unusually long
   // stretch — the signature of silently broken forms.
   startAcceptedVolumeWatch(logger);
+
+  // Weekly SEO digest: once per ISO week (claim-gated, checked every 6h),
+  // pull Search Console movers, near-winner queries (position 8–20), blog
+  // article stats, and GA4 page movers, and email the digest to the leasing
+  // inbox. Alerts the ops inbox when Search Console access is not granted.
+  startSeoWeeklyDigest(logger);
 });

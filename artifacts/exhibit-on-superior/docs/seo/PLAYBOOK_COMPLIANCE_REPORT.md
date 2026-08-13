@@ -55,7 +55,7 @@ task).
 ## 6. Measurement cadence
 | Theme | Status | Notes |
 |---|---|---|
-| Weekly GSC/GA4 movers + near-winner digest | **Follow-up** | Uses the existing watchdog + GA4 Data API + SMTP patterns; scoped as its own task. |
+| Weekly GSC/GA4 movers + near-winner digest | Fixed here | api-server `seoWeeklyDigest` watchdog: once per ISO week it pulls GSC rising/falling queries+pages, near-winners (pos 8–20), per-`/blog`-article stats, and GA4 page movers, and emails the leasing inbox. Alerts ops with grant instructions until the service account is added in Search Console. Manual run: `pnpm run send:seo-digest`. |
 | Quarterly AI-visibility spot-check | Fixed here (doc) | Prompt pack committed; aligned to the Jan/Apr/Jul/Oct cadence. |
 | Draft-review email + IndexNow on publish | **Follow-up** | Weekly auto-draft/review-email and IndexNow submission of new blog URLs are scoped follow-up tasks. |
 
