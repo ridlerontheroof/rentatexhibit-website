@@ -99,6 +99,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       'is-river-north-a-good-place-to-live',
       'moving-to-river-north-chicago-checklist',
       'river-north-vs-streeterville-renters',
+      'river-north-commute-guide',
     ],
     links: [
       { label: 'See current availability and pricing', href: '/available-units' },
@@ -375,6 +376,99 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       {
         label: 'Walk Score for 165 W Superior St',
         href: WALK_SCORE_SOURCE_URL,
+      },
+      {
+        label: 'CTA \u2014 train schedules and travel times',
+        href: 'https://www.transitchicago.com/schedules/',
+      },
+    ],
+    ogCard: 'neighborhood',
+    published: '2026-08-13',
+    updated: '2026-08-13',
+  },
+
+  // ---------------------------------------------------------------------
+  // CLUSTER — river north commute to the loop
+  // ---------------------------------------------------------------------
+  {
+    slug: 'river-north-commute-guide',
+    title: 'The River North Commute Guide: L Lines, Buses, and Airports',
+    metaTitle: 'River North Commute Guide',
+    targetQuery: 'river north commute to the loop',
+    role: 'cluster',
+    pillar: 'living-in-river-north-chicago',
+    authorId: 'leasing-team',
+    summary:
+      'From 165 W Superior St, our leasing team\u2019s practical Loop plan is the Brown or Purple Line from Chicago & Franklin, with an approximate 10-minute L ride, or a walk down Wells St of about 20 minutes. This guide also outlines nearby rail, bus, bike, car, and airport options.',
+    sections: [
+      {
+        heading: 'A practical commute from River North to the Loop',
+        paragraphs: [
+          'For a River North commute to the Loop, we recommend starting with Chicago station at Chicago Ave and Franklin St. The Brown and Purple Lines are about 2 blocks from Exhibit On Superior, or an approximate 3-minute walk. From Chicago & Franklin, the Loop is one stop away on the Brown or Purple Line, with an approximate 10-minute L trip.',
+          'Walking is another straightforward car-free option when it fits your schedule. The route down Wells St is an approximate 20-minute walk, or about 1 mile. Our leasing team recommends checking CTA schedules before leaving when you plan to take the Brown or Purple Line.',
+        ],
+      },
+      {
+        heading: 'Nearby rail and bus options',
+        paragraphs: [
+          'Chicago/State station on the Red Line is at Chicago Ave and State St, about 0.3 miles from the community or an approximate 7-minute walk. This gives residents another rail starting point in addition to the Brown and Purple Lines at Chicago & Franklin.',
+          'For bus travel, the #66 Chicago Ave bus stops along Chicago Ave, one block north of the property. The stop is about 1 block away, or an approximate 2-minute walk. When selecting a route, our leasing team recommends comparing the nearby rail station and Chicago Ave bus option with your specific destination and departure time.',
+        ],
+        list: [
+          'Chicago station \u2014 Brown & Purple Lines: Chicago Ave & Franklin St, about 2 blocks or an approximate 3-minute walk',
+          'Chicago/State station \u2014 Red Line: Chicago Ave & State St, about 0.3 miles or an approximate 7-minute walk',
+          '#66 Chicago Ave bus: along Chicago Ave, about 1 block or an approximate 2-minute walk',
+        ],
+      },
+      {
+        heading: 'Car-free and bike-ready planning',
+        paragraphs: [
+          'The address has a 99/100 Walk Score, described as \u201cWalker\u2019s Paradise,\u201d a 100/100 Transit Score, described as \u201cRider\u2019s Paradise,\u201d and an 86/100 Bike Score, described as \u201cVery Bikeable.\u201d For residents building a car-free routine, the nearby Brown, Purple, and Red Lines, the #66 Chicago Ave bus, and the walk to the Loop provide several starting points.',
+          'Residents who bike can use complimentary bike storage on the ground floor at Exhibit On Superior. We recommend planning a bike trip around your own destination and comfort level, then using the available storage as part of your arrival and departure routine. For more location details, see the map and directions page and the parking and transportation guide linked below.',
+        ],
+      },
+      {
+        heading: 'Airport trips by rail or car',
+        paragraphs: [
+          'For O\u2019Hare International Airport, the Blue Line is available from Grand station at Milwaukee & Halsted. The station is reached by a short ride or bus west. The approximate trip time is 45\u201355 minutes by L or 30\u201345 minutes by car via I-90 W. Our leasing team recommends allowing your own additional time for the connection to Grand station and for your airport plans.',
+          'For Midway International Airport, take the Orange Line from the Loop with a Brown or Purple Line transfer. The approximate trip time is 45\u201355 minutes by L or 25\u201340 minutes by car. These are approximate commute-table times, so we recommend reviewing CTA schedules when planning a rail trip.',
+        ],
+      },
+      {
+        heading: 'Parking and neighborhood trip planning',
+        paragraphs: [
+          'Residents who plan to drive may apply for unreserved garage parking, subject to availability, at $335 per space monthly. The community also offers on-site storage locker rental for $25 monthly. Our leasing team can help direct prospective residents to current parking and transportation information.',
+          'Whether you are walking to the Loop, taking an L line, using the #66 Chicago Ave bus, biking, or planning an airport trip, begin with the option that matches your destination. Our River North neighborhood guide, linked below, can help you orient your daily plans around the community\u2019s location and quick access to downtown neighborhoods.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'What is the River North commute to the Loop from Exhibit On Superior?',
+        answer:
+          'From 165 W Superior St, take the Brown or Purple Line from Chicago & Franklin. The Loop is one stop away, with an approximate 10-minute L trip. Walking down Wells St is an approximate 20-minute walk, or about 1 mile.',
+      },
+      {
+        question: 'What CTA stations are closest to 165 W Superior St?',
+        answer:
+          'Chicago station for the Brown and Purple Lines is at Chicago Ave and Franklin St, about 2 blocks or an approximate 3-minute walk. Chicago/State station for the Red Line is at Chicago Ave and State St, about 0.3 miles or an approximate 7-minute walk.',
+      },
+      {
+        question: 'How can I get to O\u2019Hare or Midway from River North?',
+        answer:
+          'For O\u2019Hare, use the Blue Line from Grand station at Milwaukee & Halsted after a short ride or bus west; the approximate L trip is 45\u201355 minutes. For Midway, transfer from the Brown or Purple Line in the Loop to the Orange Line; the approximate L trip is 45\u201355 minutes.',
+      },
+    ],
+    related: ['living-in-river-north-chicago', 'moving-to-river-north-chicago-checklist'],
+    links: [
+      { label: 'map and directions information', href: '/map-directions' },
+      { label: 'parking and transportation guide', href: '/parking-transportation' },
+      { label: 'River North neighborhood guide', href: '/neighborhood' },
+    ],
+    sources: [
+      {
+        label: 'Walk Score for 165 W Superior St',
+        href: 'https://www.walkscore.com/score/165-w-superior-st-chicago-il-60654',
       },
       {
         label: 'CTA \u2014 train schedules and travel times',

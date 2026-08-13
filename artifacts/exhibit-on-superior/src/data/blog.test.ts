@@ -254,6 +254,23 @@ describe('blog copy quality (no marketing filler)', () => {
     }
   });
 
+  it('no raw HTML markup in article prose (paragraphs render as plain text)', () => {
+    // BlogSection paragraphs/lists/FAQ answers are rendered as React text —
+    // any embedded markup would be escaped and shown literally to readers.
+    // Internal links belong in the typed `links` array, not inline HTML.
+    for (const a of BLOG_ARTICLES) {
+      const prose = [
+        a.title,
+        a.summary,
+        ...a.sections.flatMap((s) => [s.heading ?? '', ...s.paragraphs, ...(s.list ?? [])]),
+        ...a.faqs.flatMap((f) => [f.question, f.answer]),
+      ].join(' ');
+      expect(/<[a-z/][^>]*>/i.test(prose), `${a.slug} contains raw HTML markup in prose`).toBe(
+        false,
+      );
+    }
+  });
+
   it('never names the management company in renter-facing prose', () => {
     for (const a of BLOG_ARTICLES) {
       const prose = JSON.stringify(a).toLowerCase();
