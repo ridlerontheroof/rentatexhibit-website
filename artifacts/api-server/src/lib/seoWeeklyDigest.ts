@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendSeoWeeklyDigest, sendSeoDigestFailureAlert } from "./email";
@@ -928,6 +929,7 @@ export function startSeoWeeklyDigest(log: Logger = defaultLogger): void {
     },
     "Weekly SEO digest watchdog started",
   );
+  announceWatchdogStarted("seo-weekly-digest");
 }
 
 /** Test-only: clear per-process state. */

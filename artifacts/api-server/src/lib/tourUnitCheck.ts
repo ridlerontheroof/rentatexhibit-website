@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat, createDailyInfoGate } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
@@ -231,6 +232,7 @@ export function startTourUnitCheck(log: Logger = defaultLogger): void {
     },
     "Tour-unit watchdog started",
   );
+  announceWatchdogStarted("tour-unit");
 }
 
 /** Test-only: clear the per-process fallback dedupe state. */

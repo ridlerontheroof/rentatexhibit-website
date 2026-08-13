@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
@@ -461,6 +462,7 @@ export function startKnowledgePageCheck(log: Logger = defaultLogger): void {
     { site: SITE, intervalHours: CHECK_INTERVAL_MS / 3_600_000 },
     "Knowledge-page watchdog started",
   );
+  announceWatchdogStarted("knowledge-pages");
 }
 
 /** Test-only: clear the per-process fallback dedupe state. */

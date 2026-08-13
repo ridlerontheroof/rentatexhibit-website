@@ -15,6 +15,7 @@ import { startGa4DataCheck } from "./lib/ga4DataCheck";
 import { startGtmTrackingCheck } from "./lib/gtmCheck";
 import { startAcceptedVolumeWatch } from "./lib/botGuardAlert";
 import { startSeoWeeklyDigest } from "./lib/seoWeeklyDigest";
+import { scheduleStartupSummary } from "./lib/startupSummary";
 
 const rawPort = process.env["PORT"];
 
@@ -118,4 +119,10 @@ app.listen(port, (err) => {
   // article stats, and GA4 page movers, and email the digest to the leasing
   // inbox. Alerts the ops inbox when Search Console access is not granted.
   startSeoWeeklyDigest(logger);
+
+  // The deploy runtime drops roughly the first ~25s of container stdout, so
+  // the synchronous "… watchdog started" lines above never reach deployment
+  // logs. Emit one deferred "Watchdogs online: …" summary after the blackout
+  // window so every publish is auditably self-announcing.
+  scheduleStartupSummary(logger);
 });

@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
@@ -364,6 +365,7 @@ export function startFloorPlanPageCheck(log: Logger = defaultLogger): void {
     { site: SITE, intervalHours: CHECK_INTERVAL_MS / 3_600_000 },
     "Floor-plan-page watchdog started",
   );
+  announceWatchdogStarted("floor-plan-pages");
 }
 
 /** Test-only: clear the per-process fallback dedupe state. */

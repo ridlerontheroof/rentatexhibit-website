@@ -5,6 +5,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
@@ -334,6 +335,7 @@ export function startRentedNoindexCheck(log: Logger = defaultLogger): void {
     },
     "Rented-unit indexability watchdog started",
   );
+  announceWatchdogStarted("rented-noindex");
 }
 
 /** Test-only: clear the per-process fallback state. */

@@ -5,6 +5,7 @@ import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { createDailyClaim } from "./dailyClaim";
 import { mailerConfigured } from "./mailer";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import {
   sendAcceptedSilenceAlert,
   sendAcceptedSpikeAlert,
@@ -360,6 +361,7 @@ export function startAcceptedVolumeWatch(log: Logger = defaultLogger): void {
     SILENCE_CHECK_INTERVAL_MS,
   );
   timer.unref?.();
+  announceWatchdogStarted("accepted-lead-silence");
 }
 
 /**

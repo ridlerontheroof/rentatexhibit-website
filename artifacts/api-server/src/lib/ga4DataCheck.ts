@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
@@ -444,6 +445,7 @@ export function startGa4DataCheck(log: Logger = defaultLogger): void {
     },
     "GA4 visitor-data watchdog started",
   );
+  announceWatchdogStarted("ga4-visitor-data");
 }
 
 /** Test-only: clear the per-process fallback state. */

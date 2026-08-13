@@ -1,5 +1,6 @@
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
@@ -204,6 +205,7 @@ export function startApexRedirectCheck(log: Logger = defaultLogger): void {
     },
     "Apex redirect watchdog started",
   );
+  announceWatchdogStarted("apex-redirect");
 }
 
 /** Test-only: clear the per-process fallback dedupe state. */

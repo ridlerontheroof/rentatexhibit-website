@@ -5,6 +5,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
@@ -311,6 +312,7 @@ export function startLegacyRedirectCheck(log: Logger = defaultLogger): void {
     },
     "Legacy-redirect watchdog started",
   );
+  announceWatchdogStarted("legacy-redirects");
 }
 
 /** Test-only: clear the per-process fallback state. */

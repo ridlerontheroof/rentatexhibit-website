@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "./logger";
+import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyClaim } from "./dailyClaim";
 import { createDailyHeartbeat, createDailyInfoGate } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
@@ -293,6 +294,7 @@ export function startApplyLinkCheck(log: Logger = defaultLogger): void {
     },
     "Apply-link watchdog started",
   );
+  announceWatchdogStarted("apply-link");
 }
 
 /** Test-only: clear the per-process fallback dedupe state. */
