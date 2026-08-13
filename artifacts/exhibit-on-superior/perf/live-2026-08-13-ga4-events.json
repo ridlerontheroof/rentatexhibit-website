@@ -1,0 +1,17 @@
+{
+  "url": "https://www.rentatexhibit.com/available-units",
+  "date": "2026-08-13",
+  "check": "Post-publish GA4 custom-event verification (follow-up to the GTM gtag-stub failure found 2026-08-12)",
+  "note": "Live build carries the self-loaded gtag.js fix (index bundle references G-1S66YHBN91, send_page_view:false, gtag/js loader). Headless Chromium (Playwright, nix chromium) captured /g/collect requests during a scripted session.",
+  "ga4MeasurementId": "G-1S66YHBN91",
+  "results": {
+    "sightmap_impression": "PASS — fired after opening the map facade",
+    "sightmap_unit_selected": "PASS — fired clicking unit 0208 on floor 2 (params unit_number=0208, floor_plan='2bed 2bath, NE, low floor, full size appliances, large layout', matched=true)",
+    "sightmap_filter_change": "PASS — fired on floor/filter interaction",
+    "generate_lead": "PASS — fired after contact-form submit with POST /api/leads route-mocked to 201 (no real lead created); GTM's own form_start also observed",
+    "sightmap_apply_click": "PASS — tripwire silent across all sessions (hide_apply_button intact)",
+    "page_view": "PASS — exactly one on initial load and exactly one on SPA navigation to /contact-us (no doubles)"
+  },
+  "tidsSeen": ["G-1S66YHBN91"],
+  "method": "Playwright over nix-store chromium; request listener parsing en= from /g/collect POST bodies (newline-separated batches) and URL params; **/api/leads fulfilled 201 via route interception"
+}
