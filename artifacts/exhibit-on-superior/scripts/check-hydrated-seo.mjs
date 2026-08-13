@@ -23,9 +23,10 @@
 //   committed yet can never be satisfied by the previous route's settled
 //   head.
 //
-// Routes: home, /amenities, one live per-unit page (from the live feed) and
-// one blog article (from the live sitemap) — the four shapes of prerendered
-// head that shipped.
+// Routes: home, /amenities, EVERY live per-unit page (from the live feed —
+// AppFolio photo URLs are per-unit, so image liveness must cover them all)
+// and one blog article (from the live sitemap). The hydrated Chromium pass
+// stays sampled at one per-unit page; raw + image checks cover every route.
 //
 // Environments without a headless Chromium (e.g. the deployed api-server
 // runtime) run the RAW checks plus a shipped-strip-logic probe (the JS
@@ -217,27 +218,38 @@ async function settledSnapshot(cdp, expectedUrl, timeoutMs = 45_000) {
 }
 
 // --- Route discovery ---------------------------------------------------------
+// Returns { routes, hydratedRoutes }: raw checks cover EVERY route (a raw
+// fetch is cheap, and AppFolio photo URLs are per-unit — a stale CDN photo on
+// ANY listed apartment would ship an empty share card), while the Chromium
+// hydrated pass stays sampled at one per-unit page (the strip logic is the
+// same bundle on every unit route).
 async function pickRoutes() {
   const routes = ['/', '/amenities'];
-  // One live per-unit page from the availability feed.
+  const hydratedRoutes = ['/', '/amenities'];
+  // EVERY live per-unit page from the availability feed (raw + image checks);
+  // only the first one joins the hydrated sample.
   try {
     const feed = await (await fetch(`${BASE}/api/availability`, { headers: { 'user-agent': UA } })).json();
-    const unit = feed?.units?.[0]?.unit ?? null;
-    if (unit) routes.push(`/available-units/${unit}`);
-    else console.warn('warn  live feed returned no units — skipping the per-unit route.');
+    const units = (feed?.units ?? []).map((u) => u?.unit).filter(Boolean);
+    if (units.length) {
+      for (const unit of units) routes.push(`/available-units/${unit}`);
+      hydratedRoutes.push(`/available-units/${units[0]}`);
+    } else console.warn('warn  live feed returned no units — skipping the per-unit routes.');
   } catch (err) {
-    console.warn(`warn  could not read ${BASE}/api/availability (${err.message}) — skipping the per-unit route.`);
+    console.warn(`warn  could not read ${BASE}/api/availability (${err.message}) — skipping the per-unit routes.`);
   }
   // One blog article from the live sitemap.
   try {
     const xml = await (await fetch(`${BASE}/sitemap.xml`, { headers: { 'user-agent': UA } })).text();
     const m = xml.match(/<loc>\s*https?:\/\/[^<]*\/blog\/([^<\s/]+)\/?\s*<\/loc>/);
-    if (m) routes.push(`/blog/${m[1]}`);
-    else console.warn('warn  no /blog/<slug> URL in the live sitemap — skipping the blog route.');
+    if (m) {
+      routes.push(`/blog/${m[1]}`);
+      hydratedRoutes.push(`/blog/${m[1]}`);
+    } else console.warn('warn  no /blog/<slug> URL in the live sitemap — skipping the blog route.');
   } catch (err) {
     console.warn(`warn  could not read ${BASE}/sitemap.xml (${err.message}) — skipping the blog route.`);
   }
-  return routes;
+  return { routes, hydratedRoutes };
 }
 
 // --- Raw-head checks (always run, every route) ---------------------------------
@@ -396,7 +408,7 @@ async function hydratedChecks(routes, chrome) {
 
 // --- Main ---------------------------------------------------------------------
 async function main() {
-  const routes = await pickRoutes();
+  const { routes, hydratedRoutes } = await pickRoutes();
   console.log(`Checking share-preview heads on ${BASE} for routes: ${routes.join(', ')}`);
 
   // Raw heads first — every route, every mode.
@@ -404,7 +416,7 @@ async function main() {
 
   const chrome = HTTP_ONLY ? null : findChromium();
   if (chrome) {
-    const hydrated = await hydratedChecks(routes, chrome);
+    const hydrated = await hydratedChecks(hydratedRoutes, chrome);
     failures.push(...hydrated.failures);
     for (const [route, urls] of hydrated.imageUrlsByRoute) imageUrlsByRoute.set(route, urls);
   } else {
