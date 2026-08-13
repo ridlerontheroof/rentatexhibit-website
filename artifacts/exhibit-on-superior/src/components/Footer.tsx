@@ -79,6 +79,11 @@ export function Footer() {
                   Knowledge Center
                 </Link>
               </li>
+              <li>
+                <Link href="/blog" className="hover:text-primary-on-dark transition-colors">
+                  Blog
+                </Link>
+              </li>
             </ul>
           </div>
 
