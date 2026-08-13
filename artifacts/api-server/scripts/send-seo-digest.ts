@@ -36,12 +36,23 @@ async function main(): Promise<void> {
     );
   } catch (err) {
     if (err instanceof GscUnauthorizedError) {
-      console.error(
-        `send-seo-digest: Search Console refused access (HTTP ${err.httpStatus}).\n` +
-          `Grant it: open Search Console for ${config.gscSiteUrl} → Settings → Users and permissions → ` +
-          `add ${config.clientEmail} with "Restricted" (read) access. ` +
-          `If the property type differs, set GSC_SITE_URL to the exact property.`,
-      );
+      if (err.reason === "SERVICE_DISABLED") {
+        console.error(
+          `send-seo-digest: The Google Search Console API is not enabled in the GCP project (HTTP ${err.httpStatus}).\n` +
+            `Fix it: open Google Cloud Console → APIs & Services → Enable APIs and search for\n` +
+            `  "Google Search Console API"\n` +
+            `or go directly to:\n` +
+            `  https://console.developers.google.com/apis/api/searchconsole.googleapis.com/overview\n` +
+            `The service account is: ${config.clientEmail}`,
+        );
+      } else {
+        console.error(
+          `send-seo-digest: Search Console refused access (HTTP ${err.httpStatus}).\n` +
+            `Grant it: open Search Console for ${config.gscSiteUrl} → Settings → Users and permissions → ` +
+            `add ${config.clientEmail} with "Restricted" (read) access. ` +
+            `If the property type differs, set GSC_SITE_URL to the exact property.`,
+        );
+      }
     } else {
       console.error("send-seo-digest: failed:", err instanceof Error ? err.message : err);
     }

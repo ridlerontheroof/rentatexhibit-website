@@ -286,11 +286,17 @@ export interface GscRow {
   position: number;
 }
 
-/** Thrown when the property answers 403/404 — the service account lacks access. */
+/**
+ * Thrown when the property answers 403/404 — either the service account lacks
+ * user access or the Search Console API is not enabled in the GCP project.
+ * `reason` is "SERVICE_DISABLED" when the API itself is off; for all other
+ * 403/404s it is "PERMISSION_DENIED" (service account not added as a user).
+ */
 export class GscUnauthorizedError extends Error {
   constructor(
     public readonly httpStatus: number,
     message: string,
+    public readonly reason: "SERVICE_DISABLED" | "PERMISSION_DENIED" = "PERMISSION_DENIED",
   ) {
     super(message);
     this.name = "GscUnauthorizedError";
@@ -346,11 +352,16 @@ async function queryGsc(
     fetchImpl,
   );
   if (status === 403 || status === 404) {
-    const message =
-      (body as { error?: { message?: unknown } } | null)?.error?.message ?? "no body";
+    const error = (body as { error?: { message?: unknown; details?: { reason?: unknown }[] } } | null)?.error;
+    const message = error?.message ?? "no body";
+    // Distinguish "API not enabled in GCP project" from "service account not a
+    // Search Console user" — they need different remediation steps.
+    const isApiDisabled =
+      error?.details?.some((d) => d?.reason === "SERVICE_DISABLED") ?? false;
     throw new GscUnauthorizedError(
       status,
       `Search Console rejected ${config.gscSiteUrl} (HTTP ${status}): ${String(message)}`,
+      isApiDisabled ? "SERVICE_DISABLED" : "PERMISSION_DENIED",
     );
   }
   if (status !== 200) {
@@ -781,8 +792,10 @@ export async function checkSeoDigestOnce(
     if (err instanceof GscUnauthorizedError) {
       heartbeat.record(log, now, "unauthorized");
       log.error(
-        { httpStatus: err.httpStatus, siteUrl: config.gscSiteUrl },
-        "Weekly SEO digest cannot read Search Console — the service account is not authorized on the property",
+        { httpStatus: err.httpStatus, siteUrl: config.gscSiteUrl, reason: err.reason },
+        err.reason === "SERVICE_DISABLED"
+          ? "Weekly SEO digest cannot read Search Console — the Search Console API is not enabled in the GCP project"
+          : "Weekly SEO digest cannot read Search Console — the service account is not authorized on the property",
       );
       try {
         if (!mailerConfigured()) return;
@@ -791,6 +804,7 @@ export async function checkSeoDigestOnce(
           serviceAccountEmail: config.clientEmail,
           siteUrl: config.gscSiteUrl,
           detail: err.message,
+          gscReason: err.reason,
         });
       } catch (sendErr) {
         log.error({ err: sendErr }, "Failed to send SEO-digest authorization alert");

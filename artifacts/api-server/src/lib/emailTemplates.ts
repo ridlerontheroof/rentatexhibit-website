@@ -1621,29 +1621,63 @@ export function renderSeoWeeklyDigest(data: SeoDigestEmailData): RenderedEmail {
 /**
  * Operational alert: the weekly SEO digest could not read Search Console —
  * either the service account was never granted access (403 until the owner
- * adds it in Search Console) or the check has failed repeatedly.
+ * adds it in Search Console), the Search Console API is not enabled in the
+ * GCP project, or the check has failed repeatedly.
+ *
+ * `gscReason` distinguishes the two 403 cases so the alert gives the exact
+ * remediation steps:
+ *   - "SERVICE_DISABLED" → the Google Search Console API is off in the GCP
+ *     project; the owner must enable it in Google Cloud Console.
+ *   - "PERMISSION_DENIED" (default) → the service account is not added as a
+ *     user on the Search Console property.
  */
 export function renderSeoDigestFailureAlert(opts: {
   serviceAccountEmail: string;
   siteUrl: string;
   detail: string;
+  gscReason?: "SERVICE_DISABLED" | "PERMISSION_DENIED";
 }): RenderedEmail {
-  const { serviceAccountEmail, siteUrl, detail } = opts;
+  const { serviceAccountEmail, siteUrl, detail, gscReason } = opts;
   const subject = "Website alert: the weekly search digest could not read Search Console";
 
   const intro = `The automatic weekly search digest could not pull data from Google Search Console for ${siteUrl}. ${detail}`;
-  const remedyText = `What to do: open Google Search Console for the property (${siteUrl}), go to Settings → Users and permissions, and add ${serviceAccountEmail} with at least "Restricted" (read) access. If the site is verified as a different property type, set the GSC_SITE_URL environment variable to the exact property (e.g. "sc-domain:rentatexhibit.com" or "https://www.rentatexhibit.com/"). The digest retries automatically; this alert is sent at most once per week.`;
 
-  const html =
-    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
-    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
-      `open Google Search Console for ${siteUrl}, go to Settings → Users and permissions, and add ${serviceAccountEmail} with at least "Restricted" (read) access. If the site is verified as a different property type, set GSC_SITE_URL to the exact property. The digest retries automatically; this alert is sent at most once per week.`,
-    )}</p>`;
+  let remedyText: string;
+  let remedyHtml: string;
+  if (gscReason === "SERVICE_DISABLED") {
+    const gcpUrl = `https://console.developers.google.com/apis/api/searchconsole.googleapis.com/overview`;
+    remedyText =
+      `What to do: the Google Search Console API is not enabled in the service account's GCP project. ` +
+      `Open Google Cloud Console → APIs & Services → Enable APIs → search for "Google Search Console API" and enable it, ` +
+      `or go directly to ${gcpUrl}. ` +
+      `The service account email is ${serviceAccountEmail}. Once enabled, the digest retries automatically (this alert is sent at most once per week).`;
+    remedyHtml =
+      `<p style="${BODY_TEXT}"><strong>What to do:</strong> The Google Search Console API is not enabled ` +
+      `in the GCP project that owns this service account (${escapeHtml(serviceAccountEmail)}). ` +
+      `Enable it in Google Cloud Console → APIs &amp; Services → Enable APIs, or ` +
+      `<a href="${escapeHtml(gcpUrl)}" style="color:#0066cc">open the API directly</a>. ` +
+      `The digest retries automatically; this alert is sent at most once per week.</p>`;
+  } else {
+    remedyText =
+      `What to do: open Google Search Console for the property (${siteUrl}), go to Settings → Users and permissions, ` +
+      `and add ${serviceAccountEmail} with at least "Restricted" (read) access. ` +
+      `If the site is verified as a different property type, set the GSC_SITE_URL environment variable to the exact property ` +
+      `(e.g. "sc-domain:rentatexhibit.com" or "https://www.rentatexhibit.com/"). ` +
+      `The digest retries automatically; this alert is sent at most once per week.`;
+    remedyHtml =
+      `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+        `open Google Search Console for ${siteUrl}, go to Settings → Users and permissions, and add ${serviceAccountEmail} with at least "Restricted" (read) access. If the site is verified as a different property type, set GSC_SITE_URL to the exact property. The digest retries automatically; this alert is sent at most once per week.`,
+      )}</p>`;
+  }
 
+  const html = `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` + remedyHtml;
   const text = [intro, "", remedyText, "", TEXT_FOOTER].join("\n");
 
   const htmlShell = renderEmailShell({
-    preheader: "The weekly search digest needs Search Console access granted to the service account.",
+    preheader:
+      gscReason === "SERVICE_DISABLED"
+        ? "Enable the Google Search Console API in the GCP project to resume the weekly digest."
+        : "The weekly search digest needs Search Console access granted to the service account.",
     kicker: "Website Alert",
     heading: "Search Digest Needs Access",
     bodyHtml: html,

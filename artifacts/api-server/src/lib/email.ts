@@ -814,6 +814,7 @@ export async function sendSeoDigestFailureAlert(opts: {
   serviceAccountEmail: string;
   siteUrl: string;
   detail: string;
+  gscReason?: "SERVICE_DISABLED" | "PERMISSION_DENIED";
 }): Promise<void> {
   warnIfUnconfigured();
   const { subject, html: htmlBody, text: textBody } = renderSeoDigestFailureAlert(opts);
