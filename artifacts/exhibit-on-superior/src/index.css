@@ -236,7 +236,7 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
     color: #444;
-    font-size: 15px;
+    font-size: 1rem;
     line-height: 1.4;
   }
 

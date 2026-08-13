@@ -181,7 +181,7 @@ export function ContactUs() {
                   <div
                     ref={thankYouRef}
                     tabIndex={-1}
-                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary focus:outline-none flex items-start justify-between gap-4"
+                    className="bg-primary/10 text-primary p-4 mb-6 border border-primary focus:outline-none focus:ring-2 focus:ring-ring flex items-start justify-between gap-4"
                     role="status"
                     aria-live="polite"
                   >
@@ -229,7 +229,7 @@ export function ContactUs() {
                   <div
                     ref={errorRef}
                     tabIndex={-1}
-                    className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none"
+                    className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none focus:ring-2 focus:ring-ring"
                     role="alert"
                   >
                     Something went wrong and your message couldn't be sent. Please check your connection and try again.

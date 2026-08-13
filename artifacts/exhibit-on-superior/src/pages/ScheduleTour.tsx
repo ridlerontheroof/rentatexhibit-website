@@ -356,7 +356,7 @@ export function ScheduleTour() {
               <div
                 ref={fallbackRef}
                 tabIndex={-1}
-                className="max-w-2xl mx-auto text-center bg-muted p-12 border border-border focus:outline-none"
+                className="max-w-2xl mx-auto text-center bg-muted p-12 border border-border focus:outline-none focus:ring-2 focus:ring-ring"
                 role="status"
                 aria-live="polite"
               >
@@ -369,7 +369,7 @@ export function ScheduleTour() {
                     <div
                       ref={errorRef}
                       tabIndex={-1}
-                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none text-left"
+                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none focus:ring-2 focus:ring-ring text-left"
                       role="alert"
                     >
                       Something went wrong and your tour request couldn't be sent. Please check
@@ -499,7 +499,7 @@ export function ScheduleTour() {
                     <div
                       ref={errorRef}
                       tabIndex={-1}
-                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none"
+                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none focus:ring-2 focus:ring-ring"
                       role="alert"
                     >
                       Your submission couldn't be verified. Please review your details and try

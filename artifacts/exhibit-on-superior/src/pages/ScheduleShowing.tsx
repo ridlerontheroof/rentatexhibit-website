@@ -257,7 +257,7 @@ export function ScheduleShowing() {
               <div
                 ref={unitGoneRef}
                 tabIndex={-1}
-                className="border border-border bg-muted p-12 text-center focus:outline-none"
+                className="border border-border bg-muted p-12 text-center focus:outline-none focus:ring-2 focus:ring-ring"
                 role="status"
                 aria-live="polite"
               >
@@ -530,7 +530,7 @@ export function ScheduleShowing() {
               <div
                 ref={fallbackRef}
                 tabIndex={-1}
-                className="border border-border bg-muted p-12 text-center focus:outline-none"
+                className="border border-border bg-muted p-12 text-center focus:outline-none focus:ring-2 focus:ring-ring"
                 role="status"
                 aria-live="polite"
               >

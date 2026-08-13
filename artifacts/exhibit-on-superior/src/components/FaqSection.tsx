@@ -23,7 +23,7 @@ export function FaqSection({ path }: FaqSectionProps) {
             <details key={faq.q} className="group py-4">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-lg text-foreground marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <span>{faq.q}</span>
-                <Plus className="h-5 w-5 shrink-0 text-primary transition-transform duration-200 group-open:rotate-45" />
+                <Plus className="h-5 w-5 shrink-0 text-primary transition-transform duration-200 group-open:rotate-45" aria-hidden="true" />
               </summary>
               <p className="mt-3 leading-relaxed text-muted-foreground">
                 {faq.a}
