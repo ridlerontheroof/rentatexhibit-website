@@ -684,7 +684,11 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
           'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. The fee is $95\u2013$195 by floor plan, while electricity is billed directly to the resident by ComEd.',
       },
     ],
-    related: ['moving-to-river-north-chicago-checklist', 'river-north-commute-guide'],
+    related: [
+      'moving-to-river-north-chicago-checklist',
+      'river-north-commute-guide',
+      'chicago-apartment-application-documents',
+    ],
     links: [
       { label: 'Browse available apartments', href: '/available-units' },
       { label: 'Review leasing fees and charges', href: '/fees' },
@@ -699,6 +703,112 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
         label: 'CTA \u2014 train schedules and travel times',
         href: 'https://www.transitchicago.com/schedules/',
       },
+      {
+        label: 'ComEd \u2014 start, stop, or move electric service',
+        href: 'https://www.comed.com/my-account/customer-support/start-stop-move',
+      },
+    ],
+    ogCard: 'application-guide',
+    published: '2026-08-13',
+    updated: '2026-08-13',
+  },
+
+  // ---------------------------------------------------------------------
+  // CLUSTER — documents needed to rent an apartment chicago
+  // ---------------------------------------------------------------------
+  {
+    slug: 'chicago-apartment-application-documents',
+    title: 'What You Need to Apply for a Chicago Apartment',
+    metaTitle: 'Chicago Apartment Application Documents',
+    targetQuery: 'documents needed to rent an apartment chicago',
+    role: 'cluster',
+    pillar: 'how-to-rent-an-apartment-in-chicago',
+    authorId: 'leasing-team',
+    summary:
+      'Documents needed to rent an apartment in Chicago vary by building. Our leasing team recommends confirming identification, income or credit-review materials, and renters-insurance requirements before applying. At Exhibit On Superior, applicants need a minimum credit score of 700, or 600 with a qualified co-signer, plus required renters insurance.',
+    sections: [
+      {
+        heading: 'Start with the building\u2019s application checklist',
+        paragraphs: [
+          'There is no single document list that applies to every Chicago apartment. Identification standards, income documentation, credit-review materials, co-signer rules, and insurance timing vary by building. Before submitting an application, our leasing team recommends asking the property which documents it needs and whether it has a preferred format for each item.',
+          'At Exhibit On Superior, the application is completed through a secure online application for the selected apartment. The application fee is shown on each unit\u2019s secure online application before payment. You can begin by reviewing available residences and selecting the home you would like to apply for.',
+        ],
+        list: [
+          'Confirm the identification documentation requested by the building.',
+          'Ask which materials are needed for its credit and income review.',
+          'Ask whether a co-signer is available if you do not meet the building\u2019s direct approval criteria.',
+          'Confirm when renters-insurance information is required and what liability coverage the building requires.',
+        ],
+      },
+      {
+        heading: 'Understand Exhibit\u2019s credit and co-signer path',
+        paragraphs: [
+          'For Exhibit On Superior, the minimum credit score is 700. Applicants with a credit score of 600 may qualify with a qualified co-signer. Whether another building accepts a co-signer, and what it considers qualified, varies by building.',
+          'Our leasing team recommends discussing the co-signer path before you submit an application if you expect to use one. That gives you an opportunity to confirm the building\u2019s current requirements and understand what information the co-signer may need to provide.',
+        ],
+        list: [
+          'Minimum credit score: 700.',
+          'Credit score with a qualified co-signer: 600.',
+          'Approval decision: 1\u20133 business days.',
+        ],
+      },
+      {
+        heading: 'Plan for application and lease-related charges',
+        paragraphs: [
+          'Knowing the charges connected with an application can help you prepare before you apply. At Exhibit, the application fee is $60 per applicant and is one-time. The administration fee is $500 per apartment and is one-time; it is non-refundable and refunded only if the application is denied.',
+          'Exhibit does not currently collect a security deposit. Other charges may apply depending on your apartment selection and services. Our leasing team recommends reviewing the full fee information alongside your chosen floor plan before moving forward.',
+        ],
+        list: [
+          'Application fee: $60 per applicant, one-time.',
+          'Administration fee: $500 per apartment, one-time.',
+          'Security deposit: $0.',
+          'Utility & Service Amenity fee: $95\u2013$195 by floor plan, monthly.',
+        ],
+      },
+      {
+        heading: 'Arrange renters insurance before move-in',
+        paragraphs: [
+          'At Exhibit, renters insurance is required with $300,000 liability-to-landlord coverage. Our leasing team recommends confirming your policy meets that requirement before move-in and asking us where to provide the insurance information.',
+          'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed directly to the resident by ComEd. Residents can use ComEd\u2019s move-service resources when arranging electric service.',
+        ],
+        list: [
+          'Required liability-to-landlord coverage: $300,000.',
+          'Electricity: billed directly to the resident by ComEd.',
+          'Covered through the Utility & Service Amenity fee: water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer.',
+        ],
+      },
+      {
+        heading: 'Choose an apartment, then confirm the current requirements',
+        paragraphs: [
+          'Exhibit On Superior is at 165 W Superior St in Chicago\u2019s River North neighborhood and offers studio, convertible, one-, two-, and three-bedroom apartments. The applicable monthly Utility & Service Amenity fee depends on the floor plan, from $95 for studios to $195 for three-bedrooms.',
+          'Requirements and availability can change, so our leasing team recommends choosing an available apartment first, then contacting us to confirm the current application checklist, co-signer process, and renters-insurance submission steps. A tour request is also a practical time to ask application questions before you apply.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'What documents do I need to rent an apartment in Chicago?',
+        answer:
+          'Document requirements vary by building. Our leasing team recommends confirming the building\u2019s requested identification, credit or income-review materials, co-signer documentation if applicable, and renters-insurance requirements before applying.',
+      },
+      {
+        question: 'What credit score do I need to apply at Exhibit On Superior?',
+        answer:
+          'Exhibit requires a minimum credit score of 700. Applicants with a credit score of 600 may qualify with a qualified co-signer. Approval decisions are made in 1\u20133 business days.',
+      },
+      {
+        question: 'Is renters insurance required at Exhibit On Superior?',
+        answer:
+          'Yes. Renters insurance is required at Exhibit with $300,000 liability-to-landlord coverage. Our leasing team can help confirm the required submission steps before move-in.',
+      },
+    ],
+    related: ['how-to-rent-an-apartment-in-chicago', 'moving-to-river-north-chicago-checklist'],
+    links: [
+      { label: 'Browse available apartments and move-in dates', href: '/available-units' },
+      { label: 'Review Exhibit On Superior fees', href: '/fees' },
+      { label: 'Schedule a tour and ask our leasing team questions', href: '/schedule-a-tour' },
+    ],
+    sources: [
       {
         label: 'ComEd \u2014 start, stop, or move electric service',
         href: 'https://www.comed.com/my-account/customer-support/start-stop-move',

@@ -46,7 +46,7 @@ expertise is the differentiator.
 | Priority | Slug | Target query | Intent | Author | Status |
 |---|---|---|---|---|---|
 | Pillar | `how-to-rent-an-apartment-in-chicago` | how to rent an apartment in chicago | pillar | Leasing Team | **Published** |
-| 1 | `chicago-apartment-application-documents` | documents needed to rent an apartment chicago | decision-support | Leasing Team | Planned |
+| 1 | `chicago-apartment-application-documents` | documents needed to rent an apartment chicago | decision-support | Leasing Team | **Published** |
 | 2 | `chicago-move-in-costs-explained` | apartment move in costs chicago | decision-support | Leasing Team | Planned |
 | 3 | `first-apartment-chicago-guide` | first apartment chicago tips | informational | Leasing Team | Planned |
 | 4 | `chicago-renters-insurance-basics` | renters insurance requirements chicago apartment | informational | Leasing Team | Planned |
