@@ -147,6 +147,16 @@ describe('knowledge center content rules', () => {
     }
   });
 
+  it('descriptions meet the 150-char minimum and contain no mid-sentence ellipsis', () => {
+    for (const a of KNOWLEDGE_ARTICLES) {
+      const desc = knowledgeDescription(a);
+      expect(desc.length, `${a.slug} description too short (${desc.length} chars)`).toBeGreaterThanOrEqual(150);
+      // An ellipsis followed by whitespace+capital letter means a tail was
+      // appended after truncation, producing a broken snippet.
+      expect(desc, `${a.slug} description has mid-sentence ellipsis`).not.toMatch(/\u2026\s+[A-Z]/);
+    }
+  });
+
   it('JSON-LD carries FAQPage + 3-level breadcrumb per article', () => {
     for (const a of KNOWLEDGE_ARTICLES) {
       const graph = knowledgeJsonLd(a)['@graph'] as Array<Record<string, any>>;

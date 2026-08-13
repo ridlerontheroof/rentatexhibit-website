@@ -125,6 +125,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     category: 'Pricing & Fees',
     answer:
       'No. Exhibit On Superior does not currently collect a security deposit. In place of a deposit there is a $500 non-refundable administration fee per apartment, which is fully refunded if your application is denied but retained if you choose to cancel. For the current policy, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+    description:
+      'No security deposit at Exhibit On Superior. A $500 non-refundable administration fee per apartment applies in place of a deposit \u2014 refunded if denied.',
     sections: [
       {
         paragraphs: [
@@ -473,6 +475,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     category: 'Apartments & Floor Plans',
     answer:
       'A convertible at Exhibit On Superior is an open floor plan larger than a studio but without a separate bedroom, with space that can be arranged as a sleeping area. Junior convertibles run about 450–478 square feet and convertibles about 554 square feet. They sit between studios and one-bedrooms in size and price. See live availability on the Available Units page.',
+    description:
+      'Convertibles at Exhibit On Superior are open plans between a studio and one-bedroom \u2014 no separate bedroom but space for a sleeping area. About 450\u2013554 sq ft.',
     sections: [
       {
         paragraphs: [
@@ -765,6 +769,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     category: 'Apartments & Floor Plans',
     answer:
       `Yes. Per the as-built accessibility matrix, ${ADA_COUNTS.total} apartments at Exhibit On Superior — more than 20% of the homes — carry an ADA designation: ${ADA_COUNTS.a} Type A accessible/adaptable residences (A) and ${ADA_COUNTS.ac} Type A units with conduit line (AC). Use the ADA-accessible filter on the Available Units page to see the designated floor plans and apartments. Contact leasing to verify a specific apartment\u2019s current configuration and discuss accessibility needs: exhibit@highlandptrs.com or 312-450-0635.`,
+    description:
+      'Exhibit On Superior designates more than 20% of its apartments ADA-accessible across two types \u2014 filter by ADA on the Available Units page to see them.',
     sections: [
       {
         heading: 'What the designations mean',
@@ -1282,6 +1288,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     category: 'Pets',
     answer:
       'Exhibit On Superior charges a one-time, non-refundable pet fee: $650 for one dog or $750 for two dogs (two-dog maximum), and $325 for cats (two-cat maximum). There is no refundable pet deposit and no monthly pet rent. Breed restrictions apply for dogs; see a leasing consultant for details.',
+    description:
+      'One-time pet fee at Exhibit On Superior: $650 for one dog, $750 for two dogs, or $325 per cat. No deposit and no monthly pet rent. Breed restrictions apply.',
     sections: [
       {
         heading: 'One-time, not recurring',
@@ -2919,6 +2927,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     category: 'Building & Services',
     answer:
       'Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654, in the River North neighborhood. You can reach the leasing team at exhibit@highlandptrs.com or 312-450-0635. See the Map + Directions page for driving, transit, and parking routes to the building.',
+    description:
+      'Exhibit On Superior is at 165 W Superior St, Chicago, IL 60654, in River North \u2014 two blocks from the CTA Brown/Purple Line. Contact leasing at 312-450-0635.',
     sections: [
       {
         paragraphs: [

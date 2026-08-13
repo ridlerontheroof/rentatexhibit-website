@@ -337,7 +337,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     ogImage: ogCardUrl('luxury-apartments-river-north'),
     label: 'Luxury River North Apartments',
     title: 'Luxury River North Apartments, Chicago | Exhibit On Superior',
-    description: `Luxury River North apartments at 165 W Superior St \u2014 ${UNIT_TOTAL} residences with live pricing, a full amenity floor, Walk Score 99, and tours available.`,
+    description: `Luxury River North apartments at 165 W Superior St \u2014 ${UNIT_TOTAL} studio, convertible & 1\u20133-bedroom residences with live pricing, Walk Score 99, and tours available.`,
     quickAnswer: `Exhibit On Superior offers luxury River North apartments at 165 W Superior St, Chicago \u2014 ${UNIT_TOTAL} studio, convertible, one-, two-, and three-bedroom residences from ${SQFT_MIN_DISPLAY} to ${SQFT_MAX_DISPLAY} square feet over 34 stories, with a full amenity floor (75-foot lap pool, fitness center, work rooms), a 24-hour front desk, and live availability with current pricing below.`,
     faqs: [
       {
@@ -520,7 +520,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Apartments Near the Merchandise Mart',
     title: 'Apartments Near the Merchandise Mart | Exhibit On Superior',
     description:
-      'Luxury apartments about 0.5 miles from THE MART \u2014 walk to Merchandise Mart offices and showrooms from Exhibit On Superior in River North, Chicago.',
+      'Luxury apartments about 0.5 miles from THE MART \u2014 walk to Merchandise Mart offices and showrooms from Exhibit On Superior in River North, Chicago. Tours daily.',
     quickAnswer:
       'Exhibit On Superior at 165 W Superior St is about half a mile from THE MART (Merchandise Mart) \u2014 roughly a 10-minute walk, or one Brown/Purple Line stop from the Chicago station two blocks from the building. The luxury River North tower offers studio through three-bedroom homes with a full amenity floor; live availability is listed below.',
     faqs: [

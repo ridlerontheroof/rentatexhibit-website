@@ -211,18 +211,39 @@ function truncate(text: string, max = 158): string {
   return `${cut.slice(0, cut.lastIndexOf(' '))}\u2026`;
 }
 
+/** Contextual tail appended when a genuinely short answer needs padding. */
+const DESCRIPTION_TAIL = ' At 165 W Superior St, River North, Chicago.';
+/** Lower bound for a healthy meta-description snippet. */
+const DESCRIPTION_MIN = 150;
+
 // Q&A titles are the question itself. Most questions already name the
 // property, so appending "| Exhibit On Superior Chicago" double-branded
 // every title and pushed all of them past Google's ~60-character display
 // limit (guarded by src/prerender-titles.test.ts). Only questions that
 // don't mention the property get a short brand suffix.
+// For questions that are still under the 50-character SEO floor even after
+// the brand suffix is applied (or because "Exhibit On Superior" already
+// appears in the question), a location qualifier is added so each title
+// occupies enough snippet real estate for Google to display it clearly.
 export function knowledgeTitle(a: KnowledgeArticle): string {
-  if (a.question.includes('Exhibit On Superior')) return a.question;
-  return `${a.question} | Exhibit On Superior`;
+  const base = a.question.includes('Exhibit On Superior')
+    ? a.question
+    : `${a.question} | Exhibit On Superior`;
+  if (base.length < 50) return `${base} | River North`;
+  return base;
 }
 
 export function knowledgeDescription(a: KnowledgeArticle): string {
-  return truncate(a.description ?? a.answer);
+  const raw = a.description ?? a.answer;
+  const standard = truncate(raw);
+  if (standard.length >= DESCRIPTION_MIN) return standard;
+  // Short raw text: append the location tail before a single truncation so
+  // the snippet lands in the 150–160 window. The tail is appended to raw
+  // (before truncation) so no ellipsis appears mid-description.
+  // Articles whose long answers produce a short word-boundary truncation
+  // should set an explicit `description` field instead of relying on this
+  // fallback — the regression test below will catch any that slip through.
+  return truncate(raw + DESCRIPTION_TAIL);
 }
 
 /**
