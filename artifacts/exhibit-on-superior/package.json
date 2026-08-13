@@ -21,6 +21,7 @@
     "check:gtm": "node scripts/check-gtm-tracking.mjs",
     "check:postpublish": "pnpm run check:knowledge && pnpm run check:rented && pnpm run check:schema && pnpm run check:redirects && pnpm run check:floorplans && pnpm run check:gtm",
     "watch:postpublish": "node scripts/watch-postpublish.mjs",
+    "submit:indexnow": "node scripts/submit-indexnow.mjs",
     "check:fold:built": "node scripts/check-units-above-fold.mjs --built",
     "check:link-names": "node scripts/check-link-names.mjs",
     "check:server:built": "vitest run src/server/production-server.test.ts",

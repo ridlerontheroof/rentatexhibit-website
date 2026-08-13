@@ -68,4 +68,5 @@
 - [SightMap embed integration](sightmap-embed.md) — hide_apply_button+disable_structured_data params, SDK origin handling, EmbedFacade-children SSR trap, dual CSP entries.
 - [Blog draft publish-readiness](blog-article-drafter.md) — draft-gated content is exempt from the published-set guards; publishability must be proven by simulating the published set incl. the inbound related link.
 - [Claim-gated emails release on failed send](weekly-claim-send-release.md) — every claim-before-send watchdog must release its slot in ALL send-failure catches, incl. escalation alerts, or the period goes silent.
+- [Post-publish IndexNow submitter](indexnow-postpublish.md) — watcher diffs live sitemap lastmods vs gitignored state, submits only new/changed URLs; removed units stay api-server's job; NODE_ENV=production for mailer CLIs.
 - [Unit map spreadsheet as fact source](unit-map-fact-source.md) — unitMap.json/planFacts/floorPlanCopy pipeline, sheet's floor-5 = 4M mezzanine, line-06 packet split alias, copy guarded by fact-discipline tests.

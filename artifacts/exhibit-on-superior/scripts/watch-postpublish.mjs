@@ -86,6 +86,32 @@ function runChecks() {
   });
 }
 
+/**
+ * Submit new/content-changed URLs to IndexNow (scripts/submit-indexnow.mjs).
+ * Best-effort by design: a failed submission logs + emails inside the script
+ * itself and must NEVER fail the publish or this watcher, so the exit code
+ * is reported but otherwise ignored.
+ */
+function runIndexNowSubmission() {
+  return new Promise((resolve) => {
+    log('Submitting new/changed URLs to IndexNow…');
+    const child = spawn('node', ['scripts/submit-indexnow.mjs', BASE], {
+      cwd: pkgDir,
+      stdio: 'inherit',
+    });
+    child.on('close', (code) => {
+      if (code !== 0) {
+        log('IndexNow submission FAILED (non-fatal — see alert email / reports/indexnow/submissions.log).');
+      }
+      resolve();
+    });
+    child.on('error', (err) => {
+      console.error(`could not spawn IndexNow submitter: ${err.message}`);
+      resolve();
+    });
+  });
+}
+
 async function checkAndReport(reason) {
   console.log('\n' + '='.repeat(72));
   log(`Running post-publish checks against ${BASE} (${reason})`);
@@ -116,6 +142,7 @@ async function main() {
 
   if (RUN_NOW) {
     const passed = await checkAndReport('requested on startup');
+    await runIndexNowSubmission();
     if (!passed) process.exit(1);
     if (ONCE) return;
   }
@@ -146,6 +173,9 @@ async function main() {
 
     baseline = settled;
     const passed = await checkAndReport(`new publish went live: build ${settled}`);
+    // Ping IndexNow even when a check failed — the new content is live either
+    // way, and the submitter never fails the watcher.
+    await runIndexNowSubmission();
     if (!passed) process.exit(1);
     log(`Watching for the next publish (current build: ${baseline})…`);
   }
