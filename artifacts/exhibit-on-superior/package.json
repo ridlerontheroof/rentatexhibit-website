@@ -32,7 +32,9 @@
     "generate:unit-map": "node scripts/generate-unit-map.mjs",
     "generate:unit-rewrites": "node scripts/generate-unit-rewrites.mjs",
     "generate:unit-rewrites:check": "node scripts/generate-unit-rewrites.mjs --check",
-    "generate:article": "tsx scripts/generate-article.ts"
+    "generate:article": "tsx scripts/generate-article.ts && pnpm run generate:blog-queue",
+    "generate:blog-queue": "tsx scripts/generate-blog-queue.ts",
+    "generate:blog-queue:check": "tsx scripts/generate-blog-queue.ts --check"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",

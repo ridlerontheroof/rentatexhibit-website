@@ -7,6 +7,7 @@ import { announceWatchdogStarted } from "./startupSummary";
 import { createDailyHeartbeat } from "./dailyHeartbeat";
 import { mailerConfigured } from "./mailer";
 import { sendSeoWeeklyDigest, sendSeoDigestFailureAlert } from "./email";
+import { buildBlogReminder, type BlogReminder } from "./blogQueue";
 
 /**
  * Weekly SEO movers digest — the measurement-cadence half of the SEO
@@ -499,6 +500,8 @@ export interface SeoDigestData {
   ga4Fallers: Ga4PageMover[] | null;
   /** Non-fatal problems worth a line in the email (e.g. GA4 query failed). */
   notes: string[];
+  /** "Next guide up" cadence reminder (blog queue snapshot + refresh mode). */
+  blogReminder: BlogReminder;
 }
 
 /** Join two GSC reports into week-over-week movers. Exported for tests. */
@@ -661,6 +664,9 @@ export async function fetchSeoDigestData(
   const queryMovers = computeMovers(curQueries, prevQueries);
   const pageMovers = computeMovers(curPages, prevPages);
 
+  const blogPages = blogPageStats(blogUrls, pageMovers);
+  const nearWinners = nearWinnersOf(curQueries, config.minImpressions);
+
   return {
     windows,
     siteUrl: config.gscSiteUrl,
@@ -668,11 +674,12 @@ export async function fetchSeoDigestData(
     fallingQueries: topMovers(queryMovers, "falling"),
     risingPages: topMovers(pageMovers, "rising"),
     fallingPages: topMovers(pageMovers, "falling"),
-    nearWinners: nearWinnersOf(curQueries, config.minImpressions),
-    blogPages: blogPageStats(blogUrls, pageMovers),
+    nearWinners,
+    blogPages,
     ga4Risers,
     ga4Fallers,
     notes,
+    blogReminder: buildBlogReminder({ blogPages, nearWinners }),
   };
 }
 

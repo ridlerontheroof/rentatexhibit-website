@@ -90,6 +90,20 @@ function emptyData(now: number): SeoDigestData {
     ga4Risers: null,
     ga4Fallers: null,
     notes: [],
+    blogReminder: {
+      pendingDrafts: [],
+      nextUp: {
+        slug: "chicago-move-in-costs-explained",
+        workingTitle: "Move-In Costs in Chicago: What Renters Actually Pay",
+        targetQuery: "apartment move in costs chicago",
+        pillarTitle: "How to Rent an Apartment in Chicago: The Complete Guide",
+      },
+      queueRemaining: 9,
+      publishedCount: 8,
+      plannedTotal: 18,
+      refreshCandidate: null,
+      refreshNearWinner: null,
+    },
   };
 }
 

@@ -1430,6 +1430,32 @@ export interface SeoDigestGa4Row {
   previousUsers: number;
 }
 
+export interface SeoDigestBlogReminderRow {
+  /** draft: true articles awaiting review — publish these before drafting new ones. */
+  pendingDrafts: { slug: string; title: string }[];
+  /** Next planned-but-unwritten guide; null when the cluster plan is exhausted. */
+  nextUp: {
+    slug: string;
+    workingTitle: string;
+    targetQuery: string;
+    pillarTitle: string;
+  } | null;
+  queueRemaining: number;
+  publishedCount: number;
+  plannedTotal: number;
+  /** Refresh mode: weakest published guide from this week's digest data. */
+  refreshCandidate: {
+    url: string;
+    currentClicks: number;
+    previousClicks: number;
+    currentImpressions: number;
+    previousImpressions: number;
+    position: number;
+  } | null;
+  /** Refresh-mode fallback when no blog stats exist this week. */
+  refreshNearWinner: { query: string; impressions: number; clicks: number; position: number } | null;
+}
+
 export interface SeoDigestEmailData {
   windows: {
     current: { start: string; end: string };
@@ -1445,6 +1471,7 @@ export interface SeoDigestEmailData {
   ga4Risers: SeoDigestGa4Row[] | null;
   ga4Fallers: SeoDigestGa4Row[] | null;
   notes: string[];
+  blogReminder: SeoDigestBlogReminderRow;
 }
 
 const TABLE_STYLE =
@@ -1512,6 +1539,55 @@ export function renderSeoWeeklyDigest(data: SeoDigestEmailData): RenderedEmail {
 
   let html = `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>`;
   const text: string[] = [intro, ""];
+
+  // "Next guide up" — the weekly blog-cadence reminder.
+  {
+    const r = data.blogReminder;
+    const lines: string[] = [];
+    if (r.pendingDrafts.length > 0) {
+      lines.push(
+        `Review & publish these drafted guides first (${r.pendingDrafts.length} pending review): ` +
+          r.pendingDrafts.map((d) => `"${d.title}" (${d.slug})`).join("; ") +
+          ".",
+      );
+    }
+    if (r.nextUp) {
+      lines.push(
+        `${r.pendingDrafts.length > 0 ? "After those, the next" : "The next"} guide to draft is ` +
+          `"${r.nextUp.workingTitle}" (/blog/${r.nextUp.slug}), targeting "${r.nextUp.targetQuery}" ` +
+          `in the "${r.nextUp.pillarTitle}" cluster. ${r.queueRemaining} more planned guide${r.queueRemaining === 1 ? "" : "s"} after it ` +
+          `(${r.publishedCount} of ${r.plannedTotal} published).`,
+      );
+    } else if (r.pendingDrafts.length === 0) {
+      lines.push(
+        `The cluster plan is fully published (${r.publishedCount} of ${r.plannedTotal} guides) — switch to refresh mode this week.`,
+      );
+      if (r.refreshCandidate) {
+        const c = r.refreshCandidate;
+        lines.push(
+          `Best refresh candidate: ${shortPage(c.url)} — clicks ${c.previousClicks} → ${c.currentClicks}, ` +
+            `impressions ${c.previousImpressions} → ${c.currentImpressions}, avg pos ${c.position ? c.position.toFixed(1) : "n/a"}. ` +
+            `Update its facts, tighten the intro answer, and add internal links.`,
+        );
+      } else if (r.refreshNearWinner) {
+        const w = r.refreshNearWinner;
+        lines.push(
+          `No blog search stats this week — instead, refresh the page behind the top near-winner query ` +
+            `"${w.query}" (${w.impressions} impressions, avg pos ${w.position.toFixed(1)}).`,
+        );
+      } else {
+        lines.push(
+          "No blog stats or near-winner queries this week — pick the oldest published guide and refresh it.",
+        );
+      }
+    }
+    html +=
+      `<div style="background:#f6f3ec;border:1px solid #d8d2c6;border-radius:8px;padding:14px 16px;margin:0 0 20px;">` +
+      `<p style="${BODY_TEXT}margin:0 0 6px;"><strong>Next guide up — weekly blog cadence</strong></p>` +
+      lines.map((l) => `<p style="${BODY_TEXT}margin:0 0 6px;">${escapeHtml(l)}</p>`).join("") +
+      `</div>`;
+    text.push("Next guide up — weekly blog cadence:", ...lines.map((l) => `  ${l}`), "");
+  }
 
   html += moverTableHtml("Rising queries", data.risingQueries, false);
   html += moverTableHtml("Falling queries", data.fallingQueries, false);

@@ -5,7 +5,10 @@ import {
   renderGeneralTourConfirmation,
   renderLeadNotification,
   renderProspectConfirmation,
+  renderSeoWeeklyDigest,
   slotTimeLabels,
+  type SeoDigestBlogReminderRow,
+  type SeoDigestEmailData,
 } from "./emailTemplates";
 
 function lead(overrides: Partial<LeadNotification> = {}): LeadNotification {
@@ -235,6 +238,123 @@ describe("renderBlogDraftReviewNote", () => {
       title: 'Draft <script>alert("x")</script>',
     });
     expect(r.html).not.toContain("<script>");
+    expect(r.html).toContain("&lt;script&gt;");
+  });
+});
+
+function digestData(reminder: Partial<SeoDigestBlogReminderRow> = {}): SeoDigestEmailData {
+  return {
+    windows: {
+      current: { start: "2026-08-03", end: "2026-08-09" },
+      previous: { start: "2026-07-27", end: "2026-08-02" },
+    },
+    siteUrl: "sc-domain:rentatexhibit.com",
+    risingQueries: [],
+    fallingQueries: [],
+    risingPages: [],
+    fallingPages: [],
+    nearWinners: [],
+    blogPages: [],
+    ga4Risers: null,
+    ga4Fallers: null,
+    notes: [],
+    blogReminder: {
+      pendingDrafts: [],
+      nextUp: null,
+      queueRemaining: 0,
+      publishedCount: 18,
+      plannedTotal: 18,
+      refreshCandidate: null,
+      refreshNearWinner: null,
+      ...reminder,
+    },
+  };
+}
+
+describe("renderSeoWeeklyDigest — next guide up reminder", () => {
+  it("names the next planned guide when the queue has entries", () => {
+    const r = renderSeoWeeklyDigest(
+      digestData({
+        nextUp: {
+          slug: "chicago-move-in-costs-explained",
+          workingTitle: "Move-In Costs in Chicago: What Renters Actually Pay",
+          targetQuery: "apartment move in costs chicago",
+          pillarTitle: "How to Rent an Apartment in Chicago: The Complete Guide",
+        },
+        queueRemaining: 9,
+        publishedCount: 8,
+      }),
+    );
+    expect(r.html).toContain("Next guide up");
+    expect(r.html).toContain("Move-In Costs in Chicago");
+    expect(r.html).toContain("/blog/chicago-move-in-costs-explained");
+    expect(r.text).toContain("apartment move in costs chicago");
+    expect(r.text).toContain("9 more planned guides");
+  });
+
+  it("puts pending drafts first, before the next guide", () => {
+    const r = renderSeoWeeklyDigest(
+      digestData({
+        pendingDrafts: [{ slug: "drafted-guide", title: "A Drafted Guide" }],
+        nextUp: {
+          slug: "next-one",
+          workingTitle: "Next One",
+          targetQuery: "next query",
+          pillarTitle: "Pillar",
+        },
+        queueRemaining: 1,
+      }),
+    );
+    expect(r.text).toContain("Review & publish these drafted guides first");
+    expect(r.text).toContain("A Drafted Guide");
+    expect(r.text).toContain("After those, the next guide to draft");
+  });
+
+  it("switches to refresh mode with the weakest guide when the plan is exhausted", () => {
+    const r = renderSeoWeeklyDigest(
+      digestData({
+        refreshCandidate: {
+          url: "https://www.rentatexhibit.com/blog/slipping-guide",
+          currentClicks: 1,
+          previousClicks: 9,
+          currentImpressions: 40,
+          previousImpressions: 80,
+          position: 14.2,
+        },
+      }),
+    );
+    expect(r.text).toContain("switch to refresh mode");
+    expect(r.text).toContain("/blog/slipping-guide");
+    expect(r.text).toContain("clicks 9 → 1");
+  });
+
+  it("falls back to the top near-winner query when refresh mode has no blog stats", () => {
+    const r = renderSeoWeeklyDigest(
+      digestData({
+        refreshNearWinner: {
+          query: "river north parking",
+          impressions: 40,
+          clicks: 2,
+          position: 11.2,
+        },
+      }),
+    );
+    expect(r.text).toContain('"river north parking"');
+    expect(r.text).toContain("40 impressions");
+  });
+
+  it("escapes HTML in reminder titles", () => {
+    const r = renderSeoWeeklyDigest(
+      digestData({
+        nextUp: {
+          slug: "x",
+          workingTitle: "Tips <script>alert(1)</script>",
+          targetQuery: "q",
+          pillarTitle: "P",
+        },
+      }),
+    );
+    expect(r.html).not.toContain("<script>alert(1)</script>");
     expect(r.html).toContain("&lt;script&gt;");
   });
 });
