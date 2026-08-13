@@ -212,10 +212,9 @@ export const NO_CHECKLIST_TYPES = [
   // potentialAction entries carry only a target URL + name.
   'ScheduleAction',
   'ViewAction',
-  // SearchAction + its EntryPoint target carry only urlTemplate / query-input;
-  // schema.org recommends nothing further for this site's use of them.
-  'SearchAction',
-  'EntryPoint',
+  // NOTE: SearchAction (Sitelinks Search Box) is not emitted — the
+  // available-units filter has no ?q= free-text endpoint. Remove this comment
+  // and add 'SearchAction' back here only when a real text-search is wired up.
   // Review authors: name-only Person nodes per Google review-snippet docs.
   'Person',
 ];

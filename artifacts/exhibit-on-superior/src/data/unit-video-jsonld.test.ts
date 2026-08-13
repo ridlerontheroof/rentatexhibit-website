@@ -44,6 +44,30 @@ describe('youtube-metadata.json cache', () => {
   });
 });
 
+describe('unitPageJsonLd datePublished stability', () => {
+  const sampleUnit = units[0] as AvailableUnit;
+  const EXPECTED_DATE_PUBLISHED = '2026-07-01';
+
+  it('datePublished is always the stable launch date, never the snapshot timestamp', () => {
+    const getWebPage = (ldJson: unknown) => {
+      const graph = (ldJson as { '@graph': Record<string, unknown>[] })['@graph'];
+      return graph.find((n) => n['@type'] === 'WebPage')!;
+    };
+
+    const withTimestamp = getWebPage(unitPageJsonLd(sampleUnit, '2026-08-13T10:00:00Z'));
+    expect(withTimestamp.datePublished).toBe(EXPECTED_DATE_PUBLISHED);
+    // dateModified carries the freshness signal
+    expect(withTimestamp.dateModified).toBe('2026-08-13T10:00:00Z');
+
+    const withDifferentTimestamp = getWebPage(unitPageJsonLd(sampleUnit, '2027-01-01T00:00:00Z'));
+    expect(withDifferentTimestamp.datePublished).toBe(EXPECTED_DATE_PUBLISHED);
+
+    const withoutTimestamp = getWebPage(unitPageJsonLd(sampleUnit));
+    expect(withoutTimestamp.datePublished).toBe(EXPECTED_DATE_PUBLISHED);
+    expect(withoutTimestamp.dateModified).toBeUndefined();
+  });
+});
+
 describe('unitVideoJsonLd', () => {
   const withVideo = units.find((u) => u.videoUrl);
 

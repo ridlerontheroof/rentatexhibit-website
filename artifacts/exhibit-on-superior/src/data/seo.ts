@@ -778,6 +778,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
   '/faq': {
     path: '/faq',
+    datePublished: '2026-01-01',
     dateModified: '2026-07-28',
     ogImage: ogCardUrl('faq'),
     label: 'FAQ',
@@ -1253,16 +1254,11 @@ export const WEBSITE_NODE = {
   name: 'Exhibit On Superior',
   url: SITE_URL,
   publisher: { '@id': `${SITE_URL}#organization` },
-  // SearchAction enables a Sitelinks Search Box for brand queries; target
-  // routes to the Available Units page which accepts a ?q= filter param.
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: `${SITE_URL}/available-units?q={search_term_string}`,
-    },
-    'query-input': 'required name=search_term_string',
-  },
+  // SearchAction / Sitelinks Search Box omitted: the available-units page
+  // filter accepts structured params (movein/ubeds/ubaths/usqft) but no
+  // free-text ?q= query. Declaring a SearchAction with a non-functional
+  // target URL would be inaccurate schema — add it only when a real
+  // text-search endpoint exists.
 };
 
 export const ORGANIZATION_NODE = {
@@ -1472,7 +1468,7 @@ export const APARTMENT_COMPLEX_NODE = {
     `${WALK_SCORE.name} ${WALK_SCORE.score} (${WALK_SCORE.label}, per Walk Score)`,
     `${TRANSIT_SCORE.name} ${TRANSIT_SCORE.score} (${TRANSIT_SCORE.label}, per Walk Score)`,
     `${BIKE_SCORE.name} ${BIKE_SCORE.score} (${BIKE_SCORE.label}, per Walk Score)`,
-  ].map((name) => ({ '@type': 'LocationFeatureSpecification', name })),
+  ].map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true })),
 };
 
 /** Build the JSON-LD @graph for a page path. */

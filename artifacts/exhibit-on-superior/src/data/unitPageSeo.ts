@@ -27,6 +27,12 @@ import { youTubeEmbedUrl, youTubeVideoId } from '../lib/youtube';
 import youtubeMetadata from './youtube-metadata.json';
 import type { AvailableUnit } from '../hooks/use-availability';
 
+/** Stable first-publication date for per-unit pages (launched July 2026).
+ *  This must NEVER change when availability data refreshes — datePublished
+ *  represents when the page type was first published, not when the listing
+ *  data was last updated. Use dateModified for freshness signals. */
+const UNIT_PAGES_PUBLISHED_DATE = '2026-07-01';
+
 interface CachedYouTubeVideo {
   videoUrl: string;
   title: string;
@@ -194,12 +200,13 @@ export function unitPageJsonLd(u: AvailableUnit, updatedAt?: string | null): Rec
     // page-image signal and share card can never diverge.
     primaryImageOfPage: u.photoUrl ?? ogCardUrl('floor-plans'),
     breadcrumb: { '@id': `${canonical}#breadcrumb` },
-    // The availability snapshot's own timestamp — the same data the page
-    // renders — NOT build time, so the claim stays truthful.
-    // datePublished is required for E-E-A-T freshness signals; unit pages
-    // have no separate first-seen date, so the snapshot date doubles as
-    // both the publication anchor and the last-modified marker.
-    ...(updatedAt ? { datePublished: updatedAt, dateModified: updatedAt } : {}),
+    // datePublished is the stable first-publication anchor (when unit pages
+    // launched). It must NEVER be derived from updatedAt: the availability
+    // timestamp changes on every feed refresh and would falsely claim the
+    // page was re-published each time. dateModified carries the freshness
+    // signal when the snapshot timestamp is present.
+    datePublished: UNIT_PAGES_PUBLISHED_DATE,
+    ...(updatedAt ? { dateModified: updatedAt } : {}),
   };
 
   const breadcrumb = {
