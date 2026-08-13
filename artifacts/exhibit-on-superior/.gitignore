@@ -1,0 +1,4 @@
+# Runtime outputs of the post-publish IndexNow submitter — a submission
+# record for the leasing team, not source. Committing them would create
+# generated-data drift on task branches.
+reports/indexnow/
