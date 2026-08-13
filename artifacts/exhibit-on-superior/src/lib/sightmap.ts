@@ -68,6 +68,9 @@ interface SightMapEvent {
 
 export interface SightMapEmbed {
   on(eventName: string, handler: (event: SightMapEvent) => void): void;
+  /** Disable in-map UI elements ('filters' | 'unitList' | 'floorSelection' |
+   * 'unitTooltip' | 'unitDetails'). Optional: older SDK builds may lack it. */
+  disableUI?(elements: string[]): void;
 }
 
 declare global {

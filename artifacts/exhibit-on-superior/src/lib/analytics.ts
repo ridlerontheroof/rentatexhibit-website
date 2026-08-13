@@ -247,7 +247,9 @@ export function trackSightMap(
     | 'sightmap_unit_selected'
     | 'sightmap_filter_change'
     | 'sightmap_apply_click'
-    | 'sightmap_outbound_click',
+    | 'sightmap_outbound_click'
+    | 'sightmap_tour_cta_click'
+    | 'sightmap_apply_cta_click',
   extra: Record<string, string | number | boolean> = {}
 ): void {
   if (!window.gtag) return;

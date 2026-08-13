@@ -3,7 +3,8 @@ import { Link } from 'wouter';
 import { SplitHeadline } from '../SplitHeadline';
 import { EmbedFacade } from '../EmbedFacade';
 import { useAvailability } from '../../hooks/use-availability';
-import { SightMapUnitDetails } from './SightMapUnitDetails';
+import { tourUrlForListing } from './UnitGalleryLightbox';
+import { SightMapUnitPanel } from './SightMapUnitPanel';
 import { trackSightMap } from '../../lib/analytics';
 import {
   loadSightMapSdk,
@@ -89,8 +90,15 @@ export function SightMapSection() {
         if (disposed || !window.SightMap) return;
         const embed = new window.SightMap.Embed(SIGHTMAP_IFRAME_ID);
 
-        const onUnitClick = (event: { data?: { unit?: SightMapUnit } }) => {
-          const unit = event.data?.unit;
+        // The site renders the full listing panel below the map, so the map's
+        // own right-side unit list card and Unit Details modal would duplicate
+        // it — suppress both. Called both immediately and on 'ready'
+        // (whichever side loads first wins).
+        const suppressUnitDetails = () => embed.disableUI?.(['unitList', 'unitDetails']);
+        suppressUnitDetails();
+        embed.on('ready', suppressUnitDetails);
+
+        const selectUnit = (unit: SightMapUnit | undefined): string | null => {
           const token = unitTokenFromSightMap(unit);
           if (token) {
             setSelectedToken(token);
@@ -99,6 +107,12 @@ export function SightMapSection() {
             // the raw value for debugging + GA so drift is noticed.
             console.warn('[sightmap] unmatched unit identifier', unit?.unitNumber, unit?.id);
           }
+          return token;
+        };
+
+        const onUnitClick = (event: { data?: { unit?: SightMapUnit } }) => {
+          const unit = event.data?.unit;
+          const token = selectUnit(unit);
           trackSightMap('sightmap_unit_selected', {
             unit_number: token ?? (unit?.unitNumber ?? 'unknown'),
             matched: Boolean(token),
@@ -108,6 +122,14 @@ export function SightMapSection() {
 
         embed.on('metrics.unitMap.unit.click', onUnitClick);
         embed.on('metrics.unitList.unit.click', onUnitClick);
+        // Some flows (notably on phones, where a tap opens the map's own unit
+        // detail view) surface the chosen unit via this impression event
+        // rather than a distinct click event — sync the panel below from it
+        // too, without the click's GA event (clicks already track themselves,
+        // and impressions also fire alongside clicks on desktop).
+        embed.on('metrics.unitDetails.impression', (event) => {
+          selectUnit(event.data?.unit);
+        });
         embed.on('metrics.unitMatches.impression', () => trackSightMap('sightmap_impression'));
         embed.on('metrics.filters.change', (event) => {
           trackSightMap('sightmap_filter_change', { filters: summarizeSightMapFilters(event) });
@@ -137,6 +159,9 @@ export function SightMapSection() {
       disposed = true;
     };
   }, [activated, retryNonce]);
+
+  const ctaTourUrl = ctaUnit?.listingUrl ? tourUrlForListing(ctaUnit.listingUrl) : null;
+  const ctaButtonToken = unpostedToken ?? ctaUnit?.unit ?? null;
 
   return (
     <section
@@ -236,37 +261,14 @@ export function SightMapSection() {
               </a>
               <Link
                 href="/schedule-a-tour"
+                onClick={() => trackSightMap('sightmap_tour_cta_click', { unit_number: 'general' })}
                 className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
               >
                 Schedule a tour
               </Link>
               <Link
                 href="/start-application"
-                className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-              >
-                Apply now
-              </Link>
-            </div>
-          </div>
-        ) : unpostedToken ? (
-          /* Selected-but-unposted unit (rare — Engrain syncs from the same
-             AppFolio): no listing detail to show, so keep the site-owned
-             tour/apply path visible with the raw token. */
-          <div className="mt-3 flex flex-col gap-3 border border-border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-lg font-semibold uppercase tracking-wider text-foreground">
-              Apt {unpostedToken}
-            </span>
-            <div className="flex shrink-0 flex-wrap items-center gap-3">
-              <Link
-                href={`/schedule-a-tour?unit=${unpostedToken}`}
-                aria-label={`Schedule a tour of apartment ${unpostedToken}`}
-                className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
-              >
-                Schedule a tour
-              </Link>
-              <Link
-                href={`/start-application?unit=${unpostedToken}`}
-                aria-label={`Apply now for apartment ${unpostedToken}`}
+                onClick={() => trackSightMap('sightmap_apply_cta_click', { unit_number: 'general' })}
                 className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
               >
                 Apply now
@@ -275,17 +277,75 @@ export function SightMapSection() {
           </div>
         ) : (
           <>
-            {/* Full listing detail for the map-selected residence (defaults to
-                the first available unit before any selection). Mirrors the
-                standalone unit page; client-only, so it never affects
-                prerender or the page's performance budgets. */}
-            <SightMapUnitDetails unit={ctaUnit} updatedAt={data?.updatedAt} />
+            {/* Exhibit panel for the map-selected unit — the full listing
+                (photos, key facts, story, Residence Details) mirroring the
+                unit's own page, so map shoppers see everything without
+                leaving /available-units. Mounted together with the iframe
+                (never inserted later); its height changes only on the
+                visitor's own map clicks. Unposted tokens (shouldn't happen)
+                keep a plain bar with the general fallback links. */}
+            <div className="mt-3 border border-border bg-white">
+              {unpostedToken ? (
+                <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <span className="text-2xl font-semibold uppercase tracking-wider text-foreground">
+                    Apt {ctaButtonToken}
+                  </span>
+                  <div className="flex shrink-0 flex-wrap items-center gap-3">
+                    <Link
+                      href={`/schedule-a-tour?unit=${unpostedToken}`}
+                      onClick={() => trackSightMap('sightmap_tour_cta_click', { unit_number: ctaButtonToken ?? 'unknown' })}
+                      aria-label={`Schedule a tour of apartment ${ctaButtonToken}`}
+                      className="border border-primary px-6 py-3 text-lg uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
+                    >
+                      Schedule a tour
+                    </Link>
+                    <Link
+                      href={`/start-application?unit=${ctaButtonToken}`}
+                      onClick={() => trackSightMap('sightmap_apply_cta_click', { unit_number: ctaButtonToken ?? 'unknown' })}
+                      aria-label={`Apply now for apartment ${ctaButtonToken}`}
+                      className="bg-primary px-6 py-3 text-lg uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                    >
+                      Apply now
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <SightMapUnitPanel
+                  unit={ctaUnit}
+                  actions={
+                      <>
+                        <Link
+                          href={
+                            ctaTourUrl
+                              ? `/schedule-showing?unit=${ctaUnit.unit}`
+                              : `/schedule-a-tour?unit=${ctaUnit.unit}`
+                          }
+                          onClick={() => trackSightMap('sightmap_tour_cta_click', { unit_number: ctaButtonToken ?? 'unknown' })}
+                          aria-label={`Schedule a tour of apartment ${ctaButtonToken}`}
+                          className="border border-primary px-6 py-3 text-lg uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
+                        >
+                          Schedule a tour
+                        </Link>
+                        <Link
+                          href={`/start-application?unit=${ctaButtonToken}`}
+                          onClick={() => trackSightMap('sightmap_apply_cta_click', { unit_number: ctaButtonToken ?? 'unknown' })}
+                          aria-label={`Apply now for apartment ${ctaButtonToken}`}
+                          className="bg-primary px-6 py-3 text-lg uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                        >
+                          Apply now
+                        </Link>
+                      </>
+                    }
+                  />
+              )}
+            </div>
             <p className="mt-2 text-center text-xs text-muted-foreground">
               {sdkFailed ? (
-                <>Selecting a unit in the map won&rsquo;t update these details right now
-                &mdash; use the residence list below to pick a specific apartment.</>
+                <>Selecting a unit in the map won&rsquo;t update this bar right now &mdash;
+                use the residence list below to pick a specific apartment.</>
               ) : (
-                <>Select any unit on the map above to see its full details here.</>
+                <>Tours and applications always go through Exhibit&rsquo;s own scheduler and
+                application flow &mdash; the same links as the residence list below.</>
               )}
             </p>
           </>

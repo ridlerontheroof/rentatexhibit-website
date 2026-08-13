@@ -1647,7 +1647,7 @@ export const IMAGE_MANIFEST: Record<string, ImageMeta> = {
   },
   "/images/sightmap-embed-poster.png": {
     "width": 1920,
-    "height": 993,
+    "height": 1080,
     "variants": [
       {
         "src": "/images/sightmap-embed-poster-800w.webp",
