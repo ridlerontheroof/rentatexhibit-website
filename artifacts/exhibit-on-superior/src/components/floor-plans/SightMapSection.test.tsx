@@ -36,11 +36,15 @@ type Handler = (event: { data?: unknown }) => void;
 const unit = (token: string, overrides: Record<string, unknown> = {}) => ({
   unit: token,
   listingUrl: `https://example.appfolio.com/listings/detail/${token}`,
-  details: [`Apartment ${token}`],
+  photos: [],
+  details: [{ title: 'Rental Terms', items: [`Apartment ${token}`] }],
   rent: 2500,
-  beds: 1,
-  baths: 1,
+  bedrooms: 1,
+  bathrooms: 1,
   sqft: 700,
+  availableOn: null,
+  marketingTitle: null,
+  description: null,
   ...overrides,
 });
 
@@ -96,7 +100,7 @@ describe('SightMapSection', () => {
     expect((apply as HTMLAnchorElement).href).toContain('/start-application?unit=0610');
     const tour = screen.getByRole('link', { name: /schedule a tour of apartment 0610/i });
     expect((tour as HTMLAnchorElement).href).toContain('/schedule-showing?unit=0610');
-    const details = screen.getByRole('link', { name: /apt 0610 details/i });
+    const details = screen.getByRole('link', { name: /apt 0610 full details/i });
     expect((details as HTMLAnchorElement).href).toContain('/available-units/0610');
     expect(trackSightMap).toHaveBeenCalledWith(
       'sightmap_unit_selected',
@@ -110,7 +114,7 @@ describe('SightMapSection', () => {
     render(<SightMapSection />);
     await activate();
 
-    await screen.findByText(/won.t update this bar right now/i);
+    await screen.findByText(/won.t update these details right now/i);
     // Conversion paths remain (first-unit prefill).
     expect(screen.getByRole('link', { name: /apply now for apartment 0208/i })).toBeTruthy();
     expect(screen.getByRole('link', { name: /schedule a tour of apartment 0208/i })).toBeTruthy();

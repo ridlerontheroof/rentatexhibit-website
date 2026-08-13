@@ -35,7 +35,7 @@ before touring.
 | Pillar | `living-in-river-north-chicago` | living in river north chicago | pillar | Rebbekah | **Published** |
 | 1 | `is-river-north-a-good-place-to-live` | is river north a good place to live | decision-support | Rebbekah | **Published** |
 | 2 | `moving-to-river-north-chicago-checklist` | moving to river north chicago | decision-support | Leasing Team | **Published** |
-| 3 | `river-north-vs-streeterville-renters` | river north vs streeterville | comparison | Rebbekah | Planned |
+| 3 | `river-north-vs-streeterville-renters` | river north vs streeterville | comparison | Rebbekah | **Published** |
 | 4 | `river-north-commute-guide` | river north commute to the loop | informational | Leasing Team | Planned |
 | 5 | `river-north-with-a-dog` | river north dog friendly apartments | informational | Rebbekah | Planned |
 

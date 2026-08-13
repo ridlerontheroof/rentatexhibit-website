@@ -95,7 +95,11 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
           'No. The address holds a perfect 100/100 Transit Score per Walk Score, with the Brown, Purple, and Red Lines and the #66 bus all within a seven-minute walk. Renters who keep a car can lease garage parking at Exhibit On Superior for $335 per month.',
       },
     ],
-    related: ['is-river-north-a-good-place-to-live', 'moving-to-river-north-chicago-checklist'],
+    related: [
+      'is-river-north-a-good-place-to-live',
+      'moving-to-river-north-chicago-checklist',
+      'river-north-vs-streeterville-renters',
+    ],
     links: [
       { label: 'See current availability and pricing', href: '/available-units' },
       { label: 'Explore the neighborhood guide', href: '/neighborhood' },
@@ -287,6 +291,97 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       },
     ],
     ogCard: 'application-guide',
+    published: '2026-08-13',
+    updated: '2026-08-13',
+  },
+
+  // ---------------------------------------------------------------------
+  // CLUSTER — River North vs. Streeterville
+  // ---------------------------------------------------------------------
+  {
+    slug: 'river-north-vs-streeterville-renters',
+    title: 'River North vs. Streeterville: Which Should Renters Choose?',
+    metaTitle: 'River North vs. Streeterville: Which Should Renters Choose?',
+    targetQuery: 'river north vs streeterville',
+    role: 'cluster',
+    pillar: 'living-in-river-north-chicago',
+    authorId: 'rebbekah-hallberg',
+    summary:
+      'Both River North and Streeterville are walkable downtown Chicago neighborhoods within easy reach of the Loop, but they feel different. River North earns a 99/100 Walk Score and a perfect 100/100 Transit Score; its streets are lined with galleries and restaurants. Streeterville is quieter and faces the lake. This piece weighs both for renters deciding between them.',
+    sections: [
+      {
+        heading: 'Where the two neighborhoods sit',
+        paragraphs: [
+          'River North and Streeterville share a border but have distinct personalities. River North runs from the Chicago River north to Chicago Avenue, between the river and Michigan Avenue. Streeterville picks up on the other side of Michigan Avenue and stretches east to Lake Shore Drive and the lakefront, bordered roughly by the river to the south and Oak Street to the north.',
+          'The practical consequence: River North puts you a few blocks from the Brown and Purple Line stations and the Loop. Streeterville puts you closer to the lakefront, Ohio Street Beach, and Navy Pier, but a bit farther from L service.',
+        ],
+      },
+      {
+        heading: 'Getting around: transit and walkability',
+        paragraphs: [
+          `River North\u2019s transit access is one of its clearest advantages. Per Walk Score, 165 W Superior St \u2014 right in the heart of River North \u2014 rates ${WALK_SCORE_PHRASE}, ${TRANSIT_SCORE_PHRASE}, and ${BIKE_SCORE_PHRASE}. The Chicago station on the Brown and Purple Lines is about two blocks away; the Red Line\u2019s Chicago/State station is roughly a seven-minute walk east; and the #66 Chicago Avenue bus stops one block north. The Loop is one L stop away \u2014 about ten minutes door to door per the CTA\u2019s published schedules.`,
+          'Streeterville is also walkable: most necessities are reachable on foot along Michigan Avenue, and the Red Line\u2019s Chicago/State station serves the neighborhood\u2019s western edge. Lakefront express buses run along Lake Shore Drive and connect quickly to the Loop. That said, Streeterville does not have its own L station \u2014 the walk to the nearest train is longer than it is from most River North addresses.',
+          'If train access matters most to your commute, River North has the edge.',
+        ],
+      },
+      {
+        heading: 'Neighborhood energy and daily life',
+        paragraphs: [
+          'River North\u2019s energy comes from density. The neighborhood is one of the densest restaurant districts in Chicago, and its gallery-district history gives it a mix of creative studios and design showrooms alongside everyday retail. Streets are active through the evening, and the sound level outside reflects that.',
+          'Streeterville is quieter in character. It has a more residential feel, anchored by Northwestern Memorial Hospital and the residential towers along the lakefront. Daily life there leans on Michigan Avenue and the Magnificent Mile for shopping and dining \u2014 strong access, but with more tourist traffic than River North\u2019s side streets. The lakefront is Streeterville\u2019s strongest card: Ohio Street Beach and the Lakefront Trail are minutes away on foot, which is hard to replicate from an inland River North address.',
+        ],
+      },
+      {
+        heading: 'Apartment stock and what you pay for',
+        paragraphs: [
+          'Both neighborhoods are dominated by high-rise towers, and both price at a downtown premium. The core trade-off is what that premium buys you: in River North, density of transit and restaurant options; in Streeterville, lakefront proximity and a quieter street environment.',
+          'At Exhibit On Superior in River North, apartments run from studios and convertibles to three-bedrooms \u2014 448 to 1,528 square feet across floors 2 through 34 \u2014 with floor-to-ceiling windows, an in-home washer and dryer, quartz countertops, and driftwood-style plank flooring. There is no security deposit; move-in costs are a $60 application fee per applicant and a $500 administration fee per apartment, refunded if the application is denied.',
+          'Building features include a 75-foot outdoor lap pool, hot tub, sauna, and fitness center, plus a dog spa and outdoor dog run on the first floor. Monthly add-ons: a Utility & Service Amenity fee of $95\u2013$195 depending on floor plan (covering water, sewer, trash, heat, air conditioning, and natural gas), garage parking at $335 per month, and storage lockers at $25 per month.',
+        ],
+      },
+      {
+        heading: 'Who each neighborhood suits',
+        paragraphs: [
+          'River North is a better fit if you commute by train and want the shortest walk to the L, if you want to walk to most daily needs \u2014 restaurants, groceries, the riverwalk \u2014 without a car, or if you prefer neighborhood energy over quiet: galleries, late-night dining, and street activity at your door.',
+          'Streeterville is a better fit if lakefront access \u2014 running, cycling, or the beach \u2014 is part of your daily routine, if you want a quieter residential street environment in a downtown location, or if your commute is to Northwestern Memorial Hospital or the surrounding medical campus.',
+          'Most renters who choose between the two have already decided whether transit proximity or lakefront proximity matters more to their daily life. That single preference usually determines the pick.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Is River North or Streeterville more walkable?',
+        answer:
+          `Both neighborhoods are highly walkable \u2014 you can run most errands on foot in either one. River North rates ${WALK_SCORE_PHRASE} and ${TRANSIT_SCORE_PHRASE} at 165 W Superior St per Walk Score, reflecting denser L access. Streeterville is similarly walkable day-to-day but relies more on buses than on nearby L stations.`,
+      },
+      {
+        question: 'Which neighborhood is closer to the Loop?',
+        answer:
+          'River North, for most transit users. From Exhibit On Superior, the Brown/Purple Line at Chicago & Franklin reaches the Loop in about ten minutes door to door per the CTA\u2019s published schedules. Streeterville residents typically take the Red Line from Chicago/State or a lakefront bus, adding a few extra minutes of walking.',
+      },
+      {
+        question: 'Does Streeterville have better lakefront access than River North?',
+        answer:
+          'Yes \u2014 that is Streeterville\u2019s defining advantage. Ohio Street Beach and the Lakefront Trail are steps away from most Streeterville addresses. River North sits inland; the lakefront is reachable by bike or bus, but it is not a quick walk from most buildings.',
+      },
+    ],
+    related: ['living-in-river-north-chicago', 'is-river-north-a-good-place-to-live'],
+    links: [
+      { label: 'Explore the neighborhood guide', href: '/neighborhood' },
+      { label: 'See current availability and pricing', href: '/available-units' },
+      { label: 'Schedule a tour', href: '/schedule-a-tour' },
+    ],
+    sources: [
+      {
+        label: 'Walk Score for 165 W Superior St',
+        href: WALK_SCORE_SOURCE_URL,
+      },
+      {
+        label: 'CTA \u2014 train schedules and travel times',
+        href: 'https://www.transitchicago.com/schedules/',
+      },
+    ],
+    ogCard: 'neighborhood',
     published: '2026-08-13',
     updated: '2026-08-13',
   },

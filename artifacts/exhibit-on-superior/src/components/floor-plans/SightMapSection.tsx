@@ -3,9 +3,7 @@ import { Link } from 'wouter';
 import { SplitHeadline } from '../SplitHeadline';
 import { EmbedFacade } from '../EmbedFacade';
 import { useAvailability } from '../../hooks/use-availability';
-import { tourUrlForListing } from './UnitGalleryLightbox';
-import { bedBathLabel, formatRent, groupForUnit } from './AvailableUnits';
-import { resolveUnitSqft } from '../../data/unitSqft';
+import { SightMapUnitDetails } from './SightMapUnitDetails';
 import { trackSightMap } from '../../lib/analytics';
 import {
   loadSightMapSdk,
@@ -140,12 +138,6 @@ export function SightMapSection() {
     };
   }, [activated, retryNonce]);
 
-  const ctaGroup = ctaUnit ? groupForUnit(ctaUnit.unit) : null;
-  const ctaSqft = ctaUnit ? resolveUnitSqft(ctaUnit) : null;
-  const ctaRent = ctaUnit ? formatRent(ctaUnit.rent) : null;
-  const ctaTourUrl = ctaUnit?.listingUrl ? tourUrlForListing(ctaUnit.listingUrl) : null;
-  const ctaButtonToken = unpostedToken ?? ctaUnit?.unit ?? null;
-
   return (
     <section
       id="explore-the-building"
@@ -256,67 +248,44 @@ export function SightMapSection() {
               </Link>
             </div>
           </div>
+        ) : unpostedToken ? (
+          /* Selected-but-unposted unit (rare — Engrain syncs from the same
+             AppFolio): no listing detail to show, so keep the site-owned
+             tour/apply path visible with the raw token. */
+          <div className="mt-3 flex flex-col gap-3 border border-border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-lg font-semibold uppercase tracking-wider text-foreground">
+              Apt {unpostedToken}
+            </span>
+            <div className="flex shrink-0 flex-wrap items-center gap-3">
+              <Link
+                href={`/schedule-a-tour?unit=${unpostedToken}`}
+                aria-label={`Schedule a tour of apartment ${unpostedToken}`}
+                className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
+              >
+                Schedule a tour
+              </Link>
+              <Link
+                href={`/start-application?unit=${unpostedToken}`}
+                aria-label={`Apply now for apartment ${unpostedToken}`}
+                className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+              >
+                Apply now
+              </Link>
+            </div>
+          </div>
         ) : (
           <>
-            {/* Exhibit CTA row for the map-selected unit — identical targets
-                to the Available Residences rows below, mounted together with
-                the iframe (never inserted later), so it cannot shift layout. */}
-            <div className="mt-3 flex flex-col gap-3 border border-border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <span className="text-lg font-semibold uppercase tracking-wider text-foreground">
-                  Apt {ctaButtonToken}
-                </span>
-                {!unpostedToken && (
-                  <span className="ml-3 text-sm text-muted-foreground">
-                    {[
-                      ctaRent,
-                      bedBathLabel(ctaUnit, ctaGroup),
-                      ctaSqft !== null ? `${ctaSqft.toLocaleString()} sq ft` : null,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </span>
-                )}
-              </div>
-              <div className="flex shrink-0 flex-wrap items-center gap-3">
-                {!unpostedToken && ctaUnit.details.length > 0 && (
-                  <Link
-                    href={`/available-units/${ctaUnit.unit}`}
-                    aria-label={`Apt ${ctaUnit.unit} details`}
-                    className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
-                  >
-                    Apt {ctaUnit.unit} details
-                  </Link>
-                )}
-                <Link
-                  href={
-                    unpostedToken
-                      ? `/schedule-a-tour?unit=${unpostedToken}`
-                      : ctaTourUrl
-                        ? `/schedule-showing?unit=${ctaUnit.unit}`
-                        : `/schedule-a-tour?unit=${ctaUnit.unit}`
-                  }
-                  aria-label={`Schedule a tour of apartment ${ctaButtonToken}`}
-                  className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
-                >
-                  Schedule a tour
-                </Link>
-                <Link
-                  href={`/start-application?unit=${ctaButtonToken}`}
-                  aria-label={`Apply now for apartment ${ctaButtonToken}`}
-                  className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-                >
-                  Apply now
-                </Link>
-              </div>
-            </div>
+            {/* Full listing detail for the map-selected residence (defaults to
+                the first available unit before any selection). Mirrors the
+                standalone unit page; client-only, so it never affects
+                prerender or the page's performance budgets. */}
+            <SightMapUnitDetails unit={ctaUnit} updatedAt={data?.updatedAt} />
             <p className="mt-2 text-center text-xs text-muted-foreground">
               {sdkFailed ? (
-                <>Selecting a unit in the map won&rsquo;t update this bar right now &mdash;
-                use the residence list below to pick a specific apartment.</>
+                <>Selecting a unit in the map won&rsquo;t update these details right now
+                &mdash; use the residence list below to pick a specific apartment.</>
               ) : (
-                <>Tours and applications always go through Exhibit&rsquo;s own scheduler and
-                application flow &mdash; the same links as the residence list below.</>
+                <>Select any unit on the map above to see its full details here.</>
               )}
             </p>
           </>

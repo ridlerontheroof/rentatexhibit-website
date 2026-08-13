@@ -1415,6 +1415,14 @@ to = "/blog/moving-to-river-north-chicago-checklist/index.html"
 from = "/blog/moving-to-river-north-chicago-checklist/"
 to = "/blog/moving-to-river-north-chicago-checklist/index.html"
 
+[[services.production.rewrites]]
+from = "/blog/river-north-vs-streeterville-renters"
+to = "/blog/river-north-vs-streeterville-renters/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/river-north-vs-streeterville-renters/"
+to = "/blog/river-north-vs-streeterville-renters/index.html"
+
 # Unknown /blog/<slug> URLs: serve the noindex not-found stub instead of
 # homepage HTML for retired, mistyped, or still-draft blog paths.
 [[services.production.rewrites]]
