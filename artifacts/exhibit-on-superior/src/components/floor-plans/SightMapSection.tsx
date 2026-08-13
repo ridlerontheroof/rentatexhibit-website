@@ -225,13 +225,13 @@ export function SightMapSection() {
                   <button
                     type="button"
                     onClick={() => setRetryNonce((n) => n + 1)}
-                    className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
+                    className="border border-primary px-6 py-3 text-lg uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
                   >
                     Try again
                   </button>
                   <a
                     href="#available-units"
-                    className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                    className="bg-primary px-6 py-3 text-lg uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                   >
                     View available residences
                   </a>
@@ -255,21 +255,21 @@ export function SightMapSection() {
             <div className="flex shrink-0 flex-wrap items-center gap-3">
               <a
                 href="#available-units"
-                className="border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
+                className="border border-border px-6 py-3 text-lg uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
               >
                 View available residences
               </a>
               <Link
                 href="/schedule-a-tour"
                 onClick={() => trackSightMap('sightmap_tour_cta_click', { unit_number: 'general' })}
-                className="border border-primary px-4 py-2 text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
+                className="border border-primary px-6 py-3 text-lg uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-white"
               >
                 Schedule a tour
               </Link>
               <Link
                 href="/start-application"
                 onClick={() => trackSightMap('sightmap_apply_cta_click', { unit_number: 'general' })}
-                className="bg-primary px-4 py-2 text-xs uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                className="bg-primary px-6 py-3 text-lg uppercase tracking-wider text-white transition-opacity hover:opacity-90"
               >
                 Apply now
               </Link>
