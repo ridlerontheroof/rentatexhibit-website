@@ -6,7 +6,14 @@
 //   2. malformed raw heads — duplicated preview tags, tags outside the seo
 //      markers, missing markers — must fail the raw-head assertions.
 import { describe, it, expect } from 'vitest';
-import { analyzeRawHead, rawHeadFailures, isSettled, PREVIEW_TAGS } from './hydrated-seo.mjs';
+import {
+  analyzeRawHead,
+  rawHeadFailures,
+  isSettled,
+  PREVIEW_TAGS,
+  extractPreviewImageUrls,
+  imageResponseFailure,
+} from './hydrated-seo.mjs';
 
 const settledCounts = Object.fromEntries(PREVIEW_TAGS.map((t) => [t, 1]));
 const settledSnap = (href) => ({ ...settledCounts, href, leftoverInBlock: 0, sawMarkers: true });
@@ -86,5 +93,47 @@ describe('rawHeadFailures', () => {
   it('ignores tags below </head>', () => {
     const bodyNoise = cleanHead.replace('<body>', `<body><meta property="og:image" content="x" />`);
     expect(rawHeadFailures(bodyNoise, '/')).toEqual([]);
+  });
+});
+
+describe('extractPreviewImageUrls', () => {
+  it('collects og:image and twitter:image content URLs from the head', () => {
+    expect(extractPreviewImageUrls(cleanHead)).toEqual([
+      'https://x.test/og.jpg',
+      'https://x.test/og.jpg',
+    ]);
+  });
+
+  it('ignores og:image:width/height and anything below </head>', () => {
+    const bodyNoise = cleanHead.replace('<body>', `<body><meta property="og:image" content="body.jpg" />`);
+    const urls = extractPreviewImageUrls(bodyNoise);
+    expect(urls).not.toContain('body.jpg');
+    expect(urls).not.toContain('1200');
+  });
+
+  it('handles single-quoted attributes and preserves cache-busters', () => {
+    const html = page(
+      `<!-- seo:start --><meta property='og:image' content='/images/og/home.jpg?v=abc123' /><!-- seo:end -->`,
+    );
+    expect(extractPreviewImageUrls(html)).toEqual(['/images/og/home.jpg?v=abc123']);
+  });
+});
+
+describe('imageResponseFailure', () => {
+  it('passes a 200 image/* response', () => {
+    expect(imageResponseFailure('https://x.test/og.jpg', 200, 'image/jpeg')).toBeNull();
+    expect(imageResponseFailure('https://x.test/og.webp', 200, 'IMAGE/WEBP; charset=binary')).toBeNull();
+  });
+
+  it('fails a non-200 status (the renamed/stale-URL case)', () => {
+    expect(imageResponseFailure('https://x.test/og.jpg', 404, 'text/html')).toContain('HTTP 404');
+    expect(imageResponseFailure('https://x.test/og.jpg', 410, 'image/jpeg')).toContain('HTTP 410');
+  });
+
+  it('fails a 200 that is not an image (SPA fallback HTML masquerading as a hit)', () => {
+    expect(imageResponseFailure('https://x.test/og.jpg', 200, 'text/html; charset=utf-8')).toContain(
+      'expected image/*',
+    );
+    expect(imageResponseFailure('https://x.test/og.jpg', 200, null)).toContain('expected image/*');
   });
 });

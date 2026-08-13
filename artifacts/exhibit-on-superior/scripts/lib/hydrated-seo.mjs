@@ -63,6 +63,41 @@ export function rawHeadFailures(html, route) {
   return failures;
 }
 
+/**
+ * Extract every share-preview IMAGE URL (og:image + twitter:image content
+ * attributes) from a raw HTML document's head. Duplicates are preserved so
+ * the caller can de-duplicate across routes; order follows document order.
+ */
+export function extractPreviewImageUrls(html) {
+  const headEnd = html.search(/<\/head\s*>/i);
+  const head = headEnd === -1 ? html : html.slice(0, headEnd);
+  const urls = [];
+  for (const re of [
+    /<meta[^>]+property=["']og:image["'][^>]*>/gi,
+    /<meta[^>]+name=["']twitter:image["'][^>]*>/gi,
+  ]) {
+    for (const m of head.match(re) ?? []) {
+      const content = m.match(/content=["']([^"']+)["']/i);
+      if (content) urls.push(content[1]);
+    }
+  }
+  return urls;
+}
+
+/**
+ * Failure message (or null = pass) for one fetched share-preview image URL.
+ * A share card only renders when the image URL answers HTTP 200 with an
+ * image/* content type — anything else means scrapers show an empty card.
+ */
+export function imageResponseFailure(url, status, contentType) {
+  if (status !== 200) return `share-preview image ${url} answered HTTP ${status} (expected 200)`;
+  const type = String(contentType ?? '').toLowerCase();
+  if (!type.startsWith('image/')) {
+    return `share-preview image ${url} answered content-type "${contentType ?? ''}" (expected image/*)`;
+  }
+  return null;
+}
+
 /** Normalize a URL for target comparison: drop query/hash and trailing slash. */
 export function normalizeUrl(url) {
   return String(url ?? '')

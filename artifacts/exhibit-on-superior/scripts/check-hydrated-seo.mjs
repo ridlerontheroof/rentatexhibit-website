@@ -42,7 +42,13 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { PREVIEW_TAGS, rawHeadFailures, isSettled } from './lib/hydrated-seo.mjs';
+import {
+  PREVIEW_TAGS,
+  rawHeadFailures,
+  isSettled,
+  extractPreviewImageUrls,
+  imageResponseFailure,
+} from './lib/hydrated-seo.mjs';
 
 const args = process.argv.slice(2);
 const HTTP_ONLY = args.includes('--http-only');
@@ -195,6 +201,7 @@ const SNAPSHOT_EXPR = `(() => {
     leftoverInBlock,
     canonicalHref: attr('link[rel="canonical"]', 'href'),
     ogImageContent: attr('meta[property="og:image"]', 'content'),
+    twitterImageContent: attr('meta[name="twitter:image"]', 'content'),
   };
 })()`;
 
@@ -240,6 +247,7 @@ async function pickRoutes() {
 async function rawChecks(routes) {
   const failures = [];
   const htmlByRoute = new Map();
+  const imageUrlsByRoute = new Map();
   for (const route of routes) {
     const url = `${BASE}${route}`;
     let html;
@@ -255,11 +263,50 @@ async function rawChecks(routes) {
       continue;
     }
     htmlByRoute.set(route, html);
+    imageUrlsByRoute.set(route, extractPreviewImageUrls(html));
     const routeFailures = rawHeadFailures(html, route);
     failures.push(...routeFailures);
     console.log(routeFailures.length ? `FAIL  raw ${route}` : `ok    raw ${route}: single preview set, all inside seo markers`);
   }
-  return { failures, htmlByRoute };
+  return { failures, htmlByRoute, imageUrlsByRoute };
+}
+
+// --- Share-preview image liveness (both modes) ---------------------------------
+// A rename, a drifted ?v= cache-buster, or a stale AppFolio photo URL leaves
+// the head pointing at a dead image — scrapers then show an EMPTY preview
+// card and nothing else alarms. Every og:image / twitter:image URL found
+// (raw heads always; hydrated heads too in Chromium mode) must answer
+// HTTP 200 with an image/* content type.
+async function imageChecks(urlsByRoute) {
+  const failures = [];
+  const checked = new Map(); // absolute URL -> failure message | null
+  for (const [route, urls] of urlsByRoute) {
+    for (const raw of urls) {
+      let abs;
+      try {
+        abs = new URL(raw, BASE).href;
+      } catch {
+        failures.push(`${route}: share-preview image URL is unparsable (${JSON.stringify(raw)})`);
+        continue;
+      }
+      if (!checked.has(abs)) {
+        let failure;
+        try {
+          const res = await fetch(abs, { headers: { 'user-agent': UA }, redirect: 'follow' });
+          failure = imageResponseFailure(abs, res.status, res.headers.get('content-type'));
+          // Drain the body so keep-alive sockets are reusable.
+          await res.arrayBuffer().catch(() => {});
+        } catch (err) {
+          failure = `share-preview image ${abs} could not be fetched (${err.message})`;
+        }
+        checked.set(abs, failure);
+        console.log(failure ? `FAIL  image ${abs}` : `ok    image ${abs}: 200 image/*`);
+      }
+      const failure = checked.get(abs);
+      if (failure) failures.push(`${route}: ${failure}`);
+    }
+  }
+  return failures;
 }
 
 /** No-Chromium probe: some shipped JS bundle must reference the seo:start
@@ -316,6 +363,7 @@ async function hydratedChecks(routes, chrome) {
   await cdp.send('Runtime.enable');
 
   const failures = [];
+  const imageUrlsByRoute = new Map();
   for (const route of routes) {
     const url = `${BASE}${route}`;
     await cdp.send('Page.navigate', { url });
@@ -337,12 +385,13 @@ async function hydratedChecks(routes, chrome) {
       // missing marker pair means prerender tooling changed — say so loudly.
       console.warn(`warn  ${route}: seo:start/seo:end markers not found in the hydrated head.`);
     }
+    imageUrlsByRoute.set(`${route} (hydrated)`, [...snap.ogImageContent, ...snap.twitterImageContent]);
     console.log(
       `ok    hydrated ${route}: ${PREVIEW_TAGS.map((t) => `${t}=${snap[t]}`).join(' ')} leftoverInBlock=${snap.leftoverInBlock} (og:image → ${snap.ogImageContent[0]})`,
     );
   }
   cdp.close();
-  return failures;
+  return { failures, imageUrlsByRoute };
 }
 
 // --- Main ---------------------------------------------------------------------
@@ -351,11 +400,13 @@ async function main() {
   console.log(`Checking share-preview heads on ${BASE} for routes: ${routes.join(', ')}`);
 
   // Raw heads first — every route, every mode.
-  const { failures, htmlByRoute } = await rawChecks(routes);
+  const { failures, htmlByRoute, imageUrlsByRoute } = await rawChecks(routes);
 
   const chrome = HTTP_ONLY ? null : findChromium();
   if (chrome) {
-    failures.push(...(await hydratedChecks(routes, chrome)));
+    const hydrated = await hydratedChecks(routes, chrome);
+    failures.push(...hydrated.failures);
+    for (const [route, urls] of hydrated.imageUrlsByRoute) imageUrlsByRoute.set(route, urls);
   } else {
     console.log(
       HTTP_ONLY
@@ -368,6 +419,10 @@ async function main() {
       failures.push('no shipped JS bundle references the seo:start marker — the hydration strip may not be deployed');
     }
   }
+
+  // Every share-preview image URL found (raw always; hydrated too when
+  // Chromium ran) must be alive, or shared links show an empty card.
+  failures.push(...(await imageChecks(imageUrlsByRoute)));
   return failures;
 }
 
@@ -375,7 +430,7 @@ main()
   .then((failures) => {
     if (failures.length) {
       console.error(
-        `\n${failures.length} check(s) FAILED against ${BASE}. A shared link may show a duplicate or broken preview card — inspect src/lib/stripPrerenderedSeo.ts, its call in src/main.tsx, and the <Seo> component, then re-publish.`,
+        `\n${failures.length} check(s) FAILED against ${BASE}. A shared link may show a duplicate, broken, or EMPTY preview card — inspect src/lib/stripPrerenderedSeo.ts, its call in src/main.tsx, the <Seo> component, and (for dead image URLs) the share-card assets under public/images/og, then re-publish.`,
       );
       process.exit(1);
     }
