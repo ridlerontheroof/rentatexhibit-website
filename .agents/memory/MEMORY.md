@@ -16,6 +16,7 @@
 - [AppFolio showing scheduler](appfolio-showing-scheduler.md) — /schedule-showing books real showings via api-server proxies; ALL bodies snake_case (camelCase → bare 400), no X-JWT anymore, mandatory lead+hosted-URL fallback.
 - [AppFolio slot-format drift](appfolio-slot-format-drift.md) — availabilities now ISO-with-offset + dash dates; parser accepts both & normalizes to slash wall time; all-dropped condition must alarm (slots_degraded + leasing email), never read as "no openings".
 - [Headless Chromium PDF printing](fact-sheet-pdf-headless.md) — nix store ships playwright-browsers chromium; CLI `--print-to-pdf` works with no library; fact-sheet PDF reprints itself.
+- [iMessage link-preview caching](imessage-preview-cache.md) — edited bubbles never re-fetch previews; verify with check:hydrated-seo, then resend as a new message.
 - [OG share-card generation](og-card-recipe.md) — share cards are script-generated from a page→photo/tagline map; edit the map + rerun, never hand-run ImageMagick.
 - [Matterport signed asset URLs expire in CDN cache](matterport-signed-urls.md) — player-models `image` URLs can be stale-signed (410 content.gone); cache-bust the API call for fresh URLs.
 - [Gmail SMTP sending](gmail-smtp-sending.md) — api-server mails via app-password SMTP (connector is one-account, owned by DealVault); nodemailer raw needs explicit envelope recipients; DKIM/DMARC live in AppFolio DNS.
