@@ -34,12 +34,28 @@ try {
   // snapshot dirties the working tree on every build, which blocks task merges
   // ("cannot apply changes") and produces noise commits. Compare the payload
   // against the committed snapshot with updatedAt normalized out.
+  // …EXCEPT when the committed updatedAt is itself getting old: the prerender
+  // guard fails the whole build once the stamp passes 48h, so a long quiet
+  // stretch with zero unit changes must still refresh the stamp. Rewrite once
+  // the committed stamp is older than half the max age (24h) — rare enough to
+  // stay merge-friendly, early enough that a publish never hits the 48h wall.
+  const STAMP_REFRESH_AGE_MS = 24 * 60 * 60 * 1000;
   let unchanged = false;
   try {
     const existing = JSON.parse(await fs.readFile(outPath, 'utf8'));
-    unchanged =
+    const sameUnits =
       JSON.stringify({ ...existing, updatedAt: null }) ===
       JSON.stringify({ ...payload, updatedAt: null });
+    const existingUpdated = Date.parse(existing?.updatedAt);
+    const stampFresh =
+      Number.isFinite(existingUpdated) && Date.now() - existingUpdated <= STAMP_REFRESH_AGE_MS;
+    unchanged = sameUnits && stampFresh;
+    if (sameUnits && !stampFresh) {
+      console.log(
+        'Availability snapshot units unchanged but committed updatedAt is >24h old; ' +
+          'rewriting the stamp so the prerender freshness guard (48h) cannot trip.',
+      );
+    }
   } catch {
     /* missing/malformed existing snapshot — write the fresh one */
   }
