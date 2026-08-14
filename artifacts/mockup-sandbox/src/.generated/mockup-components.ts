@@ -2,5 +2,9 @@
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 export const modules: ModuleMap = {
   "./components/mockups/sightmap-placement/Collapsed.tsx": () => import("../components/mockups/sightmap-placement/Collapsed.tsx"),
-  "./components/mockups/sightmap-placement/Expanded.tsx": () => import("../components/mockups/sightmap-placement/Expanded.tsx")
+  "./components/mockups/sightmap-placement/Expanded.tsx": () => import("../components/mockups/sightmap-placement/Expanded.tsx"),
+  "./components/mockups/woods-crossing/Board.tsx": () => import("../components/mockups/woods-crossing/Board.tsx"),
+  "./components/mockups/woods-crossing/BoldFriendly.tsx": () => import("../components/mockups/woods-crossing/BoldFriendly.tsx"),
+  "./components/mockups/woods-crossing/CleanContemporary.tsx": () => import("../components/mockups/woods-crossing/CleanContemporary.tsx"),
+  "./components/mockups/woods-crossing/WasatchWarm.tsx": () => import("../components/mockups/woods-crossing/WasatchWarm.tsx")
 };

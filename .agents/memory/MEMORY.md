@@ -72,3 +72,4 @@
 - [Post-publish IndexNow submitter](indexnow-postpublish.md) — watcher diffs live sitemap lastmods vs gitignored state, submits only new/changed URLs; removed units stay api-server's job; NODE_ENV=production for mailer CLIs.
 - [AI proxy provisioning](ai-proxy-provisioning.md) — setupReplitAIIntegrations doesn't exist in task sandboxes; user provisions via a regular chat (owner has no OpenAI API account).
 - [Unit map spreadsheet as fact source](unit-map-fact-source.md) — unitMap.json/planFacts/floorPlanCopy pipeline, sheet's floor-5 = 4M mezzanine, line-06 packet split alias, copy guarded by fact-discipline tests.
+- [Canvas comps need in-repo evidence](canvas-comps-review-evidence.md) — completion review can't see canvas shapes; commit a Board component + rationale doc or the task gets rejected.
