@@ -113,7 +113,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Luxury apartments in River North Chicago — studio, convertible, 1, 2 & 3-bedroom homes with skyline views, resort amenities, and on-site retail and dining.',
     quickAnswer:
-      'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, convertible, one-, two-, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown neighborhoods.',
+      'Exhibit On Superior is a luxury high-rise apartment community at 165 W Superior St in Chicago\u2019s River North neighborhood with studio, convertible, one-, two-, and three-bedroom apartments, a full floor of luxury amenities, on-site retail, and quick access to downtown Chicago neighborhoods.',
     faqs: [
       {
         q: 'Where is Exhibit On Superior located?',

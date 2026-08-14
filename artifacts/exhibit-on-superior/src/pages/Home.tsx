@@ -69,10 +69,10 @@ export function Home() {
           <div className="container mx-auto max-w-4xl text-center">
             <SplitHeadline script={'Less clutter. Less "stuff"'} caps="More Time. More Freedom" className="mb-8" />
             <p className="text-lg leading-relaxed mb-6">
-              Discover the perfect fit for your on-the-go lifestyle at Exhibit on Superior, where modern apartments in Chicago’s vibrant River North neighborhood put everything within reach. From fitness to food to relaxation, CycleBar, Club Pilates, Goddess and the Baker, Train Moment, and LaPerior Foot Spa are all right here in the building. This is your social hub, entertainment zone, wellness retreat, and relaxing oasis all rolled into one, with endless amenities at every turn. At Exhibit on Superior, every day is anything but ordinary.
+              Discover the perfect fit for your on-the-go lifestyle at Exhibit on Superior. Our modern apartments sit in River North, one of downtown Chicago’s most vibrant neighborhoods, with everything within reach. From fitness to food to relaxation, CycleBar, Club Pilates, Goddess and the Baker, Train Moment, and LaPerior Foot Spa are all right here in the building. This is your social hub, wellness retreat, and relaxing oasis rolled into one. At Exhibit on Superior, every day is anything but ordinary.
             </p>
             <p className="text-lg leading-relaxed mb-8">
-              Exhibit on Superior is not one-size fits all. It’s designed to be a true original, every bit as unique as you are. Living here is all about creating a complete lifestyle that lets you be you while efficiently using your time and space how you want. Our sleek, contemporary homes are meant for relaxed lounging, formal entertaining, and everything in between. Choose from stylishly appointed studio, convertible, one-, two-, and three-bedroom apartments designed with comfort and brimming with style.
+              Exhibit on Superior is not one-size fits all. It’s designed to be a true original, every bit as unique as you are. Living here means a complete lifestyle that lets you be you, using your time and space how you want. Our sleek, contemporary homes suit relaxed lounging, formal entertaining, and everything in between. Choose from stylishly appointed studio, studio convertible, one-, two-, and three-bedroom apartments — each finished for comfort, brimming with style, and equipped with energy-efficient stainless-steel appliances.
             </p>
             <p className="text-lg leading-relaxed mb-8">
               Want to learn more? Start the conversation today with one of our leasing agents.
@@ -194,10 +194,10 @@ export function Home() {
               <div>
                 <SplitHeadline script="Urban Bliss" caps="Just Outside Your Door" align="left" dark className="mb-6" />
                 <p className="text-lg leading-relaxed mb-6 text-white">
-                  Make the most of the vibrant city with a home base that puts everything at your fingertips. From cozy cafés and trendy restaurants to sprawling parks and convenient shops, you’ll find it all just steps away. Take a quick trip to Target or spend the afternoon along the Chicago River.
+                  Make the most of the vibrant city with a home base that puts everything at your fingertips. Cozy cafés, trendy restaurants, parks, and shops are all just steps away. Take a quick trip to Target or spend the afternoon along the Chicago River.
                 </p>
                 <p className="text-lg leading-relaxed mb-8 text-white">
-                  Located in River North, our welcoming neighborhood offers the perfect blend of energy and ease with West Loop, Old Town, and Fulton Market just minutes away for even more dining, shopping, and cultural experiences. When it’s time to head out, nearby access to major roadways and public transit makes getting around the city a breeze — the address rates a {WALK_SCORE.score} Walk Score and a perfect {TRANSIT_SCORE.score} Transit Score, per Walk Score.
+                  Located in River North, our welcoming neighborhood blends energy and ease. West Loop, Old Town, and Fulton Market are just minutes away for even more dining, shopping, and culture. When it’s time to head out, major roadways and public transit make getting around downtown Chicago a breeze — the address rates a {WALK_SCORE.score} Walk Score and a perfect {TRANSIT_SCORE.score} Transit Score, per Walk Score.
                 </p>
                 <p className="text-lg leading-relaxed mb-8 text-white">
                   Exhibit on Superior is your urban hub for fun and convenience in the heart of Chicago.

@@ -111,6 +111,44 @@ export function Reviews() {
           </div>
         </section>
 
+        {/* What reviewers consistently mention + how to use reviews when touring */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl uppercase tracking-wider mb-6 text-center">What Residents Mention Most</h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+              <p>
+                Read across the reviews and a few themes repeat. Residents point to the River North
+                location, with restaurants, galleries, and the L a short walk away. They also mention
+                a leasing and front-desk team that responds quickly when something needs attention.
+                The amenities and the skyline views come up often too. That kind of first-hand detail
+                is worth reading whether you&rsquo;re comparing a studio convertible with a
+                three-bedroom — the experience reviewers describe is about the building and the team,
+                not any one floor plan.
+              </p>
+              <h3 className="text-xl uppercase tracking-wider text-foreground pt-4">How to Weigh Reviews When You Tour</h3>
+              <p>
+                Reviews are most useful as a list of questions to bring on a tour. If a reviewer
+                praises the fitness center or the pool, walk through them yourself. If someone
+                mentions the front desk, stop and say hello on your way in. Every renter weighs
+                things differently — quiet versus street energy, space versus price — so pair what
+                reviewers say with your own priorities.
+              </p>
+              <p>
+                For the context reviews rarely cover, our own guides can help: the{' '}
+                <Link href="/neighborhood" className="text-primary underline underline-offset-4 hover:text-primary/80">
+                  Neighborhood
+                </Link>{' '}
+                page covers daily life in River North, and the{' '}
+                <Link href="/knowledge" className="text-primary underline underline-offset-4 hover:text-primary/80">
+                  Knowledge Center
+                </Link>{' '}
+                answers the practical questions — pet policies, parking, and total move-in costs —
+                that star ratings can&rsquo;t.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Where reviews come from */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl">
