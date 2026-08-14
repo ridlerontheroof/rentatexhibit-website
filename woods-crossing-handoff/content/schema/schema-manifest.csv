@@ -1,0 +1,3 @@
+file,type,used_in,notes
+content/schema/apartmentcomplex.jsonld,ApartmentComplex,All pages,"Equivalent JSON-LD is emitted by app/site-components.tsx."
+content/schema/faq.jsonld,FAQPage,FAQ sections,"Page-specific FAQ JSON-LD is emitted by app/site-components.tsx."

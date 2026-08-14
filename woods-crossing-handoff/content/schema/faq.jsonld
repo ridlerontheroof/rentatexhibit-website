@@ -1,0 +1,39 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://www.woodscrossingslc.com/#faq",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Where is Woods Crossing located?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Woods Crossing is located at 850 N. Hwy 89 in North Salt Lake, Utah 84054."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What floor plans does Woods Crossing offer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The source site lists one- and two-bedroom apartment layouts from 684 to 888 approximate square feet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Woods Crossing pet-friendly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The source site lists dog and cat deposits, monthly pet rent, and a policy of up to two pets per apartment with breed restrictions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are rents and availability guaranteed on this rebuild?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Rents, specials, deposits, and availability were copied from the public source site on August 6, 2026 and should be confirmed before launch."
+      }
+    }
+  ]
+}

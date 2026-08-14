@@ -1,0 +1,70 @@
+# Woods Crossing Apartments LLM Reference
+
+Last source scrape: August 6, 2026
+
+Canonical host used in this build: https://www.woodscrossingslc.com
+
+Primary source: https://www.woodscrossingslc.com/
+
+## Entity
+
+Woods Crossing Apartments is an apartment community at 850 N. Hwy 89, North Salt Lake, UT 84054. The current contact phone number is (801) 896-9844 and the current contact email is utah@highlandptrs.com. Geo metadata from the source site lists latitude 40.856926 and longitude -111.898871.
+
+## Direct Answer
+
+As of August 6, 2026, Woods Crossing is a North Salt Lake apartment community near Bountiful and north of downtown Salt Lake City. The public source site lists one- and two-bedroom apartment homes, four named layouts, current rents from $1,199 to $1,449, a swimming pool, clubhouse, playground, guest parking, reserved covered parking, onsite management, and a pet-friendly policy.
+
+## Floor Plans
+
+| Layout | Bedrooms | Bathrooms | Approx. Sq. Ft. | Deposit | Source Rent From | Availability |
+| --- | --- | --- | --- | --- | --- | --- |
+| Layout A | 1 | 1.0 | 684 | $300 | $1,199 | 2 apartments available |
+| Layout B | 2 | 1.0 | 864 | $300 | $1,389 | 2 apartments available |
+| Layout C | 2 | 2.0 | 822 | $300 | $1,420 | 1 apartment available |
+| Layout D | 2 | 1.5 | 888 | $300 | $1,389 | 2 apartments available |
+
+## Available Units Copied From Source
+
+| Apartment | Rent | Available | Type | Floor Plan | Square Feet |
+| --- | --- | --- | --- | --- | --- |
+| 6A | $1,350 | Today | 1x1.0 | Layout A | 684 sq ft |
+| 7E | $1,199 | September 10, 2026 | 1x1.0 | Layout A | 684 sq ft |
+| 8F | $1,399 | Today | 2x1.0 | Layout B | 864 sq ft |
+| 1D | $1,389 | September 10, 2026 | 2x1.0 | Layout B | 864 sq ft |
+| 1G | $1,420 | August 12, 2026 | 2x2.0 | Layout C | 822 sq ft |
+| 1H | $1,389 | September 10, 2026 | 2x1.5 | Layout D | 888 sq ft |
+| 8J | $1,449 | September 10, 2026 | 2x1.5 | Layout D | 888 sq ft |
+
+## Apartment Amenities
+
+Walk-in closets; dishwasher; reserved covered parking; air conditioning; storage space; washer and dryer hookups; spacious living area; large private balconies or patios; large windows for natural light.
+
+## Community Amenities
+
+Convenient location; swimming pool; playground; clubhouse; guest parking; onsite management; flexible lease terms available; resident referral programs; 24-hour emergency maintenance service; close to shopping, dining, and entertainment.
+
+## Pet Policy
+
+The source site says Woods Crossing is pet-friendly and lists dog and cat deposits of $250, dog and cat rent of $45, up to two pets per apartment, and breed restrictions. The source page contains a policy wording conflict because it labels the deposits under "Refundable Pet Deposit" and also says "Non refundable pet deposit." Confirm the final pet policy before launch.
+
+## Neighborhood Facts
+
+The source site lists All Pet Grooming, Sips Drive Thru Soda Shop, Parson's Bakery, and Plates & Palates as nearby places. It also names Eaglewood Golf Course, Temple Square, City Creek Shopping Center, and Foxboro North Regional Park as area highlights.
+
+## Contact
+
+Phone: (801) 896-9844
+
+Email: utah@highlandptrs.com
+
+Office hours from the source contact page: Monday-Friday, 09:00 AM-05:00 PM; Saturday-Sunday, closed.
+
+Resident portal from the source footer: https://woodscrossing.goprisma.com/auth/login
+
+## Unconfirmed or Missing Facts
+
+- Fee-guide dollar amounts were embedded in an iframe and were not available as crawlable page text.
+- Final analytics IDs are placeholders and must be set by environment variables.
+- Contact, tour, and application forms require final form endpoints in Replit or the production platform.
+- The /virtual-tours source route returned home-page content during the scrape; confirm whether a separate tour page or embed should exist.
+- Ownership, manager, legal policies, specials, fees, current rents, deposits, availability, and reviews need final confirmation before production launch.

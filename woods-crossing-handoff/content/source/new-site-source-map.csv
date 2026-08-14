@@ -1,0 +1,26 @@
+new_path,canonical_path,source_url,source_text_file,markdown_twin,notes
+/,/,https://www.woodscrossingslc.com/,content/source/text/index.md,/markdown/home.md,Home page facts and primary property positioning.
+/floor-plans,/floor-plans,https://www.woodscrossingslc.com/floor-plans,content/source/text/floor-plans.md,/markdown/floor-plans.md,Floor plan table rebuilt with crawlable table markup.
+/apartment-search,/apartment-search,https://www.woodscrossingslc.com/apartment-search,content/source/text/apartment-search.md,/markdown/apartment-search.md,Availability copied on 2026-08-06 and should be rechecked before launch.
+/availability,/apartment-search,https://www.woodscrossingslc.com/availability,content/source/text/availability.md,/markdown/apartment-search.md,Alias route; canonical points to /apartment-search.
+/gallery,/gallery,https://www.woodscrossingslc.com/gallery,content/source/text/gallery.md,/markdown/gallery.md,Selected public photos displayed; full asset inventory preserved.
+/north-salt-lake-ut/amenities,/north-salt-lake-ut/amenities,https://www.woodscrossingslc.com/north-salt-lake-ut/amenities,content/source/text/north-salt-lake-ut__amenities.md,/markdown/amenities.md,Canonical amenities route.
+/amenities,/north-salt-lake-ut/amenities,https://www.woodscrossingslc.com/amenities,content/source/text/amenities.md,/markdown/amenities.md,Alias route; canonical points to /north-salt-lake-ut/amenities.
+/north-salt-lake-ut/neighborhood,/north-salt-lake-ut/neighborhood,https://www.woodscrossingslc.com/north-salt-lake-ut/neighborhood,content/source/text/north-salt-lake-ut__neighborhood.md,/markdown/neighborhood.md,Canonical neighborhood route.
+/neighborhood,/north-salt-lake-ut/neighborhood,https://www.woodscrossingslc.com/neighborhood,content/source/text/neighborhood.md,/markdown/neighborhood.md,Alias route; canonical points to /north-salt-lake-ut/neighborhood.
+/pet-friendly,/pet-friendly,https://www.woodscrossingslc.com/pet-friendly,content/source/text/pet-friendly.md,/markdown/pet-friendly.md,Pet deposit policy has a source wording conflict flagged in docs.
+/reviews,/reviews,https://www.woodscrossingslc.com/reviews,content/source/text/reviews.md,/markdown/reviews.md,Review rating and snippets copied from source and require final reputation-source approval.
+/contact,/contact,https://www.woodscrossingslc.com/contact,content/source/text/contact.md,/markdown/contact.md,Contact form endpoint is configurable through environment variables.
+/schedule-a-tour,/schedule-a-tour,https://www.woodscrossingslc.com/schedule-a-tour,content/source/text/schedule-a-tour.md,/markdown/schedule-a-tour.md,Tour form endpoint is configurable through environment variables.
+/apply-online,/apply-online,https://www.woodscrossingslc.com/apply-online,content/source/text/apply-online.md,/markdown/apply-online.md,Application form endpoint is configurable through environment variables.
+/apply-now,/apply-online,https://www.woodscrossingslc.com/apply-now,content/source/text/apply-now.md,/markdown/apply-online.md,Alias route; canonical points to /apply-online.
+/residents,/residents,https://www.woodscrossingslc.com/residents,content/source/text/residents.md,/markdown/residents.md,Resident actions point to the source Prisma portal.
+/virtual-leasing,/virtual-leasing,https://www.woodscrossingslc.com/virtual-leasing,content/source/text/virtual-leasing.md,/markdown/virtual-leasing.md,Virtual leasing steps rebuilt as crawlable cards.
+/virtual-tours,/virtual-leasing,https://www.woodscrossingslc.com/virtual-tours,content/source/text/virtual-tours.md,/markdown/virtual-leasing.md,Source /virtual-tours returned home content; alias to virtual leasing pending confirmation.
+/disclosure-fees,/disclosure-fees,https://www.woodscrossingslc.com/disclosure-fees,content/source/text/disclosure-fees.md,/markdown/disclosure-fees.md,Fee guide values were hidden in iframe and are flagged for confirmation.
+/rental-scams,/rental-scams,https://www.woodscrossingslc.com/rental-scams,content/source/text/rental-scams.md,/markdown/rental-scams.md,Rental scam safety content rebuilt as crawlable summary.
+/accessibility-statement,/accessibility-statement,https://www.woodscrossingslc.com/accessibility-statement,content/source/text/accessibility-statement.md,/markdown/accessibility-statement.md,Accessibility statement summarized; full source text preserved.
+/privacy-policy,/privacy-policy,https://www.woodscrossingslc.com/privacy-policy,content/source/text/privacy-policy.md,/markdown/privacy-policy.md,Legal content summarized and flagged for legal review.
+/terms-of-service,/terms-of-service,https://www.woodscrossingslc.com/terms-of-service,content/source/text/terms-of-service.md,/markdown/terms-of-service.md,Legal content summarized and flagged for legal review.
+/terms,/terms-of-service,https://www.woodscrossingslc.com/terms,content/source/text/terms.md,/markdown/terms-of-service.md,Alias route; source title was blank.
+/termsofservice,/terms-of-service,https://www.woodscrossingslc.com/termsofservice,content/source/text/termsofservice.md,/markdown/terms-of-service.md,Alias route; source title was blank.

@@ -1,0 +1,30 @@
+# Woods Crossing Apartments
+
+> Woods Crossing is a North Salt Lake apartment community at 850 N. Hwy 89, North Salt Lake, UT 84054. The source site lists one- and two-bedroom apartment homes, a swimming pool, clubhouse, playground, covered parking, onsite management, pet-friendly policies, and current availability copied on August 6, 2026.
+
+Canonical site: https://www.woodscrossingslc.com/
+
+Last source scrape: 2026-08-06
+
+## High-value pages
+
+- [Home](https://www.woodscrossingslc.com/) - property summary, address, phone, unit mix, amenities, location, and quick answers.
+- [Floor Plans](https://www.woodscrossingslc.com/floor-plans) - Layouts A-D, bedrooms, bathrooms, square feet, deposits, and source-listed starting rents.
+- [Apartment Search](https://www.woodscrossingslc.com/apartment-search) - source-listed available units, rent, move-in date, type, and square footage.
+- [Amenities](https://www.woodscrossingslc.com/north-salt-lake-ut/amenities) - apartment and community amenities.
+- [Neighborhood](https://www.woodscrossingslc.com/north-salt-lake-ut/neighborhood) - nearby North Salt Lake and Bountiful places listed by the source site.
+- [Pet-Friendly Apartments](https://www.woodscrossingslc.com/pet-friendly) - dog and cat policy details copied from the source site.
+- [Contact](https://www.woodscrossingslc.com/contact) - address, phone, office hours, and leasing request form.
+
+## Machine-readable twins
+
+- [Full LLM content file](https://www.woodscrossingslc.com/llms-full.txt)
+- [Home markdown](https://www.woodscrossingslc.com/markdown/home.md)
+- [Floor plan markdown](https://www.woodscrossingslc.com/markdown/floor-plans.md)
+- [Availability markdown](https://www.woodscrossingslc.com/markdown/apartment-search.md)
+- [Amenities markdown](https://www.woodscrossingslc.com/markdown/amenities.md)
+- [Pet policy markdown](https://www.woodscrossingslc.com/markdown/pet-friendly.md)
+
+## Confirmation notes
+
+Rents, specials, deposits, pet policies, fee-guide values, availability, reviews, legal copy, form endpoints, analytics IDs, and final ownership/manager details should be confirmed before production launch.

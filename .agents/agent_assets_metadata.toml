@@ -166,3 +166,10 @@ uri = "file://screenshots/sightmap-mobile-expanded.jpg"
 type = "image"
 title = "Mobile — map open (fixed)"
 description = "Portrait map on mobile: floor selector, plan view, and selected-unit CTA bar all visible."
+
+[[outputs]]
+id = "J9uMhRxYbcMuoKld8AxT7"
+uri = "file://woods-crossing-handoff.zip"
+type = "unspecified"
+title = "Woods Crossing handoff package"
+description = "Original Codex bundle plus SEO_AEO_PLAYBOOK.md, URL_PARITY_MAP.md, and SECRETS_MIGRATION.md in docs/."

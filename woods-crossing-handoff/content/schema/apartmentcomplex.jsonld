@@ -1,0 +1,25 @@
+{
+  "@context": "https://schema.org",
+  "@type": "ApartmentComplex",
+  "@id": "https://www.woodscrossingslc.com/#apartmentcomplex",
+  "name": "Woods Crossing",
+  "url": "https://www.woodscrossingslc.com/",
+  "telephone": "(801) 896-9844",
+  "email": "utah@highlandptrs.com",
+  "image": "https://www.woodscrossingslc.com/assets/source/exterior-woods-crossing-02e0d1bd.jpg",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "850 N. Hwy 89",
+    "addressLocality": "North Salt Lake",
+    "addressRegion": "UT",
+    "postalCode": "84054",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 40.856926,
+    "longitude": -111.898871
+  },
+  "petsAllowed": "Dogs and cats allowed according to the source site; up to two pets per apartment, with breed restrictions.",
+  "priceRange": "$1199-$1449 as listed by the public source site on August 6, 2026"
+}
