@@ -178,5 +178,5 @@ description = "Now includes docs/APPFOLIO_INTEGRATION_PLAYBOOK.md — every less
 id = "XAuDgYqwhfmCBmdve-jr-"
 uri = "file://woods-crossing-appfolio-addon.zip"
 type = "unspecified"
-title = "Woods Crossing AppFolio add-on package"
-description = "Standalone add-on: the AppFolio integration playbook (leads, tours, availability, photos, attribution, bot guard, monitoring) plus a README with the three property-specific setup steps."
+title = "Woods Crossing add-on: AppFolio + UTM + operations learnings"
+description = "Standalone add-on with three playbooks — AppFolio integrations, UTM attribution & analytics, and operations/platform learnings — plus a README with the property-specific setup steps."
