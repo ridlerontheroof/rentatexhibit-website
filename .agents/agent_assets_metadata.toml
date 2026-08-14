@@ -171,5 +171,5 @@ description = "Portrait map on mobile: floor selector, plan view, and selected-u
 id = "J9uMhRxYbcMuoKld8AxT7"
 uri = "file://woods-crossing-handoff.zip"
 type = "unspecified"
-title = "Woods Crossing handoff package"
-description = "Original Codex bundle plus SEO_AEO_PLAYBOOK.md, URL_PARITY_MAP.md, and SECRETS_MIGRATION.md in docs/."
+title = "Woods Crossing handoff package (with design comps)"
+description = "The full handoff bundle for the new project: site source, SEO/AEO playbook, URL parity map, secrets checklist — now including the three design comps, their content data, photos, and porting notes."
