@@ -173,3 +173,10 @@ uri = "file://woods-crossing-handoff.zip"
 type = "unspecified"
 title = "Woods Crossing handoff package (with AppFolio playbook)"
 description = "Now includes docs/APPFOLIO_INTEGRATION_PLAYBOOK.md — every lesson from wiring leads, tours, availability, photos, attribution, bot guarding, and monitoring directly into AppFolio."
+
+[[outputs]]
+id = "XAuDgYqwhfmCBmdve-jr-"
+uri = "file://woods-crossing-appfolio-addon.zip"
+type = "unspecified"
+title = "Woods Crossing AppFolio add-on package"
+description = "Standalone add-on: the AppFolio integration playbook (leads, tours, availability, photos, attribution, bot guard, monitoring) plus a README with the three property-specific setup steps."
