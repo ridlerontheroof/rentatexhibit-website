@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "property-config.schema.json",
+  "title": "Highland property-site config",
+  "description": "The single property-owned input to the template kit and onboarding skill. Everything property-specific lives here; the kit code never carries property literals. Secrets appear as env-var NAMES only — never values.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-phase-required": {
+    "intake": ["property", "identity"],
+    "discovery": ["property", "identity", "legacySite"],
+    "design": ["property", "identity", "brand"],
+    "build": ["property", "identity", "brand", "nap", "leasing", "appfolio", "seo", "analytics", "email", "secrets"],
+    "prelaunch": ["property", "identity", "brand", "nap", "leasing", "appfolio", "seo", "redirects", "analytics", "email", "secrets"],
+    "golive": ["property", "identity", "brand", "nap", "leasing", "appfolio", "seo", "redirects", "analytics", "email", "secrets", "deployment"]
+  },
+  "required": ["configVersion", "kitVersion", "property", "identity"],
+  "properties": {
+    "configVersion": { "type": "string", "description": "Version of this schema the config was written against, e.g. \"1\"." },
+    "kitVersion": { "type": "string", "description": "Pinned template-kit release tag this site is generated from (e.g. kit-v1.0.0). Sites never float on the kit." },
+    "property": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "shortName", "slug"],
+      "properties": {
+        "name": { "type": "string", "description": "Full marketing name, e.g. \"Woods Crossing Apartments\"." },
+        "shortName": { "type": "string", "description": "Short name used in copy, e.g. \"Woods Crossing\"." },
+        "slug": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Machine slug, e.g. \"woods-crossing\"." }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalOrigin", "domains"],
+      "properties": {
+        "canonicalOrigin": { "type": "string", "pattern": "^https://", "description": "The ONE canonical origin, e.g. https://www.woodscrossingslc.com. Everything else 301s here in one hop." },
+        "domains": { "type": "array", "items": { "type": "string" }, "minItems": 1, "description": "All owned domains/hosts (apex, www, legacy domains) that must 301 to canonicalOrigin." },
+        "legacyOrigins": { "type": "array", "items": { "type": "string" }, "description": "Origins of legacy sites being replaced (discovery targets)." }
+      }
+    },
+    "nap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["streetAddress", "locality", "region", "postalCode", "phone"],
+      "properties": {
+        "streetAddress": { "type": "string" },
+        "locality": { "type": "string" },
+        "region": { "type": "string" },
+        "postalCode": { "type": "string" },
+        "country": { "type": "string", "default": "US" },
+        "phone": { "type": "string", "description": "E.164 or display form; keep ONE authoritative form." },
+        "email": { "type": "string" },
+        "geo": {
+          "type": "object", "additionalProperties": false,
+          "required": ["latitude", "longitude"],
+          "properties": { "latitude": { "type": "number" }, "longitude": { "type": "number" } }
+        },
+        "hours": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["days", "opens", "closes"],
+            "properties": { "days": { "type": "array", "items": { "type": "string" } }, "opens": { "type": "string" }, "closes": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "brand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["designDirection", "tokens"],
+      "properties": {
+        "designDirection": { "type": "string", "description": "The APPROVED design direction (human gate G3). Name + one-sentence concept; never inferred." },
+        "tokens": {
+          "type": "object", "additionalProperties": true,
+          "description": "Design tokens: colors, font families, radii. Keys are consumed by the kit's Tailwind theme.",
+          "properties": {
+            "colors": { "type": "object", "additionalProperties": { "type": "string" } },
+            "fonts": { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        },
+        "logoAssets": { "type": "array", "items": { "type": "string" }, "description": "Paths (in the new project) to approved logo/brand asset files." },
+        "reuseRightsConfirmed": { "type": "boolean", "description": "Human gate G2: owner confirmed rights to reuse legacy photos/copy. Never assume." }
+      }
+    },
+    "leasing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "facts": { "type": "object", "additionalProperties": true, "description": "Verified leasing facts (pet policy, deposits, fees, unit mix). Every value must exist in the uncertainty register as CONFIRMED before build uses it." },
+        "applyUrl": { "type": "string" },
+        "residentPortalUrl": { "type": "string" }
+      }
+    },
+    "appfolio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["database", "propertyName"],
+      "properties": {
+        "database": { "type": "string", "description": "AppFolio database host prefix, e.g. \"highlandrealestatepartners\" (NOT the marketing brand — verify: wrong host looks like an egress block)." },
+        "propertyName": { "type": "string", "description": "EXACT property name for filters[property_list] — verify via the unit_directory report first (human gate G7)." },
+        "tourUnitName": { "type": "string", "description": "Name of the hidden real unit used for general tour bookings (leasing team creates it; human gate G7)." },
+        "leadSourceDefault": { "type": "string", "pattern": "^Website \\([A-Za-z0-9_-]+\\)$", "description": "Default lead-source label, exactly \"Website (Token)\"." }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "defaultTitleSuffix": { "type": "string" },
+        "defaultDescription": { "type": "string" },
+        "ogSiteName": { "type": "string" },
+        "gbpUrl": { "type": "string", "description": "Google Business Profile URL (reviews feed)." },
+        "localBusinessType": { "type": "string", "default": "ApartmentComplex" }
+      }
+    },
+    "redirects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parityMapPath"],
+      "properties": {
+        "parityMapPath": { "type": "string", "description": "Path to the human-APPROVED parity map CSV (gate G4). The build imports redirects from it; unreviewed rows fail the build." },
+        "extra": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": false, "required": ["from", "to"], "properties": { "from": { "type": "string" }, "to": { "type": "string" } } }
+        }
+      }
+    },
+    "analytics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "gtmId": { "type": "string", "pattern": "^GTM-" },
+        "ga4MeasurementId": { "type": "string", "pattern": "^G-" },
+        "utmStorageKey": { "type": "string", "description": "sessionStorage key for visit-source capture, e.g. \"woodscrossing_utm_params\"." }
+      }
+    },
+    "email": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["leasingInbox", "alertInbox"],
+      "properties": {
+        "leasingInbox": { "type": "string", "description": "Real lead traffic ONLY." },
+        "alertInbox": { "type": "string", "description": "Technical/watchdog alerts ONLY — never mix with leasing." },
+        "senderAddress": { "type": "string" },
+        "senderName": { "type": "string" }
+      }
+    },
+    "secrets": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Env-var NAMES only. Values are set in Replit Secrets by the operator (gate G5).",
+      "required": ["required"],
+      "properties": {
+        "required": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" } },
+        "optional": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" } }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "replitAppName": { "type": "string" },
+        "dnsProvider": { "type": "string", "description": "Registrar/DNS host — traps differ (Squarespace: delete Domain Connect presets before forwarding saves)." },
+        "indexNowKey": { "type": "boolean", "description": "true once an IndexNow key file is generated and served." }
+      }
+    },
+    "legacySite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startUrl"],
+      "properties": {
+        "startUrl": { "type": "string" },
+        "crawlMode": { "type": "string", "enum": ["live", "archive", "offline"], "description": "live = direct crawl; archive = Wayback CDX fallback (bot-walled sites); offline = pre-scraped inventory." },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

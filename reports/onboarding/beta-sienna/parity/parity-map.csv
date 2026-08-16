@@ -1,0 +1,28 @@
+path,classification,redirect_target,rationale,source_title,source_canonical,review_status
+/accessibility,REVIEW,,very thin page (30 words) — may have been broken/JS-only at scrape time,RentCafe Accessibility,https://www.siennachicago.com/accessibility,NEEDS_REVIEW
+/floorplans/unit-1,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Sienna Chicago | Apartments in Chicago, IL | RENTCafe",https://www.siennachicago.com/floorplans/unit-1,NEEDS_REVIEW
+/floorplans/unit-10,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Sienna Chicago | Apartments in Chicago, IL | RENTCafe",https://www.siennachicago.com/floorplans/unit-10,NEEDS_REVIEW
+/floorplans/unit-2,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Sienna Chicago | Apartments in Chicago, IL | RENTCafe",https://www.siennachicago.com/floorplans/unit-2,NEEDS_REVIEW
+/floorplans/unit-8,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Sienna Chicago | Apartments in Chicago, IL | RENTCafe",https://www.siennachicago.com/floorplans/unit-8,NEEDS_REVIEW
+/floorplans/unit-9,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Sienna Chicago | Apartments in Chicago, IL | RENTCafe",https://www.siennachicago.com/floorplans/unit-9,NEEDS_REVIEW
+/privacypolicy,REVIEW,,source page was noindexed — decide keep/drop,RentCafe Privacy Policy,https://www.siennachicago.com/privacypolicy,NEEDS_REVIEW
+/scheduletour,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Sienna Chicago | Apartments in Chicago, IL | RENTCafe",https://www.siennachicago.com/scheduletour,NEEDS_REVIEW
+/termsandconditions,REVIEW,,source page was noindexed — decide keep/drop,RentCafe - Terms & Conditions,https://www.siennachicago.com/termsandconditions,NEEDS_REVIEW
+/,SERVE,,,"Apartments for Rent in Chicago, Illinois | Streeterville Apartments | Sienna Flats",,NEEDS_REVIEW
+/about-us,SERVE,,,About Us - Sienna,https://www.siennachicago.com/about-us/,NEEDS_REVIEW
+/amenities,SERVE,,,Sienna Chicago | Apartment and Community Amenities,https://www.siennachicago.com/amenities,NEEDS_REVIEW
+/brochure,SERVE,,,Sienna Chicago eBrochure,https://www.siennachicago.com/brochure,NEEDS_REVIEW
+/contact-us,SERVE,,,Contact Us - Sienna,https://www.siennachicago.com/contact-us/,NEEDS_REVIEW
+/contactus,SERVE,,,Contact Sienna Chicago to Schedule a Visit,https://www.siennachicago.com/contactus,NEEDS_REVIEW
+/faq,SERVE,,,faq - Sienna,https://www.siennachicago.com/faq/,NEEDS_REVIEW
+/floorplans,SERVE,,,"Floor Plans of Sienna Chicago in Chicago, IL",https://www.siennachicago.com/floorplans,NEEDS_REVIEW
+/gallery,SERVE,,,Gallery - Sienna,https://www.siennachicago.com/gallery/,NEEDS_REVIEW
+/mapsanddirections,SERVE,,,"Map and Directions to Sienna Chicago in Chicago, IL",https://www.siennachicago.com/mapsanddirections,NEEDS_REVIEW
+/neighborhood,SERVE,,,Neighborhood - Sienna,https://www.siennachicago.com/neighborhood/,NEEDS_REVIEW
+/photogallery,SERVE,,,"Photos and Video of Sienna Chicago in Chicago, IL",https://www.siennachicago.com/photogallery,NEEDS_REVIEW
+/property-details,SERVE,,,Features & Floorplans - Sienna,https://www.siennachicago.com/property-details/,NEEDS_REVIEW
+/sitemap,SERVE,,,Sitemap |,,NEEDS_REVIEW
+/tenant,SERVE,,,Tenants - Sienna,https://www.siennachicago.com/tenant/,NEEDS_REVIEW
+/tenant/maintenance-request,SERVE,,,Maintenance Request - Sienna,https://www.siennachicago.com/tenant/maintenance-request/,NEEDS_REVIEW
+/tenant/pay-rent-online,SERVE,,,Pay Rent Online - Sienna,https://www.siennachicago.com/tenant/pay-rent-online/,NEEDS_REVIEW
+/vacancies,SERVE,,,Vacancies - Sienna,https://www.siennachicago.com/vacancies/,NEEDS_REVIEW

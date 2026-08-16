@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!--[if IE 8]>		 <html class="no-js ie8"> <![endif]-->
+<!--[if IE 9]>		 <html class="no-js ie9"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+<!-- COMPANY: Golub & Co. -->
+<!-- TLF:executeTemplateLoadFunctions -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){var o=e[n]={exports:{}};t[n][0].call(o.exports,function(e){var o=t[n][1][e];return r(o||e)},o,o.exports)}return e[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(t,e,n){function r(){}function o(t,e,n){return function(){return i(t,[(new Date).getTime()].concat(u(arguments)),e?null:this,n),e?void 0:this}}var i=t("handle"),a=t(2),u=t(3),c=t("ee").get("tracer"),f=NREUM;"undefined"==typeof window.newrelic&&(newrelic=f);var s=["setPageViewName","setCustomAttribute","finished","addToTrace","inlineHit"],p="api-",l=p+"ixn-";a(s,function(t,e){f[e]=o(p+e,!0,"api")}),f.addPageAction=o(p+"addPageAction",!0),e.exports=newrelic,f.interaction=function(){return(new r).get()};var d=r.prototype={createTracer:function(t,e){var n={},r=this,o="function"==typeof e;return i(l+"tracer",[Date.now(),t,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[Date.now(),r,o],n),o)try{return e.apply(this,arguments)}finally{c.emit("fn-end",[Date.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(t,e){d[e]=o(l+e)}),newrelic.noticeError=function(t){"string"==typeof t&&(t=new Error(t)),i("err",[t,(new Date).getTime()])}},{}],2:[function(t,e,n){function r(t,e){var n=[],r="",i=0;for(r in t)o.call(t,r)&&(n[i]=e(r,t[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],3:[function(t,e,n){function r(t,e,n){e||(e=0),"undefined"==typeof n&&(n=t?t.length:0);for(var r=-1,o=n-e||0,i=Array(o<0?0:o);++r<o;)i[r]=t[e+r];return i}e.exports=r},{}],ee:[function(t,e,n){function r(){}function o(t){function e(t){return t&&t instanceof r?t:t?u(t,a,i):i()}function n(n,r,o){t&&t(n,r,o);for(var i=e(o),a=l(n),u=a.length,c=0;c<u;c++)a[c].apply(i,r);var s=f[m[n]];return s&&s.push([w,n,r,i]),i}function p(t,e){g[t]=l(t).concat(e)}function l(t){return g[t]||[]}function d(t){return s[t]=s[t]||o(n)}function v(t,e){c(t,function(t,n){e=e||"feature",m[n]=e,e in f||(f[e]=[])})}var g={},m={},w={on:p,emit:n,get:d,listeners:l,context:e,buffer:v};return w}function i(){return new r}var a="nr@context",u=t("gos"),c=t(2),f={},s={},p=e.exports=o();p.backlog=f},{}],gos:[function(t,e,n){function r(t,e,n){if(o.call(t,e))return t[e];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(t,e,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return t[e]=r,r}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],handle:[function(t,e,n){function r(t,e,n,r){o.buffer([t],r),o.emit(t,e,n)}var o=t("ee").get("handle");e.exports=r,r.ee=o},{}],id:[function(t,e,n){function r(t){var e=typeof t;return!t||"object"!==e&&"function"!==e?-1:t===window?0:a(t,i,function(){return o++})}var o=1,i="nr@id",a=t("gos");e.exports=r},{}],loader:[function(t,e,n){function r(){if(!h++){var t=y.info=NREUM.info,e=s.getElementsByTagName("script")[0];if(t&&t.licenseKey&&t.applicationID&&e){c(m,function(e,n){t[e]||(t[e]=n)});var n="https"===g.split(":")[0]||t.sslForHttp;y.proto=n?"https://":"http://",u("mark",["onload",a()],null,"api");var r=s.createElement("script");r.src=y.proto+t.agent,e.parentNode.insertBefore(r,e)}}}function o(){"complete"===s.readyState&&i()}function i(){u("mark",["domContent",a()],null,"api")}function a(){return(new Date).getTime()}var u=t("handle"),c=t(2),f=window,s=f.document,p="addEventListener",l="attachEvent",d=f.XMLHttpRequest,v=d&&d.prototype;NREUM.o={ST:setTimeout,CT:clearTimeout,XHR:d,REQ:f.Request,EV:f.Event,PR:f.Promise,MO:f.MutationObserver},t(1);var g=""+location,m={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-963.min.js"},w=d&&v&&v[p]&&!/CriOS/.test(navigator.userAgent),y=e.exports={offset:a(),origin:g,features:{},xhrWrappable:w};s[p]?(s[p]("DOMContentLoaded",i,!1),f[p]("load",r,!1)):(s[l]("onreadystatechange",o),f[l]("onload",r)),u("mark",["firstbyte",a()],null,"api");var h=0},{}]},{},["loader"]);</script>	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="format-detection" content="telephone=no"> 
+<meta name="msapplication-tap-highlight" content="no"> 
+<title>Apartments for Rent in Chicago, Illinois | Streeterville Apartments | Sienna Flats</title>
+<meta name="description" content="Sienna's brand new apartments spacious floor plans, fantastic neighborhood culture, and a convenient location in Downtown Chicago.">
+<meta name="keywords" content=" Apartment Rentals in Chicago Illinois, Apartment Rentals on 423 East Ohio Chicago">
+<!-- Social Meta Media Tags -->
+<meta property="og:title" content="Apartments for Rent in Chicago, Illinois | Streeterville Apartments | Sienna Flats" />
+<meta property="og:description" content="Sienna's brand new apartments spacious floor plans, fantastic neighborhood culture, and a convenient location in Downtown Chicago." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Sienna" />
+<meta property="og:url" content="http://www.siennachicago.com/" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Apartments for Rent in Chicago, Illinois | Streeterville Apartments | Sienna Flats" />
+<meta name="twitter:description" content="Sienna's brand new apartments spacious floor plans, fantastic neighborhood culture, and a convenient location in Downtown Chicago." />
+<link rel="apple-touch-icon" href="http://commoncdn.entrata.com/images/shortcut_icons/prospect_portal_icon_new.png?ver=100588">
+<link href="http://medialibrarycdn.entrata.com/media_library/2479/5739e999c7366301.ico" rel="SHORTCUT ICON">
+<link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Glegoo%7CLato'>
+<!--[if lt IE 9]>
+<link rel="stylesheet" type="text/css" href='http://commoncdn.entrata.com/css/less.php?template=diamondback_premium%2F&template-theme=Theme1&template-colors=base-color%3Affffff%2Ctext-color%3A646569%2Caccent-color-1%3A646569%2Caccent-color-2%3Ae3592b%2Caccent-color-3%3A000000%2C&js-theme-colors=Brand_Color%5E0%3Affffff%2CBody_Text_Color%5E0%3A646569%2CAccent_Color_One%5E0%3A646569%2CAccent_Color_Two%5E0%3Ae3592b%2CAccent_Color_Three%5E0%3A000000&head-line-font=Glegoo%2Csans-serif&head-line-font-weight=400&head-line-font-style=normal&body-font=Lato%2Csans-serif&body-font-weight=400&body-font-style=normal&google-font-values=Glegoo%7CLato&slider-opacity=0.15&page-type=home&application-type=prospect_portal&t=1&compiler=less-master&no-mq=true&common-path=http%3A%2F%2Fcommoncdn.entrata.com&lkey=c1348aa8e2d102dca51bc5a1ca8d2f6d&lver=1466319024'>
+<![endif]-->
+<!--[if gt IE 8]><!-->
+<link rel="stylesheet" type="text/css" href='http://commoncdn.entrata.com/css/less.php?template=diamondback_premium%2F&template-theme=Theme1&template-colors=base-color%3Affffff%2Ctext-color%3A646569%2Caccent-color-1%3A646569%2Caccent-color-2%3Ae3592b%2Caccent-color-3%3A000000%2C&js-theme-colors=Brand_Color%5E0%3Affffff%2CBody_Text_Color%5E0%3A646569%2CAccent_Color_One%5E0%3A646569%2CAccent_Color_Two%5E0%3Ae3592b%2CAccent_Color_Three%5E0%3A000000&head-line-font=Glegoo%2Csans-serif&head-line-font-weight=400&head-line-font-style=normal&body-font=Lato%2Csans-serif&body-font-weight=400&body-font-style=normal&google-font-values=Glegoo%7CLato&slider-opacity=0.15&page-type=home&application-type=prospect_portal&no-mq=false&compiler=less-master&common-path=http%3A%2F%2Fcommoncdn.entrata.com&lkey=db7ee725dd1b76b316a78b31efdba272&lver=1466319024'>
+<!--<![endif]-->
+<script src="http://commoncdn.entrata.com/javascript/vendor/modernizr-2.6.2.min.js?ver=100588"></script>
+</head>
+<body>
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-PFT9BZ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PFT9BZ');</script>
+<!-- End Google Tag Manager -->
+<link href="http://commoncdn.entrata.com/css/jquery/jquery_m_custom_scrollbar/jquery.m_custom_scrollbar.css" rel="stylesheet" type="text/css">
+<header class="template-header">
+<div class="header-top">
+<div class="content-wrapper">
+<a class="guest-card-trigger" href="http://www.siennachicago.com/Apartments/module/guest_card/property%5Bid%5D/237927/section/contact_widget/lightwindow/1/" data-modal="open" data-class="contact-form" data-title="guest card" data-cache="true"></a>
+<a href="javascript:void(0);" class="mobile-menu-trigger menu-icon-mobile" data-target="#global-nav" data-ui="offpage-menu">
+<i class="icon" data-app-icon="B"></i>
+</a>
+<nav id="global-nav" class="header-nav main-menu" data-menu="animate">
+<ul class="header-nav-list">
+<li class="header-nav-item home"><a class="header-nav-link" href="http://www.siennachicago.com/">Home</a></li><li class="header-nav-item floorplans"><a class="header-nav-link" href="http://www.siennachicago.com/Apartments/module/property_info/property%5Bid%5D/237927/">Floor Plans</a></li><li class="header-nav-item photos-tours"><a class="header-nav-link" href="http://www.siennachicago.com/Apartments/module/photos/property%5Bid%5D/237927/">Photo Gallery</a></li><li class="header-nav-item amenities"><a class="header-nav-link" href="http://www.siennachicago.com/Apartments/module/amenities/property%5Bid%5D/237927/">Amenities</a></li><li class="header-nav-item directions"><a class="header-nav-link" href="http://www.siennachicago.com/Apartments/module/map_and_directions/property%5Bid%5D/237927/">Neighborhood</a></li><li class="header-nav-item residents"><a class="header-nav-link js-subnav-trigger" href="https://siennachicago.residentportal.com/resident_portal/">Residents</a><ul class="header-nav-sublist resident-dropdown"><li class="header-nav-subitem"><a class="header-nav-sublink" href="https://siennachicago.residentportal.com/resident_portal/?module=payment_center_system&kill_session=1">Pay Rent</a></li><li class="header-nav-subitem"><a class="header-nav-sublink" href="https://siennachicago.residentportal.com/resident_portal/?module=maintenance_requests">Maintenance</a></li><li class="header-nav-subitem"><a class="header-nav-sublink" href="https://siennachicago.residentportal.com/resident_portal/?module=contact">Contact</a></li></ul></li><li class="header-nav-item apply"><a class="header-nav-link" href="https://siennachicago.prospectportal.com/Apartments/module/application_authentication/property[id]/237927/show_in_popup/false/kill_session/1/">Apply</a></li>
+</ul>
+</nav>
+<div class="phone-container">
+<i class="icon" data-app-icon="P" aria-hidden="true"></i>
+<a class="tel google-forwarding-number" href="tel:312-644-4230" data-tracking='{
+"category"	: "0",
+"action"   	: "0",
+"label"    	: "Phone Number Header"
+}'>
+(312) 644-4230
+</a>
+</div>
+</div>
+</div>
+<div class="header-bottom">
+<div class="content-wrapper">
+<div class="phone-container">
+<i class="icon" data-app-icon="P" aria-hidden="true"></i>
+<a class="tel google-forwarding-number" href="tel:312-644-4230" data-tracking='{
+"category"	: "0",
+"action"   	: "0",
+"label"    	: "Phone Number Header"
+}'>
+(312) 644-4230
+</a>
+</div>
+<a class="guest-card-trigger" href="http://www.siennachicago.com/Apartments/module/guest_card/property%5Bid%5D/237927/section/contact_widget/lightwindow/1/" data-modal="open" data-class="contact-form" data-title="guest card" data-cache="true"></a>
+</div>
+</div>
+</header>
+<section class="slider-container">
+<ul class="slider">
+<li class="slider-image" style="background-image: url('http://medialibrarycdn.entrata.com/media_library/2479/57d1aff735a6a755.jpg');">
+</li>
+<li class="slider-image" style="background-image: url('http://medialibrarycdn.entrata.com/media_library/2479/57d1b008d6621871.jpg');">
+</li>
+<li class="slider-image" style="background-image: url('http://medialibrarycdn.entrata.com/media_library/2479/57d1b01d288f3895.jpg');">
+</li>
+</ul>
+<div class="slider-overlay"></div>
+<div class="logo-container logo-text">
+<a href=http://www.siennachicago.com/ title='Home'>
+</a>
+</div>
+<div class="content-wrapper">
+</div>
+</section>
+<div class="welcome-text-wrapper">
+<div class="welcome-text-container">
+<h1 class="welcome-title">
+Boutique Rental Living
+</h1>
+<div class="welcome-text"><div style="text-align: center;">&nbsp;
+<div style="text-align: center;"><span style="color:#646569;"><strong><span style="font-size:22px;"><span style="color:#646569;"><strong><span style="font-size:22px;">NOW OPEN!</span></strong></span></span></strong></span><br />
+<br />
+<strong style="color: rgb(100, 101, 105); text-align: center;"><span style="font-size: 22px;">One Month Free on All New Leases*</span></strong></div>
+<div style="text-align: center;"><span style="color:#646569;"><span style="font-size:22px;"><span style="color:#646569;"><span style="font-size:22px;"><br/><span style="font-size:18px;">
+Nestled within Chicago&rsquo;s Streeterville neighborhood, Sienna offers a limited number of boutique rental apartments. Here, 50 private flats combine higher ceilings with spacious floor plans to create an environment that balances an upmarket but free-flowing vibe. Fewer units reduce the commotion common to high-rise living while offering convenient day-to-day access without delay. Sienna also provides easy access to Lake Michigan, the Magnificent Mile, and more. If you want a unique approach to living, our apartments will fit you and your style. </span></span></span>
+<div style="text-align: center;"><br />
+<span style="font-size:16px;"><strong><span style="font-size:18px;"><span style="color:#646569;"><a href="https://viewer.panoskin.com/?tour=57646d0341ae74eb60c5a341" target="_blank">Take a Virtual Tour of Sienna</a></span></span></strong></span></div>
+<br />
+<span style="color:#646569;"><strong><span style="font-size:22px;"><span style="font-size:12px;">*Some restrictions apply. Contact management for details.</span></span></strong></span></div></div>
+</div>
+</div>
+<section class="widgets-wrapper content-wrapper wrap-1">
+<div class="widgets-separator block-1  staggered">
+<div class="widgets-separator-content">
+<h2 class="slot-title">
+Sienna
+</h2>
+<p class="slot-text">
+Boutique Rental Living
+</p>
+</div>
+<style>
+.widgets-separator.block-1 {
+background-image: url('http://medialibrarycdn.entrata.com/media_library/2479/573b3a513df61838.jpg');
+}
+</style>
+</div>
+<div class="widgets-section clearfix  staggered">
+<div class="widget-1 widget-holder">
+<article class="widget-placeholder" data-widget-new="WIDGET_ONE" data-website_setting_key="WIDGET_ONE">
+<img src="http://commoncdn.entrata.com/images/loading_img.gif" />
+</article>
+</div>
+<div class="widget-2 widget-holder">
+<article class="widget-placeholder" data-widget-new="WIDGET_TWO" data-website_setting_key="WIDGET_TWO">
+<img src="http://commoncdn.entrata.com/images/loading_img.gif" />
+</article>
+</div>
+</div>
+</section>
+<section class="widgets-wrapper content-wrapper wrap-2">
+<div class="widgets-separator block-2  staggered">
+<div class="widgets-separator-content">
+<h2 class="slot-title">
+Integrity & Authenticity
+</h2>
+<p class="slot-text">
+For individuals confident in who they are and how they choose to live
+</p>
+</div>
+<style>
+.widgets-separator.block-2 {
+background-image: url('http://medialibrarycdn.entrata.com/media_library/2479/573649a0bf017809.jpg');
+}
+</style>
+</div>
+<div class="widgets-section clearfix  staggered">
+<div class="widget-3 widget-holder">
+<article class="widget-placeholder" data-widget-new="WIDGET_THREE" data-website_setting_key="WIDGET_THREE">
+<img src="http://commoncdn.entrata.com/images/loading_img.gif" />
+</article>
+</div>
+<div class="widget-4 widget-holder">
+<article class="widget-placeholder" data-widget-new="WIDGET_FOUR" data-website_setting_key="WIDGET_FOUR">
+<img src="http://commoncdn.entrata.com/images/loading_img.gif" />
+</article>
+</div>
+</div>
+</section>
+<footer class="template-footer">
+<div class="footer-container-1  staggered">	
+<div class="footer-container-1-wrapper">
+<div class="social-icon-container">
+<ul id="social-nav" class="social-icon-list count-1">
+<li class="social-icon-item facebook"><a class="social-icon-link" data-tracking='{
+"category":	"1",
+"action":	"0",
+"label":	"Facebook Icon Link"
+}' title="Facebook" href="https://www.facebook.com/Siennaflats-1649876655265180/" data-media="Facebook" target="_blank"><i class="icon" data-home-icon="f" aria-hidden="true"></i></a></li>	
+</ul>
+</div>
+<ul class="footer-bottom-social">
+</ul>
+</div>	
+</div>
+<style>
+.footer-container-1 {
+background-image: url('http://medialibrarycdn.entrata.com/media_library/2479/5744a068e0c75799.jpg');
+}
+</style>
+<div class="footer-container-2">
+<article class="widget contact">
+<h5>Contact</h5>
+<div class="vcard">
+<span class="fn">Sienna</span>
+<div class="adr">
+<span class="street-address">423 East Ohio</span>
+<span class="locality">Chicago, </span>
+<span class="region">IL </span>
+<span class="postal-code">60611</span>
+</div>
+<a class="tel google-forwarding-number" href="tel:312-644-4230" data-tracking='{
+"category"	: "0",
+"action"   	: "0",
+"label"    	: "Phone Number Footer"
+}'>
+<span class="type">p:</span>
+<span class="value"> 							(312) 644-4230
+</span>
+</a>
+</div>
+</article>
+<article class="widget office-hours">
+<h5>Office Hours</h5>
+<ul class="hours-table">
+<li class="hours-table-row">
+<span class="hours-time">Please contact us to schedule an appointment.</span>
+</li>
+</ul>
+</article>
+<article class="secondary-links">
+<nav class="footer-nav-secondary">
+<h5>
+More Info
+</h5>
+<ul class="footer-nav-list">
+<li class="footer-nav-item">
+<a  href="http://www.siennachicago.com/Apartments/module/website_documents/website_document%5Bid%5D/239710/">
+LEGAL
+</a>
+</li>
+</ul>
+</nav>
+</article>
+<ul class="footer-nav-list logos">
+<li class="footer-nav-item eho"><a class="footer-nav-link" href="http://www.siennachicago.com/Apartments/module/legal_terms/action/view_equal_housing_opportunity/" title="Equal Housing Opportunity"><i class="icon" data-app-icon="H" aria-hidden="true"></i></a></li><li class="footer-nav-item ada"><i class="icon" data-home-icon="a" aria-hidden="true"></i></li><li class="footer-nav-item smoking"><i class="icon" data-home-icon="s" aria-hidden="true"></i></li><li class="footer-nav-item pet"><a class="footer-nav-link" href="#pet-policy" data-modal="open" data-cache="true" data-options='{
+"class" :	"pet-policy-widget",
+"title" :	"Pet Policy",
+"type"  :	"static"
+}' data-tracking='{
+"category"	: "1",
+"action"   	: "0",
+"label"    	: "Pet Policy Footer Link"
+}' title="Pet Policy"><i class="icon" data-home-icon="P" aria-hidden="true"></i></a><div id="pet-policy" class="is-hidden"><p>Limit 2 pets per apartment. There will be a one-time nonrefundable fee of $500 per dog and $200 per cat. No monthly pet rent will be charged. All animals are subject to management approval as certain breeds are prohibited. Prohibited breeds include: Akita, Giant Schnauzer, Alaskan Malamute, American Stafford-shire Terrier, Husky, Bull-mastiff, Pit Bull, Chow, Presa Canario, Rottweiler, Doberman Pinscher, Saint Bernard and German Shepherd. Any mixed breed dog that includes one of the prohibited breeds also is prohibited. There will not be any weight restrictions. Visiting animals are not permitted unless authorized by management.</p></div></li>
+</ul>
+<ul class="footer-nav-list common">
+<li class="footer-nav-item">
+<a class="footer-nav-link" href="http://www.siennachicago.com/Apartments/module/legal_terms/action/view_terms_of_use/" target="_blank">Terms of Use</a>
+</li>
+</ul>
+<div class="footer-copyright">&copy;2016 Entrata, Inc. All rights reserved.</div>
+<article class="footer-box">
+<ul class="footer-bottom-social">
+</ul>
+</article>
+</div>
+</footer>
+<script>
+var ppConfig = {"sliderType":"images","sliderSubType":"html","exit_tags":{"website_stats_logger":"\/Apartments\/module\/website_statistics\/action\/log_website_stats\/"},"event_prefix":"","is_home_page":"1","environment":"production","client_name":"Golub__Co","cid":"2479","website_template_name":"Diamondback_Premium","is_property_page":"1","property_name":"Sienna","property_count":"1","universal_analytic_tracking_key_value":"1","theme_colors":{"brand_color":"#ffffff","body_text_color":"#646569","accent_color_one":"#646569","accent_color_two":"#e3592b","accent_color_three":"#000000"},"pid":"237927","property_preferences":{"FUTURE_MOVE_IN_DAY_LIMIT":{"getValue":""},"DEFAULT_MOVE_IN_DATE":{"getValue":"0"}}};
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBDE6SNwx6nCetP7LCNuocbAMlh8tpoTvw"></script>
+<script src="http://commoncdn.entrata.com/website_templates/_assets/prospect_portal/prospect_portal.min.js?ver=100588"></script><script src="http://commoncdn.entrata.com/website_templates/_assets/_common/widget_loader.min.js?ver=100588"></script><script src="http://commoncdn.entrata.com/website_templates/_assets/template/diamondback_premium/home.min.js?ver=100588"></script>
+<script type="text/javascript">
+(function() {
+var psTracking = document.createElement('script');
+psTracking.type = 'text/javascript';
+psTracking.async = true;
+psTracking.src = ppConfig.exit_tags.website_stats_logger + 'is_bot/0/';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(psTracking);
+})();
+</script>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"fc8c705c46","applicationID":"7186833,4735284","transactionName":"NQNXMBQAWkJRWxcLVwxJdhEVFVtcHw==","queueTime":0,"applicationTime":94,"atts":"GURARlwaFkNVSRYHSxYDUSUFFV1eXhpZQBpOREcBFxRRQkRdBy9XBhNZAURbFhMcGgoRagcVRQsIEl1HVRpZQEEHFRdIRBZRU0NRFwdsBwtFCAcVURMKGicLWQ8JWwAEAFdaEGgRB1ULE1hGSkNDVFJLChZdQFwXNw8EWl9RGk9AXAMSVAYHElF\/UVUGQAJAA1sQFABAUAEAQU4aAQpcAQgVFgsSfwwOTQBGE0QlDhoTHBoBA1QDCFYBLyUWCxIaT0BLBxVGDQkPfVV1VgAQQRISUABEWxYTHBoRB1UNElAtFiBQVUJdEBEaWEQHVFJPBgIGFlFRDUxUAVFETRZZREwTN2orRA9GOk4WHRJQFxZIMANTARQERhMKGkFOGgoSQRQuDkdFEgJBFU8VSEYNAw9aUFNQCgFZBQkbBwkMFkwcGgJAAhkbSA==","errorBeacon":"bam.nr-data.net","agent":""}</script>	
+<script type="application/ld+json">
+{
+"@context" : "http://schema.org",
+"@type" : "ApartmentComplex",
+"name":  "Sienna",
+"description": "",
+"telephone" :  "",
+"url": "http://www.siennachicago.com/",
+"logo": {
+"@context" : "http://schema.org",
+"@type" : "imageObject",
+"contentUrl": "http://commoncdn.entrata.com/images/1x1pix.gif"
+},
+"address": {
+"@context" : "http://schema.org",
+"@type" : "PostalAddress", "streetAddress": "423 East Ohio",
+"postalCode": "60611"
+},
+"geo": {
+"@context" : "http://schema.org",
+"@type" : "GeoCoordinates",
+"latitude": 41.8926293,
+"longitude": -87.6168697
+}, "sameAs"   : [  " https://www.facebook.com/Siennaflats-1649876655265180/ " ]  } 
+</script>
+</body>
+</html>
+<!--T:0.1022 sec S:1.203 C:standard-->

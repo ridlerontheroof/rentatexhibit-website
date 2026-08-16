@@ -1,0 +1,40 @@
+path,classification,redirect_target,rationale,source_title,source_canonical,review_status
+/accessible-one-page,DROP,,auto-generated single-page accessibility rendering — duplicate content,Accessibility Page for Woods Crossing,,NEEDS_REVIEW
+/amenities,REDIRECT,/north-salt-lake-ut/amenities,source canonical points elsewhere — consolidate with a single-hop 301,"Apartments for Rent in North Salt Lake, UT | Amenities at Woods Crossing",https://www.woodscrossingslc.com/north-salt-lake-ut/amenities,NEEDS_REVIEW
+/apply-now,REDIRECT,/apply-online,duplicate apply entry point / per-unit deep link (old platform unit tokens will not exist),"Apartments in North Salt Lake, UT | Apply Online for Woods Crossing",https://www.woodscrossingslc.com/apply-online,NEEDS_REVIEW
+/apply-now/layout-a/6a,REDIRECT,/apply-online,duplicate apply entry point / per-unit deep link (old platform unit tokens will not exist),Apply now for our LAYOUT A apartment,,NEEDS_REVIEW
+/apply-now/layout-a/7e,REDIRECT,/apply-online,duplicate apply entry point / per-unit deep link (old platform unit tokens will not exist),Apply now for our LAYOUT A apartment,,NEEDS_REVIEW
+/apply-now/layout-b/1d,REDIRECT,/apply-online,duplicate apply entry point / per-unit deep link (old platform unit tokens will not exist),Apply now for our LAYOUT B apartment,,NEEDS_REVIEW
+/apply-now/layout-b/8f,REDIRECT,/apply-online,duplicate apply entry point / per-unit deep link (old platform unit tokens will not exist),Apply now for our LAYOUT B apartment,,NEEDS_REVIEW
+/apply-now/layout-c/1g,REDIRECT,/apply-online,duplicate apply entry point / per-unit deep link (old platform unit tokens will not exist),Apply now for our LAYOUT C apartment,,NEEDS_REVIEW
+/apply-now/layout-d/1h,REDIRECT,/apply-online,duplicate apply entry point / per-unit deep link (old platform unit tokens will not exist),Apply now for our LAYOUT D apartment,,NEEDS_REVIEW
+/apply-now/layout-d/8j,REDIRECT,/apply-online,duplicate apply entry point / per-unit deep link (old platform unit tokens will not exist),Apply now for our LAYOUT D apartment,,NEEDS_REVIEW
+/availability,REDIRECT,/apartment-search,source canonical points elsewhere — consolidate with a single-hop 301,"Apartments in North Salt Lake, UT | Apartment Search for Woods Crossing",https://www.woodscrossingslc.com/apartment-search,NEEDS_REVIEW
+/frequently-asked-questions,REDIRECT,/,source canonical points elsewhere — consolidate with a single-hop 301,Woods Crossing | Apartments near the Mountains,https://www.woodscrossingslc.com/,NEEDS_REVIEW
+/neighborhood,REDIRECT,/north-salt-lake-ut/neighborhood,source canonical points elsewhere — consolidate with a single-hop 301,"Apartments for Rent in North Salt Lake, UT | Neighborhood of Woods Crossing",https://www.woodscrossingslc.com/north-salt-lake-ut/neighborhood,NEEDS_REVIEW
+/terms,REDIRECT,/terms-of-service,near-duplicate terms URL,,https://www.woodscrossingslc.com/terms,NEEDS_REVIEW
+/termsofservice,REDIRECT,/terms-of-service,near-duplicate terms URL,,https://www.woodscrossingslc.com/termsofservice,NEEDS_REVIEW
+/virtual-tours,REDIRECT,/,source canonical points elsewhere — consolidate with a single-hop 301,Woods Crossing | Apartments near the Mountains,https://www.woodscrossingslc.com/,NEEDS_REVIEW
+/,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical",Woods Crossing | Apartments near the Mountains,https://www.woodscrossingslc.com/,NEEDS_REVIEW
+/apartment-search,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Apartments in North Salt Lake, UT | Apartment Search for Woods Crossing",https://www.woodscrossingslc.com/apartment-search,NEEDS_REVIEW
+/apply-online,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Apartments in North Salt Lake, UT | Apply Online for Woods Crossing",https://www.woodscrossingslc.com/apply-online,NEEDS_REVIEW
+/north-salt-lake-ut/amenities,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Apartments for Rent in North Salt Lake, UT | Amenities at Woods Crossing",https://www.woodscrossingslc.com/north-salt-lake-ut/amenities,NEEDS_REVIEW
+/north-salt-lake-ut/neighborhood,REVIEW,,"duplicate title with another URL — likely near-duplicate content, pick one canonical","Apartments for Rent in North Salt Lake, UT | Neighborhood of Woods Crossing",https://www.woodscrossingslc.com/north-salt-lake-ut/neighborhood,NEEDS_REVIEW
+/accessibility-statement,SERVE,,,"North Salt Lake, UT Apartments | Accessibility Statement for Woods Crossing",https://www.woodscrossingslc.com/accessibility-statement,NEEDS_REVIEW
+/apartments/layout-a,SERVE,,,Check out availability for our LAYOUT A apartment,,NEEDS_REVIEW
+/apartments/layout-b,SERVE,,,Check out availability for our LAYOUT B apartment,,NEEDS_REVIEW
+/apartments/layout-c,SERVE,,,Check out availability for our LAYOUT C apartment,,NEEDS_REVIEW
+/apartments/layout-d,SERVE,,,Check out availability for our LAYOUT D apartment,,NEEDS_REVIEW
+/contact,SERVE,,,"Apartments for Rent in North Salt Lake, UT | Contact Woods Crossing",https://www.woodscrossingslc.com/contact,NEEDS_REVIEW
+/disclosure-fees,SERVE,,,Woods Crossing Disclosure Fees,,NEEDS_REVIEW
+/floor-plans,SERVE,,,"Apartments for Rent in North Salt Lake, UT | Floor Plans at Woods Crossing",https://www.woodscrossingslc.com/floor-plans,NEEDS_REVIEW
+/gallery,SERVE,,,"Apartments for Rent in North Salt Lake, UT | Photos of Woods Crossing",https://www.woodscrossingslc.com/gallery,NEEDS_REVIEW
+/getdirections,SERVE,,,"Apartments for Rent in North Salt Lake, UT | Directions to Woods Crossing",https://www.woodscrossingslc.com/getdirections,NEEDS_REVIEW
+/pet-friendly,SERVE,,,"Apartments for Rent in North Salt Lake, UT | Pet Policy at Woods Crossing",https://www.woodscrossingslc.com/pet-friendly,NEEDS_REVIEW
+/privacy-policy,SERVE,,,"Apartments in North Salt Lake, UT | Privacy Policy for Woods Crossing",https://www.woodscrossingslc.com/privacy-policy,NEEDS_REVIEW
+/rental-scams,SERVE,,,Explore our comprehensive guide to help you spot and avoid rental fraud effectively,,NEEDS_REVIEW
+/residents,SERVE,,,"Apartments in North Salt Lake, UT | Resident Portal for Woods Crossing",https://www.woodscrossingslc.com/residents,NEEDS_REVIEW
+/reviews,SERVE,,,"Apartments for Rent in North Salt Lake, UT | Reviews of Woods Crossing",https://www.woodscrossingslc.com/reviews,NEEDS_REVIEW
+/schedule-a-tour,SERVE,,,"Apartments in North Salt Lake, UT | Schedule a Tour of Woods Crossing",https://www.woodscrossingslc.com/schedule-a-tour,NEEDS_REVIEW
+/terms-of-service,SERVE,,,"Apartments for Rent in North Salt Lake, UT | Terms for Woods Crossing",https://www.woodscrossingslc.com/terms-of-service,NEEDS_REVIEW
+/virtual-leasing,SERVE,,,"Apartments in North Salt Lake, UT | Virtual Leasing at Woods Crossing",https://www.woodscrossingslc.com/virtual-leasing,NEEDS_REVIEW
