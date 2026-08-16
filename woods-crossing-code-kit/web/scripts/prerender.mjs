@@ -1,0 +1,1207 @@
+// Build-time prerenderer: renders every indexable route to static HTML so that
+// crawlers and social/link-preview bots (which don't run JS) receive per-page
+// titles, descriptions, canonicals, and JSON-LD in <head>, plus visible body
+// content. Also regenerates sitemap.xml from PAGE_SEO so it can never drift.
+//
+// Runs after `vite build` (client) and `vite build --ssr` (server bundle).
+import { promises as fs } from 'node:fs';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import {
+  extractJsonLdPayloads,
+  validateJsonLdPayloads,
+  checkRecommendedProperties,
+  SITE_RECOMMENDED_ALLOWLIST,
+} from './validate-jsonld.mjs';
+import { htmlToMarkdown, decodeEntities } from './html-to-markdown.mjs';
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(scriptDir, '..');
+const publicDir = path.join(root, 'dist', 'public');
+const serverEntry = path.join(root, 'dist', 'server', 'entry-server.js');
+
+const {
+  render,
+  PAGE_SEO,
+  SITE_URL,
+  canonicalFor,
+  ROUTE_PATHS,
+  extractLcpPreload,
+  LEGACY_REDIRECTS,
+  LIVE_FLOORPLAN_COUNT,
+  BAKED_UNIT_COUNT,
+  UNIT_PATHS,
+  BAKED_SNAPSHOT_STATUS,
+  KNOWLEDGE_PATHS,
+  KNOWLEDGE_META,
+  BLOG_PATHS,
+  BLOG_META,
+  FLOOR_PLAN_PAGE_PATHS,
+  FLOOR_PLAN_PAGE_META,
+  PLAN_DEEP_LINK_REDIRECTS,
+} = await import(pathToFileURL(serverEntry).href);
+
+// Legacy `?plan=<group id>` deep links to /available-units: write the id →
+// /floor-plans/<slug> map next to dist/public so the production server
+// (server/index.mjs) can answer them with a single-hop 301. Kept OUTSIDE
+// dist/public on purpose — it configures the server, it is not a page asset.
+{
+  const planRedirects = PLAN_DEEP_LINK_REDIRECTS ?? {};
+  if (Object.keys(planRedirects).length === 0) {
+    throw new Error(
+      'Prerender aborted: PLAN_DEEP_LINK_REDIRECTS is empty — legacy ?plan= deep links ' +
+        'would stop 301ing to their floor-plan landing pages.',
+    );
+  }
+  const planRedirectsPath = path.join(publicDir, '..', 'plan-redirects.json');
+  await fs.writeFile(planRedirectsPath, JSON.stringify(planRedirects, null, 2) + '\n');
+  console.log(
+    `Plan deep-link redirect map written (${Object.keys(planRedirects).length} ids) → dist/plan-redirects.json`,
+  );
+}
+
+// Snapshot freshness guard: per-unit pages, their sitemap entries, and the
+// /available-units Apartment/Offer nodes are all generated from the baked
+// availability snapshot. A stale (>48h) or malformed snapshot would silently
+// drop ALL of them from the publish — fail loudly instead, with the fix.
+if (BAKED_SNAPSHOT_STATUS !== 'fresh') {
+  throw new Error(
+    `Prerender aborted: baked availability snapshot is ${BAKED_SNAPSHOT_STATUS}. ` +
+      'Per-unit pages and unit-level structured data would silently vanish from this build. ' +
+      'Re-fetch it (scripts/fetch-availability-snapshot.mjs runs during `pnpm build`; it needs ' +
+      'the production /api/availability to be reachable) and rebuild.',
+  );
+}
+
+// Per-unit pages (/available-units/<unit>): dynamic routes prerendered from
+// the baked availability snapshot. They intentionally live OUTSIDE PAGE_SEO /
+// ROUTE_PATHS (their head model comes from buildUnitSeoModel, and the unit set
+// changes with every publish), so the static parity guard below ignores them.
+const unitPaths = UNIT_PATHS ?? [];
+// Knowledge Center articles (/knowledge/<slug>): static content data rendered
+// through a dynamic route — like unit pages they live outside PAGE_SEO, with
+// their head model coming from buildKnowledgeSeoModel.
+const knowledgePaths = KNOWLEDGE_PATHS ?? [];
+// Blog articles (/blog/<slug>): published static content rendered through a
+// dynamic route — like knowledge pages they live outside PAGE_SEO, with their
+// head model coming from buildBlogSeoModel. Draft articles are already
+// excluded upstream (BLOG_ARTICLES filters them), so they never reach here.
+const blogPaths = BLOG_PATHS ?? [];
+// Floor-plan landing pages (/floor-plans/<slug>): one per distinct plan
+// layout — code-derived slugs rendered through a dynamic route, with their
+// head model coming from buildFloorPlanSeoModel.
+const floorPlanPagePaths = FLOOR_PLAN_PAGE_PATHS ?? [];
+const allPaths = [
+  ...Object.keys(PAGE_SEO),
+  ...unitPaths,
+  ...knowledgePaths,
+  ...blogPaths,
+  ...floorPlanPagePaths,
+];
+const outPathFor = (routePath) =>
+  routePath === '/'
+    ? path.join(publicDir, 'index.html')
+    : path.join(publicDir, routePath.replace(/^\//, ''), 'index.html');
+
+// Parity guard: every indexable page must have a route to render it, and every
+// content route must have SEO metadata. Fail the build on any mismatch so a new
+// page can't silently ship with the wrong (home) meta or 404 content.
+const seoPaths = Object.keys(PAGE_SEO);
+const missingRoutes = seoPaths.filter((p) => !ROUTE_PATHS.includes(p));
+const orphanRoutes = ROUTE_PATHS.filter((p) => !seoPaths.includes(p));
+if (missingRoutes.length || orphanRoutes.length) {
+  throw new Error(
+    'Prerender aborted: routes.tsx and PAGE_SEO are out of sync.\n' +
+      (missingRoutes.length ? `  PAGE_SEO paths with no route: ${missingRoutes.join(', ')}\n` : '') +
+      (orphanRoutes.length ? `  Routes with no PAGE_SEO entry: ${orphanRoutes.join(', ')}\n` : ''),
+  );
+}
+
+// Guard: every WebP AND AVIF variant listed in the image manifest must exist
+// in the build output, so a stale/hand-edited manifest can't ship 404ing
+// srcsets or <source type="image/avif"> entries. The manifest object literal
+// is generator-emitted JSON, so parse it structurally rather than regexing
+// individual fields — robust against formatting changes.
+{
+  const manifestSrc = await fs.readFile(path.join(root, 'src', 'data', 'imageManifest.ts'), 'utf8');
+  const objectMatch = manifestSrc.match(/IMAGE_MANIFEST[^=]*=\s*(\{[\s\S]*\})\s*;/);
+  if (!objectMatch) {
+    throw new Error('Prerender aborted: could not locate IMAGE_MANIFEST object in imageManifest.ts');
+  }
+  /** @type {Record<string, {variants: Array<{src: string, avif?: string}>}>} */
+  const manifest = JSON.parse(objectMatch[1]);
+  const variantPaths = Object.values(manifest).flatMap((meta) =>
+    meta.variants.flatMap((v) => (v.avif ? [v.src, v.avif] : [v.src])),
+  );
+  const missing = [];
+  for (const p of variantPaths) {
+    try {
+      await fs.access(path.join(publicDir, p.replace(/^\//, '')));
+    } catch {
+      missing.push(p);
+    }
+  }
+  if (missing.length) {
+    throw new Error(
+      `Prerender aborted: ${missing.length} image manifest variant(s) missing from build output ` +
+        `(run scripts/optimize-images.mjs): ${missing.slice(0, 5).join(', ')}`,
+    );
+  }
+}
+
+const templatePath = path.join(publicDir, 'index.html');
+const template = await fs.readFile(templatePath, 'utf8');
+
+const SEO_BLOCK = /<!--\s*seo:start\s*-->[\s\S]*?<!--\s*seo:end\s*-->/;
+// Per-page LCP preload block (AVIF imagesrcset). The template carries the
+// home-hero hint (guarded by hero-lcp-preload.test.ts); each prerendered page
+// gets the block rewritten with a preload derived from its own rendered
+// markup, so imagesrcset/imagesizes always match what <SmartImg> renders.
+const LCP_BLOCK = /\s*<!--\s*lcp:start\s*-->[\s\S]*?<!--\s*lcp:end\s*-->/;
+const ROOT_DIV = '<div id="root"></div>';
+
+if (!SEO_BLOCK.test(template)) {
+  throw new Error(
+    'Prerender aborted: could not find <!-- seo:start --> / <!-- seo:end --> markers in index.html.',
+  );
+}
+if (!template.includes(ROOT_DIV)) {
+  throw new Error(`Prerender aborted: could not find "${ROOT_DIV}" in index.html.`);
+}
+if (!LCP_BLOCK.test(template)) {
+  throw new Error(
+    'Prerender aborted: could not find <!-- lcp:start --> / <!-- lcp:end --> markers in index.html.',
+  );
+}
+
+for (const routePath of allPaths) {
+  const { html, head } = await render(routePath);
+
+  if (!head.includes('<title>')) {
+    throw new Error(`Prerender aborted: no <title> generated for ${routePath}.`);
+  }
+
+  let page = template
+    .replace(SEO_BLOCK, `<!-- seo:start -->\n    ${head}\n    <!-- seo:end -->`)
+    .replace(ROOT_DIV, `<div id="root">${html}</div>`);
+
+  // Normalize React's camelCase attribute serialization to canonical
+  // lowercase HTML. Browsers parse attribute names case-insensitively so
+  // this is behavior-neutral, but auditing tools (and some crawlers) match
+  // `fetchpriority`/`srcset` case-sensitively and report eager hero images
+  // as "missing fetchpriority" when the attribute ships as `fetchPriority`.
+  page = page
+    .replace(/ srcSet="/g, ' srcset="')
+    .replace(/ fetchPriority="/g, ' fetchpriority="')
+    .replace(/ autoComplete="/g, ' autocomplete="')
+    .replace(/ enterKeyHint="/g, ' enterkeyhint="');
+
+  // Radix Slider renders hidden form-bridge <input>s during SSR (it can't
+  // know it's outside a <form> until it can call closest('form') in the
+  // browser; it removes them after hydration). They are display:none and
+  // inert, but static a11y scanners flag them as unlabeled form inputs —
+  // mark them explicitly hidden from the accessibility tree. type="hidden"
+  // matters too: squirrel's form-labels/aria-input-field-name rules ignore
+  // aria-hidden (stricter than axe) but exempt hidden inputs.
+  page = page.replace(
+    /<input style="display:none"\/>/g,
+    '<input type="hidden" style="display:none" aria-hidden="true" tabindex="-1"/>',
+  );
+
+  // Rewrite the LCP block with this page's own preload, extracted from the
+  // eager high-priority <picture> SmartImg just rendered (exact-match srcset,
+  // so the browser reuses the preloaded response — never a double download).
+  const lcpLink = extractLcpPreload(html);
+  if (lcpLink) {
+    page = page.replace(
+      LCP_BLOCK,
+      `\n    <!-- lcp:start -->\n    ${lcpLink}\n    <!-- lcp:end -->`,
+    );
+    if (routePath === '/' && !page.includes(lcpLink)) {
+      throw new Error('Prerender aborted: home LCP preload injection failed.');
+    }
+  } else {
+    // Page has no eager AVIF image above the fold — drop the hint entirely.
+    page = page.replace(LCP_BLOCK, '');
+  }
+
+  // Guard: React 19 SSR silently emits <link rel="preload" as="image"
+  // href="..."> for any eager plain <img> rendered outside a <picture> —
+  // exactly how a full-size PNG logo preload once shipped unnoticed. Only the
+  // deliberate href-less imagesrcset AVIF LCP hints are allowed; any image
+  // preload carrying a fixed href fails the build loudly.
+  {
+    const imagePreloads = page.match(/<link\b[^>]*rel="preload"[^>]*>/gi) ?? [];
+    const offenders = imagePreloads.filter(
+      (tag) => /\bas="image"/i.test(tag) && /\bhref="[^"]*"/i.test(tag),
+    );
+    if (offenders.length) {
+      throw new Error(
+        `Prerender aborted: page ${routePath} contains ${offenders.length} fixed-href image preload(s) ` +
+          `(likely React 19 auto-preload from an eager plain <img>; render via SmartImg instead):\n` +
+          offenders
+            .map((tag) => `  ${tag} -> ${tag.match(/\bhref="([^"]*)"/i)?.[1] ?? '?'}`)
+            .join('\n'),
+      );
+    }
+  }
+
+  // Assert the head tags actually landed inside the marker block (not the body).
+  const block = page.match(SEO_BLOCK);
+  if (!block || !/<title>/.test(block[0]) || !/rel="canonical"/.test(block[0])) {
+    throw new Error(`Prerender aborted: head injection failed for ${routePath}.`);
+  }
+
+  const outPath = outPathFor(routePath);
+
+  await fs.mkdir(path.dirname(outPath), { recursive: true });
+  await fs.writeFile(outPath, page, 'utf8');
+}
+
+// Key routes that MUST ship an imagesrcset LCP preload. The self-consistency
+// guard below would happily pass a page that lost its eager hero entirely
+// (no eager AVIF image -> no hint expected -> "consistent"), so a redesign
+// could silently strip the fast-loading hint from a major landing page. These
+// routes fail the build instead if their preload disappears.
+const LCP_REQUIRED_ROUTES = [
+  '/',
+  '/available-units',
+  '/amenities',
+  '/neighborhood',
+  '/photo-gallery',
+  '/pet-friendly',
+  '/apartment-guide',
+];
+
+// Routes known to intentionally ship without an eager hero image (and thus no
+// LCP preload hint). Pages here are skipped by the soft "lost its hint"
+// warning below; if one of them gains an eager hero later, its hint is picked
+// up automatically — remove it from this list to start warning again if the
+// hero ever disappears.
+const LCP_NO_HERO_ROUTES = [
+  // Knowledge Center hub: a text-first Q&A index with no hero image by design.
+  '/knowledge',
+  // Blog hub: a text-first index of renter guides, no hero image by design.
+  '/blog',
+  // Floor-plan hub: a directory of lazy plan-diagram cards, no hero by design.
+  '/floor-plans',
+];
+
+// Post-build guard: re-read every written page from disk and cross-check its
+// injected LCP preload against its OWN rendered body. A template/injection bug
+// (e.g. a page shipping the home hero's hint, or a leftover template hint on a
+// page with no eager AVIF image) fails the build loudly.
+{
+  const problems = [];
+  // Soft check (WARNINGS ONLY — never fails the build): non-key indexable
+  // pages that ship without an LCP preload hint. Allowed by design (only
+  // LCP_REQUIRED_ROUTES hard-fail), but a broad redesign could quietly strip
+  // the eager hero from many smaller pages — make that visible in build
+  // output, like the recommended-schema soft check.
+  const hintlessWarnings = [];
+  // Parity: required routes must actually be rendered pages, so a route rename
+  // can't quietly drop one from the required set.
+  for (const routePath of LCP_REQUIRED_ROUTES) {
+    if (!allPaths.includes(routePath)) {
+      problems.push(
+        `${routePath}: listed in LCP_REQUIRED_ROUTES but is not a prerendered route ` +
+          '(renamed or removed? update the list in scripts/prerender.mjs).',
+      );
+    }
+  }
+  // Parity: exempt no-hero routes must also be real prerendered routes, so a
+  // rename/removal can't leave a stale entry silently exempting nothing.
+  for (const routePath of LCP_NO_HERO_ROUTES) {
+    if (!allPaths.includes(routePath)) {
+      problems.push(
+        `${routePath}: listed in LCP_NO_HERO_ROUTES but is not a prerendered route ` +
+          '(renamed or removed? update the list in scripts/prerender.mjs).',
+      );
+    }
+  }
+  // Soft notice: exempt routes that now DO ship a preload hint — the entry is
+  // stale and can be removed so the "lost its hero" warning re-arms.
+  const staleExemptions = [];
+  for (const routePath of allPaths) {
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
+
+    // Split head/body so we compare the head's hint to the body's markup only.
+    const headEnd = page.indexOf('</head>');
+    if (headEnd === -1) {
+      problems.push(`${routePath}: no </head> found in output.`);
+      continue;
+    }
+    const headHtml = page.slice(0, headEnd);
+    const bodyHtml = page.slice(headEnd);
+
+    // Expected hint: derived from this page's own body markup.
+    const expected = extractLcpPreload(bodyHtml);
+
+    // Actual hint(s): imagesrcset preloads present in the head.
+    const actualLinks = (headHtml.match(/<link\b[^>]*rel="preload"[^>]*>/gi) ?? []).filter((tag) =>
+      /\bimagesrcset="/i.test(tag),
+    );
+
+    if (!expected && LCP_REQUIRED_ROUTES.includes(routePath)) {
+      problems.push(
+        `${routePath}: key landing page has NO eager AVIF hero, so it ships without an LCP ` +
+          'preload hint (performance regression). Restore the eager fetchPriority="high" ' +
+          '<SmartImg> hero, or — if the redesign is intentional — remove the route from ' +
+          'LCP_REQUIRED_ROUTES in scripts/prerender.mjs.',
+      );
+    }
+
+    // Soft warning: any other indexable PAGE_SEO page without a hint. Noindex
+    // pages, unit/knowledge pages (outside PAGE_SEO), and deliberate no-hero
+    // routes are exempt.
+    if (
+      !expected &&
+      !LCP_REQUIRED_ROUTES.includes(routePath) &&
+      !LCP_NO_HERO_ROUTES.includes(routePath) &&
+      routePath in PAGE_SEO &&
+      !PAGE_SEO[routePath]?.noindex
+    ) {
+      hintlessWarnings.push(routePath);
+    }
+
+    // Exempt route now ships a hint: the LCP_NO_HERO_ROUTES entry is stale.
+    if (expected && LCP_NO_HERO_ROUTES.includes(routePath)) {
+      staleExemptions.push(routePath);
+    }
+
+    if (expected) {
+      if (actualLinks.length !== 1) {
+        problems.push(
+          `${routePath}: expected exactly 1 imagesrcset preload, found ${actualLinks.length}.`,
+        );
+      } else if (actualLinks[0] !== expected) {
+        problems.push(
+          `${routePath}: preload does not match the page's own eager <picture>.\n` +
+            `    head has: ${actualLinks[0]}\n` +
+            `    expected: ${expected}`,
+        );
+      }
+    } else if (actualLinks.length) {
+      problems.push(
+        `${routePath}: has no eager AVIF <picture> but head carries ${actualLinks.length} ` +
+          `imagesrcset preload(s) (stale/leftover template hint): ${actualLinks[0]}`,
+      );
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: LCP preload verification failed on ${problems.length} page(s):\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  if (staleExemptions.length) {
+    for (const routePath of staleExemptions) {
+      console.warn(
+        `WARN ${routePath}: listed in LCP_NO_HERO_ROUTES but now ships an LCP preload hint ` +
+          '(it gained an eager hero). Remove it from LCP_NO_HERO_ROUTES in scripts/prerender.mjs ' +
+          'so the no-hero warning re-arms if the hero ever disappears.',
+      );
+    }
+  }
+  if (hintlessWarnings.length) {
+    for (const routePath of hintlessWarnings) {
+      console.warn(
+        `WARN ${routePath}: page ships without an LCP preload hint (no eager ` +
+          'fetchPriority="high" <SmartImg> hero rendered). Allowed for non-key pages, but if ' +
+          'this used to have a hero it quietly lost its fast-loading hint. If intentional, add ' +
+          'the route to LCP_NO_HERO_ROUTES in scripts/prerender.mjs.',
+      );
+    }
+  }
+  console.log(
+    `LCP preload verified on ${allPaths.length} pages` +
+      (hintlessWarnings.length
+        ? ` — ${hintlessWarnings.length} page(s) without a hint (warnings above, build not failed).`
+        : '.'),
+  );
+}
+
+// Post-build guard: structured-data validation. Re-read every written page and
+// validate ALL of its JSON-LD blocks — parseable JSON, schema.org @context,
+// @type on every node, and no dangling internal @id references. A malformed
+// node on ANY prerendered route fails the build before Google ever sees it.
+{
+  const problems = [];
+  for (const routePath of allPaths) {
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
+    const payloads = extractJsonLdPayloads(page);
+    // Every indexable page must ship structured data; noindex pages skip it.
+    // Unit pages (not in PAGE_SEO) are always indexable.
+    if (!PAGE_SEO[routePath]?.noindex && payloads.length === 0) {
+      problems.push(`${routePath}: indexable page has no JSON-LD blocks`);
+    }
+    for (const problem of validateJsonLdPayloads(payloads, SITE_URL)) {
+      problems.push(`${routePath}: ${problem}`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: JSON-LD validation failed on ${problems.length} issue(s):\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`JSON-LD validated on ${allPaths.length} pages.`);
+}
+
+// Post-build guard: /available-units must publish machine-readable inventory —
+// one FloorPlan node per residence line WITH A LIVE UNIT (the full 27-line
+// catalog schema lives on the /floor-plans hub now), and (whenever the build carried a
+// fresh availability snapshot) one Apartment node with a lease Offer per
+// available unit. A refactor that drops these silently would erase the site's
+// unit-level structured data for AI/Bing crawlers.
+{
+  const page = await fs.readFile(path.join(publicDir, 'available-units', 'index.html'), 'utf8');
+  const nodes = [];
+  for (const raw of extractJsonLdPayloads(page)) {
+    const parsed = JSON.parse(raw);
+    const collect = (v) => {
+      if (Array.isArray(v)) return v.forEach(collect);
+      if (v && typeof v === 'object') {
+        if (typeof v['@type'] === 'string' || Array.isArray(v['@type'])) nodes.push(v);
+        for (const k of Object.keys(v)) if (!k.startsWith('@')) collect(v[k]);
+        if (Array.isArray(v['@graph'])) collect(v['@graph']);
+      }
+    };
+    collect(parsed);
+  }
+  const count = (type) => nodes.filter((n) => n['@type'] === type).length;
+  const problems = [];
+  // Per-plan FloorPlan nodes only — the building-wide summary FloorPlan
+  // (#floorplan-range, carrying the tower's sq-ft range) is not a plan sheet.
+  const perPlanFloorPlans = nodes.filter(
+    (n) => n['@type'] === 'FloorPlan' && n['@id'] !== `${SITE_URL}#floorplan-range`,
+  ).length;
+  if (perPlanFloorPlans !== LIVE_FLOORPLAN_COUNT) {
+    problems.push(
+      `expected ${LIVE_FLOORPLAN_COUNT} FloorPlan nodes (live residence lines), found ${perPlanFloorPlans}`,
+    );
+  }
+  // The 27-plan catalog ItemList moved to the /floor-plans hub — it must not
+  // reappear here and duplicate the hub's entities.
+  if (nodes.some((n) => n['@type'] === 'ItemList')) {
+    problems.push('found a catalog ItemList on /available-units — it belongs on /floor-plans');
+  }
+  // Offers are standalone nodes linked to their Apartment via itemOffered
+  // (schema.org core has no `offers` property on Apartment).
+  const apartmentIds = new Set(
+    nodes.filter((n) => n['@type'] === 'Apartment').map((n) => n['@id']),
+  );
+  const linkedOffers = nodes.filter(
+    (n) => n['@type'] === 'Offer' && apartmentIds.has(n.itemOffered?.['@id']),
+  ).length;
+  if (apartmentIds.size < BAKED_UNIT_COUNT || linkedOffers < BAKED_UNIT_COUNT) {
+    problems.push(
+      `expected >= ${BAKED_UNIT_COUNT} Apartment nodes with linked Offers (snapshot units), ` +
+        `found ${apartmentIds.size} apartments / ${linkedOffers} linked offers`,
+    );
+  }
+  if (
+    !nodes.some(
+      (n) =>
+        [].concat(n['@type'] ?? []).includes('ApartmentComplex') &&
+        n.numberOfAccommodationUnits === 298,
+    )
+  ) {
+    problems.push('ApartmentComplex is missing numberOfAccommodationUnits: 298');
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: /available-units unit-level structured data check failed:\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(
+    `Unit-level structured data verified: ${LIVE_FLOORPLAN_COUNT} live-line FloorPlans, ${BAKED_UNIT_COUNT} available units with Offers.`,
+  );
+}
+
+// Post-build guard: every per-unit page must carry its own facts — the unit
+// number in <title> and canonical, an Apartment node with a lease Offer, and
+// the fact-first summary in the body. A regression that ships unit pages with
+// home/generic meta (the exact soft-duplicate failure these pages exist to
+// avoid) fails the build.
+{
+  const problems = [];
+  for (const routePath of unitPaths) {
+    const unit = routePath.split('/').pop();
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
+    if (!new RegExp(`<title>[^<]*${unit}`).test(page)) {
+      problems.push(`${routePath}: <title> does not mention unit ${unit}`);
+    }
+    if (!page.includes(`rel="canonical" href="${SITE_URL}${routePath}"`)) {
+      problems.push(`${routePath}: missing self-canonical`);
+    }
+    // renderToString splits dynamic text with <!-- --> comments, so check the
+    // body via a comment-tolerant fragment of the fact summary.
+    if (!page.replaceAll('<!-- -->', '').includes(`Apartment ${unit} at ${PROPERTY_DISPLAY_NAME} is a`)) {
+      problems.push(`${routePath}: fact-first summary missing from body`);
+    }
+    const nodes = extractJsonLdPayloads(page).flatMap((raw) => {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed];
+    });
+    const apt = nodes.find((n) => n['@type'] === 'Apartment');
+    const offer =
+      apt && nodes.find((n) => n['@type'] === 'Offer' && n.itemOffered?.['@id'] === apt['@id']);
+    if (!apt || !offer) {
+      problems.push(`${routePath}: missing Apartment node with linked Offer`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: per-unit page check failed:\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`Per-unit pages verified: ${unitPaths.length} unit page(s).`);
+}
+
+// Soft check: recommended schema.org properties (WARNINGS ONLY — never fails
+// the build). Google's rich-result eligibility improves with per-type
+// recommended properties (FAQ answers, ApartmentComplex address/telephone/
+// image, VideoObject uploadDate, ...). Missing ones are printed per page so
+// thin listings are visible in build output; intentional omissions live in
+// SITE_RECOMMENDED_ALLOWLIST (scripts/validate-jsonld.mjs). The vitest suite
+// (src/prerender-jsonld-recommended.test.ts) pins these to zero beyond the
+// allowlist, so this printout doubles as a diagnostic when that test fails.
+{
+  let warned = 0;
+  for (const routePath of allPaths) {
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
+    const warnings = checkRecommendedProperties(extractJsonLdPayloads(page), {
+      allowlist: SITE_RECOMMENDED_ALLOWLIST,
+    });
+    if (warnings.length) {
+      warned += warnings.length;
+      console.warn(`WARN ${routePath}: structured data missing recommended properties:`);
+      for (const w of warnings) console.warn(`  - ${w}`);
+    }
+  }
+  console.log(
+    warned
+      ? `Recommended-property check: ${warned} warning(s) — see above (build not failed).`
+      : `Recommended-property check: all pages carry the properties Google rewards.`,
+  );
+}
+
+// Legacy URL redirect stubs: crawlers that hit old Wix-era URLs (or the former
+// /floor-plans canonical) must receive an explicit redirect signal — never the
+// homepage document (which reads as duplicate/soft-404 content). Each stub is a
+// no-JS meta-refresh (Google treats refresh=0 as a permanent redirect) with a
+// canonical pointing at the destination. artifact.toml rewrites route the
+// legacy paths to these files; the SPA's client-side <Redirect> routes remain
+// as a belt-and-braces fallback for JS-enabled visitors.
+// Source of truth: src/data/legacyRedirects.ts (shared with App.tsx).
+const LEGACY_REDIRECT_STUBS = LEGACY_REDIRECTS;
+
+// Parity guard: every legacy path must have BOTH rewrite forms (bare and
+// trailing slash) in artifact.toml pointing at its stub, or crawlers would
+// fall through to the /* -> /index.html catch-all and receive homepage
+// content (the soft-duplicate failure this whole block exists to prevent).
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const missing = [];
+  for (const from of Object.keys(LEGACY_REDIRECT_STUBS)) {
+    for (const form of [from, `${from}/`]) {
+      const rule = `from = "${form}"\nto = "${from}/index.html"`;
+      if (!toml.includes(rule)) missing.push(form);
+    }
+  }
+  if (missing.length) {
+    throw new Error(
+      `Prerender aborted: artifact.toml is missing legacy redirect rewrite(s) for: ${missing.join(', ')}.\n` +
+        'Add [[services.production.rewrites]] entries (bare + trailing slash) ahead of the /* catch-all.',
+    );
+  }
+}
+
+// Parity guard: per-unit rewrites must EXACTLY match the baked snapshot's
+// unit set. The production static host does not resolve directory indexes for
+// unmatched paths (verified live 2026-07-26: unit URLs fell through to the /*
+// catch-all and served the homepage shell), so every unit page needs an
+// explicit rewrite pair. A MISSING pair ships a unit page that serves homepage
+// HTML; a STALE pair points at a file absent from the new build (hard 404
+// instead of the graceful client-side "has been rented" page). Both fail here.
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const tomlUnits = new Set(
+    // Unit segments are "FFUU" or AppFolio's mezzanine form "04M02".
+    [...toml.matchAll(/^from = "\/available-units\/([0-9M]+)\/?"$/gm)].map((m) => m[1]),
+  );
+  const snapshotUnits = unitPaths.map((p) => p.split('/').pop());
+  const missing = snapshotUnits.filter((u) => {
+    return (
+      !toml.includes(`from = "/available-units/${u}"\nto = "/available-units/${u}/index.html"`) ||
+      !toml.includes(`from = "/available-units/${u}/"\nto = "/available-units/${u}/index.html"`)
+    );
+  });
+  const stale = [...tomlUnits].filter((u) => !snapshotUnits.includes(u));
+  if (missing.length || stale.length) {
+    throw new Error(
+      'Prerender aborted: artifact.toml per-unit rewrites are out of sync with the baked availability snapshot.\n' +
+        (missing.length ? `  Units missing rewrite pairs (bare + trailing slash): ${missing.join(', ')}\n` : '') +
+        (stale.length ? `  Stale rewrites for units no longer in the snapshot: ${stale.join(', ')}\n` : '') +
+        'Run `node scripts/generate-unit-rewrites.mjs` (or `pnpm run generate:unit-rewrites`) to regenerate the [[services.production.rewrites]] unit block from src/data/availabilitySnapshot.json.',
+    );
+  }
+}
+
+for (const [from, to] of Object.entries(LEGACY_REDIRECT_STUBS)) {
+  const isExternal = /^https?:\/\//i.test(to);
+  const stub = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>WOODS-CROSSING: Property Name<\/title> <!-- WOODS-CROSSING: replace -->
+    <meta name="robots" content="noindex" />${
+      isExternal ? '' : `\n    <link rel="canonical" href="${canonicalFor(to.split('?')[0])}" />`
+    }
+    <meta http-equiv="refresh" content="0;url=${to}" />
+  </head>
+  <body>
+    <p>This page has moved. <a href="${to}">Continue to WOODS-CROSSING: Property Name <!-- WOODS-CROSSING: replace --></a>.</p>
+  </body>
+</html>
+`;
+  // Same layout as the public/artist-in-residence stub: the file lives at the
+  // legacy path itself, and artifact.toml rewrites route both the bare and
+  // trailing-slash forms to it.
+  const stubPath = path.join(publicDir, from.replace(/^\//, ''), 'index.html');
+  await fs.mkdir(path.dirname(stubPath), { recursive: true });
+  await fs.writeFile(stubPath, stub, 'utf8');
+}
+console.log(`Wrote ${Object.keys(LEGACY_REDIRECT_STUBS).length} legacy redirect stubs.`);
+
+// Sitemap: indexable pages only (noindex pages excluded). Redirect routes such
+// as /available-units are absent from PAGE_SEO, so they're excluded by design.
+// Generation itself happens AFTER the markdown twins below: each URL's
+// <lastmod> is derived from a content hash over the page's twin, so the twin
+// bodies must exist first.
+const indexable = seoPaths.filter((p) => !PAGE_SEO[p].noindex);
+
+console.log(`Prerendered ${allPaths.length} routes.`);
+
+// Post-build guard: every knowledge article must ship its answer-first
+// structure — question in <title> and H1, self-canonical, the answer text in
+// the body, and a FAQPage node whose Question matches. A refactor that ships
+// article pages with generic meta or drops the FAQ schema fails the build.
+{
+  const problems = [];
+  for (const meta of KNOWLEDGE_META ?? []) {
+    const page = await fs.readFile(outPathFor(meta.path), 'utf8');
+    const text = page.replaceAll('<!-- -->', '');
+    if (!page.includes(`rel="canonical" href="${SITE_URL}${meta.path}"`)) {
+      problems.push(`${meta.path}: missing self-canonical`);
+    }
+    const esc = (s) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    if (!text.includes(`<title>${esc(meta.title)}</title>`)) {
+      problems.push(`${meta.path}: <title> does not match the article question`);
+    }
+    // Scope the question check to the rendered <body> (the <title>/OG tags
+    // would otherwise satisfy it even if the H1 regressed).
+    const body = text.slice(text.indexOf('<body'));
+    if (!body.includes(esc(meta.question))) {
+      problems.push(`${meta.path}: question missing from page body/H1`);
+    }
+    const nodes = extractJsonLdPayloads(page).flatMap((raw) => {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed];
+    });
+    const faq = nodes.find((n) => n['@type'] === 'FAQPage');
+    const question = faq?.mainEntity?.[0];
+    if (!faq || question?.name !== meta.question || !question?.acceptedAnswer?.text) {
+      problems.push(`${meta.path}: FAQPage JSON-LD missing or does not carry the question/answer`);
+    }
+    const crumbs = nodes.find((n) => n['@type'] === 'BreadcrumbList');
+    if (!crumbs || crumbs.itemListElement?.length !== 3) {
+      problems.push(`${meta.path}: BreadcrumbList missing or not 3 levels`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: knowledge article check failed:\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`Knowledge articles verified: ${(KNOWLEDGE_META ?? []).length} article(s).`);
+}
+
+// Post-build guard: every published blog article must ship its answer-first
+// structure — title in <title> and H1, self-canonical, and an Article node in
+// the JSON-LD with author + datePublished. A refactor that ships article
+// pages with generic meta or drops the authorship signal fails the build.
+{
+  const problems = [];
+  for (const meta of BLOG_META ?? []) {
+    const page = await fs.readFile(outPathFor(meta.path), 'utf8');
+    const text = page.replaceAll('<!-- -->', '');
+    if (!page.includes(`rel="canonical" href="${SITE_URL}${meta.path}"`)) {
+      problems.push(`${meta.path}: missing self-canonical`);
+    }
+    const esc = (s) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    if (!text.includes(`<title>${esc(meta.title)}</title>`)) {
+      problems.push(`${meta.path}: <title> does not match the article title`);
+    }
+    const body = text.slice(text.indexOf('<body'));
+    if (!body.includes(esc(meta.heading))) {
+      problems.push(`${meta.path}: article title missing from page body/H1`);
+    }
+    const nodes = extractJsonLdPayloads(page).flatMap((raw) => {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed];
+    });
+    const article = nodes.find(
+      (n) => Array.isArray(n['@type']) && n['@type'].includes('Article'),
+    );
+    if (!article || !article.author || !article.datePublished) {
+      problems.push(`${meta.path}: Article JSON-LD missing or lacks author/datePublished`);
+    }
+    const crumbs = nodes.find((n) => n['@type'] === 'BreadcrumbList');
+    if (!crumbs || crumbs.itemListElement?.length !== 3) {
+      problems.push(`${meta.path}: BreadcrumbList missing or not 3 levels`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: blog article check failed:\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`Blog articles verified: ${(BLOG_META ?? []).length} article(s).`);
+}
+
+// Blog rewrite parity guard: same failure mode as knowledge/floor-plan pages —
+// the slugs live in code (blogArticles.ts) but their clean-URL rewrites are
+// duplicated in artifact.toml. Missing pair => homepage HTML for crawlers;
+// stale pair => rewrite to an unpublished/deleted page. Both directions fail.
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const expected = ['/blog', ...blogPaths];
+  const missing = [];
+  for (const p of expected) {
+    for (const form of [p, `${p}/`]) {
+      if (!toml.includes(`from = "${form}"\nto = "${p}/index.html"`)) missing.push(form);
+    }
+  }
+  const expectedSet = new Set(expected);
+  const stale = [...toml.matchAll(/from = "(\/blog\/[^"*]+?)\/?"/g)]
+    .map((m) => m[1])
+    .filter((p) => !expectedSet.has(p));
+  if (!toml.includes('from = "/blog/*"')) missing.push('/blog/* (not-found fallback)');
+  if (missing.length || stale.length) {
+    throw new Error(
+      `Prerender aborted: artifact.toml blog rewrites out of sync with blogArticles.ts.\n` +
+        (missing.length ? `  Missing rewrite(s): ${missing.join(', ')}\n` : '') +
+        (stale.length ? `  Stale rewrite(s) for removed/unpublished slug(s): ${[...new Set(stale)].join(', ')}\n` : '') +
+        'Regenerate the blog rewrite block (bare + trailing-slash pair per published slug, then the /blog/* not-found fallback, all ahead of the /* catch-all).',
+    );
+  }
+}
+
+// Knowledge rewrite parity guard: the article slugs live in code
+// (knowledgeArticles.ts) but their clean-URL rewrites are duplicated in
+// artifact.toml. A slug added/renamed without its rewrite pair would serve
+// catch-all homepage HTML to non-JS crawlers; a stale rewrite would point at
+// a deleted page. Both directions fail the build here.
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const expected = ['/knowledge', ...knowledgePaths];
+  const missing = [];
+  for (const p of expected) {
+    for (const form of [p, `${p}/`]) {
+      if (!toml.includes(`from = "${form}"\nto = "${p}/index.html"`)) missing.push(form);
+    }
+  }
+  const expectedSet = new Set(expected);
+  const stale = [...toml.matchAll(/from = "(\/knowledge\/[^"*]+?)\/?"/g)]
+    .map((m) => m[1])
+    // Unpublished slugs that became legacy 301s (e.g. internet-options while
+    // hidden pending the Zentro install) keep their rewrite pair — it now
+    // routes to the redirect stub — so they are not stale.
+    .filter((p) => !expectedSet.has(p) && !(p in LEGACY_REDIRECT_STUBS));
+  if (!toml.includes('from = "/knowledge/*"')) missing.push('/knowledge/* (not-found fallback)');
+  if (missing.length || stale.length) {
+    throw new Error(
+      `Prerender aborted: artifact.toml knowledge rewrites out of sync with knowledgeArticles.ts.\n` +
+        (missing.length ? `  Missing rewrite(s): ${missing.join(', ')}\n` : '') +
+        (stale.length ? `  Stale rewrite(s) for removed slug(s): ${[...new Set(stale)].join(', ')}\n` : '') +
+        'Regenerate the knowledge rewrite block (bare + trailing-slash pair per slug, then the /knowledge/* not-found fallback, all ahead of the /* catch-all).',
+    );
+  }
+}
+
+// Floor-plan rewrite parity guard: same failure mode as knowledge articles —
+// the slugs live in code (floorPlanPages.ts) but their clean-URL rewrites are
+// duplicated in artifact.toml. Missing pair => homepage HTML for crawlers;
+// stale pair => rewrite to a deleted page. Both directions fail the build.
+{
+  const tomlPath = path.join(root, '.replit-artifact', 'artifact.toml');
+  const toml = await fs.readFile(tomlPath, 'utf8');
+  const expected = ['/floor-plans', ...floorPlanPagePaths];
+  const missing = [];
+  for (const p of expected) {
+    for (const form of [p, `${p}/`]) {
+      if (!toml.includes(`from = "${form}"\nto = "${p}/index.html"`)) missing.push(form);
+    }
+  }
+  const expectedSet = new Set(expected);
+  const stale = [...toml.matchAll(/from = "(\/floor-plans\/[^"*]+?)\/?"/g)]
+    .map((m) => m[1])
+    .filter((p) => !expectedSet.has(p));
+  if (!toml.includes('from = "/floor-plans/*"')) missing.push('/floor-plans/* (not-found fallback)');
+  if (missing.length || stale.length) {
+    throw new Error(
+      `Prerender aborted: artifact.toml floor-plan rewrites out of sync with floorPlanPages.ts.\n` +
+        (missing.length ? `  Missing rewrite(s): ${missing.join(', ')}\n` : '') +
+        (stale.length ? `  Stale rewrite(s) for removed slug(s): ${[...new Set(stale)].join(', ')}\n` : '') +
+        'Regenerate the floor-plan rewrite block (bare + trailing-slash pair per slug, then the /floor-plans/* not-found fallback, all ahead of the /* catch-all).',
+    );
+  }
+}
+
+// Meta-description band guard: floor-plan descriptions regenerate from plan
+// data (sqft, floor range, balcony) + filler phrases, so a data edit can push
+// one out of the 150–160 char band search engines display in full. Fail the
+// build loudly instead of silently shipping a short/truncated snippet.
+{
+  const bad = (FLOOR_PLAN_PAGE_META ?? []).filter(
+    (m) => m.description.length < 150 || m.description.length > 160,
+  );
+  if (bad.length) {
+    throw new Error(
+      `Prerender aborted: floor-plan meta description(s) outside the 150–160 char band.\n` +
+        bad
+          .map((m) => `  ${m.path} (${m.description.length} chars): "${m.description}"`)
+          .join('\n') +
+        '\nAdjust DESCRIPTION_FILLERS in src/data/floorPlanPages.ts (see the coverage test in floorPlanPages.test.ts).',
+    );
+  }
+}
+
+// Unknown-slug fallback: /floor-plans/* (after the per-slug rewrites) serves
+// this noindex stub instead of homepage HTML, so retired or mistyped plan
+// URLs are not soft-404 duplicates of the homepage for non-JS crawlers.
+{
+  const stubDir = path.join(publicDir, 'floor-plans', 'not-found');
+  await fs.mkdir(stubDir, { recursive: true });
+  const stub = template.replace(
+    SEO_BLOCK,
+    `<!-- seo:start -->\n    <title>Page Not Found | ${PROPERTY_DISPLAY_NAME}</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This floor plan page does not exist. Browse every layout at ${SITE_URL}/floor-plans." />\n    <!-- seo:end -->`,
+  );
+  await fs.writeFile(path.join(stubDir, 'index.html'), stub, 'utf8');
+  console.log('Floor-plan not-found stub written (noindex, served via /floor-plans/* rewrite).');
+}
+
+// Unknown-slug fallback: /knowledge/* (after the per-slug rewrites) serves
+// this noindex stub instead of homepage HTML, so retired or mistyped article
+// URLs are not soft-404 duplicates of the homepage for non-JS crawlers.
+// JS-enabled visitors still hydrate into the SPA's NotFound page.
+{
+  const stubDir = path.join(publicDir, 'knowledge', 'not-found');
+  await fs.mkdir(stubDir, { recursive: true });
+  const stub = template
+    .replace(
+      SEO_BLOCK,
+      `<!-- seo:start -->\n    <title>Page Not Found | ${PROPERTY_DISPLAY_NAME}</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This Knowledge Center page does not exist. Browse all renter questions at ${SITE_URL}/knowledge." />\n    <!-- seo:end -->`,
+    );
+  await fs.writeFile(path.join(stubDir, 'index.html'), stub, 'utf8');
+  console.log('Knowledge not-found stub written (noindex, served via /knowledge/* rewrite).');
+}
+
+// Unknown-slug fallback: /blog/* (after the per-slug rewrites) serves this
+// noindex stub instead of homepage HTML, so retired, mistyped, or still-draft
+// blog URLs are not soft-404 duplicates of the homepage for non-JS crawlers.
+{
+  const stubDir = path.join(publicDir, 'blog', 'not-found');
+  await fs.mkdir(stubDir, { recursive: true });
+  const stub = template.replace(
+    SEO_BLOCK,
+    `<!-- seo:start -->\n    <title>Page Not Found | ${PROPERTY_DISPLAY_NAME}</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This blog page does not exist. Browse every renter guide at ${SITE_URL}/blog." />\n    <!-- seo:end -->`,
+  );
+  await fs.writeFile(path.join(stubDir, 'index.html'), stub, 'utf8');
+  console.log('Blog not-found stub written (noindex, served via /blog/* rewrite).');
+}
+
+// Site-wide 404 page: the production server (server/index.mjs) serves this
+// with a real 404 status for any unknown path, replacing the old static-host
+// soft-404 (200 + homepage HTML). noindex keeps it out of the index; the SPA
+// hydrates into its NotFound route for JS-enabled visitors.
+{
+  const stub = template.replace(
+    SEO_BLOCK,
+    `<!-- seo:start -->\n    <title>Page Not Found | ${PROPERTY_DISPLAY_NAME}</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This page does not exist. Visit ${SITE_URL} for luxury apartments in River North, Chicago." />\n    <!-- seo:end -->`,
+  );
+  await fs.writeFile(path.join(publicDir, '404.html'), stub, 'utf8');
+  console.log('404 page written (noindex, served with status 404 by the production server).');
+}
+
+// Markdown twins (SEO Phase 4 / AEO): every prerendered page gets a `.md`
+// variant at `<path>.md` (homepage: /index.md), generated from the page's own
+// rendered <main> content — answer-first text without the markup overhead
+// (page HTML is <15% visible text; the twin is ~90%+). The production server
+// (server/index.mjs) serves these directly and via `Accept: text/markdown`
+// content negotiation. Guarded: a page whose twin comes out empty or heading-
+// less fails the build.
+const mdPathFor = (routePath) =>
+  routePath === '/'
+    ? path.join(publicDir, 'index.md')
+    : path.join(publicDir, `${routePath.replace(/^\//, '')}.md`);
+// Per-page content fingerprint for the sitemap's <lastmod>: sha256 over the
+// full markdown twin (frontmatter title/description + body text). The twin is
+// derived from the rendered <main> and never contains build-stamped chunk
+// names, so it only changes when the page's actual content changes.
+const contentHashes = new Map();
+{
+  // Stale-twin cleanup: remove any .md left over from routes that no longer
+  // exist (e.g. a rented unit) so old twins can't outlive their pages.
+  const expected = new Set(allPaths.map((p) => mdPathFor(p)));
+  const walk = async (dir) => {
+    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) await walk(p);
+      else if (p.endsWith('.md') && !expected.has(p)) await fs.rm(p);
+    }
+  };
+  await walk(publicDir);
+
+  const problems = [];
+  for (const routePath of allPaths) {
+    const page = await fs.readFile(outPathFor(routePath), 'utf8');
+    const title = decodeEntities(page.match(/<title>([^<]*)<\/title>/)?.[1] ?? '');
+    const description = decodeEntities(
+      page.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '',
+    );
+    const canonical = page.match(/<link rel="canonical" href="([^"]*)"/)?.[1] ?? `${SITE_URL}${routePath}`;
+    const mainMatch = page.match(/<main[\s\S]*?<\/main>/);
+    if (!mainMatch) {
+      problems.push(`${routePath}: no <main> element found for markdown generation`);
+      continue;
+    }
+    const body = htmlToMarkdown(mainMatch[0], { siteUrl: SITE_URL });
+    const md = [
+      '---',
+      `title: ${JSON.stringify(title)}`,
+      `description: ${JSON.stringify(description)}`,
+      `url: ${canonical}`,
+      '---',
+      '',
+      body,
+    ].join('\n');
+    const noindex = PAGE_SEO[routePath]?.noindex;
+    if (!body.includes('# ')) {
+      problems.push(`${routePath}: markdown twin has no heading`);
+    }
+    if (!noindex && body.length < 300) {
+      problems.push(`${routePath}: markdown twin suspiciously thin (${body.length} chars)`);
+    }
+    const outPath = mdPathFor(routePath);
+    await fs.mkdir(path.dirname(outPath), { recursive: true });
+    await fs.writeFile(outPath, md, 'utf8');
+    contentHashes.set(routePath, createHash('sha256').update(md).digest('hex'));
+  }
+  if (problems.length) {
+    throw new Error(
+      `Prerender aborted: markdown twin generation failed on ${problems.length} page(s):\n` +
+        problems.map((p) => `  ${p}`).join('\n'),
+    );
+  }
+  console.log(`Markdown twins written for ${allPaths.length} pages.`);
+}
+
+// Sitemap with content-derived <lastmod>: each URL's date comes from the
+// committed hash→date map src/data/sitemapLastmod.json. An entry only moves
+// to today's date when the page's content hash changes — a rebuild without
+// content changes must never touch any lastmod (the handoff requires dates
+// derived from content changes, not deployment time). The map is rewritten
+// here (dropping paths that no longer exist, e.g. rented units) and must be
+// committed alongside the dist so dates persist across builds; the
+// sitemap-lastmod test suite guards map↔twin↔sitemap consistency.
+{
+  const lastmodPath = path.join(root, 'src', 'data', 'sitemapLastmod.json');
+  /** @type {Record<string, {hash: string, lastmod: string}>} */
+  let prior = {};
+  try {
+    prior = JSON.parse(await fs.readFile(lastmodPath, 'utf8'));
+  } catch {
+    // First build with the mechanism: every page starts at today's date.
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  const sitemapPaths = [...indexable, ...unitPaths, ...knowledgePaths, ...blogPaths, ...floorPlanPagePaths];
+  /** @type {Record<string, {hash: string, lastmod: string}>} */
+  const lastmods = {};
+  for (const p of sitemapPaths) {
+    const hash = contentHashes.get(p);
+    if (!hash) {
+      throw new Error(`Prerender aborted: no content hash for sitemap URL ${p} (twin missing?).`);
+    }
+    const prev = prior[p];
+    lastmods[p] = prev && prev.hash === hash ? prev : { hash, lastmod: today };
+  }
+  await fs.writeFile(lastmodPath, `${JSON.stringify(lastmods, null, 2)}\n`, 'utf8');
+
+  const urls = [
+    ...indexable.map((p) => {
+      const priority = p === '/' ? '1.0' : '0.8';
+      return `  <url><loc>${canonicalFor(p)}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
+    }),
+    // Per-unit pages: churn with inventory — daily changefreq, slightly
+    // lower priority than the hub pages.
+    ...unitPaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`,
+    ),
+    // Knowledge Center articles: stable evergreen content.
+    ...knowledgePaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
+    ),
+    // Blog articles: evergreen renter guides, refreshed periodically.
+    ...blogPaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
+    ),
+    // Floor-plan landing pages: stable plan facts, availability list churns.
+    ...floorPlanPagePaths.map(
+      (p) =>
+        `  <url><loc>${SITE_URL}${p}</loc><lastmod>${lastmods[p].lastmod}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>`,
+    ),
+  ].join('\n');
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  await fs.writeFile(path.join(publicDir, 'sitemap.xml'), sitemap, 'utf8');
+  console.log(`sitemap.xml written with ${sitemapPaths.length} URLs (content-derived lastmod).`);
+}
+
+// llms.txt + llms-full.txt: regenerated every build so they can never drift
+// from the deployed page set. llms.txt stays a concise entry point (curated
+// primary pages + the Knowledge Center hub); llms-full.txt is the rich
+// catalog — every indexable page with title, one-line description, and URL,
+// grouped for AI assistants that fetch one file for full site context.
+{
+  // Deterministic: strip any existing Knowledge Center section, then insert
+  // the freshly generated one (self-healing — a stale article count or edited
+  // section can never survive a build).
+  const llmsPath = path.join(publicDir, 'llms.txt');
+  let llms = await fs.readFile(llmsPath, 'utf8');
+  llms = llms.replace(/## Knowledge Center\n[\s\S]*?(?=\n## )/, '');
+  llms = llms.replace(/## Blog\n[\s\S]*?(?=\n## )/, '');
+  const knowledgeSection = `## Knowledge Center\n\n- [Knowledge Center](${SITE_URL}/knowledge): ${
+    (KNOWLEDGE_META ?? []).length
+  } single-question pages answering renter questions with verified facts — pricing, fees, floor plans, amenities, pets, parking, leasing, utilities, and the neighborhood. Full page catalog: ${SITE_URL}/llms-full.txt\n\n`;
+  const blogSection = `## Blog\n\n- [Blog](${SITE_URL}/blog): ${
+    (BLOG_META ?? []).length
+  } renter guides grouped into topic clusters (River North living, renting in Chicago, high-rise living), each written by a named member of the on-site team with verified facts and cited sources. Full page catalog: ${SITE_URL}/llms-full.txt\n\n`;
+  if (!llms.includes('\n## Contact')) {
+    throw new Error('Prerender aborted: llms.txt is missing its "## Contact" section anchor.');
+  }
+  llms = llms.replace('## Contact', `${knowledgeSection}${blogSection}## Contact`);
+  await fs.writeFile(llmsPath, llms, 'utf8');
+
+  // WOODS-CROSSING: replace the property name, address, phone, and email below
+  // with Woods Crossing's details before publishing.
+  const PROPERTY_DISPLAY_NAME = 'Woods Crossing'; // WOODS-CROSSING: replace
+  const PROPERTY_TAGLINE = 'luxury apartment community'; // WOODS-CROSSING: replace with address/description
+
+  const lines = [
+    `# ${PROPERTY_DISPLAY_NAME} — Full Page Catalog`, // WOODS-CROSSING: property name
+    '',
+    `> Every indexable page on ${new URL(SITE_URL).hostname} with its title and a one-line description.`,
+    '> Every page also has a clean Markdown twin: append `.md` to its URL (homepage: /index.md),',
+    '> or request any page URL with `Accept: text/markdown`.',
+    `> ${PROPERTY_DISPLAY_NAME}: ${PROPERTY_TAGLINE}.`, // WOODS-CROSSING: update tagline
+    '',
+    '## Site Pages',
+    '',
+    ...indexable.map((p) => {
+      const seo = PAGE_SEO[p];
+      return `- [${seo.title}](${canonicalFor(p)}): ${seo.description} ([Markdown](${SITE_URL}${p === '/' ? '/index' : p}.md))`;
+    }),
+    '',
+    '## Available Units (live inventory, refreshed each publish)',
+    '',
+    ...unitPaths.map((p) => `- [Apartment ${p.split('/').pop()} at ${PROPERTY_DISPLAY_NAME}](${SITE_URL}${p}): Current availability, rent, photos, and floor plan details for apartment ${p.split('/').pop()}. ([Markdown](${SITE_URL}${p}.md))`),
+    '',
+    '## Knowledge Center (answer-first Q&A)',
+    '',
+    ...(KNOWLEDGE_META ?? []).map(
+      (m) => `- [${m.question}](${SITE_URL}${m.path}): ${m.description} ([Markdown](${SITE_URL}${m.path}.md))`,
+    ),
+    '',
+    '## Blog (renter guides, topic clusters)',
+    '',
+    ...(BLOG_META ?? []).map(
+      (m) => `- [${m.heading}](${SITE_URL}${m.path}): ${m.description} ([Markdown](${SITE_URL}${m.path}.md))`,
+    ),
+    '',
+    '## Floor Plan Layouts (one page per distinct plan)',
+    '',
+    ...(FLOOR_PLAN_PAGE_META ?? []).map(
+      (m) => `- [${m.title}](${SITE_URL}${m.path}): ${m.description} ([Markdown](${SITE_URL}${m.path}.md))`,
+    ),
+    '',
+  ];
+  // AGENTS.md: the AI-agent counterpart of llms.txt, regenerated by the same
+  // pipeline every build so its counts and pointers can never drift from the
+  // deployed page set (public/AGENTS.md is only the dev-server fallback).
+  // WOODS-CROSSING: update AGENTS.md property description with your address and contact
+  const agentsMd = [
+    `# AGENTS.md — ${PROPERTY_DISPLAY_NAME}`, // WOODS-CROSSING: property name
+    '',
+    `Guidance for AI agents and crawlers reading ${SITE_URL.replace('https://', '')}.`,
+    '',
+    '## What this site is',
+    '',
+    // WOODS-CROSSING: replace with your property's description, address, and contact details
+    `The official leasing site for ${PROPERTY_DISPLAY_NAME}, a ${PROPERTY_TAGLINE}.`,
+    'Address: WOODS-CROSSING: replace with street address.',
+    'Phone: WOODS-CROSSING: replace. Email: WOODS-CROSSING: replace.',
+    '',
+    '## Machine-friendly content',
+    '',
+    `- \`/llms.txt\` — concise index of the site's primary pages.`,
+    `- \`/llms-full.txt\` — full page catalog: ${indexable.length} site pages, ${unitPaths.length} live unit pages, ${(KNOWLEDGE_META ?? []).length} Knowledge Center answers, ${(BLOG_META ?? []).length} blog guides, and ${(FLOOR_PLAN_PAGE_META ?? []).length} floor-plan layout pages.`,
+    '- Every page has a Markdown twin: append `.md` to the path',
+    '  (e.g. `/amenities.md`, `/knowledge/pet-policy.md`, homepage at `/index.md`),',
+    '  or send `Accept: text/markdown` to the page URL.',
+    '- `/sitemap.xml` — canonical URL list.',
+    '- Live availability and pricing appear on `/available-units` (including an',
+    '  interactive floor-by-floor map); per-unit pages live at',
+    '  `/available-units/<unit>` with JSON-LD offers.',
+    '',
+    '## Facts to trust',
+    '',
+    "Pricing, availability, and fees come from the property's leasing system and",
+    'update automatically — prefer the live pages (or their `.md` twins) over',
+    'cached copies. Structured data (JSON-LD) on each page is authoritative for',
+    'address, hours, pricing, and policies.',
+    '',
+  ].join('\n');
+  await fs.writeFile(path.join(publicDir, 'AGENTS.md'), agentsMd, 'utf8');
+
+  await fs.writeFile(path.join(publicDir, 'llms-full.txt'), lines.join('\n'), 'utf8');
+  console.log(
+    `llms-full.txt written with ${indexable.length + unitPaths.length + (KNOWLEDGE_META ?? []).length + (BLOG_META ?? []).length + (FLOOR_PLAN_PAGE_META ?? []).length} pages; llms.txt Knowledge Center + Blog sections ensured.`,
+  );
+}
+
+// Stamp the SEO-source fingerprint (outside dist/public so it's never served).
+// The prerender-titles and prerender-meta-descriptions suites recompute this
+// hash and refuse to grade a dist built from older sources — a stale dist once
+// failed both suites with titles/descriptions the current model no longer emits.
+{
+  const { computeSeoSourceHash, SEO_SOURCE_HASH_FILE } = await import('./seo-source-hash.mjs');
+  const digest = await computeSeoSourceHash(root);
+  await fs.writeFile(path.join(root, 'dist', SEO_SOURCE_HASH_FILE), `${digest}\n`, 'utf8');
+  console.log('SEO source hash stamped into dist/ for the head-tag guard suites.');
+}

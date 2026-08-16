@@ -1,0 +1,626 @@
+#!/usr/bin/env node
+// Rented-unit indexability guard (production smoke-check).
+//
+// Task 246 verified once, by hand, that a rented unit's URL renders with
+// exactly one noindex robots meta, the "Residence Not Available" title, and
+// no Offer JSON-LD — and that /available-units' rendered Apartment/Offer
+// JSON-LD lists only currently available units. A future refactor of
+// main.tsx's pre-hydration stripping, the Seo component, or the sold-out
+// branch in UnitDetail.tsx could silently regress this, and Google would
+// re-index rented apartments with stale prices. This script makes that
+// verification repeatable: run it after each publish.
+//
+// What it does (all against production — the availability feed is only
+// reachable from the workspace via production, AppFolio blocks direct
+// workspace egress):
+//   1. Fetches <base>/api/availability for the live unit list.
+//   2. Renders a known-ABSENT unit URL in headless Chromium (CDP, same
+//      zero-dependency pattern as check-units-above-fold.mjs) and asserts:
+//        - exactly ONE meta[name=robots] in the rendered DOM, containing
+//          "noindex"
+//        - the rendered <title> is the sold-out title
+//        - ZERO Offer/OfferForLease nodes in any rendered JSON-LD
+//   3. Renders /available-units and asserts:
+//        - the rendered Apartment nodes (with Offers) exactly match the live
+//          feed's unit set — no rented stragglers, no missing units
+//        - exactly one robots meta, and it does NOT say noindex
+//
+// Unit selection (step 2): the riskiest real-world page is a unit that WAS
+// available at the last publish — it has its own prerendered HTML (stale
+// title, index-follow robots, Offer JSON-LD) and an explicit rewrite pair —
+// and has since been rented. The script cross-references the per-unit URLs
+// actually published (from the live sitemap.xml, which prerender.mjs
+// regenerates from UNIT_PATHS every build, confirmed by probing the raw
+// prerendered HTML for a unit-specific <title>) against the live feed, and
+// prefers such a published-but-now-rented unit when one exists. Only when
+// every published unit page is still available does it fall back to a
+// synthetic absent unit number (which exercises the SPA fallback instead).
+//
+// Environments without a headless Chromium (e.g. the deployed api-server
+// runtime, which only ships the nodejs module closure) automatically fall
+// back to a browserless HTTP-level subset of the check (forceable with
+// --http-only). It cannot observe hydration, so instead it asserts the
+// ingredients hydration needs: the raw page is intact (one robots meta,
+// module scripts present) and the shipped JS bundles still contain the
+// sold-out title and a noindex directive — i.e. Google's renderer WILL
+// reach the noindex branch. The output clearly marks the reduced mode.
+//
+// Usage: node scripts/check-rented-noindex.mjs [baseUrl] [--unit NNNN] [--http-only]
+//   default baseUrl: https://www.woodscrossing.com /* WOODS-CROSSING: replace */
+//   --unit: force a specific absent unit number (default: prefer a
+//           published-but-now-rented unit page; otherwise derive a synthetic
+//           absent number from the live feed).
+//   --http-only: skip Chromium even if available; run the HTTP-level subset.
+import { spawn, spawnSync } from 'node:child_process';
+import { existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { tsImport } from 'tsx/esm/api';
+
+const args = process.argv.slice(2);
+const unitFlag = args.indexOf('--unit');
+const FORCED_UNIT = unitFlag >= 0 ? args[unitFlag + 1] : null;
+const HTTP_ONLY = args.includes('--http-only');
+const BASE = (
+  args.find((a, i) => !a.startsWith('--') && i !== unitFlag + 1) ||
+  'https://www.woodscrossing.com' // WOODS-CROSSING: replace
+).replace(/\/$/, '');
+
+// Sold-out <title> comes from the same source the build uses
+// (src/data/seo.ts SOLD_OUT_UNIT_TITLE), so this check can never drift when
+// the sold-out copy is edited.
+const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+let SOLD_OUT_TITLE;
+try {
+  ({ SOLD_OUT_UNIT_TITLE: SOLD_OUT_TITLE } = await tsImport(
+    pathToFileURL(path.join(pkgDir, 'src/data/seo.ts')).href,
+    import.meta.url,
+  ));
+} catch (err) {
+  console.error(`Could not load src/data/seo.ts: ${err.message}`);
+  process.exit(1);
+}
+if (!SOLD_OUT_TITLE) {
+  console.error('SOLD_OUT_UNIT_TITLE is missing from src/data/seo.ts — refusing to run a vacuous check.');
+  process.exit(1);
+}
+
+/** Locate a headless-capable Chromium/Chrome binary, or null if none exists. */
+function findChromium() {
+  const candidates = [];
+  if (process.env.CHROME_BIN) candidates.push(process.env.CHROME_BIN);
+  for (const name of ['chromium', 'chromium-browser', 'google-chrome', 'google-chrome-stable', 'chrome']) {
+    const which = spawnSync('which', [name], { encoding: 'utf8' });
+    if (which.status === 0 && which.stdout.trim()) candidates.push(which.stdout.trim());
+  }
+  const home = process.env.HOME ?? '';
+  try {
+    for (const entry of readdirSync(path.join(home, '.cache', 'ms-playwright'))) {
+      if (entry.startsWith('chromium-')) {
+        candidates.push(path.join(home, '.cache', 'ms-playwright', entry, 'chrome-linux', 'chrome'));
+      }
+    }
+  } catch {
+    /* cache dir absent */
+  }
+  try {
+    for (const entry of readdirSync('/nix/store')) {
+      if (!entry.endsWith('-playwright-browsers-chromium')) continue;
+      const base = path.join('/nix/store', entry);
+      try {
+        for (const sub of readdirSync(base)) {
+          if (sub.startsWith('chromium-')) candidates.push(path.join(base, sub, 'chrome-linux', 'chrome'));
+        }
+      } catch {
+        /* unreadable derivation */
+      }
+    }
+  } catch {
+    /* no nix store */
+  }
+  for (const c of candidates) {
+    if (!existsSync(c)) continue;
+    const v = spawnSync(c, ['--version'], { encoding: 'utf8', timeout: 15_000 });
+    if (v.status === 0) return c;
+  }
+  return null;
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Minimal Chrome DevTools Protocol client over a page WebSocket. */
+class Cdp {
+  constructor(ws) {
+    this.ws = ws;
+    this.nextId = 1;
+    this.pending = new Map();
+    ws.addEventListener('message', (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.id && this.pending.has(msg.id)) {
+        const { resolve, reject } = this.pending.get(msg.id);
+        this.pending.delete(msg.id);
+        if (msg.error) reject(new Error(`CDP ${msg.error.message}`));
+        else resolve(msg.result);
+      }
+    });
+  }
+
+  static connect(url) {
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket(url);
+      ws.addEventListener('open', () => resolve(new Cdp(ws)));
+      ws.addEventListener('error', () => reject(new Error(`Could not connect to CDP at ${url}`)));
+    });
+  }
+
+  send(method, params = {}) {
+    const id = this.nextId++;
+    return new Promise((resolve, reject) => {
+      this.pending.set(id, { resolve, reject });
+      this.ws.send(JSON.stringify({ id, method, params }));
+    });
+  }
+
+  async eval(expression) {
+    const { result, exceptionDetails } = await this.send('Runtime.evaluate', {
+      expression,
+      returnByValue: true,
+      awaitPromise: true,
+    });
+    if (exceptionDetails) {
+      throw new Error(`Page evaluation threw: ${exceptionDetails.text} ${result?.description ?? ''}`);
+    }
+    return result.value;
+  }
+
+  close() {
+    this.ws.close();
+  }
+}
+
+const children = [];
+const tmpDirs = [];
+function cleanup() {
+  for (const child of children) {
+    try {
+      child.kill('SIGKILL');
+    } catch {
+      /* already gone */
+    }
+  }
+  for (const dir of tmpDirs) {
+    try {
+      rmSync(dir, { recursive: true, force: true });
+    } catch {
+      /* best effort */
+    }
+  }
+}
+process.on('exit', cleanup);
+
+// Serialized into the page: a snapshot of the fully-hydrated head state we
+// assert on — robots metas, title, and every JSON-LD blob (with a flag for
+// leftover prerendered [data-ssr-jsonld] scripts that main.tsx should have
+// stripped before hydration).
+const SNAPSHOT_EXPR = `(() => {
+  const robots = [...document.querySelectorAll('meta[name="robots"]')].map((m) => m.getAttribute('content') ?? '');
+  const jsonLd = [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => ({
+    ssrLeftover: s.hasAttribute('data-ssr-jsonld'),
+    text: s.textContent ?? '',
+  }));
+  return { title: document.title, robots, jsonLd };
+})()`;
+
+/** Poll SNAPSHOT_EXPR until `done(snapshot)` is true or the timeout passes;
+ *  returns the last snapshot either way (assertions produce the real error). */
+async function settledSnapshot(cdp, done, timeoutMs = 45_000) {
+  const deadline = Date.now() + timeoutMs;
+  let snap = await cdp.eval(SNAPSHOT_EXPR);
+  while (!done(snap) && Date.now() < deadline) {
+    await sleep(750);
+    snap = await cdp.eval(SNAPSHOT_EXPR);
+  }
+  return snap;
+}
+
+/** Every node (recursively) in all parsed JSON-LD blobs of a snapshot. */
+function allJsonLdNodes(snapshot) {
+  const nodes = [];
+  const walk = (v) => {
+    if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === 'object') {
+      nodes.push(v);
+      Object.values(v).forEach(walk);
+    }
+  };
+  for (const { text } of snapshot.jsonLd) {
+    try {
+      walk(JSON.parse(text));
+    } catch {
+      nodes.push({ '@type': '__UNPARSEABLE__', raw: text.slice(0, 120) });
+    }
+  }
+  return nodes;
+}
+
+const isType = (node, type) => {
+  const t = node['@type'];
+  return Array.isArray(t) ? t.includes(type) : t === type;
+};
+
+/**
+ * Find a unit that HAS a published prerendered page but is no longer in the
+ * live feed — the stale-head case main.tsx must fix at hydration.
+ *
+ * Published unit pages are read from the live sitemap.xml (prerender.mjs
+ * regenerates it from UNIT_PATHS on every publish, so it exactly mirrors the
+ * per-unit pages that shipped). Each candidate is then confirmed by fetching
+ * its RAW HTML (no JS) and requiring a unit-specific prerendered <title> —
+ * proving it's a real prerendered page with a stale head, not the SPA
+ * fallback a synthetic unit number would hit.
+ *
+ * Returns { unit, staleTitle } or null (no such unit / sitemap unreachable).
+ */
+async function findPublishedRentedUnit(liveUnits) {
+  let xml;
+  try {
+    const res = await fetch(`${BASE}/sitemap.xml`, { headers: { 'user-agent': 'rented-noindex-check' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    xml = await res.text();
+  } catch (err) {
+    console.warn(`warn  could not read ${BASE}/sitemap.xml (${err.message}) — falling back to a synthetic absent unit.`);
+    return null;
+  }
+  const published = new Set();
+  // Unit segments are "FFUU" (0606) or AppFolio's mezzanine form "04M02".
+  for (const m of xml.matchAll(/<loc>[^<]*\/available-units\/(\d{4}|04M\d{2})\s*<\/loc>/g)) {
+    published.add(m[1]);
+  }
+  if (published.size === 0) {
+    console.warn('warn  sitemap.xml lists no per-unit pages — falling back to a synthetic absent unit.');
+    return null;
+  }
+  const rented = [...published].filter((u) => !liveUnits.has(u)).sort();
+  console.log(
+    `Sitemap: ${published.size} published unit page(s), ${rented.length} no longer in the live feed.`,
+  );
+  for (const unit of rented) {
+    // Confirm the RAW prerendered HTML is unit-specific (stale head present).
+    try {
+      const res = await fetch(`${BASE}/available-units/${unit}`, {
+        headers: { 'user-agent': 'rented-noindex-check' },
+      });
+      if (!res.ok) continue;
+      const html = await res.text();
+      const title = /<title>([^<]*)<\/title>/.exec(html)?.[1] ?? '';
+      if (title.includes(unit)) return { unit, staleTitle: title };
+      console.warn(
+        `warn  /available-units/${unit} is in the sitemap but its raw <title> ("${title}") is not unit-specific — skipping as a published-page candidate.`,
+      );
+    } catch {
+      /* transient fetch failure — try the next candidate */
+    }
+  }
+  return null;
+}
+
+async function main() {
+  // --- 1. Live availability feed (source of truth). -------------------------
+  const feedUrl = `${BASE}/api/availability`;
+  const res = await fetch(feedUrl, { headers: { 'user-agent': 'rented-noindex-check' } });
+  if (!res.ok) throw new Error(`${feedUrl} responded HTTP ${res.status} — cannot establish the live unit set.`);
+  const feed = await res.json();
+  const liveUnits = new Set((feed.units ?? []).map((u) => u.unit));
+  if (liveUnits.size === 0) {
+    throw new Error(`${feedUrl} returned zero units — refusing to run (a broken feed would make every assertion vacuous).`);
+  }
+  console.log(`Live feed: ${liveUnits.size} available units (updated ${feed.updatedAt ?? 'unknown'}).`);
+
+  // --- 2. Pick the rented-unit URL under test. --------------------------------
+  // Preference order:
+  //   a. --unit NNNN (forced, must not be currently available)
+  //   b. a PUBLISHED-but-now-rented unit page (real prerendered stale head —
+  //      the exact case main.tsx's pre-hydration stripping exists for)
+  //   c. a synthetic absent unit number (SPA fallback), derived from a live
+  //      unit's line on a different floor, falling back to a fixed number.
+  let absentUnit = FORCED_UNIT;
+  let unitKind = 'forced (--unit)';
+  if (absentUnit && liveUnits.has(absentUnit)) {
+    throw new Error(`--unit ${absentUnit} is currently AVAILABLE per the live feed — pick a rented/absent unit.`);
+  }
+  if (!absentUnit) {
+    const publishedRented = await findPublishedRentedUnit(liveUnits);
+    if (publishedRented) {
+      absentUnit = publishedRented.unit;
+      unitKind = 'published prerendered page, now rented';
+      console.log(
+        `Published-but-rented unit found: ${absentUnit} — its raw prerendered head is stale ` +
+          `(title "${publishedRented.staleTitle}"), so hydration MUST override it.`,
+      );
+    }
+  }
+  if (!absentUnit) {
+    unitKind = 'synthetic absent unit (SPA fallback; every published unit page is still available)';
+    outer: for (const unit of liveUnits) {
+      const line = unit.slice(2);
+      for (let floor = 2; floor <= 25; floor++) {
+        const candidate = String(floor).padStart(2, '0') + line;
+        if (!liveUnits.has(candidate)) {
+          absentUnit = candidate;
+          break outer;
+        }
+      }
+    }
+    absentUnit ??= '9901';
+  }
+  console.log(`Rented/absent-unit page under test: /available-units/${absentUnit} [${unitKind}]`);
+
+  const failures = [];
+  const fail = (what, msg) => {
+    failures.push(`${what}: ${msg}`);
+    console.error(`FAIL  ${what}: ${msg}`);
+  };
+  const ok = (what, msg) => console.log(`ok    ${what}: ${msg}`);
+
+  // --- 3. Headless Chromium (or the browserless HTTP-level subset). -----------
+  const chrome = HTTP_ONLY ? null : findChromium();
+  if (!chrome) {
+    console.log(
+      HTTP_ONLY
+        ? 'MODE: http-fallback (forced via --http-only) — running browserless HTTP-level subset.'
+        : 'MODE: http-fallback (no headless Chromium in this environment) — running browserless HTTP-level subset.',
+    );
+    await httpFallbackChecks({ absentUnit, liveUnits, fail, ok });
+    finish(failures, 'HTTP-level subset of the ');
+    return;
+  }
+  const debugPort = 9222 + Math.floor(Math.random() * 20000);
+  const profileDir = mkdtempSync(path.join(tmpdir(), 'rented-check-'));
+  tmpDirs.push(profileDir);
+  const browser = spawn(
+    chrome,
+    [
+      '--headless=new',
+      '--no-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      `--remote-debugging-port=${debugPort}`,
+      `--user-data-dir=${profileDir}`,
+      'about:blank',
+    ],
+    { stdio: ['ignore', 'ignore', 'pipe'] },
+  );
+  children.push(browser);
+
+  let pageWsUrl = null;
+  const deadline = Date.now() + 30_000;
+  while (Date.now() < deadline && !pageWsUrl) {
+    try {
+      const targets = await (await fetch(`http://127.0.0.1:${debugPort}/json/list`)).json();
+      pageWsUrl = targets.find((t) => t.type === 'page')?.webSocketDebuggerUrl ?? null;
+    } catch {
+      /* browser still starting */
+    }
+    if (!pageWsUrl) await sleep(250);
+  }
+  if (!pageWsUrl) throw new Error('Chromium started but no CDP page target appeared within 30s');
+
+  const cdp = await Cdp.connect(pageWsUrl);
+  await cdp.send('Page.enable');
+  await cdp.send('Runtime.enable');
+
+  // --- 4. Rented/absent unit page. -------------------------------------------
+  const rentedUrl = `${BASE}/available-units/${absentUnit}`;
+  {
+    await cdp.send('Page.navigate', { url: rentedUrl });
+    // Settled = hydration reached the sold-out branch: sold-out title AND a
+    // noindex robots meta present (prerendered stale head may show first).
+    const snap = await settledSnapshot(
+      cdp,
+      (s) => s.title === SOLD_OUT_TITLE && s.robots.some((r) => /noindex/i.test(r)),
+    );
+
+    if (snap.title !== SOLD_OUT_TITLE) {
+      fail(rentedUrl, `rendered <title> is "${snap.title}" — expected the sold-out title "${SOLD_OUT_TITLE}". The UnitDetail sold-out branch or Seo component regressed.`);
+    } else ok(rentedUrl, 'sold-out title rendered.');
+
+    if (snap.robots.length !== 1) {
+      fail(
+        rentedUrl,
+        `${snap.robots.length} robots metas in rendered DOM [${snap.robots.join(' | ')}] — expected exactly 1. main.tsx's pre-hydration robots-meta stripping likely regressed.`,
+      );
+    } else if (!/noindex/i.test(snap.robots[0])) {
+      fail(rentedUrl, `single robots meta says "${snap.robots[0]}" — expected a noindex directive. Google could re-index this rented apartment.`);
+    } else ok(rentedUrl, `exactly one robots meta, noindex ("${snap.robots[0]}").`);
+
+    const leftovers = snap.jsonLd.filter((s) => s.ssrLeftover).length;
+    if (leftovers > 0) {
+      fail(rentedUrl, `${leftovers} prerendered [data-ssr-jsonld] script(s) survived hydration — main.tsx's pre-hydration JSON-LD stripping regressed.`);
+    }
+    const offers = allJsonLdNodes(snap).filter((n) => isType(n, 'Offer') || isType(n, 'OfferForLease'));
+    if (offers.length > 0) {
+      fail(rentedUrl, `${offers.length} Offer node(s) present in rendered JSON-LD — a rented unit must emit no Offer (stale price ${offers[0]?.price ?? '?'}).`);
+    } else ok(rentedUrl, 'zero Offer JSON-LD nodes.');
+  }
+
+  // --- 5. /available-units rendered Apartment/Offer graph vs the live feed. --
+  const listUrl = `${BASE}/available-units`;
+  {
+    const unitsInSnapshot = (s) => {
+      const set = new Set();
+      for (const node of allJsonLdNodes(s)) {
+        if (isType(node, 'Apartment')) {
+          const m = /Apartment (\d{4}|04M\d{2})/.exec(String(node.name ?? ''));
+          if (m) set.add(m[1]);
+        }
+      }
+      return set;
+    };
+    const sameSets = (a, b) => a.size === b.size && [...a].every((x) => b.has(x));
+
+    await cdp.send('Page.navigate', { url: listUrl });
+    // Settled = SSR scripts stripped, live-feed graph matches the feed. If the
+    // baked snapshot is stale, the match only appears after the client query
+    // resolves — hence the polling.
+    const snap = await settledSnapshot(
+      cdp,
+      (s) => s.jsonLd.every((j) => !j.ssrLeftover) && sameSets(unitsInSnapshot(s), liveUnits),
+    );
+
+    const rendered = unitsInSnapshot(snap);
+    const stragglers = [...rendered].filter((u) => !liveUnits.has(u));
+    const missing = [...liveUnits].filter((u) => !rendered.has(u));
+    if (stragglers.length || missing.length) {
+      const parts = [];
+      if (stragglers.length) parts.push(`rented unit(s) still advertised with Offers: ${stragglers.join(', ')}`);
+      if (missing.length) parts.push(`live unit(s) missing from the graph: ${missing.join(', ')}`);
+      fail(listUrl, `rendered Apartment JSON-LD does not match the live feed — ${parts.join('; ')}.`);
+    } else ok(listUrl, `rendered Apartment JSON-LD exactly matches the live feed (${rendered.size} units).`);
+
+    if (snap.robots.length !== 1) {
+      fail(listUrl, `${snap.robots.length} robots metas [${snap.robots.join(' | ')}] — expected exactly 1.`);
+    } else if (/noindex/i.test(snap.robots[0])) {
+      fail(listUrl, `robots meta says "${snap.robots[0]}" — the availability page must stay indexable.`);
+    } else ok(listUrl, `exactly one robots meta, indexable ("${snap.robots[0]}").`);
+  }
+
+  cdp.close();
+
+  finish(failures, '');
+}
+
+/** Shared pass/fail summary + exit code. `modePrefix` labels reduced modes. */
+function finish(failures, modePrefix) {
+  if (failures.length) {
+    console.error(`\n${failures.length} check(s) FAILED against ${BASE}. A rented apartment page may be indexable with stale pricing — inspect main.tsx (pre-hydration stripping), the Seo component, and UnitDetail.tsx's sold-out branch, then re-publish.`);
+    process.exitCode = 1;
+  } else {
+    console.log(`\nAll ${modePrefix}rented-unit indexability checks passed against ${BASE}.`);
+  }
+}
+
+/**
+ * Browserless HTTP-level subset (no Chromium). Cannot watch hydration flip
+ * the head to noindex, so it asserts the ingredients that make that flip
+ * inevitable for Google's (JS-rendering) crawler:
+ *   a. the rented/absent unit URL serves an intact page: HTTP 200, exactly
+ *      one robots meta in the RAW HTML, and module scripts (hydration ships);
+ *   b. the shipped JS bundles reachable from that page still contain the
+ *      sold-out title and a noindex directive (the sold-out branch + Seo
+ *      noindex logic were not refactored away);
+ *   c. /available-units' RAW HTML has exactly one robots meta and it is NOT
+ *      noindex (the availability page must stay indexable).
+ */
+async function httpFallbackChecks({ absentUnit, liveUnits, fail, ok }) {
+  const get = async (url) => {
+    const res = await fetch(url, { headers: { 'user-agent': 'rented-noindex-check' } });
+    return { res, text: await res.text() };
+  };
+  const robotsMetas = (html) =>
+    [...html.matchAll(/<meta[^>]+name=["']robots["'][^>]*>/gi)].map(
+      (m) => /content=["']([^"']*)["']/i.exec(m[0])?.[1] ?? '',
+    );
+
+  // --- a. Rented/absent unit raw page is intact. -----------------------------
+  const rentedUrl = `${BASE}/available-units/${absentUnit}`;
+  let rentedHtml = '';
+  try {
+    const { res, text } = await get(rentedUrl);
+    rentedHtml = text;
+    if (res.status === 404) {
+      // A unit with no rewrite pair 404s in production — a 404 cannot be
+      // indexed, so there is no stale-pricing risk on this URL at all.
+      ok(rentedUrl, 'HTTP 404 — not indexable, no stale-pricing risk on this URL.');
+    } else if (!res.ok) {
+      fail(rentedUrl, `HTTP ${res.status} — the page should serve (prerendered page, SPA fallback, or a clean 404).`);
+    } else {
+      ok(rentedUrl, `HTTP ${res.status}.`);
+      const robots = robotsMetas(rentedHtml);
+      if (robots.length !== 1) {
+        fail(rentedUrl, `${robots.length} robots metas in RAW HTML [${robots.join(' | ')}] — expected exactly 1 (hydration owns its value; a stale index,follow here is expected and fixed client-side).`);
+      } else ok(rentedUrl, `exactly one robots meta in raw HTML ("${robots[0]}").`);
+      if (!/<script[^>]+type=["']module["']/i.test(rentedHtml)) {
+        fail(rentedUrl, 'no <script type="module"> in raw HTML — hydration cannot run, so the stale head would never be corrected.');
+      } else ok(rentedUrl, 'hydration module scripts present.');
+    }
+  } catch (err) {
+    fail(rentedUrl, `fetch failed: ${err.message}`);
+  }
+
+  // --- b. Shipped bundles still contain the sold-out + noindex logic. --------
+  try {
+    const assetUrls = new Set();
+    for (const m of rentedHtml.matchAll(/(?:src|href)=["']([^"']*\/assets\/[^"']+\.js)["']/g)) {
+      assetUrls.add(new URL(m[1], `${BASE}/`).href);
+    }
+    if (assetUrls.size === 0) {
+      fail(rentedUrl, 'no JS asset references found in the raw HTML — cannot verify the shipped bundle.');
+    } else {
+      // One level of chunk-graph expansion: lazy route chunks (UnitDetail)
+      // are referenced by path inside the fetched chunks.
+      let foundTitle = false;
+      let foundNoindex = false;
+      const queue = [...assetUrls];
+      const seen = new Set(queue);
+      const MAX_ASSETS = 40;
+      while (queue.length > 0 && seen.size <= MAX_ASSETS && !(foundTitle && foundNoindex)) {
+        const url = queue.shift();
+        let js = '';
+        try {
+          const { res, text } = await get(url);
+          if (!res.ok) continue;
+          js = text;
+        } catch {
+          continue;
+        }
+        if (js.includes(SOLD_OUT_TITLE)) foundTitle = true;
+        if (/noindex/i.test(js)) foundNoindex = true;
+        for (const m of js.matchAll(/["']([\w./-]*assets\/[\w.-]+\.js)["']/g)) {
+          const next = new URL(m[1].replace(/^\.\//, ''), `${BASE}/`).href;
+          if (!seen.has(next) && seen.size < MAX_ASSETS) {
+            seen.add(next);
+            queue.push(next);
+          }
+        }
+      }
+      if (!foundTitle) {
+        fail('shipped JS bundles', `sold-out title "${SOLD_OUT_TITLE}" not found in ${seen.size} reachable chunk(s) — the UnitDetail sold-out branch may have been refactored away (or is no longer reachable from the unit page).`);
+      } else ok('shipped JS bundles', 'sold-out title present in the shipped code.');
+      if (!foundNoindex) {
+        fail('shipped JS bundles', 'no "noindex" directive found in any reachable chunk — the Seo noindex logic may have been removed.');
+      } else ok('shipped JS bundles', 'noindex directive present in the shipped code.');
+    }
+  } catch (err) {
+    fail('shipped JS bundles', `bundle scan failed: ${err.message}`);
+  }
+
+  // --- c. /available-units raw head stays indexable. --------------------------
+  const listUrl = `${BASE}/available-units`;
+  try {
+    const { res, text } = await get(listUrl);
+    if (!res.ok) {
+      fail(listUrl, `HTTP ${res.status}.`);
+    } else {
+      const robots = robotsMetas(text);
+      if (robots.length !== 1) {
+        fail(listUrl, `${robots.length} robots metas in RAW HTML [${robots.join(' | ')}] — expected exactly 1.`);
+      } else if (/noindex/i.test(robots[0])) {
+        fail(listUrl, `raw robots meta says "${robots[0]}" — the availability page must stay indexable.`);
+      } else ok(listUrl, `exactly one robots meta, indexable ("${robots[0]}").`);
+    }
+  } catch (err) {
+    fail(listUrl, `fetch failed: ${err.message}`);
+  }
+
+  console.log(
+    `note  HTTP-level subset only: hydration behaviour (${liveUnits.size} live units vs rendered JSON-LD, rendered noindex flip) needs Chromium and is covered by workspace/postpublish runs.`,
+  );
+}
+
+main()
+  .catch((err) => {
+    console.error(`Rented-unit indexability check errored: ${err.message}`);
+    process.exitCode = 1;
+  })
+  .finally(cleanup);

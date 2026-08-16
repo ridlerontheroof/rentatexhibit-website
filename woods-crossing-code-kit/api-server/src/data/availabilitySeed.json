@@ -1,0 +1,7 @@
+{
+  "_comment": "WOODS-CROSSING PATTERN FILE — replace with a real seed before first deploy.",
+  "_howto": "Run: pnpm --filter @workspace/YOUR-WEB-ARTIFACT run fetch:availability-snapshot",
+  "_description": "This file is a build-time baked availability snapshot. The fetch:availability-snapshot script calls your production /api/availability endpoint and writes the result here. Commit the result so cold-started autoscale instances answer instantly while the first live AppFolio fetch completes. The api-server treats seeds older than 48 hours as stale and sends an alert.",
+  "units": [],
+  "updatedAt": "1970-01-01T00:00:00.000Z"
+}
