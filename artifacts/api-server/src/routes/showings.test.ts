@@ -444,6 +444,47 @@ describe("POST /showings/contact", () => {
       { step: "guest card", message: "boom" },
     );
   });
+
+  describe("X-Test-Lead bypass", () => {
+    beforeEach(() => {
+      process.env.TEST_LEAD_TOKEN = "test-secret-123";
+    });
+    afterEach(() => {
+      delete process.env.TEST_LEAD_TOKEN;
+    });
+
+    it("returns a correctly shaped 201 without touching AppFolio when the header matches the secret", async () => {
+      const res = await request(makeApp())
+        .post("/showings/contact")
+        .set("x-test-lead", "test-secret-123")
+        .send(contact);
+      expect(res.status).toBe(201);
+      expect(res.body).toMatchObject({ guestCardId: expect.any(String), hostedUrl: expect.any(String) });
+      expect(vi.mocked(createShowingGuestCard)).not.toHaveBeenCalled();
+      expect(vi.mocked(recordLiveShowingSuccess)).not.toHaveBeenCalled();
+      expect(vi.mocked(recordLiveShowingFailure)).not.toHaveBeenCalled();
+    });
+
+    it("does not bypass when the header value is wrong", async () => {
+      const res = await request(makeApp())
+        .post("/showings/contact")
+        .set("x-test-lead", "wrong-token")
+        .send(contact);
+      // Falls through to the real handler — guest card is created normally.
+      expect(res.status).toBe(201);
+      expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalled();
+    });
+
+    it("does not bypass when TEST_LEAD_TOKEN is unset (production default)", async () => {
+      delete process.env.TEST_LEAD_TOKEN;
+      const res = await request(makeApp())
+        .post("/showings/contact")
+        .set("x-test-lead", "any-value")
+        .send(contact);
+      expect(res.status).toBe(201);
+      expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalled();
+    });
+  });
 });
 
 const booking = {
@@ -507,6 +548,51 @@ describe("POST /showings/book", () => {
       .post("/showings/book")
       .send({ ...booking, slotTime: "2026-07-28T13:15" });
     expect(res.status).toBe(400);
+  });
+
+  describe("X-Test-Lead bypass", () => {
+    beforeEach(() => {
+      process.env.TEST_LEAD_TOKEN = "test-secret-123";
+    });
+    afterEach(() => {
+      delete process.env.TEST_LEAD_TOKEN;
+    });
+
+    it("returns a correctly shaped 201 without touching AppFolio when the header matches the secret", async () => {
+      const res = await request(makeApp())
+        .post("/showings/book")
+        .set("x-test-lead", "test-secret-123")
+        .send(booking);
+      expect(res.status).toBe(201);
+      expect(res.body).toMatchObject({
+        startAt: expect.any(String),
+        endAt: expect.any(String),
+        fullAddress: expect.any(String),
+      });
+      expect(vi.mocked(bookShowing)).not.toHaveBeenCalled();
+      expect(vi.mocked(fetchShowingAvailabilities)).not.toHaveBeenCalled();
+      expect(vi.mocked(recordLiveShowingSuccess)).not.toHaveBeenCalled();
+      expect(vi.mocked(recordLiveShowingFailure)).not.toHaveBeenCalled();
+    });
+
+    it("does not bypass when the header value is wrong", async () => {
+      const res = await request(makeApp())
+        .post("/showings/book")
+        .set("x-test-lead", "wrong-token")
+        .send(booking);
+      expect(res.status).toBe(201);
+      expect(vi.mocked(bookShowing)).toHaveBeenCalled();
+    });
+
+    it("does not bypass when TEST_LEAD_TOKEN is unset (production default)", async () => {
+      delete process.env.TEST_LEAD_TOKEN;
+      const res = await request(makeApp())
+        .post("/showings/book")
+        .set("x-test-lead", "any-value")
+        .send(booking);
+      expect(res.status).toBe(201);
+      expect(vi.mocked(bookShowing)).toHaveBeenCalled();
+    });
   });
 
   describe("general-tour site confirmation (GENERAL_TOUR_CONFIRMATION_EMAIL flag)", () => {

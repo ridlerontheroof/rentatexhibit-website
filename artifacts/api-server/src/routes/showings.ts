@@ -44,6 +44,22 @@ import { sendGeneralTourConfirmation } from "../lib/email";
 
 const router: IRouter = Router();
 
+/**
+ * Returns true when the request carries a valid QA test token.
+ *
+ * The bypass is authenticated via TEST_LEAD_TOKEN: a secret env var supplied
+ * only to the test runner. The header value must match that secret exactly.
+ * When the env var is absent or empty (the production default) this function
+ * always returns false, making the bypass permanently disabled regardless of
+ * any header a caller sends — a browser or proxy cannot forge what it cannot
+ * know.
+ */
+function isValidTestRequest(req: { headers: Record<string, string | string[] | undefined> }): boolean {
+  const token = process.env.TEST_LEAD_TOKEN;
+  if (!token) return false; // bypass disabled; production default
+  return req.headers["x-test-lead"] === token;
+}
+
 // Same throttle rationale as /leads: these endpoints create prospect records
 // and calendar appointments in the leasing team's AppFolio, so keep any one
 // client from flooding them.
@@ -54,8 +70,11 @@ const showingLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Too many requests. Please try again in a minute." },
   // The limiter's counter is module-level; without this, test requests
-  // accumulate across cases and unrelated tests start seeing 429s.
-  skip: () => process.env.NODE_ENV === "test",
+  // accumulate across cases and unrelated tests start seeing 429s. Skip also
+  // for authenticated QA test requests so they don't consume per-IP quota.
+  skip: (req) =>
+    process.env.NODE_ENV === "test" ||
+    isValidTestRequest(req as unknown as Parameters<typeof isValidTestRequest>[0]),
 });
 
 const heartbeat = createDailyHeartbeat({
@@ -176,6 +195,29 @@ const ContactBody = z.object({
 });
 
 router.post("/showings/contact", showingLimiter, async (req, res) => {
+  // Authenticated QA bypass: when the request carries a valid TEST_LEAD_TOKEN
+  // secret in the X-Test-Lead header the route returns a correctly shaped 201
+  // but skips every real side-effect — no AppFolio guest card, no DB write,
+  // no alert counters. This lets e2e / QA harnesses exercise the full
+  // showing-contact flow without creating spurious AppFolio prospect records.
+  //
+  // The bypass is gated on a server-held secret (TEST_LEAD_TOKEN env var). If
+  // that var is unset — the production default — isValidTestRequest() always
+  // returns false, so a forged header from a browser or proxy can never
+  // suppress a real visitor's guest card.
+  if (isValidTestRequest(req)) {
+    req.log.warn(
+      { ip: req.ip },
+      "Authenticated QA test request; returning fake showing-contact success without AppFolio call",
+    );
+    res.status(201).json({
+      guestCardId: "0",
+      jwt: null,
+      hostedUrl: "",
+    });
+    return;
+  }
+
   // Invisible bot check (honeypot + fill-time) before anything creates an
   // AppFolio guest card. A generic 400 here is safe — real visitors never
   // trip it, and the flow's designed fallback only kicks in on 5xx/409.
@@ -285,6 +327,25 @@ const BookBody = z.object({
 });
 
 router.post("/showings/book", showingLimiter, async (req, res) => {
+  // Authenticated QA bypass: when the request carries a valid TEST_LEAD_TOKEN
+  // secret in the X-Test-Lead header the route returns a correctly shaped 201
+  // but skips every real side-effect — no AppFolio booking, no alert counters,
+  // no confirmation email. This lets e2e / QA harnesses exercise the full
+  // tour-booking flow without creating spurious appointments in the leasing
+  // team's AppFolio calendar.
+  if (isValidTestRequest(req)) {
+    req.log.warn(
+      { ip: req.ip },
+      "Authenticated QA test request; returning fake showing-book success without AppFolio call",
+    );
+    res.status(201).json({
+      startAt: new Date().toISOString(),
+      endAt: new Date().toISOString(),
+      fullAddress: "",
+    });
+    return;
+  }
+
   const parsed = BookBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "invalid_submission" });
