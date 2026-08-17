@@ -56,6 +56,13 @@ at `.agents/skills/property-site-onboarding/schema/property-config.schema.json`.
 
 ## Setup checklist
 
+> **Build-time guard** — `web/vite.config.ts` calls `validateWebEnv()` on every
+> `vite build` and `vite dev` invocation. In a deployment build
+> (`REPLIT_DEPLOYMENT=1`) it **throws** if any Required=Yes web var is missing,
+> stopping a bad deploy before user traffic arrives. In workspace / local builds
+> it logs a warning and continues so `check:prepublish` and local dev still work.
+> Steps 9–10 below must be done before the first production publish.
+
 1. Create `APPFOLIO_CLIENT_ID` + `APPFOLIO_CLIENT_SECRET` in AppFolio Admin → Integrations
 2. Create a dedicated Gmail account for the property, enable 2FA, generate app password
 3. Add all Replit Secrets in the api-server artifact's Secrets panel
