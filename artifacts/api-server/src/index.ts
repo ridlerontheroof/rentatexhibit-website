@@ -15,6 +15,7 @@ import { startGa4DataCheck } from "./lib/ga4DataCheck";
 import { startGtmTrackingCheck } from "./lib/gtmCheck";
 import { startAcceptedVolumeWatch } from "./lib/botGuardAlert";
 import { startSeoWeeklyDigest } from "./lib/seoWeeklyDigest";
+import { startStartingPriceCheck } from "./lib/startingPriceCheck";
 import { scheduleStartupSummary } from "./lib/startupSummary";
 
 const rawPort = process.env["PORT"];
@@ -113,6 +114,13 @@ app.listen(port, (err) => {
   // alerts (once/day) when no lead has been accepted for an unusually long
   // stretch — the signature of silently broken forms.
   startAcceptedVolumeWatch(logger);
+
+  // Watchdog: check that the homepage's baked "Apartments currently start at
+  // $X,XXX" figure matches the live /api/availability minimum on startup
+  // (= post-publish) and every 6 hours, alerting the leasing inbox (once/day)
+  // when a mismatch is detected — the always-on twin of
+  // scripts/check-starting-price.mjs.
+  startStartingPriceCheck(logger);
 
   // Weekly SEO digest: once per ISO week (claim-gated, checked every 6h),
   // pull Search Console movers, near-winner queries (position 8–20), blog

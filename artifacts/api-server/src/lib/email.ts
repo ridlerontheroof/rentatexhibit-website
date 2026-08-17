@@ -24,6 +24,7 @@ import {
   renderCspViolationAlert,
   renderSeoWeeklyDigest,
   renderSeoDigestFailureAlert,
+  renderStartingPriceCheckAlert,
   type SeoDigestEmailData,
 } from "./emailTemplates";
 import {
@@ -862,5 +863,33 @@ export async function sendCspViolationAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL, directive: opts.effectiveDirective },
     "Sent CSP violation alert email",
+  );
+}
+
+/**
+ * Alert that the always-on starting-price watchdog (startingPriceCheck) found
+ * the homepage's baked "Apartments currently start at $X,XXX" figure does not
+ * match the live /api/availability minimum — prospective renters are seeing a
+ * stale rent. Goes to the leasing inbox because the fix (re-publish) is a
+ * leasing/ops action. Throws when the mailer is unconfigured or the send
+ * fails; deduping lives in the caller (startingPriceCheck).
+ */
+export async function sendStartingPriceCheckAlert(opts: {
+  failures: string[];
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderStartingPriceCheckAlert(opts);
+  const { contentType, body } = buildMimeBody("startingpricealert", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${LEASING_INBOX_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, LEASING_INBOX_EMAIL);
+  logger.info(
+    { recipient: LEASING_INBOX_EMAIL },
+    "Sent starting-price check failure alert email",
   );
 }

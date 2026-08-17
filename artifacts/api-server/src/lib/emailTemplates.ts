@@ -1824,3 +1824,57 @@ export function renderCspViolationAlert(opts: {
 
   return { subject, html: htmlShell, text };
 }
+
+/**
+ * Operational alert: the always-on starting-price watchdog (startingPriceCheck)
+ * found that the homepage's baked "Apartments currently start at $X,XXX"
+ * figure no longer matches the live /api/availability minimum — the homepage
+ * is advertising a stale rent to prospective renters and to search engines.
+ */
+export function renderStartingPriceCheckAlert(opts: {
+  failures: string[];
+}): RenderedEmail {
+  const { failures } = opts;
+  const subject =
+    "Website alert: homepage is showing a stale starting rent — re-publish needed";
+
+  const intro =
+    `The automatic post-publish check of www.rentatexhibit.com found ${failures.length} starting-price mismatch(es). ` +
+    "The homepage's baked \"Apartments currently start at $X,XXX\" figure does not match the live availability feed — " +
+    "prospective renters (and search engines) are seeing a stale minimum rent.";
+  const remedy =
+    "What to do: re-publish the website after the next availability sync (or trigger a manual sync) to bake the current minimum rent into the homepage. " +
+    "Run `pnpm --filter @workspace/exhibit-on-superior run check:starting-price` from the workspace to confirm after the publish. " +
+    "This alert is sent at most once per day.";
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<ul style="${BODY_TEXT}">${failures
+      .map((f) => `<li>${escapeHtml(f)}</li>`)
+      .join("")}</ul>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
+      "re-publish the website after the next availability sync to bake the current minimum rent. " +
+        "Run check:starting-price from the workspace to confirm after the publish. " +
+        "This alert is sent at most once per day.",
+    )}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...failures.map((f) => `- ${f}`),
+    "",
+    remedy,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader:
+      "The homepage is showing a stale starting rent — re-publish to correct it.",
+    kicker: "Website Alert",
+    heading: "Starting Rent Mismatch Detected",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
