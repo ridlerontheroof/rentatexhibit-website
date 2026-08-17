@@ -54,6 +54,11 @@ const noopLog: MinimalLog = { info: () => {}, warn: () => {} };
  */
 export async function pingIndexNow(urls: string[], log: MinimalLog = noopLog): Promise<boolean> {
   if (urls.length === 0) return false;
+  // Breadcrumb before the network call: production logs showed submissions
+  // vanishing without a trace (no accepted/rejected/failed line), leaving no
+  // way to tell "never fired" apart from "fired but hung". This line plus the
+  // fetch timeout below guarantee every attempt leaves exactly two log lines.
+  log.info({ urlCount: urls.length }, "IndexNow submission starting");
   try {
     const res = await fetch(INDEXNOW_ENDPOINT, {
       method: "POST",
@@ -64,6 +69,9 @@ export async function pingIndexNow(urls: string[], log: MinimalLog = noopLog): P
         keyLocation: `${SITE_URL}/${INDEXNOW_KEY}.txt`,
         urlList: urls,
       }),
+      // Never hang silently — an autoscale instance can starve a background
+      // fetch; force it to resolve so the catch below logs the failure.
+      signal: AbortSignal.timeout(15_000),
     });
     // IndexNow returns 200 or 202 on acceptance.
     if (res.ok || res.status === 202) {

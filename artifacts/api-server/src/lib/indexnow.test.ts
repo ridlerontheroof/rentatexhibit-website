@@ -137,6 +137,42 @@ describe("pingIndexNow", () => {
     await expect(pingIndexNow([])).resolves.toBe(false);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it("passes an abort timeout signal so a hung submission cannot stall silently", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200 });
+    vi.stubGlobal("fetch", fetchMock);
+    await pingIndexNow([SITE_URL]);
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    expect(init.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it("logging contract: every attempt logs a start line plus exactly one terminal outcome", async () => {
+    const mkLog = () => ({ info: vi.fn(), warn: vi.fn() });
+
+    // Accepted: start + accepted, no warnings.
+    let log = mkLog();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 202 }));
+    await pingIndexNow([SITE_URL], log);
+    expect(log.info.mock.calls.map((c) => c[1])).toEqual([
+      "IndexNow submission starting",
+      "IndexNow submission accepted",
+    ]);
+    expect(log.warn).not.toHaveBeenCalled();
+
+    // Rejected status: start + rejected warning.
+    log = mkLog();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 403 }));
+    await pingIndexNow([SITE_URL], log);
+    expect(log.info.mock.calls.map((c) => c[1])).toEqual(["IndexNow submission starting"]);
+    expect(log.warn.mock.calls.map((c) => c[1])).toEqual(["IndexNow submission rejected"]);
+
+    // Network failure / abort timeout: start + failed warning — never silent.
+    log = mkLog();
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("TimeoutError")));
+    await pingIndexNow([SITE_URL], log);
+    expect(log.info.mock.calls.map((c) => c[1])).toEqual(["IndexNow submission starting"]);
+    expect(log.warn.mock.calls.map((c) => c[1])).toEqual(["IndexNow submission failed"]);
+  });
 });
 
 describe("production gating", () => {
