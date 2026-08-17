@@ -6,6 +6,12 @@
 // Transportation) and standard CTA routing from the Chicago (Brown/Purple)
 // and Chicago/State (Red) stations. Times are approximate and phrased as
 // such; re-verify against transitchicago.com if CTA service changes.
+//
+// Last re-verification (August 2026, transitchicago.com): Blue Line O'Hare to
+// downtown is published at 40-45 min; Orange Line Midway to downtown at
+// 25 min; the Chicago (Brown/Purple) and Chicago/State (Red) stations remain
+// open with normal service; the #66 Chicago bus still runs (incl. Owl
+// service). All rows below remain consistent with those published figures.
 
 export interface CommuteRow {
   /** Destination, e.g. "The Loop". */
@@ -15,6 +21,12 @@ export interface CommuteRow {
   /** Approximate door-to-door time by that transit option. */
   time: string;
 }
+
+/**
+ * When the routings and times were last verified against transitchicago.com /
+ * Google Maps (mirrors WALK_SCORES_CHECKED in walkScores.ts).
+ */
+export const COMMUTE_CHECKED = 'August 2026';
 
 export const COMMUTE_ROWS: CommuteRow[] = [
   {

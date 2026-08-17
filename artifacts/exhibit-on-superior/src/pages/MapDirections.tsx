@@ -13,7 +13,7 @@ import {
   BIKE_SCORE,
   WALK_SCORE_SOURCE_URL,
 } from '../data/walkScores';
-import { COMMUTE_ROWS } from '../data/commute';
+import { COMMUTE_ROWS, COMMUTE_CHECKED } from '../data/commute';
 
 export function MapDirections() {
   return (
@@ -161,7 +161,7 @@ export function MapDirections() {
               Transit Score, and an {BIKE_SCORE.score}/100 Bike Score.
             </p>
             <p className="text-sm text-muted-foreground text-center mt-4">
-              Routes, exits, and schedules can change — use the map above or your preferred navigation app for current turn-by-turn directions, and check transitchicago.com for CTA service details.
+              Routes, exits, and schedules can change — use the map above or your preferred navigation app for current turn-by-turn directions, and check transitchicago.com for CTA service details. Times and routings above checked {COMMUTE_CHECKED}.
             </p>
           </div>
         </section>
