@@ -3,7 +3,7 @@
  * fake success (so they don't adapt) while nothing is stored, no email is
  * sent, and no AppFolio guest card is pushed.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import express from "express";
 import request from "supertest";
 
@@ -62,6 +62,111 @@ const lead = {
 
 afterEach(() => {
   vi.clearAllMocks();
+});
+
+describe("POST /leads QA test-lead bypass", () => {
+  const TEST_TOKEN = "qa-secret-token-for-tests";
+
+  beforeEach(() => {
+    process.env.TEST_LEAD_TOKEN = TEST_TOKEN;
+  });
+
+  afterEach(() => {
+    delete process.env.TEST_LEAD_TOKEN;
+  });
+
+  it("fake-succeeds with a valid token in X-Test-Lead without storing, emailing, or pushing a guest card", async () => {
+    const res = await request(makeApp())
+      .post("/leads")
+      .set("X-Test-Lead", TEST_TOKEN)
+      .send(lead);
+    expect(res.status).toBe(201);
+    // Returns a correctly shaped response so the client form completes normally.
+    expect(res.body).toMatchObject({
+      id: 0,
+      type: "contact",
+      firstName: "",
+    });
+    // No real side-effects.
+    expect(insertMock).not.toHaveBeenCalled();
+    expect(vi.mocked(sendLeadNotification)).not.toHaveBeenCalled();
+    expect(vi.mocked(sendProspectConfirmation)).not.toHaveBeenCalled();
+    expect(vi.mocked(createGuestCard)).not.toHaveBeenCalled();
+  });
+
+  it("does NOT bypass when TEST_LEAD_TOKEN env var is unset (production default)", async () => {
+    // Simulate production: no token configured — any header value must be ignored.
+    delete process.env.TEST_LEAD_TOKEN;
+    const row = {
+      id: 99,
+      type: "contact",
+      firstName: lead.firstName,
+      lastName: lead.lastName,
+      email: lead.email,
+      phone: lead.phone,
+      message: lead.message,
+      preferredDate: null,
+      createdAt: new Date(),
+      notifiedAt: null,
+    };
+    insertMock.mockReturnValue({
+      values: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([row]) }),
+    });
+    // Even sending the token value itself must not bypass when env var is absent.
+    const res = await request(makeApp())
+      .post("/leads")
+      .set("X-Test-Lead", TEST_TOKEN)
+      .send({ ...lead, xh_note: "", elapsedMs: 9_000 });
+    expect(res.status).toBe(201);
+    expect(insertMock).toHaveBeenCalled();
+  });
+
+  it("does NOT bypass when X-Test-Lead carries the wrong token value", async () => {
+    const row = {
+      id: 98,
+      type: "contact",
+      firstName: lead.firstName,
+      lastName: lead.lastName,
+      email: lead.email,
+      phone: lead.phone,
+      message: lead.message,
+      preferredDate: null,
+      createdAt: new Date(),
+      notifiedAt: null,
+    };
+    insertMock.mockReturnValue({
+      values: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([row]) }),
+    });
+    const res = await request(makeApp())
+      .post("/leads")
+      .set("X-Test-Lead", "wrong-token")
+      .send({ ...lead, xh_note: "", elapsedMs: 9_000 });
+    expect(res.status).toBe(201);
+    expect(insertMock).toHaveBeenCalled();
+  });
+
+  it("does NOT bypass when X-Test-Lead header is absent", async () => {
+    const row = {
+      id: 97,
+      type: "contact",
+      firstName: lead.firstName,
+      lastName: lead.lastName,
+      email: lead.email,
+      phone: lead.phone,
+      message: lead.message,
+      preferredDate: null,
+      createdAt: new Date(),
+      notifiedAt: null,
+    };
+    insertMock.mockReturnValue({
+      values: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([row]) }),
+    });
+    const res = await request(makeApp())
+      .post("/leads")
+      .send({ ...lead, xh_note: "", elapsedMs: 9_000 });
+    expect(res.status).toBe(201);
+    expect(insertMock).toHaveBeenCalled();
+  });
 });
 
 describe("POST /leads bot guard", () => {

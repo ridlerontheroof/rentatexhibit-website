@@ -13,6 +13,22 @@ import { reportGuestCardFailure } from "../lib/guestCardAlert";
 
 const router: IRouter = Router();
 
+/**
+ * Returns true when the request carries a valid QA test token.
+ *
+ * The bypass is authenticated via TEST_LEAD_TOKEN: a secret env var supplied
+ * only to the test runner. The header value must match that secret exactly.
+ * When the env var is absent or empty (the production default) this function
+ * always returns false, making the bypass permanently disabled regardless of
+ * any header a caller sends — a browser or proxy cannot forge what it cannot
+ * know.
+ */
+function isValidTestRequest(req: { headers: Record<string, string | string[] | undefined> }): boolean {
+  const token = process.env.TEST_LEAD_TOKEN;
+  if (!token) return false; // bypass disabled; production default
+  return req.headers["x-test-lead"] === token;
+}
+
 // Every accepted lead triggers two outbound emails (leasing team + prospect),
 // so this endpoint is an attractive spam/abuse vector. Throttle submissions per
 // client IP to keep an attacker from flooding the leasing inbox or turning the
@@ -23,13 +39,45 @@ const leadLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many submissions. Please try again in a minute." },
-  // The limiter's counter is module-level; without this, test requests
-  // accumulate across cases and unrelated tests start seeing 429s. (Same
-  // rationale as the showings limiter.)
-  skip: () => process.env.NODE_ENV === "test",
+  // Skip the limiter for unit-test runs and for authenticated QA test
+  // requests so they don't consume the per-IP quota or interfere with other
+  // test cases that share the same module-level counter. (Same rationale as
+  // the showings limiter.)
+  skip: (req) =>
+    process.env.NODE_ENV === "test" ||
+    isValidTestRequest(req as unknown as Parameters<typeof isValidTestRequest>[0]),
 });
 
 router.post("/leads", leadLimiter, async (req, res) => {
+  // Authenticated QA bypass: when the request carries a valid TEST_LEAD_TOKEN
+  // secret in the X-Test-Lead header the route returns a correctly shaped 201
+  // but skips every real side-effect — no DB write, no outbound emails, no
+  // AppFolio guest-card push. This lets e2e / QA harnesses exercise the full
+  // form flow without polluting the production lead table.
+  //
+  // The bypass is gated on a server-held secret (TEST_LEAD_TOKEN env var). If
+  // that var is unset — the production default — isValidTestRequest() always
+  // returns false, so a forged header from a browser or proxy can never
+  // suppress a real visitor's lead.
+  if (isValidTestRequest(req)) {
+    req.log.warn(
+      { ip: req.ip },
+      "Authenticated QA test request; returning fake success without DB write or notifications",
+    );
+    res.status(201).json({
+      id: 0,
+      type: "contact",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      message: null,
+      preferredDate: null,
+      createdAt: new Date().toISOString(),
+    });
+    return;
+  }
+
   // Invisible bot check (honeypot + fill-time) before anything else touches
   // the submission. Detected bots get a fake success so they don't learn to
   // adapt — but nothing is stored, no email is sent, no guest card is pushed.
