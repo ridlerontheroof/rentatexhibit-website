@@ -11,6 +11,7 @@ import {
   blogPath,
   buildBlogSeoModel,
 } from '../data/blog';
+import { linkifyText } from '../data/blogLinkifier';
 
 /**
  * One blog article: the title as the H1, a byline with a real author
@@ -20,7 +21,14 @@ import {
  * topic cluster, onward CTAs, and cited sources for third-party claims.
  * Head + JSON-LD come from the shared model in data/blog.ts (also used by
  * the prerenderer), so the crawler head and hydrated head never drift.
+ *
+ * In-prose internal links: naturally occurring phrases in paragraphs and
+ * list items are linked to the matching site pages (once per destination
+ * per article) via `linkifyText`. The same component renders during SSR
+ * prerender, so the links appear identically in the static HTML and in the
+ * .md markdown twins (the html-to-markdown converter already handles <a>).
  */
+
 /** Article photo with a visible caption (mirrored into the markdown twin). */
 function ArticleFigure({ image }: { image: BlogImage }) {
   return (
@@ -36,6 +44,45 @@ function ArticleFigure({ image }: { image: BlogImage }) {
   );
 }
 
+/**
+ * Render a prose string as a sequence of plain-text and internal-link
+ * segments. Mutations to `usedDests` accumulate across every paragraph and
+ * list item for this article so each destination is only linked once.
+ *
+ * Plain-text spans wrap their content in a <span> — transparent to the
+ * html-to-markdown converter (which passes generic inline elements through).
+ * Linked segments become <a> elements that the converter renders as
+ * markdown links, so the .md twins automatically carry the same links.
+ */
+function LinkedProse({
+  text,
+  usedDests,
+  selfPath,
+}: {
+  text: string;
+  usedDests: Set<string>;
+  selfPath: string;
+}) {
+  const segments = linkifyText(text, usedDests, selfPath);
+  return (
+    <>
+      {segments.map((seg, i) =>
+        seg.href ? (
+          <Link
+            key={i}
+            href={seg.href}
+            className="text-primary underline underline-offset-4"
+          >
+            {seg.text}
+          </Link>
+        ) : (
+          <span key={i}>{seg.text}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 export function BlogArticle() {
   const { slug } = useParams<{ slug: string }>();
   const article = slug ? blogArticle(slug) : undefined;
@@ -44,6 +91,12 @@ export function BlogArticle() {
   const images = article.images ?? [];
   // Second photo lands after the middle section; first goes under the summary.
   const midSectionIndex = Math.max(0, Math.ceil(article.sections.length / 2) - 1);
+
+  // Shared mutable set for the "once per destination" rule — created fresh
+  // per render (deterministic in both SSR and CSR) and mutated sequentially
+  // as each paragraph and list item is processed in section order.
+  const usedDests = new Set<string>();
+  const selfPath = blogPath(article.slug); // '/blog/<slug>'
 
   return (
     <>
@@ -97,6 +150,9 @@ export function BlogArticle() {
           <div className="container mx-auto max-w-3xl">
             <div className="border-l-2 border-primary bg-muted/50 px-6 py-5">
               <p className="eyebrow mb-2">In Short</p>
+              {/* Summary is the answer-first block AI assistants cite — keep
+                  it plain text so it reads cleanly as a self-contained answer
+                  without conversion-link noise. Not processed by linkifyText. */}
               <p className="text-lg leading-relaxed text-foreground">{article.summary}</p>
             </div>
             {images[0] ? <ArticleFigure image={images[0]} /> : null}
@@ -112,14 +168,14 @@ export function BlogArticle() {
                 ) : null}
                 {s.paragraphs.map((p) => (
                   <p key={p.slice(0, 40)} className="leading-relaxed text-muted-foreground mb-4">
-                    {p}
+                    <LinkedProse text={p} usedDests={usedDests} selfPath={selfPath} />
                   </p>
                 ))}
                 {s.list ? (
                   <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                     {s.list.map((item) => (
                       <li key={item.slice(0, 40)} className="leading-relaxed">
-                        {item}
+                        <LinkedProse text={item} usedDests={usedDests} selfPath={selfPath} />
                       </li>
                     ))}
                   </ul>
@@ -138,7 +194,13 @@ export function BlogArticle() {
                 {article.faqs.map((f) => (
                   <div key={f.question} className="py-4">
                     <dt className="text-lg text-foreground">{f.question}</dt>
-                    <dd className="mt-2 leading-relaxed text-muted-foreground">{f.answer}</dd>
+                    {/* FAQ answers are also prose — apply linkification so
+                        AI answer engines see labeled paths in the .md twin's
+                        FAQ section as well. usedDests continues from sections
+                        above so each destination is still only linked once. */}
+                    <dd className="mt-2 leading-relaxed text-muted-foreground">
+                      <LinkedProse text={f.answer} usedDests={usedDests} selfPath={selfPath} />
+                    </dd>
                   </div>
                 ))}
               </dl>
