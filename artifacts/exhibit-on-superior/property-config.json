@@ -88,5 +88,10 @@
       "VITE_GA4_MEASUREMENT_ID",
       "SESSION_SECRET"
     ]
+  },
+  "deployment": {
+    "replitAppName": "exhibit-on-superior",
+    "dnsProvider": "Squarespace",
+    "indexNowKey": true
   }
 }
