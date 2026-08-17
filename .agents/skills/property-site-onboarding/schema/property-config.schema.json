@@ -129,20 +129,21 @@
     "analytics": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["utmStorageKey", "ga4MeasurementId"],
       "properties": {
         "gtmId": { "type": "string", "pattern": "^GTM-" },
-        "ga4MeasurementId": { "type": "string", "pattern": "^G-" },
-        "utmStorageKey": { "type": "string", "description": "sessionStorage key for visit-source capture, e.g. \"woodscrossing_utm_params\"." }
+        "ga4MeasurementId": { "type": "string", "pattern": "^G-", "description": "GA4 Measurement ID. Required — missing throws at build time." },
+        "utmStorageKey": { "type": "string", "description": "sessionStorage key for visit-source capture, e.g. \"woodscrossing_utm_params\". Also drives the visit-source key." }
       }
     },
     "email": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["leasingInbox", "alertInbox"],
+      "required": ["leasingInbox", "alertInbox", "senderAddress"],
       "properties": {
         "leasingInbox": { "type": "string", "description": "Real lead traffic ONLY." },
         "alertInbox": { "type": "string", "description": "Technical/watchdog alerts ONLY — never mix with leasing." },
-        "senderAddress": { "type": "string" },
+        "senderAddress": { "type": "string", "description": "Sending Gmail account address (GMAIL_SMTP_USER). No fallback — must be set." },
         "senderName": { "type": "string" }
       }
     },

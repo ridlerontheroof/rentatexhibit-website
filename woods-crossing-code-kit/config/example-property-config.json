@@ -75,6 +75,15 @@
     "senderName": "Woods Crossing Leasing"
   },
   "secrets": {
-    "required": ["APPFOLIO_CLIENT_ID", "APPFOLIO_CLIENT_SECRET", "GMAIL_APP_PASSWORD", "SESSION_SECRET"]
+    "required": [
+      "APPFOLIO_CLIENT_ID",
+      "APPFOLIO_CLIENT_SECRET",
+      "GMAIL_APP_PASSWORD",
+      "GMAIL_SMTP_USER",
+      "INDEXNOW_KEY",
+      "VITE_UTM_STORAGE_KEY",
+      "VITE_GA4_MEASUREMENT_ID",
+      "SESSION_SECRET"
+    ]
   }
 }

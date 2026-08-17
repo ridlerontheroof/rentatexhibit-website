@@ -91,6 +91,32 @@ if (phase) {
   }
 }
 
+// kit-v1.1.0 build-phase env-var roster check.
+// Every name here MUST appear in secrets.required — these are the vars that have
+// no runtime fallback and would produce a cryptic failure if silently absent.
+// Covers both Replit Secret values and plain required env-var names.
+const BUILD_PHASES = new Set(['build', 'prelaunch', 'golive']);
+if (phase && BUILD_PHASES.has(phase)) {
+  const KIT_V1_1_0_REQUIRED = [
+    'APPFOLIO_CLIENT_ID',       // AppFolio Reports API OAuth — secret
+    'APPFOLIO_CLIENT_SECRET',   // AppFolio Reports API OAuth — secret
+    'GMAIL_APP_PASSWORD',       // SMTP app password — secret
+    'GMAIL_SMTP_USER',          // Sending address — no fallback, must be set
+    'INDEXNOW_KEY',             // IndexNow key string — no fallback, must be set
+    'VITE_UTM_STORAGE_KEY',     // sessionStorage key for UTM capture — required at build
+    'VITE_GA4_MEASUREMENT_ID',  // GA4 Measurement ID — throws at build if missing
+  ];
+  const declaredRequired = new Set(config.secrets?.required ?? []);
+  for (const name of KIT_V1_1_0_REQUIRED) {
+    if (!declaredRequired.has(name)) {
+      errors.push(
+        `$.secrets.required: kit-v1.1.0 required env-var "${name}" must be listed in secrets.required` +
+        ` (phase "${phase}" — add it so the operator knows it must be set before the build)`
+      );
+    }
+  }
+}
+
 // Secret-value tripwire: nothing in the config may look like a secret VALUE.
 const secretish = /(sk-[A-Za-z0-9]{16,}|AKIA[A-Z0-9]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|xox[baprs]-|ghp_[A-Za-z0-9]{20,})/;
 const flat = JSON.stringify(config);
