@@ -161,7 +161,10 @@ export async function recordCspViolation(
   // Known-noise violations (country-domain ga-audiences, eval from browser
   // extensions) are already logged above; skip the alert email so they
   // don't fill the daily budget with un-actionable reports.
-  if (isKnownNoise(violation)) return;
+  if (isKnownNoise(violation)) {
+    log.info({ signature }, "CSP violation suppressed as known noise");
+    return;
+  }
 
   // Hard per-process daily cap first — cheaper than the DB claim, and it
   // bounds the damage of an attacker rotating signatures. The slot is
