@@ -1,0 +1,92 @@
+{
+  "configVersion": "1",
+  "kitVersion": "kit-v1.1.0",
+  "property": {
+    "name": "Exhibit On Superior",
+    "shortName": "Exhibit On Superior",
+    "slug": "exhibit-on-superior"
+  },
+  "identity": {
+    "canonicalOrigin": "https://www.rentatexhibit.com",
+    "domains": ["rentatexhibit.com", "www.rentatexhibit.com"]
+  },
+  "brand": {
+    "designDirection": "Elevated Urban Dark — a dark-paneled luxury tower aesthetic with accessible gold accents on charcoal, referencing the building's floor-to-ceiling glass curtain wall against Chicago's River North skyline.",
+    "tokens": {
+      "colors": {
+        "primary": "hsl(42 40% 30%)",
+        "primaryOnDark": "hsl(42 36% 54%)",
+        "secondary": "hsl(0 0% 11%)"
+      },
+      "fonts": {
+        "heading": "system-ui",
+        "body": "system-ui"
+      }
+    },
+    "logoAssets": [
+      "public/images/exhibit-logo-dark.png",
+      "public/images/exhibit-logo-light.png"
+    ],
+    "reuseRightsConfirmed": true
+  },
+  "nap": {
+    "streetAddress": "165 W Superior St",
+    "locality": "Chicago",
+    "region": "IL",
+    "postalCode": "60654",
+    "country": "US",
+    "phone": "+13124500635",
+    "email": "exhibit@highlandptrs.com",
+    "timezone": "America/Chicago",
+    "geo": { "latitude": 41.8958, "longitude": -87.6328 },
+    "hours": [
+      { "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "09:00", "closes": "18:00" },
+      { "days": ["Saturday"], "opens": "10:00", "closes": "17:00" }
+    ]
+  },
+  "leasing": {
+    "facts": {},
+    "applyUrl": "https://highlandrealestatepartners.appfolio.com/listings/rental_applications/new",
+    "residentPortalUrl": "https://highlandrealestatepartners.appfolio.com/connect/"
+  },
+  "appfolio": {
+    "database": "highlandrealestatepartners",
+    "propertyName": "Exhibit On Superior",
+    "tourUnitName": "Tour",
+    "leadSourceDefault": "Website (Exhibit)"
+  },
+  "seo": {
+    "defaultTitleSuffix": "| Exhibit On Superior",
+    "defaultDescription": "Exhibit On Superior — luxury apartments in Chicago's River North neighborhood at 165 W Superior St. Studio, 1-, 2-, and 3-bedroom homes with skyline views, a 75-foot lap pool, and 24-hour front desk.",
+    "ogSiteName": "Exhibit On Superior",
+    "gbpUrl": "https://www.google.com/maps?cid=15240815771270963454",
+    "localBusinessType": "ApartmentComplex"
+  },
+  "redirects": {
+    "parityMapPath": "config/redirect-parity-map.csv",
+    "extra": []
+  },
+  "analytics": {
+    "gtmId": "GTM-MDPWH532",
+    "ga4MeasurementId": "G-1S66YHBN91",
+    "utmStorageKey": "exhibit_utm_params"
+  },
+  "email": {
+    "leasingInbox": "exhibit@highlandptrs.com",
+    "alertInbox": "ridler@highlandptrs.com",
+    "senderAddress": "leasingexhibit@highlandptrs.com",
+    "senderName": "Exhibit On Superior Leasing"
+  },
+  "secrets": {
+    "required": [
+      "APPFOLIO_CLIENT_ID",
+      "APPFOLIO_CLIENT_SECRET",
+      "GMAIL_APP_PASSWORD",
+      "GMAIL_SMTP_USER",
+      "INDEXNOW_KEY",
+      "VITE_UTM_STORAGE_KEY",
+      "VITE_GA4_MEASUREMENT_ID",
+      "SESSION_SECRET"
+    ]
+  }
+}
