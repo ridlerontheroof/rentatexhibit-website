@@ -71,12 +71,15 @@ async function liveBuildId() {
   }
 }
 
-/** Run `pnpm run check:postpublish`, streaming output. Resolves exit code. */
+/** Run `pnpm run check:postpublish`, streaming output. Resolves exit code.
+ *  Passes POSTPUBLISH_BASE so per-check scripts that accept it (e.g.
+ *  check-starting-price.mjs) target the same host the watcher polls. */
 function runChecks() {
   return new Promise((resolve) => {
     const child = spawn('pnpm', ['run', 'check:postpublish'], {
       cwd: pkgDir,
       stdio: 'inherit',
+      env: { ...process.env, POSTPUBLISH_BASE: BASE },
     });
     child.on('close', (code) => resolve(code ?? 1));
     child.on('error', (err) => {
