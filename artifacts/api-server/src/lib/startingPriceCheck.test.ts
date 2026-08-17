@@ -379,6 +379,62 @@ describe("runStartingPriceChecks", () => {
     const result = await runStartingPriceChecks(log, fetchImpl);
     expect(result.failures).toEqual([]);
   });
+
+  // -------------------------------------------------------------------------
+  // One-side-stale isolation: both visible copy AND JSON-LD carry a price,
+  // but only one of them is stale.  The failures array must name only the
+  // broken side — the healthy side must not appear in the output.
+  // -------------------------------------------------------------------------
+
+  /**
+   * Build a page that has both a visible FAQ sentence and a FAQPage JSON-LD
+   * block, each potentially carrying a different rent figure.
+   */
+  function homepageWithBothRents(visibleRent: number, jsonLdRent: number): string {
+    const ld = JSON.stringify({
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is the starting price?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: `Apartments currently start at $${jsonLdRent.toLocaleString("en-US")} per month.`,
+          },
+        },
+      ],
+    });
+    return (
+      `<html><head><script type="application/ld+json">${ld}</script></head>` +
+      `<body><p>Apartments currently start at $${visibleRent.toLocaleString("en-US")} per month.</p></body></html>`
+    );
+  }
+
+  it("names only 'FAQPage JSON-LD' when visible copy is current but JSON-LD is stale", async () => {
+    // Visible copy = LIVE_MIN (correct), JSON-LD = BAKED_STALE (stale).
+    const fetchImpl = makeFetch((url) =>
+      url.includes("/api/availability")
+        ? { status: 200, body: availabilityBody([LIVE_MIN]) }
+        : { status: 200, body: homepageWithBothRents(LIVE_MIN, BAKED_STALE) },
+    );
+    const result = await runStartingPriceChecks(log, fetchImpl);
+    expect(result.failures.length).toBe(1);
+    expect(result.failures[0]).toMatch(/FAQPage JSON-LD/);
+    expect(result.failures[0]).not.toMatch(/visible FAQ copy/);
+  });
+
+  it("names only 'visible FAQ copy' when JSON-LD is current but visible copy is stale", async () => {
+    // JSON-LD = LIVE_MIN (correct), visible copy = BAKED_STALE (stale).
+    const fetchImpl = makeFetch((url) =>
+      url.includes("/api/availability")
+        ? { status: 200, body: availabilityBody([LIVE_MIN]) }
+        : { status: 200, body: homepageWithBothRents(BAKED_STALE, LIVE_MIN) },
+    );
+    const result = await runStartingPriceChecks(log, fetchImpl);
+    expect(result.failures.length).toBe(1);
+    expect(result.failures[0]).toMatch(/visible FAQ copy/);
+    expect(result.failures[0]).not.toMatch(/FAQPage JSON-LD/);
+  });
 });
 
 // ---------------------------------------------------------------------------
