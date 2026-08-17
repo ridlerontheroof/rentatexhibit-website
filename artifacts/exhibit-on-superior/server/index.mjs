@@ -196,7 +196,20 @@ const CSP = [
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://my.matterport.com https://www.google.com https://maps.google.com https://www.googletagmanager.com https://sightmap.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
+  // Real-visitor violation reporting: the prepublish check:csp run can only
+  // exercise the pages as built — a GTM container change published later
+  // (e.g. a new Custom HTML tag) breaks only in production. Browsers POST
+  // violation reports to the api-server (same-origin /api routing), which
+  // logs them and emails the operational inbox with dedupe (see
+  // artifacts/api-server/src/routes/cspReports.ts). `report-uri` is the
+  // legacy channel (still what most browsers send), `report-to` names the
+  // Reporting-Endpoints group set alongside the CSP header below.
+  'report-uri /api/csp-reports',
+  'report-to csp-endpoint',
 ].join('; ');
+
+// Reporting API endpoint group referenced by the CSP `report-to` directive.
+const REPORTING_ENDPOINTS = 'csp-endpoint="/api/csp-reports"';
 const cspHeader =
   process.env.CSP_ENFORCE === '1' ? 'Content-Security-Policy' : 'Content-Security-Policy-Report-Only';
 
@@ -289,6 +302,7 @@ app.use((req, res, next) => {
   res.set('X-Frame-Options', 'DENY');
   res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  res.set('Reporting-Endpoints', REPORTING_ENDPOINTS);
   res.set(cspHeader, CSP);
   next();
 });

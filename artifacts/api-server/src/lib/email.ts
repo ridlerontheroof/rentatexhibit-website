@@ -21,6 +21,7 @@ import {
   renderSeedStaleAlert,
   renderShowingSchedulerAlert,
   renderBlogDraftReviewNote,
+  renderCspViolationAlert,
   renderSeoWeeklyDigest,
   renderSeoDigestFailureAlert,
   type SeoDigestEmailData,
@@ -830,5 +831,36 @@ export async function sendSeoDigestFailureAlert(opts: {
   logger.info(
     { recipient: SEED_ALERT_EMAIL },
     "Sent SEO-digest Search Console access alert email",
+  );
+}
+
+/**
+ * Operational alert: a real visitor's browser reported a CSP violation.
+ * Deduping (once per violation signature per UTC day, plus a daily cap)
+ * lives in the caller (cspReportAlert). Throws when the mailer is
+ * unconfigured or the send fails.
+ */
+export async function sendCspViolationAlert(opts: {
+  effectiveDirective: string;
+  blockedUri: string;
+  documentUri: string;
+  sourceFile: string | null;
+  scriptSample: string | null;
+  disposition: string | null;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderCspViolationAlert(opts);
+  const { contentType, body } = buildMimeBody("cspreport", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL, directive: opts.effectiveDirective },
+    "Sent CSP violation alert email",
   );
 }

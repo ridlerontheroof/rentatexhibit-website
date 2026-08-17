@@ -1,0 +1,158 @@
+import type { Logger } from "pino";
+import { createDailyClaim } from "./dailyClaim";
+import { mailerConfigured } from "./mailer";
+import { sendCspViolationAlert } from "./email";
+
+/**
+ * Real-visitor CSP violation alerting.
+ *
+ * The prepublish check (exhibit-on-superior scripts/check-csp-violations.mjs)
+ * can only exercise the pages as built. A GTM container change published
+ * later (e.g. a marketer adds a "Custom HTML" tag) injects inline scripts
+ * only in production, after the check has passed — and with the CSP
+ * enforced, the browser silently blocks them for every visitor. The serving
+ * layer therefore points the policy's `report-uri`/`report-to` at
+ * POST /api/csp-reports (routes/cspReports.ts); this module turns those
+ * reports into logs and a deduped operational email.
+ *
+ * Dedupe/rate-limiting has three layers:
+ *  1. The route caps how many reports it processes per minute (an attacker
+ *     can POST arbitrary "reports"; the endpoint is unauthenticated by
+ *     nature, so it must be cheap to hit and bounded in effect).
+ *  2. Every processed violation is logged (warn) so the full picture lives
+ *     in the api-server logs.
+ *  3. Emails go out at most once per UTC day per distinct violation
+ *     signature (directive + blocked origin), cluster-wide via the shared
+ *     dailyClaim, AND at most CSP_ALERT_EMAIL_DAILY_MAX emails per process
+ *     per day as a hard backstop against signature-rotation spam.
+ *
+ * Everything is best-effort and fire-and-forget: a database or mail outage
+ * must never affect the visitor request that delivered the report.
+ */
+
+/** Normalized shape shared by the legacy and Reporting-API report formats. */
+export interface CspViolation {
+  /** e.g. "script-src-elem" — the directive that blocked the load. */
+  effectiveDirective: string;
+  /** Blocked URL, or "inline" / "eval" for inline-script violations. */
+  blockedUri: string;
+  /** Page the violation happened on. */
+  documentUri: string;
+  /** Script/stylesheet that triggered the load, when the browser knows it. */
+  sourceFile: string | null;
+  /** First bytes of the offending inline script, when reported. */
+  scriptSample: string | null;
+  /** "enforce" or "report" — whether the browser actually blocked it. */
+  disposition: string | null;
+}
+
+/** Max alert emails per process per UTC day, whatever the signatures say. */
+export const CSP_ALERT_EMAIL_DAILY_MAX = 5;
+
+const dailyClaim = createDailyClaim({
+  prefix: "cspreport",
+  claimFailedMessage:
+    "CSP-report alert database claim failed; falling back to in-memory dedupe",
+});
+
+/** Per-process daily email counter (the hard backstop). */
+let emailDay = "";
+let emailsSentToday = 0;
+
+function utcDay(now: number): string {
+  return new Date(now).toISOString().slice(0, 10);
+}
+
+/**
+ * Reduce a blocked URI to a stable signature component: inline/eval keywords
+ * stay as-is, URLs collapse to their origin (query strings and cache-busting
+ * paths must not split the dedupe), garbage becomes "invalid".
+ */
+export function blockedUriSignature(blockedUri: string): string {
+  const v = blockedUri.trim();
+  if (v === "" ) return "empty";
+  if (!v.includes(":") || /^(inline|eval|wasm-eval|data|blob|about)$/i.test(v)) {
+    return v.toLowerCase().slice(0, 64);
+  }
+  try {
+    return new URL(v).origin.toLowerCase();
+  } catch {
+    return "invalid";
+  }
+}
+
+/** Dedupe signature: directive + blocked origin/keyword. */
+export function violationSignature(v: CspViolation): string {
+  return `${v.effectiveDirective.toLowerCase()}|${blockedUriSignature(v.blockedUri)}`;
+}
+
+/** Test-only: reset the per-process email counter and claim fallback. */
+export function resetCspReportAlertState(): void {
+  emailDay = "";
+  emailsSentToday = 0;
+  dailyClaim.reset();
+}
+
+/**
+ * Record one normalized CSP violation report: log it, and — first sighting
+ * of this signature today, under the daily email cap — email the
+ * operational inbox. Never throws; call fire-and-forget from the route.
+ */
+export async function recordCspViolation(
+  log: Logger,
+  now: number,
+  violation: CspViolation,
+): Promise<void> {
+  const signature = violationSignature(violation);
+  log.warn(
+    {
+      signature,
+      effectiveDirective: violation.effectiveDirective,
+      blockedUri: violation.blockedUri.slice(0, 256),
+      documentUri: violation.documentUri.slice(0, 256),
+      sourceFile: violation.sourceFile?.slice(0, 256) ?? null,
+      scriptSample: violation.scriptSample?.slice(0, 100) ?? null,
+      disposition: violation.disposition,
+    },
+    "Visitor browser reported a CSP violation",
+  );
+
+  if (!mailerConfigured()) return;
+
+  // Hard per-process daily cap first — cheaper than the DB claim, and it
+  // bounds the damage of an attacker rotating signatures. The slot is
+  // reserved SYNCHRONOUSLY (before any await): concurrent violations in one
+  // batch would otherwise all read the counter below the cap, each win a
+  // distinct dedupe claim, and blow past the bound together.
+  const day = utcDay(now);
+  if (emailDay !== day) {
+    emailDay = day;
+    emailsSentToday = 0;
+  }
+  if (emailsSentToday >= CSP_ALERT_EMAIL_DAILY_MAX) return;
+  emailsSentToday += 1;
+
+  try {
+    if (!(await dailyClaim.claim(log, now, { subKey: signature, logFields: { signature } }))) {
+      // A repeat signature already alerted today — hand the reserved slot
+      // back so dedupe losses never eat the budget for new signatures.
+      emailsSentToday -= 1;
+      return;
+    }
+    await sendCspViolationAlert({
+      effectiveDirective: violation.effectiveDirective,
+      blockedUri: violation.blockedUri.slice(0, 256),
+      documentUri: violation.documentUri.slice(0, 256),
+      sourceFile: violation.sourceFile?.slice(0, 256) ?? null,
+      scriptSample: violation.scriptSample?.slice(0, 100) ?? null,
+      disposition: violation.disposition,
+    });
+  } catch (err) {
+    // The claim AND the reserved email slot are deliberately NOT released
+    // on a failed send: a broken
+    // mailer would otherwise burn the whole daily email budget retrying the
+    // same signature, and the violation is already in the logs above. The
+    // next distinct signature (or the next day) alerts again.
+    log.error({ err, signature }, "Failed to send CSP violation alert email");
+  }
+}

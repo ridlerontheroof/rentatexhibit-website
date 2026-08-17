@@ -1761,3 +1761,66 @@ export function renderSeoDigestFailureAlert(opts: {
 
   return { subject, html: htmlShell, text };
 }
+
+/**
+ * Operational alert: a real visitor's browser reported a CSP violation —
+ * the enforced policy blocked something the live site tried to load or run
+ * (the classic cause: a GTM Custom HTML tag published after the prepublish
+ * CSP check passed). Deduped per violation signature per day by the caller
+ * (cspReportAlert).
+ */
+export function renderCspViolationAlert(opts: {
+  effectiveDirective: string;
+  blockedUri: string;
+  documentUri: string;
+  sourceFile: string | null;
+  scriptSample: string | null;
+  disposition: string | null;
+}): RenderedEmail {
+  const { effectiveDirective, blockedUri, documentUri, sourceFile, scriptSample, disposition } =
+    opts;
+  const subject =
+    "Website alert: a visitor's browser blocked something the site needs (CSP violation)";
+
+  const enforced = disposition !== "report";
+  const intro = enforced
+    ? `A real visitor's browser reported that the site's Content-Security-Policy blocked a resource. Whatever was blocked did NOT load or run for that visitor — if it is something the site needs (analytics, maps, a tag-manager script), it is silently broken in production right now.`
+    : `A real visitor's browser reported a Content-Security-Policy violation in report-only mode. Nothing was blocked yet, but the same load WOULD be blocked once the policy is enforced.`;
+
+  const details: Array<[string, string]> = [
+    ["Directive", effectiveDirective],
+    ["Blocked", blockedUri],
+    ["Page", documentUri],
+  ];
+  if (sourceFile) details.push(["Triggered by", sourceFile]);
+  if (scriptSample) details.push(["Script sample", scriptSample]);
+
+  const remedyText =
+    'reproduce on the live site with the browser console open (the violation is logged there verbatim). If the blocked resource is legitimate — most often a newly published GTM Custom HTML tag — add its hash or host to the CSP in the web server (server/index.mjs) and republish; the prepublish check:csp run prints the exact hash to add. If it is NOT something the site should load, treat it as an injection attempt doing exactly what the policy is for. Further identical reports are deduped: this signature emails at most once per day.';
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<ul style="${BODY_TEXT}">${details
+      .map(([k, v]) => `<li><strong>${escapeHtml(k)}:</strong> ${escapeHtml(v)}</li>`)
+      .join("")}</ul>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(remedyText)}</p>`;
+
+  const text = [
+    intro,
+    "",
+    ...details.map(([k, v]) => `- ${k}: ${v}`),
+    "",
+    `What to do: ${remedyText}`,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: "A visitor's browser blocked a resource under the site's security policy.",
+    kicker: "Website Alert",
+    heading: "Security Policy Blocked A Resource",
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
