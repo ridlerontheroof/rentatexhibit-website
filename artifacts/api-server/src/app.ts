@@ -1,3 +1,10 @@
+// validateEnv MUST be the first import so its module-level side effect runs
+// before express, cors, pino-http, router, and logger are evaluated. ESM
+// static imports are hoisted and execute in declaration order, so placing this
+// first guarantees the aggregated check fires before any other module-level
+// code in the dependency graph.
+import "./lib/validateEnv";
+
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
