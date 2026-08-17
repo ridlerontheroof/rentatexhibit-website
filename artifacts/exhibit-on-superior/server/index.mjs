@@ -193,9 +193,21 @@ const CSP = [
   // https://*.analytics.google.com covers regional collect endpoints such as
   // region1.analytics.google.com that Google routes EU/consent-mode visitors
   // through — the bare apex entry alone does not match subdomains.
+  // https://google.com (bare apex): Google Ads enhanced-conversion pings POST
+  // to https://google.com/pagead/form-data/... on /schedule-showing — the
+  // bare apex is distinct from www.google.com and must be listed separately
+  // (real-visitor CSP report 2026-08-17).
   // www.googleadservices.com: Google Ads conversion beacons fired by GTM
   // (e.g. /pagead/set_partitioned_cookie) — real-visitor CSP report 2026-08.
-  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://www.googleadservices.com https://analytics.ahrefs.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com https://*.clarity.ms https://c.bing.com",
+  // Country-domain ga-audiences (e.g. www.google.ie, www.google.com.ph):
+  // Google's remarketing tag pings the visitor's country-specific Google
+  // domain. CSP source lists cannot wildcard across ccTLDs, and enumerating
+  // every country TLD is fragile. We intentionally accept the loss of
+  // remarketing signal from non-.com Google domains rather than maintaining
+  // a long, brittle list. These violations are still logged by the api-server
+  // CSP-report endpoint but are suppressed from daily alert emails (see
+  // artifacts/api-server/src/lib/cspReportAlert.ts → isKnownNoise).
+  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://google.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://www.googleadservices.com https://analytics.ahrefs.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com https://*.clarity.ms https://c.bing.com",
   // sightmap.com: the Engrain interactive property map on /available-units
   // (iframe) and its IFrame API SDK (script-src) — see src/lib/sightmap.ts.
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://my.matterport.com https://www.google.com https://maps.google.com https://www.googletagmanager.com https://sightmap.com",

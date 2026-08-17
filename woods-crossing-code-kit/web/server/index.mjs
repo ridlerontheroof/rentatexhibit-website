@@ -146,6 +146,16 @@ console.log(`Allowing ${inlineScriptHashes.length} inline-script hashes in scrip
 // collect endpoints (e.g. region1.analytics.google.com) that Google routes
 // EU/consent-mode visitors through — the bare apex entry alone does not
 // match subdomains.
+// https://google.com (bare apex): Google Ads enhanced-conversion pings POST
+// to https://google.com/pagead/form-data/... — the bare apex is distinct
+// from www.google.com and must be listed separately.
+// https://www.googleadservices.com: Google Ads conversion beacons from GTM.
+// Country-domain ga-audiences (e.g. www.google.ie, www.google.com.ph):
+// Google's remarketing tag pings the visitor's country-specific Google
+// domain. CSP cannot wildcard across ccTLDs; we accept the loss of
+// remarketing signal from non-.com domains rather than maintaining a long
+// list. These are suppressed from alert emails (isKnownNoise in
+// api-server/src/lib/cspReportAlert.ts) but still logged.
 // ---------------------------------------------------------------------------
 const CSP = [
   "default-src 'self'",
@@ -174,11 +184,13 @@ const CSP = [
     'https://*.google-analytics.com',
     'https://www.googletagmanager.com',
     'https://www.google.com',
+    'https://google.com',
     'https://analytics.google.com',
     'https://*.analytics.google.com',
     'https://stats.g.doubleclick.net',
     'https://ad.doubleclick.net',
     'https://googleads.g.doubleclick.net',
+    'https://www.googleadservices.com',
     'https://maps.googleapis.com',
     'https://mapsresources-pa.googleapis.com',
     ...EXTRA_CONNECT_SRC_HOSTS,

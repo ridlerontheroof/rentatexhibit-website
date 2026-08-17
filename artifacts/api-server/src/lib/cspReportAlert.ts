@@ -86,6 +86,45 @@ export function violationSignature(v: CspViolation): string {
   return `${v.effectiveDirective.toLowerCase()}|${blockedUriSignature(v.blockedUri)}`;
 }
 
+/**
+ * Returns true for violations that are known-acceptable noise: still logged
+ * at warn level for full observability, but not emailed to the operational
+ * inbox. Adding a violation here must always include a rationale comment.
+ *
+ * Country-domain ga-audiences (connect-src): Google's remarketing tag pings
+ * the visitor's country-specific Google domain (e.g. www.google.ie,
+ * www.google.com.ph). CSP source lists cannot wildcard across ccTLDs, and
+ * enumerating every country TLD is fragile. We accept the loss of
+ * cross-country remarketing signal and suppress these daily alerts. The fix
+ * is deliberate policy, not a code gap — see the connect-src comment in
+ * artifacts/exhibit-on-superior/server/index.mjs.
+ *
+ * eval in script-src: reports with blockedUri "eval" and no source file are
+ * browser-extension noise. Extensions inject eval'd code into the page JS
+ * environment; the site itself and every GTM tag intentionally avoid eval.
+ * No GTM Custom HTML tag known to be in the container uses eval.
+ */
+export function isKnownNoise(v: CspViolation): boolean {
+  const directive = v.effectiveDirective.toLowerCase();
+  const blocked = v.blockedUri.trim();
+
+  // eval in script-src — browser-extension noise, not a site or GTM issue.
+  if (blocked.toLowerCase() === "eval") return true;
+
+  // Country-domain ga-audiences: connect-src blocked on www.google.<ccTLD>
+  // or google.<ccTLD>. Exclude .com (allowed in CSP) and google-analytics.com
+  // (a separate allowlisted host).
+  if (directive === "connect-src") {
+    const isGoogleCountryDomain =
+      /^https:\/\/(www\.)?google\.[a-z]/.test(blocked) &&
+      !/^https:\/\/(www\.)?google\.com(\/|$)/.test(blocked) &&
+      !/^https:\/\/(www\.)?google-/.test(blocked);
+    if (isGoogleCountryDomain) return true;
+  }
+
+  return false;
+}
+
 /** Test-only: reset the per-process email counter and claim fallback. */
 export function resetCspReportAlertState(): void {
   emailDay = "";
@@ -118,6 +157,11 @@ export async function recordCspViolation(
   );
 
   if (!mailerConfigured()) return;
+
+  // Known-noise violations (country-domain ga-audiences, eval from browser
+  // extensions) are already logged above; skip the alert email so they
+  // don't fill the daily budget with un-actionable reports.
+  if (isKnownNoise(violation)) return;
 
   // Hard per-process daily cap first — cheaper than the DB claim, and it
   // bounds the damage of an attacker rotating signatures. The slot is
