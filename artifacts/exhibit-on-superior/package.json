@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
-    "build": "node scripts/fetch-availability-snapshot.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs && tsx scripts/generate-fact-sheet.ts && node scripts/write-build-id.mjs && node scripts/precompress.mjs",
+    "build": "node scripts/fetch-availability-snapshot.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs && tsx scripts/generate-fact-sheet.ts && node scripts/write-build-id.mjs && node scripts/retain-assets.mjs && node scripts/precompress.mjs",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "start": "node server/index.mjs",
     "typecheck": "tsc -b ../../lib/api-client-react && tsc -p tsconfig.json --noEmit",
@@ -21,7 +21,8 @@
     "check:gtm": "node scripts/check-gtm-tracking.mjs",
     "check:hydrated-seo": "node scripts/check-hydrated-seo.mjs",
     "check:starting-price": "node scripts/check-starting-price.mjs",
-    "check:postpublish": "pnpm run check:knowledge && pnpm run check:rented && pnpm run check:schema && pnpm run check:redirects && pnpm run check:floorplans && pnpm run check:gtm && pnpm run check:hydrated-seo && pnpm run check:starting-price",
+    "check:assets": "node scripts/check-live-assets.mjs",
+    "check:postpublish": "pnpm run check:knowledge && pnpm run check:rented && pnpm run check:schema && pnpm run check:redirects && pnpm run check:floorplans && pnpm run check:gtm && pnpm run check:hydrated-seo && pnpm run check:starting-price && pnpm run check:assets",
     "watch:postpublish": "node scripts/watch-postpublish.mjs",
     "submit:indexnow": "node scripts/submit-indexnow.mjs",
     "check:fold:built": "node scripts/check-units-above-fold.mjs --built",

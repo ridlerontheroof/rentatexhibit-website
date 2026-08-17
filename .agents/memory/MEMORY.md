@@ -75,5 +75,6 @@
 - [Unit map spreadsheet as fact source](unit-map-fact-source.md) — unitMap.json/planFacts/floorPlanCopy pipeline, sheet's floor-5 = 4M mezzanine, line-06 packet split alias, copy guarded by fact-discipline tests.
 - [Property-site onboarding skill & tooling](onboarding-skill-tooling.md) — acquisition workflow skill + crawler/parity/linter; Cloudflare-walled legacy sites → archive mode + offline linting.
 - [CSP violation reporting](csp-violation-reporting.md) — report-uri/report-to → api-server /csp-reports; route needs its own json parser + 204-on-parse-error; dedupe by directive|blocked-origin.
+- [Stale-bundle asset retention](asset-retention.md) — previous builds' hashed bundles carried into each dist via gitignored store; lazy loaders reload once on stale chunks; check:assets guards live pages.
 - [Canvas comps need in-repo evidence](canvas-comps-review-evidence.md) — completion review can't see canvas shapes; commit a Board component + rationale doc or the task gets rejected.
 - [Prod DB writes impossible from workspace](prod-db-write-paths.md) — all workspace paths are read-only; hand owner exact SQL for the production pane, verify with read-only SELECT.

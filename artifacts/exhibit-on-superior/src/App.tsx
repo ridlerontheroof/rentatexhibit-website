@@ -12,12 +12,15 @@ import {
   FLOOR_PLAN_DETAIL_ROUTE,
 } from './routes';
 import { LEGACY_REDIRECTS as SHARED_LEGACY_REDIRECTS } from './data/legacyRedirects';
+import { withStaleChunkRecovery } from './lib/staleChunkRecovery';
 
 // Route-based code splitting: each page ships in its own chunk. The page list is
 // shared with the build-time prerenderer via `routes.tsx`; here each loader is
 // wrapped in `React.lazy` (created once at module scope, stable across renders).
 const lazyRoutes = routes.map((r) => {
-  const Lazy = lazy(() => r.load().then((C: ComponentType) => ({ default: C })));
+  const Lazy = lazy(
+    withStaleChunkRecovery(() => r.load().then((C: ComponentType) => ({ default: C }))),
+  );
   // Prefer the component preloaded by main.tsx (initial route only): it renders
   // synchronously in the first commit, so the prerendered HTML is never
   // replaced by the Suspense fallback (which would collapse the page and shift
@@ -32,9 +35,15 @@ const lazyRoutes = routes.map((r) => {
   return { path: r.path, Component: RouteComponent };
 });
 
-const NotFound = lazy(() => import('./pages/not-found').then((m) => ({ default: m.NotFound })));
+// All lazy loaders are wrapped in withStaleChunkRecovery: a route chunk that
+// vanished across a publish triggers a one-time reload instead of a broken page.
+const NotFound = lazy(
+  withStaleChunkRecovery(() => import('./pages/not-found').then((m) => ({ default: m.NotFound }))),
+);
 const UnitDetailLazy = lazy(
-  () => import('./pages/UnitDetail').then((m) => ({ default: m.UnitDetail })),
+  withStaleChunkRecovery(() =>
+    import('./pages/UnitDetail').then((m) => ({ default: m.UnitDetail })),
+  ),
 );
 /** Prefer the boot-preloaded component (see routes.tsx) — same CLS guard as the
     static routes: the prerendered unit page must never swap to the Suspense
@@ -45,7 +54,9 @@ function UnitDetailRoute(_props: RouteComponentProps) {
 }
 
 const FloorPlanDetailLazy = lazy(
-  () => import('./pages/FloorPlanDetail').then((m) => ({ default: m.FloorPlanDetail })),
+  withStaleChunkRecovery(() =>
+    import('./pages/FloorPlanDetail').then((m) => ({ default: m.FloorPlanDetail })),
+  ),
 );
 /** Same boot-preload CLS guard as unit pages, for /floor-plans/<slug>. */
 function FloorPlanDetailRoute(_props: RouteComponentProps) {
@@ -54,7 +65,9 @@ function FloorPlanDetailRoute(_props: RouteComponentProps) {
 }
 
 const KnowledgeArticleLazy = lazy(
-  () => import('./pages/KnowledgeArticle').then((m) => ({ default: m.KnowledgeArticle })),
+  withStaleChunkRecovery(() =>
+    import('./pages/KnowledgeArticle').then((m) => ({ default: m.KnowledgeArticle })),
+  ),
 );
 /** Same boot-preload CLS guard as unit pages, for /knowledge/<slug>. */
 function KnowledgeArticleRoute(_props: RouteComponentProps) {
@@ -63,7 +76,9 @@ function KnowledgeArticleRoute(_props: RouteComponentProps) {
 }
 
 const BlogArticleLazy = lazy(
-  () => import('./pages/BlogArticle').then((m) => ({ default: m.BlogArticle })),
+  withStaleChunkRecovery(() =>
+    import('./pages/BlogArticle').then((m) => ({ default: m.BlogArticle })),
+  ),
 );
 /** Same boot-preload CLS guard as unit pages, for /blog/<slug>. */
 function BlogArticleRoute(_props: RouteComponentProps) {

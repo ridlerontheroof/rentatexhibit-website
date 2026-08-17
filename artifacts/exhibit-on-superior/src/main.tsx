@@ -5,7 +5,13 @@ import App from './App';
 import { preloadRoute } from './routes';
 import { captureVisitSource } from './lib/visitSource';
 import { stripPrerenderedSeo } from './lib/stripPrerenderedSeo';
+import { installStaleChunkRecovery } from './lib/staleChunkRecovery';
 import './index.css';
+
+// Heal deploy skew: when a dynamic import fails because a publish replaced
+// the hashed bundles this tab knows about, reload once (guarded) to pick up
+// the current HTML + bundles instead of leaving a silently broken page.
+installStaleChunkRecovery();
 
 // Remember campaign attribution (UTM tags) from the landing URL for the whole
 // visit — lead forms and Apply links send it to AppFolio so the leasing team
