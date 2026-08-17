@@ -76,3 +76,4 @@
 - [Property-site onboarding skill & tooling](onboarding-skill-tooling.md) — acquisition workflow skill + crawler/parity/linter; Cloudflare-walled legacy sites → archive mode + offline linting.
 - [CSP violation reporting](csp-violation-reporting.md) — report-uri/report-to → api-server /csp-reports; route needs its own json parser + 204-on-parse-error; dedupe by directive|blocked-origin.
 - [Canvas comps need in-repo evidence](canvas-comps-review-evidence.md) — completion review can't see canvas shapes; commit a Board component + rationale doc or the task gets rejected.
+- [Prod DB writes impossible from workspace](prod-db-write-paths.md) — all workspace paths are read-only; hand owner exact SQL for the production pane, verify with read-only SELECT.

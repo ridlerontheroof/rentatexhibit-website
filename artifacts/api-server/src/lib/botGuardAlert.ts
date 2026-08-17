@@ -120,6 +120,12 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * every publish), so they must outlive any reasonable audit window — the
  * 2026-08-04 week-of-traffic re-check would have been impossible with a
  * tight sweep and the previous 2-day expiry. Do not shorten below ~30 days.
+ *
+ * Known test data in the day-by-day history: `botguard:accepted:2026-08-17`
+ * counted 2 — BOTH were deliberate end-to-end test submissions (production
+ * leads 41/42, "Leasing Disregard" test contacts), not real prospects. That
+ * day had ZERO real leads; exclude it when tuning the spike/silence
+ * thresholds against historical daily counts.
  */
 export const DAILY_COUNTER_RETENTION_DAYS = 45;
 
