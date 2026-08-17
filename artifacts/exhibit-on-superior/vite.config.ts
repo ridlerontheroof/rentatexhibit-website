@@ -60,7 +60,70 @@ function removeMaximumScale(): Plugin {
   };
 }
 
+/**
+ * Build-time environment validation for the web artifact.
+ *
+ * These VITE_* vars are baked into the client bundle by Vite's define step.
+ * A missing var at build time means `undefined` ships to every browser —
+ * analytics stop recording, API calls fail silently, and UTM attribution
+ * breaks. Catching the misconfiguration here stops a bad deploy before any
+ * user traffic arrives.
+ *
+ * Source of truth: config/env-vars.md — Required=Yes rows for the web artifact.
+ *   - PORT is excluded — Replit injects it automatically.
+ *   - Optional vars (VITE_SIGHTMAP_ID, VITE_GA_MEASUREMENT_ID, …) are excluded.
+ *
+ * Behaviour:
+ *   - Deployment build (REPLIT_DEPLOYMENT=1): throws with ALL missing var
+ *     names listed in a single error. Never silently builds with broken config.
+ *   - Workspace / local builds: logs a console.warn and continues so
+ *     check:prepublish and local dev can run without every var wired up.
+ *     These vars MUST be set on the deployed artifact before going live.
+ */
+function validateWebEnv(
+  env: Record<string, string | undefined> = process.env,
+): void {
+  const REQUIRED_VARS = [
+    'VITE_GA4_MEASUREMENT_ID',
+    'VITE_UTM_STORAGE_KEY',
+    'VITE_API_URL',
+  ] as const;
+
+  const missing = REQUIRED_VARS.filter(
+    (key) => !env[key] || env[key]!.trim() === '',
+  );
+
+  if (missing.length === 0) return;
+
+  // REPLIT_DEPLOYMENT=1 is injected by the platform only in real deployment
+  // builds (same signal used by scripts/generate-fact-sheet.ts). Workspace
+  // builds (including check:prepublish) do not have it set, so they warn
+  // instead of failing — preserving the pre-deploy check workflow.
+  const isDeployedBuild = env.REPLIT_DEPLOYMENT === '1';
+
+  if (isDeployedBuild) {
+    throw new Error(
+      'Web artifact cannot build: missing required environment variable(s):\n' +
+        missing.map((k) => `  • ${k}`).join('\n') +
+        '\n\nSee config/env-vars.md for the full setup checklist.',
+    );
+  }
+
+  // Non-deployment: warn loudly but allow the build/serve to continue so
+  // local dev and workspace prepublish checks still work.
+  // All vars MUST be set on the deployed artifact before going live.
+  console.warn(
+    `[validateWebEnv] WARNING — missing required env var(s): ${missing.join(', ')}. ` +
+      'All must be set in the deployed artifact. See config/env-vars.md.',
+  );
+}
+
 export default defineConfig(async ({ command, isSsrBuild }) => {
+  // Validate required VITE_* vars before any other config is resolved.
+  // Runs on both `vite build` and `vite dev` so misconfiguration is
+  // caught as early as possible regardless of the invocation path.
+  validateWebEnv();
+
   // PORT is required only when serving (dev/preview); builds don't bind a port.
   // BASE_PATH defaults to '/' for production builds — the deploy pipeline can
   // override it if the site ever moves off the root URL.
