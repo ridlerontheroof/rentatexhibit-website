@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Logger } from "pino";
 import {
   announceWatchdogStarted,
+  EXPECTED_WATCHDOGS,
+  getStartedWatchdogs,
   logStartupSummary,
   scheduleStartupSummary,
   STARTUP_SUMMARY_DELAY_MS,
@@ -54,5 +56,38 @@ describe("startup watchdog summary", () => {
     vi.advanceTimersByTime(1);
     expect(info).toHaveBeenCalledTimes(1);
     expect(info.mock.calls[0]?.[1]).toContain("seo-weekly-digest");
+  });
+});
+
+describe("EXPECTED_WATCHDOGS", () => {
+  it("contains no duplicates", () => {
+    const unique = new Set(EXPECTED_WATCHDOGS);
+    expect(unique.size).toBe(EXPECTED_WATCHDOGS.length);
+  });
+
+  it("has at least as many entries as watchdog files that call announceWatchdogStarted", () => {
+    // There are 13 watchdog files as of the last audit; bump this when a new
+    // watchdog is added so the reviewer notices EXPECTED_WATCHDOGS was not
+    // updated.
+    expect(EXPECTED_WATCHDOGS.length).toBeGreaterThanOrEqual(13);
+  });
+});
+
+describe("getStartedWatchdogs", () => {
+  it("returns an empty array before any watchdog registers", () => {
+    expect(getStartedWatchdogs()).toEqual([]);
+  });
+
+  it("returns a snapshot — mutations to the returned array do not affect the registry", () => {
+    announceWatchdogStarted("apex-redirect");
+    const snap = getStartedWatchdogs();
+    snap.push("injected");
+    expect(getStartedWatchdogs()).toEqual(["apex-redirect"]);
+  });
+
+  it("reflects every registered watchdog in registration order", () => {
+    announceWatchdogStarted("apex-redirect");
+    announceWatchdogStarted("knowledge-pages");
+    expect(getStartedWatchdogs()).toEqual(["apex-redirect", "knowledge-pages"]);
   });
 });

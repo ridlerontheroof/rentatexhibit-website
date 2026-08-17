@@ -16,6 +16,29 @@ import { logger as defaultLogger } from "./logger";
 /** Emit the summary after the ~25s stdout blackout, with margin. */
 export const STARTUP_SUMMARY_DELAY_MS = 30 * 1000;
 
+/**
+ * Canonical list of every watchdog that MUST be running in production.
+ * Keep this in sync with the start*() calls in index.ts — the order matches
+ * registration order there so diffs are obvious. The /watchdog-roster API
+ * endpoint and check-watchdog-roster.mjs compare the live started set against
+ * this list; any missing name causes a non-zero exit in check:postpublish.
+ */
+export const EXPECTED_WATCHDOGS = [
+  "apex-redirect",
+  "knowledge-pages",
+  "floor-plan-pages",
+  "showing-scheduler",
+  "tour-unit",
+  "apply-link",
+  "rented-noindex",
+  "legacy-redirects",
+  "ga4-tracking",
+  "ga4-visitor-data",
+  "accepted-lead-silence",
+  "starting-price",
+  "seo-weekly-digest",
+] as const;
+
 const startedWatchdogs: string[] = [];
 let summaryTimer: NodeJS.Timeout | null = null;
 
@@ -25,6 +48,16 @@ let summaryTimer: NodeJS.Timeout | null = null;
  */
 export function announceWatchdogStarted(name: string): void {
   if (!startedWatchdogs.includes(name)) startedWatchdogs.push(name);
+}
+
+/**
+ * Return a snapshot of the watchdogs that have registered so far.
+ * Used by the /watchdog-roster API route so check-watchdog-roster.mjs can
+ * verify the live server's started set against EXPECTED_WATCHDOGS without
+ * scraping deployment logs.
+ */
+export function getStartedWatchdogs(): string[] {
+  return [...startedWatchdogs];
 }
 
 /** Log the summary immediately (exported for tests and reuse). */
