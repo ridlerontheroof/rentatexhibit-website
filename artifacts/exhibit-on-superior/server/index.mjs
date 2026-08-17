@@ -190,7 +190,12 @@ const CSP = [
   // sends measurement hits to www.google.com (/g/collect, /ccm/collect),
   // analytics.google.com, and the doubleclick collect hosts. Ahrefs Analytics
   // (GTM tag) beacons to analytics.ahrefs.com.
-  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://analytics.ahrefs.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com https://*.clarity.ms https://c.bing.com",
+  // https://*.analytics.google.com covers regional collect endpoints such as
+  // region1.analytics.google.com that Google routes EU/consent-mode visitors
+  // through — the bare apex entry alone does not match subdomains.
+  // www.googleadservices.com: Google Ads conversion beacons fired by GTM
+  // (e.g. /pagead/set_partitioned_cookie) — real-visitor CSP report 2026-08.
+  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://www.googleadservices.com https://analytics.ahrefs.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com https://my.matterport.com https://*.clarity.ms https://c.bing.com",
   // sightmap.com: the Engrain interactive property map on /available-units
   // (iframe) and its IFrame API SDK (script-src) — see src/lib/sightmap.ts.
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://my.matterport.com https://www.google.com https://maps.google.com https://www.googletagmanager.com https://sightmap.com",
