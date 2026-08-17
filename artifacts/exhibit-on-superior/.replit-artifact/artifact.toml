@@ -1448,6 +1448,14 @@ from = "/blog/chicago-apartment-application-documents/"
 to = "/blog/chicago-apartment-application-documents/index.html"
 
 [[services.production.rewrites]]
+from = "/blog/first-apartment-chicago-guide"
+to = "/blog/first-apartment-chicago-guide/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/first-apartment-chicago-guide/"
+to = "/blog/first-apartment-chicago-guide/index.html"
+
+[[services.production.rewrites]]
 from = "/blog/how-to-rent-an-apartment-in-chicago"
 to = "/blog/how-to-rent-an-apartment-in-chicago/index.html"
 

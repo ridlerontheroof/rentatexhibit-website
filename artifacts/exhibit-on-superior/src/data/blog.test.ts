@@ -16,6 +16,7 @@ import {
 import { ALL_BLOG_ARTICLES } from './blogArticles';
 import { BLOG_AUTHORS } from './blogAuthors';
 import { CLUSTER_PLAN, PLANNED_SLUGS } from './blogClusterPlan';
+import { IMAGE_MANIFEST } from './imageManifest';
 import { PAGE_SEO } from './seo';
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -301,6 +302,58 @@ describe('blog cluster plan', () => {
     for (const pillar of CLUSTER_PLAN) {
       for (const c of pillar.clusters) {
         expect(c.internalLinks.length, `${c.slug} brief has no internal-link targets`).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+});
+
+describe('blog article photos', () => {
+  // Applies to ALL articles (drafts included) so a draft can't publish with
+  // broken image metadata.
+  it('published articles carry 1-2 photos (drafts 0-2) with nonempty alt and caption', () => {
+    for (const a of ALL_BLOG_ARTICLES) {
+      const images = a.images ?? [];
+      // The AI drafter appends drafts without photos; a human picks them at
+      // (or before) publish time, so only the published set requires >=1.
+      if (!a.draft) {
+        expect(images.length, `${a.slug} should have 1-2 photos`).toBeGreaterThanOrEqual(1);
+      }
+      expect(images.length, `${a.slug} has too many photos`).toBeLessThanOrEqual(2);
+      for (const img of images) {
+        expect(img.alt.trim(), `${a.slug} photo alt empty`).not.toHaveLength(0);
+        expect(img.caption.trim(), `${a.slug} photo caption empty`).not.toHaveLength(0);
+        expect(img.alt, `${a.slug} alt must differ from caption`).not.toBe(img.caption);
+      }
+    }
+  });
+
+  it('photo sources are unique within an article and resolve in the image manifest', () => {
+    for (const a of ALL_BLOG_ARTICLES) {
+      const srcs = (a.images ?? []).map((i) => i.src);
+      expect(new Set(srcs).size, `${a.slug} repeats a photo`).toBe(srcs.length);
+      for (const src of srcs) {
+        expect(
+          IMAGE_MANIFEST[src],
+          `${a.slug} photo ${src} is not an IMAGE_MANIFEST key — SmartImg would fall back to an unoptimized <img>`,
+        ).toBeDefined();
+      }
+    }
+  });
+
+  it('JSON-LD image lists the OG card first, then each article photo as an absolute URL', () => {
+    for (const a of BLOG_ARTICLES) {
+      const graph = blogJsonLd(a)['@graph'] as Record<string, unknown>[];
+      const article = graph.find((n) => Array.isArray(n['@type']) && (n['@type'] as string[]).includes('Article'))!;
+      const image = article.image as string | string[];
+      const photos = a.images ?? [];
+      if (!photos.length) {
+        expect(typeof image).toBe('string');
+        continue;
+      }
+      expect(Array.isArray(image)).toBe(true);
+      expect((image as string[]).length).toBe(1 + photos.length);
+      for (const url of image as string[]) {
+        expect(url).toMatch(/^https:\/\//);
       }
     }
   });

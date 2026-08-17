@@ -94,6 +94,13 @@ export const CREDIT_SCORE_COSIGNER_MIN = 600;
 /**
  * Renters insurance minimum liability-to-landlord (LLI) coverage required
  * before move-in, as displayed ("$300,000").
+ *
+ * Leases require LLI coverage (protects the unit/building from renter-caused
+ * accident damage — distinct from renters insurance, which covers the
+ * resident's personal property and temporary relocation/displacement).
+ * Residents can enroll in an LLI option through the resident portal, or
+ * bring their own policy documenting this coverage. (Owner-confirmed
+ * 2026-08-17.)
  */
 export const RENTERS_INSURANCE_LLI_DISPLAY = '$300,000';
 

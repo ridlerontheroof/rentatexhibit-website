@@ -34,6 +34,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'rebbekah-hallberg',
     summary:
       'River North gives renters gallery-lined streets, restaurants and nightlife at the door, and a commute measured in blocks: 165 W Superior St earns a 99/100 Walk Score and a perfect 100/100 Transit Score, with the Loop one L stop away. This guide covers getting around, costs, apartment styles, and high-rise life.',
+    images: [
+      {
+        src: '/images/image-081-20170926-1450-wmbiod.jpg',
+        alt: 'Downtown Chicago skyline with high-rise towers under an evening sky',
+        caption: 'The downtown Chicago skyline rises just south of River North.',
+      },
+      {
+        src: '/images/image-057-dji-20230620092900-0153-d-oaedvz.jpg',
+        alt: 'Aerial view of Exhibit On Superior\u2019s glass facade, outdoor pool, and landscaped deck along the street',
+        caption: 'Exhibit On Superior from above\u2014the outdoor pool and landscaped deck sit right on the block.',
+      },
+    ],
     sections: [
       {
         heading: 'Where River North sits',
@@ -68,7 +80,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
         heading: 'High-rise life: floors, views, and quiet',
         paragraphs: [
           'Floor choice changes the experience more than most renters expect. Lower floors put you closest to the street energy; higher floors trade a longer elevator ride for bigger skyline views and less street sound. Exhibit\u2019s tower runs from floor 2 to floor 34, so there is a wide band to choose from \u2014 our team walks renters through the trade-offs on every tour.',
-          'Building amenities carry more weight in a high-rise neighborhood because they extend your square footage: Exhibit residents have a 75-foot indoor lap pool, an outdoor hot tub, and a sauna, among other spaces.',
+          'Building amenities carry more weight in a high-rise neighborhood because they extend your square footage: Exhibit residents have a 75-foot outdoor lap pool, an outdoor hot tub, and a sauna, among other spaces.',
         ],
       },
       {
@@ -140,6 +152,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'rebbekah-hallberg',
     summary:
       'For renters who want to live car-free in central Chicago, yes: River North pairs a 99/100 Walk Score and a perfect 100/100 Transit Score with the Loop one L stop away. The honest trade-offs are downtown pricing and city energy \u2014 this piece weighs both sides from a property manager\u2019s view.',
+    images: [
+      {
+        src: '/images/image-082-bt7b3562-adimkf.jpg',
+        alt: 'River North street corner at dusk with high-rise apartments above street-level restaurants',
+        caption: 'A River North corner at dusk: high-rise living stacked above street-level restaurants and pubs.',
+      },
+      {
+        src: '/images/image-014-exhibit-living-room-n5xrna.jpg',
+        alt: 'Furnished Exhibit On Superior living room with floor-to-ceiling windows overlooking River North',
+        caption: 'Inside an Exhibit On Superior living room, with the neighborhood right outside the floor-to-ceiling windows.',
+      },
+    ],
     sections: [
       {
         heading: 'Who River North suits best',
@@ -220,6 +244,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'leasing-team',
     summary:
       'Moving to River North takes four steps: tour and apply (at Exhibit On Superior, a $60 application fee per applicant, a 700 minimum credit score or 600 with a co-signer, and a decision in 1\u20133 business days), budget move-in costs, set up ComEd electricity and renters insurance, then coordinate move-in with the office.',
+    images: [
+      {
+        src: '/images/image-087-012417-5548-ocwsdh.jpg',
+        alt: 'Furnished lounge area with a leather sofa and wooden shelving inside an Exhibit On Superior residence',
+        caption: 'The goal of every checklist item: a settled, unpacked space like this Exhibit On Superior lounge.',
+      },
+      {
+        src: '/images/image-030-012417-5663-hxwee6.jpg',
+        alt: 'Apartment kitchen and dining area with stainless appliances and a four-seat table at Exhibit On Superior',
+        caption: 'An Exhibit On Superior kitchen and dining area, ready for the first grocery run.',
+      },
+    ],
     sections: [
       {
         heading: 'Four to six weeks out: tour and shortlist',
@@ -311,6 +347,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'rebbekah-hallberg',
     summary:
       'Both River North and Streeterville are walkable downtown Chicago neighborhoods within easy reach of the Loop, but they feel different. River North earns a 99/100 Walk Score and a perfect 100/100 Transit Score; its streets are lined with galleries and restaurants. Streeterville is quieter and faces the lake. This piece weighs both for renters deciding between them.',
+    images: [
+      {
+        src: '/images/image-082-bt7b3562-adimkf.jpg',
+        alt: 'River North street corner at dusk with high-rise apartments above street-level restaurants',
+        caption: 'River North\u2019s street life\u2014restaurants and bars at the base of residential towers.',
+      },
+      {
+        src: '/images/image-055-dji-20230620092832-0149-d-yrh5eg.jpg',
+        alt: 'Aerial view of Exhibit On Superior\u2019s outdoor pool, sundeck, and the tree-lined street below',
+        caption: 'Exhibit On Superior\u2019s pool and sundeck from above, in the middle of River North\u2019s low-slung blocks.',
+      },
+    ],
     sections: [
       {
         heading: 'Where the two neighborhoods sit',
@@ -402,6 +450,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'leasing-team',
     summary:
       'From 165 W Superior St, our leasing team\u2019s practical Loop plan is the Brown or Purple Line from Chicago & Franklin, with an approximate 10-minute L ride, or a walk down Wells St of about 20 minutes. This guide also outlines nearby rail, bus, bike, car, and airport options.',
+    images: [
+      {
+        src: '/images/image-081-20170926-1450-wmbiod.jpg',
+        alt: 'Downtown Chicago skyline with high-rise towers under an evening sky',
+        caption: 'The Loop\u2019s towers sit just south of River North, keeping most commutes short.',
+      },
+      {
+        src: '/images/image-055-dji-20230620092832-0149-d-yrh5eg.jpg',
+        alt: 'Aerial view of Exhibit On Superior\u2019s outdoor pool, sundeck, and the tree-lined street below',
+        caption: 'Superior Street from above\u2014quiet enough to live on, close enough to walk downtown.',
+      },
+    ],
     sections: [
       {
         heading: 'A practical commute from River North to the Loop',
@@ -501,6 +561,13 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'rebbekah-hallberg',
     summary:
       'River North dog-friendly apartment searching should pair neighborhood routines with clear building policies. At Exhibit On Superior, we welcome cats and dogs, offer a dog spa and outdoor walk, and charge a one-time dog fee with no monthly pet rent. Our leasing team can help you confirm the details before touring.',
+    images: [
+      {
+        src: '/images/image-080-gettyimages-1386939001-lrrzhc.jpg',
+        alt: 'Renter walking a golden retriever on a leash along a city sidewalk',
+        caption: 'Daily leash walks are easy on River North\u2019s flat, walkable blocks.',
+      },
+    ],
     sections: [
       {
         heading: 'Start with the building\u2019s pet policy',
@@ -616,6 +683,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'leasing-team',
     summary:
       'To rent an apartment in Chicago, narrow your preferred home, review the complete charges, tour, submit the building\u2019s online application, and plan utilities and insurance after approval. At Exhibit On Superior, our leasing team can explain the screening path, fees, available residences, and move-in questions for a River North lease.',
+    images: [
+      {
+        src: '/images/image-014-exhibit-living-room-n5xrna.jpg',
+        alt: 'Furnished Exhibit On Superior living room with floor-to-ceiling windows overlooking River North',
+        caption: 'What the process ends with: a furnished Exhibit On Superior living room in River North.',
+      },
+      {
+        src: '/images/image-030-012417-5663-hxwee6.jpg',
+        alt: 'Apartment kitchen and dining area with stainless appliances and a four-seat table at Exhibit On Superior',
+        caption: 'An Exhibit On Superior kitchen and dining area\u2014touring in person helps you judge spaces like this.',
+      },
+    ],
     sections: [
       {
         heading: 'Start by defining the home and location you need',
@@ -688,6 +767,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       'moving-to-river-north-chicago-checklist',
       'river-north-commute-guide',
       'chicago-apartment-application-documents',
+      'first-apartment-chicago-guide',
     ],
     links: [
       { label: 'Browse available apartments', href: '/available-units' },
@@ -726,6 +806,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'leasing-team',
     summary:
       'Documents needed to rent an apartment in Chicago vary by building. Our leasing team recommends confirming identification, income or credit-review materials, and renters-insurance requirements before applying. At Exhibit On Superior, applicants need a minimum credit score of 700, or 600 with a qualified co-signer, plus required renters insurance.',
+    images: [
+      {
+        src: '/images/image-087-012417-5548-ocwsdh.jpg',
+        alt: 'Furnished lounge area with a leather sofa and wooden shelving inside an Exhibit On Superior residence',
+        caption: 'Paperwork first, then this: a furnished lounge inside an Exhibit On Superior residence.',
+      },
+      {
+        src: '/images/image-004-012417-5732-pu4fo5.jpg',
+        alt: 'Reading nook with a lounge chair beside a colorful tile wall and a window facing city rooftops',
+        caption: 'A reading nook at Exhibit On Superior\u2014approval moves fastest when your documents are ready up front.',
+      },
+    ],
     sections: [
       {
         heading: 'Start with the building\u2019s application checklist',
@@ -838,6 +930,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'leasing-team',
     summary:
       'At Exhibit On Superior, upfront leasing costs include a $60 application fee per applicant and a $500 non-refundable administration fee per apartment, unless an application is denied. There is currently no security deposit. Monthly costs can include the Utility & Service Amenity fee, electricity, and selected optional services.',
+    images: [
+      {
+        src: '/images/image-004-012417-5732-pu4fo5.jpg',
+        alt: 'Reading nook with a lounge chair beside a colorful tile wall and a window facing city rooftops',
+        caption: 'Budgeting up front means fewer surprises once you\u2019re settled into spaces like this Exhibit On Superior nook.',
+      },
+      {
+        src: '/images/image-003-gettyimages-1216663469-cc9uxz.jpg',
+        alt: 'Bedroom with white bedding, a wooden side stool, and houseplants',
+        caption: 'Furniture and setup costs are part of the real move-in math, not just the fees on the ledger.',
+      },
+    ],
     sections: [
       {
         heading: 'Start by separating upfront and monthly costs',
@@ -946,6 +1050,18 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     authorId: 'leasing-team',
     summary:
       'Renting a first Chicago apartment is easier when you separate the tour, application, lease, move-in costs, and utility setup into clear steps. Our leasing team recommends asking direct questions early, reviewing every charge before applying, and confirming insurance and electricity responsibilities before your move.',
+    images: [
+      {
+        src: '/images/image-030-012417-5663-hxwee6.jpg',
+        alt: 'Apartment kitchen and dining area with stainless appliances and a four-seat table at Exhibit On Superior',
+        caption: 'A first apartment worth the paperwork: an Exhibit On Superior kitchen and dining area.',
+      },
+      {
+        src: '/images/image-003-gettyimages-1216663469-cc9uxz.jpg',
+        alt: 'Bedroom with white bedding, a wooden side stool, and houseplants',
+        caption: 'Start simple\u2014a bed, a lamp, and a plant go a long way in a first apartment.',
+      },
+    ],
     sections: [
       {
         heading: 'Start with a tour and a practical question list',
@@ -1043,6 +1159,124 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     ogCard: 'application-guide',
     published: '2026-08-13',
     updated: '2026-08-13',
+  },
+
+  // ---------------------------------------------------------------------
+  // CLUSTER — renters insurance requirements chicago apartment
+  // AI DRAFT — awaiting human review. To publish, ALL THREE edits are
+  // required (guard tests fail if any is missed):
+  //   1. remove `draft: true` below
+  //   2. add 'chicago-renters-insurance-basics' to the related: list of the
+  //      'how-to-rent-an-apartment-in-chicago' article above (inbound-link guard)
+  //   3. add the /blog/chicago-renters-insurance-basics rewrite pair in artifact.toml
+  // ---------------------------------------------------------------------
+  {
+    slug: 'chicago-renters-insurance-basics',
+    title: 'Renters Insurance in Chicago: What Buildings Require and Why',
+    metaTitle: 'Chicago Renters Insurance Requirements',
+    targetQuery: 'renters insurance requirements chicago apartment',
+    role: 'cluster',
+    pillar: 'how-to-rent-an-apartment-in-chicago',
+    authorId: 'leasing-team',
+    summary:
+      'At Exhibit On Superior, renters insurance is required with $300,000 liability-to-landlord coverage. Before signing, our leasing team recommends confirming that your policy documentation shows this requirement and asking your insurer how it is listed. Review electricity setup separately, since residents are billed directly by ComEd.',
+    images: [
+      {
+        src: '/images/image-003-gettyimages-1216663469-cc9uxz.jpg',
+        alt: 'Bedroom with white bedding, a wooden side stool, and houseplants',
+        caption: 'Renters insurance covers what\u2019s yours\u2014the bedding, electronics, and furniture inside the walls.',
+      },
+      {
+        src: '/images/image-087-012417-5548-ocwsdh.jpg',
+        alt: 'Furnished lounge area with a leather sofa and wooden shelving inside an Exhibit On Superior residence',
+        caption: 'A policy protects everything you bring into a residence, like the furnishings in this Exhibit On Superior lounge.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Exhibit\u2019s renters insurance requirement',
+        paragraphs: [
+          'At Exhibit On Superior, renters insurance is required as part of the leasing requirements. The specific standard is $300,000 liability-to-landlord coverage. We recommend treating that amount and coverage description as a checklist item early in your apartment search, rather than waiting until the rest of your move details are in place.',
+          'This is a property-specific requirement. Renters comparing Chicago apartments should not assume every building requests the same amount or uses the same coverage language; requirements vary by building. Our leasing team can confirm Exhibit\u2019s current requirement and answer property-specific questions before you finalize your leasing steps.',
+        ],
+      },
+      {
+        heading: 'Liability-to-landlord vs. renters insurance: two different protections',
+        paragraphs: [
+          'Liability-to-landlord insurance (LLI) and renters insurance protect different things, and it helps to keep them separate on your checklist. LLI protects the apartment and the building itself: if a renter-caused accident \u2014 such as a kitchen fire or an overflowing tub \u2014 damages the unit or the property, LLI is the coverage that responds to the landlord\u2019s loss.',
+          'Renters insurance, in the everyday sense, protects you: your personal property (furniture, electronics, clothing), temporary relocation or displacement costs if the apartment becomes unlivable while repairs are made, and your personal liability beyond the building itself. A full renters policy typically includes liability coverage that can satisfy an LLI requirement, but the two are not the same thing \u2014 which is why we recommend verifying the documentation rather than the policy name.',
+          'Leases at Exhibit On Superior require LLI coverage \u2014 the specific standard is $300,000 liability-to-landlord coverage. Residents who prefer not to shop for a policy can enroll in an LLI option directly through the resident portal, and residents who bring their own renters policy can ask their insurer to document the liability-to-landlord coverage it includes.',
+        ],
+        list: [
+          'LLI: covers the unit and building when a renter-caused accident damages the property.',
+          'Renters insurance: covers your personal property, temporary relocation or displacement costs, and your broader personal liability.',
+          'Exhibit leases require $300,000 liability-to-landlord coverage; an LLI option is available through the resident portal.',
+          'A personal renters policy is still worth considering even when LLI is handled through the portal \u2014 LLI alone does not cover your belongings.',
+        ],
+      },
+      {
+        heading: 'Keep insurance separate from lease fees and utilities',
+        paragraphs: [
+          'Renters insurance is a separate leasing requirement, so it should not be confused with Exhibit\u2019s listed application, administration, parking, storage, pet, or utility charges. Our committed fee table does not list a renters insurance premium. For a current view of the charges associated with leasing at Exhibit, review our fees page or contact our leasing team.',
+          'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. It ranges from $95 for studios to $195 for three-bedrooms. Electricity is billed directly to the resident by ComEd. For electric-service steps, residents can use [ComEd\u2019s start, stop, or move service guidance](https://www.comed.com/my-account/customer-support/start-stop-move).',
+        ],
+      },
+      {
+        heading: 'Questions to ask before you submit proof',
+        paragraphs: [
+          'Our leasing team recommends asking your insurer whether the policy documentation can show the $300,000 liability-to-landlord coverage requested by Exhibit. If the insurer uses different terms, bring that wording to us before assuming it meets the requirement.',
+          'It is also useful to ask our team what documentation to provide and when it is needed in your leasing process. That keeps the insurance conversation focused on the actual Exhibit requirement instead of general advice that may apply differently at another building.',
+        ],
+      },
+      {
+        heading: 'Get confirmation from the on-site leasing team',
+        paragraphs: [
+          'Exhibit On Superior is located at 165 W Superior St in River North. Our on-site leasing team is available Monday\u2013Friday from 9:00 AM\u20136:00 PM and Saturday from 10:00 AM\u20135:00 PM; the office is closed Sunday.',
+          'Use our contact page to request confirmation of the current renters insurance requirement, discuss documentation questions, or review other leasing details. We recommend obtaining that confirmation directly from the office if your insurer\u2019s wording does not clearly match the $300,000 liability-to-landlord coverage requirement.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Is renters insurance required at Exhibit On Superior?',
+        answer:
+          'Yes. Exhibit On Superior requires renters insurance with $300,000 liability-to-landlord coverage.',
+      },
+      {
+        question: 'What is the difference between liability-to-landlord insurance and renters insurance?',
+        answer:
+          'Liability-to-landlord insurance (LLI) covers the unit and building if a renter-caused accident damages the property. Renters insurance covers your side: personal property, temporary relocation or displacement costs, and broader personal liability. Exhibit leases require $300,000 LLI coverage; a renters policy protects your belongings on top of that.',
+      },
+      {
+        question: 'Can I get liability-to-landlord coverage through Exhibit?',
+        answer:
+          'Yes. Residents can enroll in an LLI option directly through the resident portal, or bring their own policy that documents $300,000 liability-to-landlord coverage. Our leasing team can confirm which documentation is needed.',
+      },
+      {
+        question: 'Does Exhibit set the price of renters insurance?',
+        answer:
+          'No renters insurance premium is listed in Exhibit\u2019s committed fee table. Ask your insurer about its policy options and documentation, and ask our leasing team to confirm the property requirement.',
+      },
+      {
+        question: 'Are electricity charges included in Exhibit\u2019s Utility & Service Amenity fee?',
+        answer:
+          'No. The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed directly to the resident by ComEd.',
+      },
+    ],
+    related: ['how-to-rent-an-apartment-in-chicago', 'chicago-apartment-application-documents'],
+    links: [
+      { label: 'Review leasing fees at Exhibit On Superior', href: '/fees' },
+      { label: 'Contact the Exhibit On Superior leasing team', href: '/contact-us' },
+    ],
+    sources: [
+      {
+        label: 'ComEd \u2014 start, stop, or move electric service',
+        href: 'https://www.comed.com/my-account/customer-support/start-stop-move',
+      },
+    ],
+    ogCard: 'application-guide',
+    published: '2026-08-17',
+    updated: '2026-08-17',
     draft: true,
   },
 ];

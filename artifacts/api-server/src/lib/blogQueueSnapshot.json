@@ -7,12 +7,6 @@
       "pillarTitle": "How to Rent an Apartment in Chicago: The Complete Guide"
     },
     {
-      "slug": "first-apartment-chicago-guide",
-      "workingTitle": "Renting Your First Chicago Apartment: A No-Surprises Guide",
-      "targetQuery": "first apartment chicago tips",
-      "pillarTitle": "How to Rent an Apartment in Chicago: The Complete Guide"
-    },
-    {
       "slug": "chicago-renters-insurance-basics",
       "workingTitle": "Renters Insurance in Chicago: What Buildings Require and Why",
       "targetQuery": "renters insurance requirements chicago apartment",
@@ -67,10 +61,10 @@
       "title": "Move-In Costs in Chicago: What Renters Actually Pay"
     },
     {
-      "slug": "first-apartment-chicago-guide",
-      "title": "Renting Your First Chicago Apartment: A No-Surprises Guide"
+      "slug": "chicago-renters-insurance-basics",
+      "title": "Renters Insurance in Chicago: What Buildings Require and Why"
     }
   ],
-  "publishedCount": 8,
+  "publishedCount": 9,
   "plannedTotal": 18
 }

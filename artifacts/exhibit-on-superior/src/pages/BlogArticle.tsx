@@ -1,6 +1,8 @@
 import { Link, useParams } from 'wouter';
 import { Seo } from '../components/Seo';
+import { SmartImg } from '../components/SmartImg';
 import { SplitHeadline } from '../components/SplitHeadline';
+import type { BlogImage } from '../data/blog';
 import { NotFound } from './not-found';
 import {
   blogArticle,
@@ -19,11 +21,29 @@ import {
  * Head + JSON-LD come from the shared model in data/blog.ts (also used by
  * the prerenderer), so the crawler head and hydrated head never drift.
  */
+/** Article photo with a visible caption (mirrored into the markdown twin). */
+function ArticleFigure({ image }: { image: BlogImage }) {
+  return (
+    <figure className="my-8">
+      <SmartImg
+        src={image.src}
+        alt={image.alt}
+        sizes="(min-width: 768px) 768px, 100vw"
+        className="w-full h-auto"
+      />
+      <figcaption className="mt-2 text-sm text-muted-foreground">{image.caption}</figcaption>
+    </figure>
+  );
+}
+
 export function BlogArticle() {
   const { slug } = useParams<{ slug: string }>();
   const article = slug ? blogArticle(slug) : undefined;
   if (!article) return <NotFound />;
   const author = blogAuthor(article);
+  const images = article.images ?? [];
+  // Second photo lands after the middle section; first goes under the summary.
+  const midSectionIndex = Math.max(0, Math.ceil(article.sections.length / 2) - 1);
 
   return (
     <>
@@ -79,6 +99,7 @@ export function BlogArticle() {
               <p className="eyebrow mb-2">In Short</p>
               <p className="text-lg leading-relaxed text-foreground">{article.summary}</p>
             </div>
+            {images[0] ? <ArticleFigure image={images[0]} /> : null}
           </div>
         </section>
 
@@ -103,6 +124,7 @@ export function BlogArticle() {
                     ))}
                   </ul>
                 ) : null}
+                {images[1] && i === midSectionIndex ? <ArticleFigure image={images[1]} /> : null}
               </div>
             ))}
           </div>

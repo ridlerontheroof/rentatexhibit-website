@@ -11,6 +11,7 @@ import { resolveSizes } from '../lib/resolveSizes';
 import { IMAGE_MANIFEST } from '../data/imageManifest';
 import { HERO_SLIDES } from '../pages/Home';
 import { galleryImages } from '../data/gallery';
+import { ALL_BLOG_ARTICLES } from '../data/blogArticles';
 import { lifeAtExhibitVideo, matterportTours } from '../data/virtualTours';
 
 const SRC_ROOT = join(__dirname, '..');
@@ -344,6 +345,14 @@ describe('data-driven hero and gallery images ship sharp largest rungs', () => {
     expect(violations, `\n${violations.join('\n\n')}\n`).toEqual([]);
   });
 
+  it('every blog article photo covers the article column sharply', () => {
+    const blogSizes = sizesAtDynamicCallSite('pages/BlogArticle.tsx', 'image.src');
+    const violations = ALL_BLOG_ARTICLES.flatMap((a) => a.images ?? [])
+      .map((img) => checkImageRung(img.src, blogSizes, 'blog article photos'))
+      .filter((v): v is string => v !== null);
+    expect(violations, `\n${violations.join('\n\n')}\n`).toEqual([]);
+  });
+
   it('every galleryImages entry covers both the grid and the lightbox sharply', () => {
     const violations = galleryImages
       .flatMap((img) => [
@@ -479,6 +488,7 @@ describe('every dynamic-src SmartImg call site is covered by a data-driven check
     'components/EmbedFacade.tsx :: poster', // EmbedFacade posters check
     'components/HeroSlider.tsx :: slide.src', // HERO_SLIDES check
     'components/PageHero.tsx :: image', // PageHero usages check
+    'pages/BlogArticle.tsx :: image.src', // blog article photos check
     'pages/PhotoGallery.tsx :: image.src', // galleryImages grid check
     'pages/PhotoGallery.tsx :: lightboxImages[selectedImage].src', // lightbox check
   ]);

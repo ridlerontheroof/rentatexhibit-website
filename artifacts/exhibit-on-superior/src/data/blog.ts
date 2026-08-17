@@ -46,6 +46,15 @@ export interface BlogFaq {
   answer: string;
 }
 
+export interface BlogImage {
+  /** IMAGE_MANIFEST key (original path), e.g. '/images/image-014-….jpg'. */
+  src: string;
+  /** Descriptive alt text (what the photo shows, for screen readers/SEO). */
+  alt: string;
+  /** Visible caption rendered under the photo (and in the markdown twin). */
+  caption: string;
+}
+
 export interface BlogArticle {
   /** URL slug under /blog/, e.g. "living-in-river-north-chicago". */
   slug: string;
@@ -72,6 +81,12 @@ export interface BlogArticle {
    */
   summary: string;
   sections: BlogSection[];
+  /**
+   * 0–2 relevant photos with captions (test-enforced). The first renders
+   * after the summary, the second mid-article. `src` must be an
+   * IMAGE_MANIFEST key so SmartImg serves responsive WebP/AVIF rungs.
+   */
+  images?: BlogImage[];
   /** FAQ block (rendered + FAQPage JSON-LD). Empty array = no FAQ block. */
   faqs: BlogFaq[];
   /** Slugs of related blog articles (pillar and/or siblings). */
@@ -215,7 +230,10 @@ export function blogJsonLd(a: BlogArticle): Record<string, unknown> {
     isPartOf: { '@id': `${SITE_URL}#website` },
     about: { '@id': `${SITE_URL}#apartmentcomplex` },
     primaryImageOfPage: blogOgImage(a),
-    image: blogOgImage(a),
+    // OG card first (stable share/primary image), then in-article photos.
+    image: a.images?.length
+      ? [blogOgImage(a), ...a.images.map((img) => `${SITE_URL}${img.src}`)]
+      : blogOgImage(a),
     author: authorRef,
     publisher,
     datePublished: a.published,

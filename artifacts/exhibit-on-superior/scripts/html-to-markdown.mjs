@@ -165,6 +165,30 @@ export function htmlToMarkdown(html, { siteUrl = '' } = {}) {
       return t ? [`${'#'.repeat(Number(tag[1]))} ${t}`] : [];
     }
     if (tag === 'hr') return ['---'];
+    if (tag === 'figure') {
+      // Content images: a <figure> wrapping an <img> (possibly inside
+      // <picture>) becomes a markdown image + its caption. Figures without
+      // an <img> (e.g. review quotes) fall through to generic handling.
+      const findImg = (n) => {
+        if (n.tag === 'img') return n;
+        for (const c of n.children ?? []) {
+          const hit = findImg(c);
+          if (hit) return hit;
+        }
+        return undefined;
+      };
+      const img = findImg(node);
+      if (img) {
+        const alt = collapse(img.attrs?.alt ?? '').trim();
+        let src = img.attrs?.src ?? '';
+        if (src.startsWith('/')) src = siteUrl + src;
+        const out = src ? [`![${alt}](${src})`] : [];
+        for (const c of node.children) {
+          if (c.tag === 'figcaption') out.push(...blocks(c, ctx));
+        }
+        return out;
+      }
+    }
     if (tag === 'p' || tag === 'blockquote' || tag === 'figcaption' || tag === 'address') {
       // Paragraph-level: children may still contain nested blocks (rare) —
       // render inline; if empty, fall back to child blocks.
