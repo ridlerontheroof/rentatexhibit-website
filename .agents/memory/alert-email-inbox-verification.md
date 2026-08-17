@@ -6,6 +6,7 @@ description: How to prove watchdog alert emails actually landed, and MIME gotcha
 The site's alert sender account (leasingexhibit@, Gmail SMTP app password) is also IMAP-readable with the same `GMAIL_APP_PASSWORD` — connect to imap.gmail.com:993 with raw TLS + IMAP commands (LOGIN / SELECT INBOX / UID SEARCH / UID FETCH); no IMAP library is installed or needed.
 
 **Gotchas:**
+- Workspace egress MITM re-signs the TLS cert (DEPTH_ZERO_SELF_SIGNED_CERT; `--use-system-ca` doesn't help) — connect with `rejectUnauthorized:false` for these read-only checks.
 - IMAP LOGIN args must be quoted and the app password stripped of spaces (`LOGIN "user" "pass"`), or Gmail silently fails and every later command returns BAD "Unknown command". Sender account is leasingexhibit@**highlandptrs.com** (not gmail.com).
 - Alerts sent to third-party inboxes (e.g. the operational recipient) can't be read directly — verify via the sender's `"[Gmail]/Sent Mail"` mailbox instead (UID SEARCH SINCE … SUBJECT …).
 - Alert email bodies are multipart MIME with **base64-encoded** text parts — grepping the fetched body for wording fails; base64-decode the part first.
