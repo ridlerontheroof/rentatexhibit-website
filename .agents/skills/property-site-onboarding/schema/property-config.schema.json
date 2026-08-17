@@ -40,7 +40,7 @@
     "nap": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["streetAddress", "locality", "region", "postalCode", "phone"],
+      "required": ["streetAddress", "locality", "region", "postalCode", "phone", "timezone"],
       "properties": {
         "streetAddress": { "type": "string" },
         "locality": { "type": "string" },
@@ -49,6 +49,7 @@
         "country": { "type": "string", "default": "US" },
         "phone": { "type": "string", "description": "E.164 or display form; keep ONE authoritative form." },
         "email": { "type": "string" },
+        "timezone": { "type": "string", "description": "IANA timezone string for the property's local time — used by the showing scheduler and slot normaliser. Examples: \"America/Chicago\", \"America/Denver\", \"America/New_York\"." },
         "geo": {
           "type": "object", "additionalProperties": false,
           "required": ["latitude", "longitude"],

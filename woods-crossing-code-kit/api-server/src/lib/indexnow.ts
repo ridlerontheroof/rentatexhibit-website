@@ -15,10 +15,26 @@ import type { AvailabilityPayload } from "./appfolio";
 
 // WOODS-CROSSING: generate your own key at https://www.indexnow.org/
 // and host it at https://www.yourdomain.com/<key>.txt
-export const INDEXNOW_KEY = "fc45d4f042a0d056c865fb0b348a0065"; // WOODS-CROSSING: replace
+// Then set the INDEXNOW_KEY env var.
+const _INDEXNOW_KEY = process.env.INDEXNOW_KEY?.trim();
+if (!_INDEXNOW_KEY) {
+  throw new Error(
+    "INDEXNOW_KEY env var is required but not set. " +
+    "Generate a key at https://www.indexnow.org/, host <key>.txt at your domain root, " +
+    "and set this env var to that key string.",
+  );
+}
+export const INDEXNOW_KEY = _INDEXNOW_KEY;
 
-// WOODS-CROSSING: replace with your production site's canonical www URL
-export const SITE_URL = "https://www.rentatexhibit.com"; // WOODS-CROSSING: replace, e.g. "https://www.woodscrossing.com"
+// Read canonical www URL from SITE_URL env var (property-config identity.canonicalOrigin).
+const _SITE_URL = process.env.SITE_URL?.trim();
+if (!_SITE_URL) {
+  throw new Error(
+    "SITE_URL env var is required but not set. " +
+    "Set it to your canonical www origin (identity.canonicalOrigin from property-config.json).",
+  );
+}
+export const SITE_URL = _SITE_URL;
 
 const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 

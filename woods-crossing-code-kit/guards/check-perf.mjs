@@ -32,7 +32,7 @@
 //   node scripts/check-perf.mjs --pages /,/amenities   # subset (debugging)
 //
 // Requires a prior production build:
-//   pnpm --filter @workspace/exhibit-on-superior run build
+//   pnpm --filter @workspace/YOUR-WEB-ARTIFACT run build
 //
 // Related build-time guard (runs in the normal `pnpm test` vitest suite):
 //   src/knowledge-chunk-isolation.test.ts — fails if any non-knowledge page
@@ -214,7 +214,7 @@ async function main() {
   // Prod build must exist — this suite measures dist/public.
   if (!existsSync(path.join(root, 'dist', 'public', 'index.html'))) {
     throw new Error(
-      'dist/public/index.html missing — run `pnpm --filter @workspace/exhibit-on-superior run build` first.',
+      'dist/public/index.html missing — run `pnpm --filter @workspace/YOUR-WEB-ARTIFACT run build` first.',
     );
   }
 

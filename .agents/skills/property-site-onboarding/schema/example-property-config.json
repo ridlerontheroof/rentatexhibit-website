@@ -41,10 +41,16 @@
     "localBusinessType": "ApartmentComplex"
   },
   "redirects": { "parityMapPath": "onboarding/parity/parity-map.csv" },
-  "analytics": { "utmStorageKey": "woodscrossing_utm_params" },
+  "analytics": {
+    "utmStorageKey": "woodscrossing_utm_params",
+    "gtmId": "GTM-XXXXXXX",
+    "ga4MeasurementId": "G-XXXXXXXXXX"
+  },
   "email": {
     "leasingInbox": "leasing@example.com",
-    "alertInbox": "alerts@example.com"
+    "alertInbox": "alerts@example.com",
+    "senderAddress": "leasingwoodscrossing@example.com",
+    "senderName": "Woods Crossing Leasing"
   },
   "secrets": {
     "required": [

@@ -4,17 +4,24 @@ import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
-// WOODS-CROSSING: replace with your web artifact's production URL
-const DEFAULT_ALLOWED_ORIGIN = "https://exhibit-on-superior.replit.app"; // WOODS-CROSSING: replace with your site's origin
-
 /**
- * Resolve the CORS origin from the environment. A wildcard ("*") or any
- * non-HTTPS/malformed value is rejected outright. Set ALLOWED_ORIGIN env var
- * to your web app's deployed origin (e.g. "https://www.woodscrossing.com").
+ * Resolve the CORS origin from the environment.
+ *
+ * Set ALLOWED_ORIGIN env var to your web app's deployed HTTPS origin, e.g.
+ * "https://www.woodscrossing.com". Maps to property-config identity.canonicalOrigin.
+ *
+ * A wildcard ("*") or any non-HTTPS/malformed value is rejected outright.
+ * There is no hard-coded fallback — a missing ALLOWED_ORIGIN is a
+ * misconfiguration and must be loud, not silent.
  */
 function resolveAllowedOrigin(): string {
   const raw = process.env.ALLOWED_ORIGIN;
-  if (raw === undefined || raw === "") return DEFAULT_ALLOWED_ORIGIN;
+  if (raw === undefined || raw === "") {
+    throw new Error(
+      "ALLOWED_ORIGIN env var is required but not set. " +
+      "Set it to your web artifact's deployed HTTPS origin (identity.canonicalOrigin from property-config.json).",
+    );
+  }
   const value = raw.trim();
   if (value === "*") throw new Error('ALLOWED_ORIGIN must not be "*"');
   let parsed: URL;

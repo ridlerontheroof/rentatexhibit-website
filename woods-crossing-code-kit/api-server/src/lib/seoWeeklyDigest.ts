@@ -58,14 +58,31 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /** Consecutive errored runs before escalating to an alert (~2 days blind). */
 const ERROR_ESCALATION_RUNS = 8;
 
-const SITE = "https://YOUR-DOMAIN.com /* WOODS-CROSSING: replace */";
+// Read from SITE_URL env var (property-config identity.canonicalOrigin).
+// Used for sitemap.xml fetches and digest link-backs. Same var as indexnow/apexCheck.
+const _SITE_FOR_DIGEST = process.env.SITE_URL?.trim();
+if (!_SITE_FOR_DIGEST) {
+  throw new Error(
+    "SITE_URL env var is required for seoWeeklyDigest but is not set. " +
+    "Set it to your canonical www origin (identity.canonicalOrigin from property-config.json).",
+  );
+}
+const SITE = _SITE_FOR_DIGEST.replace(/\/$/, "");
 /**
  * Default Search Console property. The site is verified at the domain level;
  * override with GSC_SITE_URL (e.g. a url-prefix property
  * "https://YOUR-DOMAIN.com /* WOODS-CROSSING: replace *//") if the grant lands elsewhere.
  */
-// WOODS-CROSSING: replace with your Search Console property (sc-domain: or https://www.)
-const DEFAULT_GSC_SITE_URL = "sc-domain:rentatexhibit.com"; // WOODS-CROSSING: replace
+// Derived from SITE_URL env var (property-config identity.canonicalOrigin) by
+// stripping "https://www." and prepending "sc-domain:", e.g.:
+//   SITE_URL=https://www.woodscrossing.com → sc-domain:woodscrossing.com
+// Override with GSC_SITE_URL env var if your Search Console property is
+// a URL-prefix property instead of a domain property.
+const _SITE_URL_FOR_GSC = process.env.SITE_URL?.trim();
+const DEFAULT_GSC_SITE_URL: string = process.env.GSC_SITE_URL?.trim() ||
+  (_SITE_URL_FOR_GSC
+    ? `sc-domain:${new URL(_SITE_URL_FOR_GSC).hostname.replace(/^www\./, "")}`
+    : (() => { throw new Error("Either GSC_SITE_URL or SITE_URL env var must be set for seoWeeklyDigest."); })());
 /** Near-winner filter: min impressions in the current window. */
 const DEFAULT_MIN_IMPRESSIONS = 10;
 /** Near-winner filter: average position band (page 2, cusp of page 1). */

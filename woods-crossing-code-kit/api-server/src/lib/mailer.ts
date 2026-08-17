@@ -19,9 +19,20 @@ import { logger } from "./logger";
  * Set GMAIL_SMTP_USER env var to the sending account address.
  */
 
-// WOODS-CROSSING: replace with your property's dedicated sender email address
-export const SENDER_EMAIL =
-  process.env.GMAIL_SMTP_USER ?? "leasingexhibit@highlandptrs.com"; // WOODS-CROSSING: update default
+// Read the sender address from GMAIL_SMTP_USER env var.
+// Maps to property-config email.senderAddress.
+// There is NO fallback — a missing sender must fail loudly rather than
+// silently send as the wrong property's mailbox.
+const _SENDER_EMAIL = process.env.GMAIL_SMTP_USER?.trim();
+if (!_SENDER_EMAIL) {
+  throw new Error(
+    "GMAIL_SMTP_USER env var is required but not set. " +
+    "Set it to your property's dedicated Gmail sender address " +
+    "(email.senderAddress from property-config.json). " +
+    "Do not fall back to another property's mailbox.",
+  );
+}
+export const SENDER_EMAIL = _SENDER_EMAIL;
 
 let transporter: nodemailer.Transporter | null = null;
 

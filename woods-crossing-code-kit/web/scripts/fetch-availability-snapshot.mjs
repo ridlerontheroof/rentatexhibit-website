@@ -15,8 +15,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { refreshSnapshot } from './lib/availability-snapshot-refresh.mjs';
 
-// WOODS-CROSSING: replace with your deployed API server's availability endpoint
-const SNAPSHOT_URL = 'https://www.rentatexhibit.com/api/availability'; // WOODS-CROSSING: replace
+// Read from SITE_URL env var (property-config identity.canonicalOrigin).
+// The snapshot URL is derived automatically as SITE_URL + /api/availability.
+// Override with SNAPSHOT_URL env var if your API server lives on a different origin.
+const _SITE_URL = process.env.SITE_URL?.trim();
+const SNAPSHOT_URL = process.env.SNAPSHOT_URL?.trim() ||
+  (_SITE_URL
+    ? `${_SITE_URL.replace(/\/$/, '')}/api/availability`
+    : (() => { throw new Error('Either SNAPSHOT_URL or SITE_URL env var must be set for fetch-availability-snapshot.'); })());
 const outPath = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   '..',

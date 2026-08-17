@@ -10,15 +10,20 @@
 // Routing parity: the clean-URL rewrite table in artifact.toml is the single
 // source of truth. This server parses that table at startup.
 //
-// WOODS-CROSSING: 2 sections to update (marked below):
-//   1. GTM-injected inline script hashes (section ~line 110)
-//   2. CSP directives — remove Exhibit-specific hosts, add yours (section ~line 130)
+// WOODS-CROSSING: all property-specific CSP values live in csp-property.mjs.
+// Edit that file — do not add property literals here.
 
 import express from 'express';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  GTM_INJECTED_SCRIPT_HASHES,
+  EXTRA_SCRIPT_SRC_HOSTS,
+  EXTRA_CONNECT_SRC_HOSTS,
+  EXTRA_FRAME_SRC_HOSTS,
+} from './csp-property.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.resolve(here, '..', 'dist', 'public');
@@ -135,23 +140,8 @@ if (inlineScriptHashes.length === 0) {
 console.log(`Allowing ${inlineScriptHashes.length} inline-script hashes in script-src`);
 
 // ---------------------------------------------------------------------------
-// GTM-injected inline script hashes (runtime tags, can't be startup-hashed).
-// WOODS-CROSSING: run `pnpm run check:csp` after deploy; it reports the
-// required hash for any GTM Custom HTML tag. Replace the value below with
-// your GTM container's injected-script hash(es).
-// ---------------------------------------------------------------------------
-const gtmInjectedScriptHashes = [
-  // WOODS-CROSSING: replace with the sha256 hash(es) for your GTM Custom HTML tags.
-  // Example (Ahrefs Analytics from Exhibit's GTM container — remove or replace):
-  "'sha256-4QVZ8pB20FlguyBJHonvohn/Z1AzVSRh5oBkVcjkySY='",
-];
-
-// ---------------------------------------------------------------------------
-// CSP directives
-// WOODS-CROSSING: update the hosts in script-src, connect-src, frame-src to
-// match the third-party services YOUR property uses. Remove Exhibit-specific
-// entries (Matterport, SightMap, Ahrefs) unless Woods Crossing uses them too.
-// Keep the Google tag entries — every GTM-managed GA4 property needs them.
+// CSP directives — property-specific additions come from csp-property.mjs.
+// The Google tag entries below are common to every GTM-managed GA4 property.
 // ---------------------------------------------------------------------------
 const CSP = [
   "default-src 'self'",
@@ -159,17 +149,45 @@ const CSP = [
   "object-src 'none'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  `script-src 'self' ${inlineScriptHashes.join(' ')} ${gtmInjectedScriptHashes.join(' ')} https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://maps.googleapis.com`,
-  // WOODS-CROSSING: add your analytics/widget script hosts here, e.g.:
-  // https://analytics.ahrefs.com https://www.clarity.ms https://scripts.clarity.ms https://sightmap.com
+  [
+    "script-src 'self'",
+    ...inlineScriptHashes,
+    ...GTM_INJECTED_SCRIPT_HASHES,
+    'https://www.googletagmanager.com',
+    'https://www.google-analytics.com',
+    'https://googleads.g.doubleclick.net',
+    'https://www.googleadservices.com',
+    'https://maps.googleapis.com',
+    ...EXTRA_SCRIPT_SRC_HOSTS,
+  ].join(' '),
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: https:",
   "media-src 'self' https:",
-  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.google.com https://analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://maps.googleapis.com https://mapsresources-pa.googleapis.com",
-  // WOODS-CROSSING: add your analytics/embed connect-src hosts here
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.google.com https://maps.google.com https://www.googletagmanager.com",
-  // WOODS-CROSSING: add Matterport / SightMap / other iframe embeds if used
+  [
+    "connect-src 'self'",
+    'https://www.google-analytics.com',
+    'https://*.google-analytics.com',
+    'https://www.googletagmanager.com',
+    'https://www.google.com',
+    'https://analytics.google.com',
+    'https://stats.g.doubleclick.net',
+    'https://ad.doubleclick.net',
+    'https://googleads.g.doubleclick.net',
+    'https://maps.googleapis.com',
+    'https://mapsresources-pa.googleapis.com',
+    ...EXTRA_CONNECT_SRC_HOSTS,
+  ].join(' '),
+  [
+    'frame-src',
+    'https://www.youtube.com',
+    'https://www.youtube-nocookie.com',
+    'https://player.vimeo.com',
+    'https://www.google.com',
+    'https://maps.google.com',
+    'https://www.googletagmanager.com',
+    ...EXTRA_FRAME_SRC_HOSTS,
+  ].join(' '),
   "worker-src 'self' blob:",
   "manifest-src 'self'",
 ].join('; ');

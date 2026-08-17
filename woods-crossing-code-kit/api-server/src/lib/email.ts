@@ -30,9 +30,16 @@ const SEED_ALERT_EMAIL =
 
 /**
  * The from-name shown on all emails from this property.
- * WOODS-CROSSING: replace with your property's display name.
+ * Set via PROPERTY_NAME env var (property-config property.name).
  */
-const PROPERTY_NAME = "Exhibit on Superior"; // WOODS-CROSSING: replace with "Woods Crossing" or your property name
+const _PROPERTY_NAME = process.env.PROPERTY_NAME?.trim();
+if (!_PROPERTY_NAME) {
+  throw new Error(
+    "PROPERTY_NAME env var is required but not set. " +
+    "Set it to your property's display name (property.name from property-config.json).",
+  );
+}
+const PROPERTY_NAME = _PROPERTY_NAME;
 
 /** Shape of the data we need to build a lead notification email. */
 export interface LeadNotification {

@@ -19,14 +19,34 @@ import { isTourUnitName } from "./tourUnit";
 
 // WOODS-CROSSING: Set APPFOLIO_DATABASE env var to your management company's
 // AppFolio database name (visible in your AppFolio portal URL:
-// <database>.appfolio.com). Example: "woodscrossingmgmt"
-const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners";
+// <database>.appfolio.com). Maps to property-config appfolio.database.
+const _APPFOLIO_DATABASE = process.env.APPFOLIO_DATABASE?.trim();
+if (!_APPFOLIO_DATABASE) {
+  throw new Error(
+    "APPFOLIO_DATABASE env var is required but not set. " +
+    "Set it to your management company's AppFolio database name " +
+    "(the subdomain prefix in your AppFolio portal URL, e.g. \"woodscrossingmgmt\"). " +
+    "Maps to appfolio.database in property-config.json.",
+  );
+}
+const APPFOLIO_DB = _APPFOLIO_DATABASE;
 const APPFOLIO_BASE = `https://${APPFOLIO_DB}.appfolio.com/api/v2/reports`;
 
-// WOODS-CROSSING: Replace "exhibit" with a lowercase substring that uniquely
-// identifies your property name in AppFolio's property list.
-// E.g. if your property is "Woods Crossing Apartments", use "woods crossing".
-const PROPERTY_MATCH = "exhibit"; // WOODS-CROSSING: replace with your property substring
+// Exact property name used for AppFolio's filters[property_list] and for
+// row-level filtering in isPropertyRow(). Maps to property-config
+// appfolio.propertyName. Set via APPFOLIO_PROPERTY_NAME env var.
+// The substring match is lowercased for case-insensitive comparison.
+const _APPFOLIO_PROPERTY_NAME = process.env.APPFOLIO_PROPERTY_NAME?.trim();
+if (!_APPFOLIO_PROPERTY_NAME) {
+  throw new Error(
+    "APPFOLIO_PROPERTY_NAME env var is required but not set. " +
+    "Set it to the exact property name shown in AppFolio (appfolio.propertyName from property-config.json).",
+  );
+}
+/** Exact property name for the AppFolio listings filter (e.g. "Woods Crossing"). */
+const APPFOLIO_PROPERTY_NAME = _APPFOLIO_PROPERTY_NAME;
+/** Lowercase substring for tolerant row-level filtering. */
+const PROPERTY_MATCH = APPFOLIO_PROPERTY_NAME.toLowerCase();
 
 export interface AvailableUnit {
   /** Apartment number as AppFolio writes it. */
@@ -104,7 +124,7 @@ function toDateString(value: unknown): string | null {
 }
 
 /** True when the row belongs to this property. */
-export function isExhibitRow(row: Row): boolean {
+export function isPropertyRow(row: Row): boolean {
   const prop = pick(row, ["property"], ["group", "id"]);
   if (typeof prop === "string") return prop.toLowerCase().includes(PROPERTY_MATCH);
   // When the report is already filtered upstream some views omit the property
@@ -403,8 +423,8 @@ async function fetchDetailInfo(listingUrl: string): Promise<DetailInfo> {
  * property's name as it appears in AppFolio's public listings filter.
  */
 async function fetchListingMedia(): Promise<Map<string, ListingMedia>> {
-  // WOODS-CROSSING: replace "Exhibit" with your property's AppFolio listing filter name
-  const url = `https://${APPFOLIO_DB}.appfolio.com/listings?${encodeURIComponent("filters[property_list]")}=${encodeURIComponent("Exhibit")}`;
+  // Uses APPFOLIO_PROPERTY_NAME (property-config appfolio.propertyName) for the listings filter.
+  const url = `https://${APPFOLIO_DB}.appfolio.com/listings?${encodeURIComponent("filters[property_list]")}=${encodeURIComponent(APPFOLIO_PROPERTY_NAME)}`;
   const res = await fetch(url, { headers: { Accept: "text/html" } });
   if (!res.ok) throw new Error(`AppFolio public listings page failed: status ${res.status}`);
   return parseListingsHtml(await res.text());
@@ -521,7 +541,7 @@ export async function fetchAvailability(
   const rows: Row[] = Array.isArray(data.results) ? data.results : [];
 
   const units = rows
-    .filter(isExhibitRow)
+    .filter(isPropertyRow)
     .map(normalizeRow)
     .filter((u): u is AvailableUnit => u !== null && !isTourUnitName(u.unit));
 

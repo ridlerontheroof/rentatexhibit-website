@@ -28,8 +28,20 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// WOODS-CROSSING: replace with your property's GA4 Measurement ID
-const EXPECTED_GA4_ID = 'G-1S66YHBN91'; // WOODS-CROSSING: replace
+// Read from VITE_GA4_MEASUREMENT_ID env var (analytics.ga4MeasurementId from
+// property-config.json). Fails loudly if unset — a missing ID means the guard
+// cannot validate the correct property stream, which defeats its purpose.
+// WOODS-CROSSING: set VITE_GA4_MEASUREMENT_ID in your web artifact's env vars.
+const _EXPECTED_GA4_ID = process.env.VITE_GA4_MEASUREMENT_ID?.trim();
+if (!_EXPECTED_GA4_ID) {
+  console.error(
+    'FAIL  VITE_GA4_MEASUREMENT_ID env var is not set — cannot validate the GTM container ' +
+    'without knowing which GA4 Measurement ID to expect. ' +
+    'Set it to analytics.ga4MeasurementId from property-config.json (e.g. G-XXXXXXXXXX).',
+  );
+  process.exit(1);
+}
+const EXPECTED_GA4_ID = _EXPECTED_GA4_ID;
 
 const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 

@@ -37,7 +37,16 @@
 
 // WOODS-CROSSING: set APPFOLIO_DATABASE env var to your management company's
 // AppFolio database name (e.g. "woodscrossingmgmt"). See appfolio.ts for details.
-const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners"; // WOODS-CROSSING: update default
+const _SHOWINGS_APPFOLIO_DATABASE = process.env.APPFOLIO_DATABASE?.trim();
+if (!_SHOWINGS_APPFOLIO_DATABASE) {
+  throw new Error(
+    "APPFOLIO_DATABASE env var is required for showings but not set. " +
+    "Set it to your management company's AppFolio database name " +
+    "(the subdomain prefix in your AppFolio portal URL, e.g. \"woodscrossingmgmt\"). " +
+    "Maps to appfolio.database in property-config.json.",
+  );
+}
+const APPFOLIO_DB = _SHOWINGS_APPFOLIO_DATABASE;
 const LISTINGS_BASE = `https://${APPFOLIO_DB}.appfolio.com/listings`;
 
 import { DEFAULT_LEAD_SOURCE } from "./leadSource";
@@ -46,8 +55,22 @@ import { normalizeGuestCardName } from "./appfolio";
 /** Attribution shown to the leasing team; keep in sync with the guest-card push. */
 export const SHOWING_SOURCE = DEFAULT_LEAD_SOURCE;
 
-/** Timezone the property's slot wall times are quoted in. */
-export const PROPERTY_TIMEZONE = "America/Chicago";
+/**
+ * Timezone the property's slot wall times are quoted in.
+ * Read from PROPERTY_TIMEZONE env var (nap.timezone from property-config.json).
+ * Examples: "America/Chicago", "America/Denver", "America/New_York"
+ * WOODS-CROSSING: set PROPERTY_TIMEZONE env var for your property's timezone.
+ * Missing = loud startup failure — a silent wrong-timezone default mis-schedules showings.
+ */
+const _PROPERTY_TIMEZONE = process.env.PROPERTY_TIMEZONE?.trim();
+if (!_PROPERTY_TIMEZONE) {
+  throw new Error(
+    "PROPERTY_TIMEZONE env var is required but not set. " +
+    "Set it to your property's IANA timezone string (nap.timezone from property-config.json). " +
+    "Examples: \"America/Denver\", \"America/Chicago\", \"America/New_York\".",
+  );
+}
+export const PROPERTY_TIMEZONE = _PROPERTY_TIMEZONE;
 
 /** Hosted AppFolio scheduling page for a listing — the visitor-facing fallback. */
 export function hostedShowingsUrl(listableUid: string, source: string = SHOWING_SOURCE): string {

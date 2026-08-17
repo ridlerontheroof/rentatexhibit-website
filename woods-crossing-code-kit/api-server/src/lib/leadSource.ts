@@ -15,8 +15,19 @@
  */
 import { createHash } from "node:crypto";
 
+// Read from APPFOLIO_LEAD_SOURCE_DEFAULT env var (property-config appfolio.leadSourceDefault).
+// Must match the pattern "Website (Token)" — the schema enforces this.
+// Example: "Website (WoodsCrossing)"
+const _DEFAULT_LEAD_SOURCE = process.env.APPFOLIO_LEAD_SOURCE_DEFAULT?.trim();
+if (!_DEFAULT_LEAD_SOURCE) {
+  throw new Error(
+    "APPFOLIO_LEAD_SOURCE_DEFAULT env var is required but not set. " +
+    'Set it to your default AppFolio lead-source label, e.g. "Website (WoodsCrossing)" ' +
+    "(appfolio.leadSourceDefault from property-config.json).",
+  );
+}
 /** Attribution AppFolio shows the leasing team when a visit has no campaign tags. */
-export const DEFAULT_LEAD_SOURCE = "Website (Exhibit)";
+export const DEFAULT_LEAD_SOURCE = _DEFAULT_LEAD_SOURCE;
 
 /** Max length of a full source label — it renders in AppFolio's lead list. */
 export const LEAD_SOURCE_MAX_LENGTH = 80;

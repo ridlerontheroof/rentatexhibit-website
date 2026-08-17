@@ -1,14 +1,13 @@
 /**
  * One-time (re)generator for src/data/unitMap.json — the committed,
- * structured form of the user-provided unit map spreadsheet
- * attached_assets/EXHIBIT_UNIT_MAP_v1.2_ACCESSIBILITY_*.xlsx (298 units,
- * approved fact source 2026-08-04).
+ * structured form of the user-provided unit map spreadsheet.
+ * Pass your property's unit map XLSX as the first argument or set UNIT_MAP_XLSX.
  *
  * Per the data-module convention, facts are never hand-copied into JSX:
  * this script converts the spreadsheet once into JSON; src/data/unitMap.ts
  * types it and src/data/planFacts.ts aggregates it per floor-plan page.
  *
- * Run: node scripts/generate-unit-map.mjs [path-to-xlsx]
+ * Run: node scripts/generate-unit-map.mjs path/to/YOUR_UNIT_MAP.xlsx
  *
  * No dependencies: a minimal ZIP reader (xlsx is a zip of XML) using
  * node:zlib inflateRawSync.
@@ -16,15 +15,19 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { inflateRawSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, join, basename as path_basename } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
+// WOODS-CROSSING: pass your unit-map spreadsheet as the first argument, or set
+// UNIT_MAP_XLSX env var to its path. This is a per-property data input file.
+// No default is provided — the Exhibit spreadsheet is not shipped with the kit.
+// Example: node scripts/generate-unit-map.mjs attached_assets/YOUR_UNIT_MAP.xlsx
 const XLSX =
   process.argv[2] ??
-  join(
-    here,
-    '../../../attached_assets/EXHIBIT_UNIT_MAP_v1.2_ACCESSIBILITY_1785846759710.xlsx',
-  );
+  process.env.UNIT_MAP_XLSX?.trim() ??
+  (() => { throw new Error(
+    'No unit-map spreadsheet provided. Pass the path as the first argument or set UNIT_MAP_XLSX env var.',
+  ); })();
 const OUT = join(here, '../src/data/unitMap.json');
 
 // --- minimal zip: read entries via the central directory -------------------
@@ -132,5 +135,5 @@ const units = rows.slice(1).map((r) => {
   };
 });
 
-writeFileSync(OUT, JSON.stringify({ source: 'EXHIBIT_UNIT_MAP_v1.2_ACCESSIBILITY (2026-08-04)', units }, null, 1) + '\n');
+writeFileSync(OUT, JSON.stringify({ source: path_basename(XLSX), units }, null, 1) + '\n');
 console.log(`Wrote ${units.length} units -> ${OUT}`);

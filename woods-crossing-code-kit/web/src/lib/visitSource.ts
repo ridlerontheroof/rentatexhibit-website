@@ -19,8 +19,14 @@
 
 import { LEGACY_REDIRECTS } from '../data/legacyRedirects';
 
-// WOODS-CROSSING: rename this key to match your property, e.g. 'woodscrossing-visit-source'
-const STORAGE_KEY = 'exhibit-visit-source'; // WOODS-CROSSING: rename
+// Derived from VITE_UTM_STORAGE_KEY build-time env var (property-config analytics.utmStorageKey).
+// Strips the trailing "_utm_params" suffix and appends "-visit-source", e.g.:
+//   "woodscrossing_utm_params" → "woodscrossing-visit-source"
+// If the key has no "_utm_params" suffix, "-visit-source" is appended directly.
+// WOODS-CROSSING: set VITE_UTM_STORAGE_KEY in your web artifact's environment variables.
+const _UTM_KEY: string = (import.meta.env.VITE_UTM_STORAGE_KEY as string | undefined)?.trim() ||
+  (() => { throw new Error('VITE_UTM_STORAGE_KEY build env var is required (analytics.utmStorageKey from property-config.json).'); })();
+const STORAGE_KEY = _UTM_KEY.replace(/_utm_params$/, '') + '-visit-source';
 
 /** Max length of a full source label — it renders in AppFolio's lead list. */
 export const VISIT_SOURCE_MAX_LENGTH = 80;

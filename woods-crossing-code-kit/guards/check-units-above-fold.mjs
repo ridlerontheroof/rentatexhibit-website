@@ -225,7 +225,7 @@ async function main() {
     if (missing.length) {
       throw new Error(
         `--built requires a production build, but dist/public is missing ${missing.join(', ')}. ` +
-          'Run `pnpm --filter @workspace/exhibit-on-superior run build` first.',
+          'Run `pnpm --filter @workspace/YOUR-WEB-ARTIFACT run build` first.',
       );
     }
   }

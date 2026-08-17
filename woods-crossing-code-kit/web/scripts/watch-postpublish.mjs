@@ -30,7 +30,7 @@
 // on failure. This watcher remains the richer in-workspace signal.
 //
 // Usage: node scripts/watch-postpublish.mjs [baseUrl] [--now] [--once] [--interval SECONDS]
-//   default baseUrl : https://www.rentatexhibit.com
+//   default baseUrl : read from SITE_URL env var (identity.canonicalOrigin from property-config.json)
 //   --now           : also run the checks immediately on startup
 //   --once          : run the checks once and exit (no watching) — implies --now
 //   --interval      : poll interval in seconds (default 60)
@@ -45,9 +45,12 @@ const ONCE = args.includes('--once');
 const intervalFlag = args.indexOf('--interval');
 const INTERVAL_MS =
   (intervalFlag >= 0 ? Number(args[intervalFlag + 1]) || 60 : 60) * 1000;
+// Default base URL read from SITE_URL env var (property-config identity.canonicalOrigin).
+// Override on the command line: node watch-postpublish.mjs https://www.yourdomain.com
 const BASE = (
   args.find((a, i) => !a.startsWith('--') && i !== intervalFlag + 1) ||
-  'https://www.rentatexhibit.com' // WOODS-CROSSING: replace with your production domain
+  process.env.SITE_URL?.trim() ||
+  (() => { throw new Error('Pass your production domain as the first argument or set the SITE_URL env var.'); })()
 ).replace(/\/$/, '');
 
 const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');

@@ -37,7 +37,15 @@ import { sendFloorPlanCheckAlert } from "./email";
  * day, which escalates. Production only.
  */
 
-const SITE = "https://YOUR-DOMAIN.com /* WOODS-CROSSING: replace */";
+// Read from SITE_URL env var (property-config identity.canonicalOrigin).
+const _SITE_FOR_FPC = process.env.SITE_URL?.trim();
+if (!_SITE_FOR_FPC) {
+  throw new Error(
+    "SITE_URL env var is required for floorPlanCheck but is not set. " +
+    "Set it to your canonical www origin (identity.canonicalOrigin from property-config.json).",
+  );
+}
+const SITE = _SITE_FOR_FPC.replace(/\/$/, "");
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // every 6 hours
 const FETCH_TIMEOUT_MS = 20_000;
 const SAMPLE_SIZE = 8;

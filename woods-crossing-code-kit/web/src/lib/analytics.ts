@@ -25,12 +25,22 @@ declare global {
 const MEASUREMENT_ID: string | undefined = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
 /**
- * The GA4 stream ID owned by your GTM container. Used only in GTM-managed
- * mode; a build-time VITE_GA_MEASUREMENT_ID always takes precedence.
- * WOODS-CROSSING: replace with your property's GA4 Measurement ID
- * (find it in GA4 Admin → Data Streams → Web stream → Measurement ID).
+ * The GA4 stream ID owned by your GTM container. Used in GTM-managed mode
+ * to route send_to events to the correct property stream; a build-time
+ * VITE_GA_MEASUREMENT_ID always takes precedence.
+ * Read from VITE_GA4_MEASUREMENT_ID build env var (analytics.ga4MeasurementId
+ * from property-config.json). Throws at build time if not set so a missing ID
+ * can never silently route events to the wrong property stream.
+ * WOODS-CROSSING: set VITE_GA4_MEASUREMENT_ID in your web artifact's env vars.
  */
-const GTM_GA4_ID = 'G-1S66YHBN91'; // WOODS-CROSSING: replace with your GA4 Measurement ID
+const GTM_GA4_ID: string = (import.meta.env.VITE_GA4_MEASUREMENT_ID as string | undefined)?.trim() ||
+  (() => {
+    throw new Error(
+      'VITE_GA4_MEASUREMENT_ID build env var is required for GA4 send_to routing ' +
+      '(analytics.ga4MeasurementId from property-config.json). ' +
+      'Example: VITE_GA4_MEASUREMENT_ID=G-XXXXXXXXXX',
+    );
+  })();
 
 /** True when GTM owns the GA4 stream (no build-time measurement ID). */
 const GTM_MANAGED = !MEASUREMENT_ID;
@@ -48,8 +58,11 @@ let previousPath: string | null = null;
 let currentPath: string | null = null;
 
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
-// WOODS-CROSSING: update this storage key to match your property
-const UTM_STORAGE_KEY = 'exhibit_utm_params'; // WOODS-CROSSING: rename e.g. 'woodscrossing_utm_params'
+// Read from VITE_UTM_STORAGE_KEY build-time env var (property-config analytics.utmStorageKey).
+// Example: VITE_UTM_STORAGE_KEY=woodscrossing_utm_params
+// WOODS-CROSSING: set this in your web artifact's environment variables.
+const UTM_STORAGE_KEY: string = (import.meta.env.VITE_UTM_STORAGE_KEY as string | undefined)?.trim() ||
+  (() => { throw new Error('VITE_UTM_STORAGE_KEY build env var is required (analytics.utmStorageKey from property-config.json).'); })();
 
 function captureUtmParams(): void {
   try {

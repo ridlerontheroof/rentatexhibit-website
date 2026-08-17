@@ -218,7 +218,7 @@ async function main() {
   }
   if (missing.length > 0) {
     throw new Error(
-      `dist/public is missing ${missing.map((f) => path.relative(root, f)).join(', ')} — run \`pnpm --filter @workspace/exhibit-on-superior run build\` first.`,
+      `dist/public is missing ${missing.map((f) => path.relative(root, f)).join(', ')} — run \`pnpm --filter @workspace/YOUR-WEB-ARTIFACT run build\` first.`,
     );
   }
 

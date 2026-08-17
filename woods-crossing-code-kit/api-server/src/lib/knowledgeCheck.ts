@@ -35,7 +35,15 @@ import { sendKnowledgeCheckAlert } from "./email";
  * Checks only run in production — dev/test workspaces would produce noise.
  */
 
-const SITE = "https://YOUR-DOMAIN.com /* WOODS-CROSSING: replace */";
+// Read from SITE_URL env var (property-config identity.canonicalOrigin).
+const _SITE_FOR_KC = process.env.SITE_URL?.trim();
+if (!_SITE_FOR_KC) {
+  throw new Error(
+    "SITE_URL env var is required for knowledgeCheck but is not set. " +
+    "Set it to your canonical www origin (identity.canonicalOrigin from property-config.json).",
+  );
+}
+const SITE = _SITE_FOR_KC.replace(/\/$/, "");
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // every 6 hours
 const FETCH_TIMEOUT_MS = 20_000;
 const SAMPLE_SIZE = 10;

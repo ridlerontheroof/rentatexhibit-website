@@ -941,7 +941,7 @@ console.log(`Prerendered ${allPaths.length} routes.`);
 {
   const stub = template.replace(
     SEO_BLOCK,
-    `<!-- seo:start -->\n    <title>Page Not Found | ${PROPERTY_DISPLAY_NAME}</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This page does not exist. Visit ${SITE_URL} for luxury apartments in River North, Chicago." />\n    <!-- seo:end -->`,
+    `<!-- seo:start -->\n    <title>Page Not Found | ${PROPERTY_DISPLAY_NAME}</title>\n    <meta name="robots" content="noindex" />\n    <meta name="description" content="This page does not exist. Visit ${SITE_URL} to find your new home at ${PROPERTY_DISPLAY_NAME}." />\n    <!-- seo:end -->`,
   );
   await fs.writeFile(path.join(publicDir, '404.html'), stub, 'utf8');
   console.log('404 page written (noindex, served with status 404 by the production server).');
@@ -1101,7 +1101,7 @@ const contentHashes = new Map();
   } single-question pages answering renter questions with verified facts — pricing, fees, floor plans, amenities, pets, parking, leasing, utilities, and the neighborhood. Full page catalog: ${SITE_URL}/llms-full.txt\n\n`;
   const blogSection = `## Blog\n\n- [Blog](${SITE_URL}/blog): ${
     (BLOG_META ?? []).length
-  } renter guides grouped into topic clusters (River North living, renting in Chicago, high-rise living), each written by a named member of the on-site team with verified facts and cited sources. Full page catalog: ${SITE_URL}/llms-full.txt\n\n`;
+  } renter guides on neighborhood living, renting, and apartment life, each written by a named member of the on-site team with verified facts and cited sources. Full page catalog: ${SITE_URL}/llms-full.txt\n\n`;
   if (!llms.includes('\n## Contact')) {
     throw new Error('Prerender aborted: llms.txt is missing its "## Contact" section anchor.');
   }

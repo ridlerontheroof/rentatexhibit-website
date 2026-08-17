@@ -29,8 +29,11 @@
 
 import { loadKnowledgeSlugs } from './lib/knowledge-slugs.mjs';
 
+// Read from SITE_URL env var (property-config identity.canonicalOrigin) or first CLI arg.
 const BASE = (process.argv.slice(2).find((a) => !a.startsWith('--')) ||
-  'https://www.rentatexhibit.com').replace(/\/$/, '');
+  process.env.SITE_URL?.trim() ||
+  (() => { throw new Error('Pass your site URL as the first argument or set the SITE_URL env var.'); })()
+).replace(/\/$/, '');
 
 const VALIDATOR = 'https://validator.schema.org/validate';
 const TIMEOUT_MS = 60_000;

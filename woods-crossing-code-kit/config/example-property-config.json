@@ -1,0 +1,80 @@
+{
+  "configVersion": "1",
+  "kitVersion": "kit-v1.1.0",
+  "property": {
+    "name": "Woods Crossing Apartments",
+    "shortName": "Woods Crossing",
+    "slug": "woods-crossing"
+  },
+  "identity": {
+    "canonicalOrigin": "https://www.woodscrossingslc.com",
+    "domains": ["woodscrossingslc.com", "www.woodscrossingslc.com"],
+    "legacyOrigins": ["https://www.legacy-site.com"]
+  },
+  "nap": {
+    "streetAddress": "123 Main Street",
+    "locality": "Salt Lake City",
+    "region": "UT",
+    "postalCode": "84101",
+    "country": "US",
+    "phone": "+18015550100",
+    "timezone": "America/Denver",
+    "email": "leasing@woodscrossing.com",
+    "geo": { "latitude": 40.7608, "longitude": -111.891 },
+    "hours": [
+      { "days": ["Monday", "Friday"], "opens": "09:00", "closes": "18:00" },
+      { "days": ["Saturday"], "opens": "10:00", "closes": "17:00" }
+    ]
+  },
+  "brand": {
+    "designDirection": "REPLACE — approved design direction from gate G3",
+    "tokens": {
+      "colors": {
+        "primary": "#1A2E44",
+        "accent": "#C8A96E"
+      },
+      "fonts": {
+        "heading": "Playfair Display",
+        "body": "Inter"
+      }
+    },
+    "logoAssets": ["public/images/property-logo.svg", "public/images/property-logo-white.svg"],
+    "reuseRightsConfirmed": false
+  },
+  "leasing": {
+    "facts": {},
+    "applyUrl": "https://www.woodscrossingslc.com/apply",
+    "residentPortalUrl": "https://woodscrossing.appfolio.com/connect/users/sign_in"
+  },
+  "appfolio": {
+    "database": "woodscrossingmgmt",
+    "propertyName": "Woods Crossing",
+    "tourUnitName": "REPLACE — hidden tour unit name from AppFolio (gate G7)",
+    "leadSourceDefault": "Website (WoodsCrossing)"
+  },
+  "seo": {
+    "defaultTitleSuffix": "| Woods Crossing Apartments",
+    "defaultDescription": "REPLACE — meta description for the property.",
+    "ogSiteName": "Woods Crossing Apartments",
+    "gbpUrl": "https://www.google.com/maps?cid=REPLACE",
+    "localBusinessType": "ApartmentComplex"
+  },
+  "redirects": {
+    "parityMapPath": "config/redirect-parity-map.csv",
+    "extra": []
+  },
+  "analytics": {
+    "gtmId": "GTM-REPLACE",
+    "ga4MeasurementId": "G-REPLACE",
+    "utmStorageKey": "woodscrossing_utm_params"
+  },
+  "email": {
+    "leasingInbox": "leasing@woodscrossing.com",
+    "alertInbox": "alerts@woodscrossing.com",
+    "senderAddress": "leasing@woodscrossing.com",
+    "senderName": "Woods Crossing Leasing"
+  },
+  "secrets": {
+    "required": ["APPFOLIO_CLIENT_ID", "APPFOLIO_CLIENT_SECRET", "GMAIL_APP_PASSWORD", "SESSION_SECRET"]
+  }
+}

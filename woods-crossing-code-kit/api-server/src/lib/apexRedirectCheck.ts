@@ -27,9 +27,24 @@ import { sendApexRedirectAlert } from "./email";
  * dev/test workspaces would produce noise (and workspace egress differs).
  */
 
-// WOODS-CROSSING: replace with your apex (non-www) domain test URL
-const APEX_CHECK_URL = "https://rentatexhibit.com/fees"; // WOODS-CROSSING: replace
-const EXPECTED_HOST = "www.rentatexhibit.com"; // WOODS-CROSSING: replace with your www domain
+// Read from SITE_URL env var (property-config identity.canonicalOrigin).
+// SITE_URL must be the canonical www origin, e.g. "https://www.woodscrossing.com".
+// The apex check URL is derived automatically:
+//   canonicalOrigin "https://www.woodscrossing.com"
+//     → EXPECTED_HOST  "www.woodscrossing.com"
+//     → APEX_CHECK_URL "https://woodscrossing.com/fees"  (www stripped, /fees appended)
+//
+// WOODS-CROSSING: set the SITE_URL env var — no other change needed here.
+const _SITE_URL = process.env.SITE_URL?.trim();
+if (!_SITE_URL) {
+  throw new Error(
+    "SITE_URL env var is required for apexRedirectCheck but is not set. " +
+    "Set it to your canonical www origin (identity.canonicalOrigin from property-config.json).",
+  );
+}
+const EXPECTED_HOST = new URL(_SITE_URL).hostname; // e.g. "www.woodscrossing.com"
+const _APEX_HOST = EXPECTED_HOST.replace(/^www\./, "");  // e.g. "woodscrossing.com"
+const APEX_CHECK_URL = `https://${_APEX_HOST}/fees`;
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // every 6 hours
 /**
  * Delay before the startup run. Deployment log ingestion drops the first

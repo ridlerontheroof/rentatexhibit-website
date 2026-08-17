@@ -1,10 +1,16 @@
-# Woods Crossing Code Export Kit
+# Woods Crossing Code Export Kit — kit-v1.1.0
 
 Reusable production code extracted from **Exhibit on Superior** — a live
 leasing website built on the same Replit monorepo stack. This kit ships the
 proven machinery so Woods Crossing can reuse the availability feed, lead/tour
 routing, SEO build pipeline, and operational guard systems instead of
 rebuilding them from prose.
+
+**kit-v1.1.0 (2026-08-17):** All remaining Exhibit-specific literals moved
+behind environment variables / `property-config.json` fields. No hard-coded
+property values remain in any shipped `.ts`, `.tsx`, or `.mjs` file. Set the
+env vars documented in `config/env-vars.md` and CSP additions in
+`web/server/csp-property.mjs` — nothing else carries a property literal.
 
 **What ships:** server infrastructure + build tooling + guard scripts + config
 templates.  
