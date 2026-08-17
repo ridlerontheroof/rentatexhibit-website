@@ -77,12 +77,45 @@ Record `brand` in config.
 
 ### Phase 4 — Scaffold & build (from the kit)
 **In:** pinned kit release, config valid for `--phase build`.
-**Do:** generate the new project from the kit release; set `kitVersion`. Apply the config: identity,
-NAP/JSON-LD, brand tokens, AppFolio (database/propertyName/tourUnitName — G7), analytics IDs, email
-routing, redirects module generated from the APPROVED parity map. Wire ALL FOUR content systems live
-with empty property slots (see `docs/CONTENT_SYSTEM_WIRING.md` — the per-system instantiation
-contract): interpage linking + link-name guard, FAQ machinery, Knowledge Center, blog engine.
+**Do:** generate the new project from the kit release; set `kitVersion` to the pinned release (current
+pinned release: `kit-v1.1.0`). Apply the config: identity, NAP/JSON-LD, brand tokens, AppFolio
+(database/propertyName/tourUnitName — G7), analytics IDs, email routing, redirects module generated
+from the APPROVED parity map. Wire ALL FOUR content systems live with empty property slots (see
+`docs/CONTENT_SYSTEM_WIRING.md` — the per-system instantiation contract): interpage linking +
+link-name guard, FAQ machinery, Knowledge Center, blog engine.
 Only CONFIRMED facts (G1) enter copy; unresolved facts render nothing and stay in the register.
+
+**Env-var setup (kit-v1.1.0 — all required before `check:prepublish` can pass):**
+
+*Replit Secrets — api-server artifact:*
+`APPFOLIO_CLIENT_ID`, `APPFOLIO_CLIENT_SECRET`, `GMAIL_APP_PASSWORD`, `SESSION_SECRET`
+
+*Plain env vars — api-server artifact:*
+- `SITE_URL` — canonical `https://www.<domain>` URL (used by apex check, IndexNow, SEO digest, snapshot fetcher, post-publish watcher)
+- `ALLOWED_ORIGIN` — web artifact's deployed HTTPS origin for CORS (same as `SITE_URL` unless the API is on a separate subdomain)
+- `PROPERTY_NAME` — full marketing name used in email from-name, e.g. `Woods Crossing Apartments`
+- `APPFOLIO_DATABASE` — subdomain prefix from the AppFolio portal URL, e.g. `woodscrossingmgmt`
+- `APPFOLIO_PROPERTY_NAME` — exact property name for AppFolio row-matching (verify via unit_directory — G7), e.g. `Woods Crossing`
+- `APPFOLIO_LEAD_SOURCE_DEFAULT` — AppFolio lead-source label, e.g. `Website (WoodsCrossing)` (alnum + hyphens only inside parens)
+- `PROPERTY_TIMEZONE` — IANA timezone string, e.g. `America/Chicago`; always set explicitly — fallback is `America/Chicago` and wrong timezone causes booking-time errors
+- `GMAIL_SMTP_USER` — sending Gmail address (no fallback; missing causes silent send failures)
+- `LEASING_INBOX_EMAIL` — leasing team's notification inbox
+- `SEED_ALERT_EMAIL` — operational-alerts recipient
+- `INDEXNOW_KEY` — key string from indexnow.org; also host `<SITE_URL>/<key>.txt` before first publish
+
+*Plain env vars — web artifact:*
+- `VITE_GA4_MEASUREMENT_ID` — GA4 Measurement ID (required; missing throws at build time), e.g. `G-XXXXXXXXXX`
+- `VITE_UTM_STORAGE_KEY` — sessionStorage key for UTM capture, e.g. `woodscrossing_utm_params`
+- `VITE_API_URL` — deployed api-server origin + `/api`, e.g. `https://api.woodscrossing.replit.app/api`
+
+*CSP property file — `web/server/csp-property.mjs`:*
+Fill all four exports (`GTM_INJECTED_SCRIPT_HASHES`, `EXTRA_SCRIPT_SRC_HOSTS`,
+`EXTRA_CONNECT_SRC_HOSTS`, `EXTRA_FRAME_SRC_HOSTS`) before first deploy:
+1. Start the server with `CSP_ENFORCE=0` (default — report-only mode).
+2. Run `pnpm run check:csp` — it prints the sha256 hash(es) for any GTM Custom HTML tags your container injects at runtime.
+3. Paste those hashes into `GTM_INJECTED_SCRIPT_HASHES`; add property-specific third-party origins to the `EXTRA_*` arrays (analytics hosts, embed origins, map SDKs, etc.).
+4. Set `CSP_ENFORCE=1` only after `check:csp` passes cleanly.
+
 **Out:** building site with the kit's full guard suite green locally (`check:prepublish` equivalent).
 **Gate:** G1 for every fact used; G7 for AppFolio wiring.
 
