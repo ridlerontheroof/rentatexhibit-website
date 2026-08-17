@@ -1,3 +1,9 @@
+// validateEnv MUST be the first import so its module-level side effect runs
+// before appfolio, mailer, indexnow, and leadSource are evaluated. In
+// CJS-compiled output `require()` calls execute synchronously in declaration
+// order, which makes this ordering guarantee reliable.
+import "./lib/validateEnv";
+
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
@@ -11,17 +17,25 @@ import { logger } from "./lib/logger";
  * "https://www.woodscrossing.com". Maps to property-config identity.canonicalOrigin.
  *
  * A wildcard ("*") or any non-HTTPS/malformed value is rejected outright.
- * There is no hard-coded fallback — a missing ALLOWED_ORIGIN is a
- * misconfiguration and must be loud, not silent.
+ * In production there is no hard-coded fallback — a missing ALLOWED_ORIGIN is a
+ * misconfiguration caught by validateEnv() above. In non-production, falls
+ * back to "*" so local dev can start without every env var configured
+ * (validateEnv already logged the warning).
  */
 function resolveAllowedOrigin(): string {
   const raw = process.env.ALLOWED_ORIGIN;
-  if (raw === undefined || raw === "") {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (!raw || raw.trim() === "") {
+    if (!isProduction) return "*";
+    // Production: validateEnv() already threw above; this branch is
+    // unreachable, but kept for defence-in-depth.
     throw new Error(
       "ALLOWED_ORIGIN env var is required but not set. " +
       "Set it to your web artifact's deployed HTTPS origin (identity.canonicalOrigin from property-config.json).",
     );
   }
+
   const value = raw.trim();
   if (value === "*") throw new Error('ALLOWED_ORIGIN must not be "*"');
   let parsed: URL;
