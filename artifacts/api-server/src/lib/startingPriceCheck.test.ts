@@ -340,11 +340,11 @@ describe("runStartingPriceChecks", () => {
         : { status: 200, body: homepageWithJsonLdRent(BAKED_STALE) },
     );
     const result = await runStartingPriceChecks(log, fetchImpl);
-    // extractStartingRentFromText searches the raw HTML string, so the rent
-    // sentence inside the <script> tag is also found as "visible copy" — both
-    // visible-copy and FAQPage JSON-LD failures are reported.
-    expect(result.failures.length).toBeGreaterThanOrEqual(1);
-    expect(result.failures.some((f) => /FAQPage JSON-LD/.test(f))).toBe(true);
+    // extractStartingRentFromText strips <script> blocks before matching, so
+    // the rent sentence inside the JSON-LD block is not mistaken for visible
+    // copy — exactly one failure (the FAQPage JSON-LD one) is reported.
+    expect(result.failures.length).toBe(1);
+    expect(result.failures[0]).toMatch(/FAQPage JSON-LD/);
   });
 
   it("emits two failures when both visible copy and JSON-LD bake stale prices", async () => {

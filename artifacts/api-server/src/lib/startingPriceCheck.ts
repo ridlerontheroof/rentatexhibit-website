@@ -85,7 +85,10 @@ export interface StartingPriceCheckResult {
  * numeric dollar amount, or null if the pattern is absent (fallback wording).
  */
 export function extractStartingRentFromText(text: string): number | null {
-  const m = /Apartments currently start at \$(\d[\d,]+) per month/i.exec(text);
+  // Strip all <script>…</script> blocks so that prices appearing only inside
+  // JSON-LD or other script content are not mistaken for visible copy.
+  const stripped = text.replace(/<script[\s\S]*?<\/script>/gi, "");
+  const m = /Apartments currently start at \$(\d[\d,]+) per month/i.exec(stripped);
   if (!m) return null;
   return parseInt(m[1]!.replace(/,/g, ""), 10);
 }
