@@ -361,6 +361,7 @@ export function startAcceptedVolumeWatch(log: Logger = defaultLogger): void {
     SILENCE_CHECK_INTERVAL_MS,
   );
   timer.unref?.();
+  log.info({}, "Accepted-lead silence watchdog started");
   announceWatchdogStarted("accepted-lead-silence");
 }
 
