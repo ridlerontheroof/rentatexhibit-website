@@ -90,6 +90,21 @@ describe('recommended-property checklist', () => {
     expect(warnings.some((w) => w.includes('uploadDate') && w.includes('timezone'))).toBe(true);
   });
 
+  it('flags a Review missing datePublished, accepts one that carries it', () => {
+    const review = (extra: Record<string, unknown>) =>
+      JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Review',
+        reviewBody: 'Great place',
+        author: { '@type': 'Person', name: 'Resident' },
+        reviewRating: { '@type': 'Rating', ratingValue: 5, bestRating: 5, worstRating: 1 },
+        ...extra,
+      });
+    const warnings = checkRecommendedProperties([review({})]) as string[];
+    expect(warnings.some((w) => w.includes('Review') && w.includes('datePublished'))).toBe(true);
+    expect(checkRecommendedProperties([review({ datePublished: '2024-11-03' })])).toEqual([]);
+  });
+
   it('silences allowlisted omissions only', () => {
     const payload = JSON.stringify({
       '@context': 'https://schema.org',

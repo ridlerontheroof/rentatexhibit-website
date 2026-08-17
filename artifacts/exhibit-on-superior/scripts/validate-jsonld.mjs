@@ -181,9 +181,12 @@ export const RECOMMENDED_PROPERTIES = {
   Offer: ['price', 'priceCurrency', 'availability'],
   // Fee catalog on /fees: container node analogous to ItemList.
   OfferCatalog: ['name', 'itemListElement'],
-  // Review snippets on /reviews. No datePublished checklist entry: quotes are
-  // curated + live-merged without reliable per-review dates.
-  Review: ['author', 'reviewRating', 'reviewBody'],
+  // Review snippets on /reviews. datePublished is recommended: curated quotes
+  // carry their known Google publication dates and live-feed reviews pass
+  // their API publishTime through. A live review whose feed entry lacks a
+  // timestamp still omits the property (never fabricated) — that case only
+  // exists client-side, so prerendered pages must always satisfy this.
+  Review: ['author', 'reviewRating', 'reviewBody', 'datePublished'],
   AggregateRating: ['ratingValue', ['reviewCount', 'ratingCount'], 'bestRating', 'worstRating'],
   Rating: ['ratingValue', 'bestRating', 'worstRating'],
 };
