@@ -384,15 +384,15 @@ export function StartApplication() {
                     receive calls and text messages. Message frequency varies. I can opt out at
                     any time by replying STOP or text HELP for help. Standard message and data
                     rates may apply. The application is provided through AppFolio; all
-                    information provided will be treated in accordance with the AppFolio{' '}
+                    information provided will be treated in accordance with the{' '}
                     <a
                       href="https://www.appfolio.com/privacy"
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label="Privacy Policy (AppFolio)"
+                      aria-label="AppFolio Privacy Policy"
                       className="underline hover:text-primary"
                     >
-                      Privacy Policy
+                      AppFolio Privacy Policy
                     </a>{' '}
                     and{' '}
                     <a
