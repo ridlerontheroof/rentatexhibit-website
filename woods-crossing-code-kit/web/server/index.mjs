@@ -142,6 +142,10 @@ console.log(`Allowing ${inlineScriptHashes.length} inline-script hashes in scrip
 // ---------------------------------------------------------------------------
 // CSP directives — property-specific additions come from csp-property.mjs.
 // The Google tag entries below are common to every GTM-managed GA4 property.
+// connect-src includes https://*.analytics.google.com to cover regional
+// collect endpoints (e.g. region1.analytics.google.com) that Google routes
+// EU/consent-mode visitors through — the bare apex entry alone does not
+// match subdomains.
 // ---------------------------------------------------------------------------
 const CSP = [
   "default-src 'self'",
@@ -171,6 +175,7 @@ const CSP = [
     'https://www.googletagmanager.com',
     'https://www.google.com',
     'https://analytics.google.com',
+    'https://*.analytics.google.com',
     'https://stats.g.doubleclick.net',
     'https://ad.doubleclick.net',
     'https://googleads.g.doubleclick.net',
