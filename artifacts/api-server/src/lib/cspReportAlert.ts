@@ -103,6 +103,14 @@ export function violationSignature(v: CspViolation): string {
  * browser-extension noise. Extensions inject eval'd code into the page JS
  * environment; the site itself and every GTM tag intentionally avoid eval.
  * No GTM Custom HTML tag known to be in the container uses eval.
+ *
+ * inline blocked with an eval-code source: reports with blockedUri "inline"
+ * whose sourceFile is "eval code" / "sandbox eval code" are inline scripts
+ * INJECTED BY eval'd extension or in-app-webview code (seen from Google
+ * Business Profile in-app browser visits), not site markup. The site's own
+ * inline scripts are hash-allowlisted and verified by check:csp and the
+ * post-publish hydrated-SEO checks. A genuinely missing GTM tag hash reports
+ * with no eval-code sourceFile and still alerts.
  */
 export function isKnownNoise(v: CspViolation): boolean {
   const directive = v.effectiveDirective.toLowerCase();
@@ -110,6 +118,16 @@ export function isKnownNoise(v: CspViolation): boolean {
 
   // eval in script-src — browser-extension noise, not a site or GTM issue.
   if (blocked.toLowerCase() === "eval") return true;
+
+  // Inline script injected by eval'd (extension/webview) code — noise.
+  // Only suppressed when the reported source is eval code; inline violations
+  // without that fingerprint (e.g. a GTM tag missing its hash) still alert.
+  if (
+    blocked.toLowerCase() === "inline" &&
+    /(^|\s)eval code$/.test((v.sourceFile ?? "").trim().toLowerCase())
+  ) {
+    return true;
+  }
 
   // Country-domain ga-audiences: connect-src blocked on www.google.<ccTLD>
   // or google.<ccTLD>. Exclude .com (allowed in CSP) and google-analytics.com

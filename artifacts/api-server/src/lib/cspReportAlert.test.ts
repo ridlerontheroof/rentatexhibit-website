@@ -103,6 +103,48 @@ describe("isKnownNoise", () => {
     ).toBe(true);
   });
 
+  // --- inline injected by eval'd code ---
+  it("suppresses inline blocked with 'sandbox eval code' source (extension/webview noise)", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "inline",
+          sourceFile: "sandbox eval code",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("suppresses inline blocked with plain 'eval code' source", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "inline",
+          sourceFile: "eval code",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("still alerts on inline without an eval-code source (possible missing GTM hash)", () => {
+    expect(
+      isKnownNoise(
+        violation({ effectiveDirective: "script-src-elem", blockedUri: "inline" }),
+      ),
+    ).toBe(false);
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "inline",
+          sourceFile: "https://www.googletagmanager.com/gtm.js",
+        }),
+      ),
+    ).toBe(false);
+  });
+
   // --- country-domain ga-audiences ---
   it("suppresses country-domain google.ie (connect-src)", () => {
     expect(
