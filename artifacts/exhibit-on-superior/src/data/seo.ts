@@ -988,10 +988,10 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     label: 'Privacy Policy',
     title: 'Privacy Policy | Exhibit On Superior Apartments Chicago',
     description:
-      'Read the privacy policy for Exhibit On Superior in River North Chicago. Learn how we collect, use, store, and protect your personal information.',
-    dateModified: '2026-08-04',
+      'Privacy policy for Exhibit On Superior in Chicago, including SMS Terms & Conditions and Messaging Privacy Policy. How we collect and protect your information.',
+    dateModified: '2026-08-18',
     quickAnswer:
-      'This page explains how Exhibit On Superior collects, uses, and protects the information you share through the website.',
+      'This page explains how Exhibit On Superior collects, uses, and protects the information you share through the website, including SMS Terms & Conditions and Messaging Privacy Policy.',
     faqs: [],
     // Indexable on purpose: search engines (and audit tools) treat a
     // discoverable privacy policy as a site-trust signal, and a noindexed

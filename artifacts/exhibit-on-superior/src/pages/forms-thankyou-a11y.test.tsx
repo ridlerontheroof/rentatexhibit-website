@@ -76,7 +76,7 @@ async function fillContactForm(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText(/last name/i), 'Doe');
   await user.type(screen.getByLabelText(/^email/i), 'jane@example.com');
   await user.type(screen.getByLabelText(/^phone/i), '3125550100');
-  await user.type(screen.getByLabelText(/message/i), 'I would like more information please.');
+  await user.type(screen.getByLabelText(/^message/i), 'I would like more information please.');
   await user.click(screen.getByRole('button', { name: /send message/i }));
 }
 

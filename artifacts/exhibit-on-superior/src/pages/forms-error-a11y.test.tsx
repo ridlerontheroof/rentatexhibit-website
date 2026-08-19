@@ -122,12 +122,12 @@ describe('ContactUs form — error announcement wiring', () => {
     renderWithClient(<ContactUs />);
 
     await user.type(screen.getByLabelText(/email/i), 'not-an-email');
-    await user.type(screen.getByLabelText(/message/i), 'short'); // < 10 chars
+    await user.type(screen.getByLabelText(/^message/i), 'short'); // < 10 chars
     await user.click(screen.getByRole('button', { name: /send message/i }));
 
     await waitFor(() => expect(screen.getAllByRole('alert').length).toBeGreaterThan(0));
 
-    for (const label of [/first name/i, /last name/i, /email/i, /phone/i, /message/i]) {
+    for (const label of [/first name/i, /last name/i, /email/i, /phone/i, /^message/i]) {
       expectErrorWiring(screen.getByLabelText(label));
     }
 

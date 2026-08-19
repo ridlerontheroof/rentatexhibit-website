@@ -242,6 +242,60 @@ describe('ScheduleShowing', () => {
     );
   });
 
+  it('sends smsConsent: true in the book payload when the consent box is checked', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(screen.getByRole('checkbox', { name: /consent to receive SMS/i }));
+    await fillContactForm(user);
+    await user.click(await screen.findByRole('button', { name: '1:15 PM' }));
+    await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+    await screen.findByText(/you're all set/i);
+    // smsConsent travels in the book payload so the server writes the audit
+    // record server-side — no separate client-side leads call is needed.
+    await waitFor(() => {
+      const bookCall = fetchMock.mock.calls.find((c) => String(c[0]).includes('api/showings/book'));
+      expect(bookCall).toBeTruthy();
+      const body = JSON.parse(String((bookCall![1] as RequestInit).body));
+      expect(body.smsConsent).toBe(true);
+    });
+    expect(fetchMock.mock.calls.some((c) => String(c[0]).includes('api/leads'))).toBe(false);
+  });
+
+  it('sends smsConsent: false in the book payload when the consent box is unchecked', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    // Leave the box unchecked (default)
+    await fillContactForm(user);
+    await user.click(await screen.findByRole('button', { name: '1:15 PM' }));
+    await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+    await screen.findByText(/you're all set/i);
+    await waitFor(() => {
+      const bookCall = fetchMock.mock.calls.find((c) => String(c[0]).includes('api/showings/book'));
+      expect(bookCall).toBeTruthy();
+      const body = JSON.parse(String((bookCall![1] as RequestInit).body));
+      expect(body.smsConsent).toBe(false);
+    });
+    expect(fetchMock.mock.calls.some((c) => String(c[0]).includes('api/leads'))).toBe(false);
+  });
+
+  it('creates exactly one AppFolio guest card on booking success with no client-side leads call', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await fillContactForm(user);
+    await user.click(await screen.findByRole('button', { name: '1:15 PM' }));
+    await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+    await screen.findByText(/you're all set/i);
+    // One contact call (= one guest card). The SMS consent audit record is
+    // written server-side by the book route — no client-side leads call.
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.filter((c) => String(c[0]).includes('api/showings/contact'))).toHaveLength(1);
+      expect(fetchMock.mock.calls.filter((c) => String(c[0]).includes('api/leads'))).toHaveLength(0);
+    });
+  });
+
   it('shows "no longer available" when the contact step reports unit_not_listed', async () => {
     routeFetch({
       'api/showings/contact': () => jsonResponse({ error: 'unit_not_listed' }, 404),

@@ -213,3 +213,43 @@ describe("sweepUnnotifiedLeads retry behavior", () => {
     expect(updateChain.update).not.toHaveBeenCalled();
   });
 });
+
+describe("sweepUnnotifiedLeads — audit-only record exclusion", () => {
+  /**
+   * Audit-only leads are inserted with `notifiedAt` pre-stamped (see the leads
+   * route). The sweeper queries `WHERE notified_at IS NULL`, so those rows can
+   * never appear in the backlog and sendLeadNotification is never called for
+   * them. These tests guard the contract from either side:
+   *
+   * 1. Empty-backlog case: when the real DB filters out all audit-only rows
+   *    (notifiedAt IS NOT NULL), selectChain.rows is empty and no mail fires.
+   * 2. Normal-lead recovery: the sweeper still processes ordinary unsent leads
+   *    (notifiedAt = null) even when audit-only rows exist in the same table
+   *    — the filter is additive, not global.
+   */
+  it("never calls sendLeadNotification when audit-only rows (notifiedAt pre-stamped) are the only entries in the table", async () => {
+    // The real DB returns no rows because all entries have notifiedAt set.
+    // Simulate by leaving selectChain.rows empty (the isNull(notifiedAt) WHERE
+    // clause excludes every pre-stamped row the mock DB would have returned).
+    selectChain.rows = [];
+
+    await sweepUnnotifiedLeads(NOW);
+
+    expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  it("still recovers unsent normal leads even when audit-only rows exist alongside them", async () => {
+    // Normal unsent lead (notifiedAt null) — eligible for the sweeper.
+    selectChain.rows = [makeLead(30, new Date("2026-07-16T11:00:00Z"))];
+    sendMock.mockResolvedValue(true);
+
+    await sweepUnnotifiedLeads(NOW);
+
+    // The normal lead was notified; audit-only rows (notifiedAt pre-stamped,
+    // absent from selectChain.rows) were never touched.
+    expect(sendMock).toHaveBeenCalledTimes(1);
+    expect(sendMock).toHaveBeenCalledWith(
+      expect.objectContaining({ email: "ann@example.com" }),
+    );
+  });
+});

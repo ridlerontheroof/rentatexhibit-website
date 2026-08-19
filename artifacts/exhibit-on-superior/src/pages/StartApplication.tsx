@@ -111,6 +111,7 @@ export function StartApplication() {
     (unitInfo?.listingUrl && applyUrlForListing(unitInfo.listingUrl)) || APPLY_URL;
 
   const [handingOff, setHandingOff] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
   const forwardedRef = useRef(false);
 
   const {
@@ -149,6 +150,7 @@ export function StartApplication() {
         message: unitInfo
           ? `Apartment: ${unit}\nStarted an application from the website; continuing to the secure online application.`
           : 'Started an application from the website; continuing to the secure online application.',
+        smsConsent,
       },
       {
         onSuccess: () => trackLead('apply', { floorPlanPreference: unit || undefined }),
@@ -366,6 +368,27 @@ export function StartApplication() {
                         {errors.phone.message}
                       </p>
                     )}
+                  </div>
+
+                  {/* SMS opt-in consent checkbox (A2P/carrier compliance) */}
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="smsConsent"
+                      checked={smsConsent}
+                      onChange={(e) => setSmsConsent(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 flex-shrink-0 border-border accent-primary"
+                    />
+                    <label htmlFor="smsConsent" className="text-xs leading-relaxed text-muted-foreground">
+                      By checking this box, you consent to receive SMS messages from Exhibit On Superior
+                      regarding service updates and customer support. Message frequency may vary. Message
+                      and data rates may apply. Reply STOP to opt out at any time or HELP for assistance.
+                      Consent is not a condition of service.{' '}
+                      <Link href="/privacy-policy#sms-terms" aria-label="Privacy Policy — SMS Terms & Conditions" className="underline hover:text-primary">
+                        Privacy Policy
+                      </Link>
+                      .
+                    </label>
                   </div>
 
                   <button

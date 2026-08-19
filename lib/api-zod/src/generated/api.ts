@@ -44,7 +44,8 @@ export const CreateLeadBody = zod.object({
   "message": zod.string().max(createLeadBodyMessageMax).optional(),
   "preferredDate": zod.string().max(createLeadBodyPreferredDateMax).optional(),
   "unit": zod.string().regex(createLeadBodyUnitRegExp).optional().describe('Apartment number (e.g. \"0807\") when the tour or application-start request is for a specific unit; used to attach the prospect to that unit\'s AppFolio listing.'),
-  "source": zod.string().max(createLeadBodySourceMax).optional().describe('Visit-scoped attribution label captured from the landing URL\'s UTM tags (e.g. \"Website (GoogleAds-SpringPromo)\"). Sanitized server-side; omitted or invalid values fall back to the default \"Website (Exhibit)\".')
+  "source": zod.string().max(createLeadBodySourceMax).optional().describe('Visit-scoped attribution label captured from the landing URL\'s UTM tags (e.g. \"Website (GoogleAds-SpringPromo)\"). Sanitized server-side; omitted or invalid values fall back to the default \"Website (Exhibit)\".'),
+  "smsConsent": zod.boolean().optional().describe('Whether the visitor checked the SMS opt-in consent checkbox. Recorded with the lead for A2P/carrier compliance.'),
 })
 
 export const CreateLeadResponse = zod.object({

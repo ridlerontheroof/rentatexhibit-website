@@ -19,6 +19,7 @@
 import { Router, type IRouter } from "express";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
+import { db, leadsTable } from "@workspace/db";
 import { listableUidFromListingUrl, resolveTourUnitListableUid } from "../lib/appfolio";
 import { isTourUnitRequest } from "../lib/tourUnit";
 import {
@@ -324,6 +325,13 @@ const BookBody = z.object({
   firstName: z.string().min(1).max(100).optional(),
   lastName: z.string().min(1).max(100).optional(),
   email: z.string().email().max(200).optional(),
+  // Re-sent with the book body so the server can write a durable SMS consent
+  // audit record to the leads table after a verified booking completion.
+  phone: z.string().min(1).max(30).optional(),
+  // When present, a consent audit row is written with notifiedAt pre-stamped
+  // so the retry sweeper's isNull(notifiedAt) WHERE clause never picks it up.
+  // true = consent given, false = declined, absent = checkbox not shown.
+  smsConsent: z.boolean().optional(),
 });
 
 router.post("/showings/book", showingLimiter, async (req, res) => {
@@ -401,6 +409,42 @@ router.post("/showings/book", showingLimiter, async (req, res) => {
         email: input.email,
         slotTime: input.slotTime,
       });
+    }
+    // Write SMS consent audit record server-side after a verified booking
+    // completion. The contact fields are re-sent in the book body specifically
+    // for this. notifiedAt is pre-stamped so the retry sweeper's
+    // isNull(notifiedAt) query permanently excludes this audit-only row — the
+    // booking scheduler already created the guest card and sent its emails.
+    if (
+      input.smsConsent !== undefined &&
+      input.firstName &&
+      input.lastName &&
+      input.email &&
+      input.phone
+    ) {
+      const consentSuffix = input.smsConsent
+        ? '\n[SMS opt-in consent: given]'
+        : '\n[SMS opt-in consent: not given]';
+      try {
+        await db.insert(leadsTable).values({
+          type: 'tour',
+          firstName: input.firstName,
+          lastName: input.lastName,
+          email: input.email,
+          phone: input.phone,
+          message:
+            `Booking confirmation audit — slot: ${input.slotTime}, unit: ${input.unit}` +
+            consentSuffix,
+          preferredDate: input.slotTime.slice(0, 10),
+          notifiedAt: new Date(),
+        });
+        req.log.info({ unit: input.unit }, "SMS consent audit record written after booking");
+      } catch (auditErr) {
+        req.log.error(
+          { err: auditErr, unit: input.unit },
+          "SMS consent audit write failed; booking already confirmed to AppFolio",
+        );
+      }
     }
     req.log.info(
       { unit: input.unit, startAt: booked.startAt },

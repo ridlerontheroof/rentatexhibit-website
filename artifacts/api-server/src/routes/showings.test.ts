@@ -7,6 +7,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import express from "express";
 import request from "supertest";
 
+// DB mock for SMS consent audit write tests. Must be hoisted so the factory
+// closure can reference the mock fns before any imports run.
+const { showingsInsert, showingsValues } = vi.hoisted(() => {
+  const showingsValues = vi.fn().mockResolvedValue(undefined);
+  const showingsInsert = vi.fn().mockReturnValue({ values: showingsValues });
+  return { showingsInsert, showingsValues };
+});
+vi.mock("@workspace/db", () => ({
+  db: { insert: showingsInsert },
+  leadsTable: {},
+}));
+
 vi.mock("../lib/showings", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/showings")>();
   return {
@@ -71,6 +83,7 @@ import { detectNearTermSkip, detectSlotFormatDrift } from "../lib/showingFormatA
 import { recordSlotsFetchFailure } from "../lib/showingSlotsFailureAlert";
 import { sendGeneralTourConfirmation } from "../lib/email";
 import showingsRouter, { resetShowingHeartbeatForTests } from "./showings";
+import { db } from "@workspace/db";
 
 const LISTING_URL =
   "https://highlandrealestatepartners.appfolio.com/listings/detail/57dda21c-7fd6-446a-899a-c4776ceb4afa";
@@ -670,5 +683,88 @@ describe("POST /showings/book", () => {
       expect(res.status).toBe(502);
       expect(vi.mocked(sendGeneralTourConfirmation)).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe("POST /showings/book — SMS consent audit record", () => {
+  beforeEach(() => {
+    vi.mocked(db.insert).mockClear();
+    showingsValues.mockClear();
+  });
+
+  it("writes an audit row with notifiedAt pre-stamped when all contact fields and smsConsent are present", async () => {
+    const res = await request(makeApp())
+      .post("/showings/book")
+      .send({
+        ...booking,
+        firstName: "Alex",
+        lastName: "Chen",
+        email: "alex@example.com",
+        phone: "3125550100",
+        smsConsent: true,
+      });
+    expect(res.status).toBe(201);
+    expect(vi.mocked(db.insert)).toHaveBeenCalled();
+    const inserted = showingsValues.mock.calls[0]?.[0] as {
+      type: string;
+      firstName: string;
+      email: string;
+      message: string;
+      notifiedAt: unknown;
+    };
+    expect(inserted.type).toBe("tour");
+    expect(inserted.firstName).toBe("Alex");
+    expect(inserted.email).toBe("alex@example.com");
+    // notifiedAt pre-stamped → retry sweeper's isNull(notifiedAt) permanently
+    // excludes this audit-only row.
+    expect(inserted.notifiedAt).toBeInstanceOf(Date);
+    expect(inserted.message).toContain("[SMS opt-in consent: given]");
+  });
+
+  it("annotates the message with 'not given' when smsConsent is false", async () => {
+    await request(makeApp())
+      .post("/showings/book")
+      .send({
+        ...booking,
+        firstName: "Alex",
+        lastName: "Chen",
+        email: "alex@example.com",
+        phone: "3125550100",
+        smsConsent: false,
+      });
+    const inserted = showingsValues.mock.calls[0]?.[0] as { message: string };
+    expect(inserted.message).toContain("[SMS opt-in consent: not given]");
+  });
+
+  it("skips the audit write when smsConsent is absent from the book body", async () => {
+    // Base booking has no smsConsent — the condition `smsConsent !== undefined`
+    // is false, so no DB insert should happen.
+    await request(makeApp()).post("/showings/book").send(booking);
+    expect(vi.mocked(db.insert)).not.toHaveBeenCalled();
+  });
+
+  it("skips the audit write when contact fields are missing even if smsConsent is present", async () => {
+    // smsConsent is present but the contact fields (firstName/lastName/email/phone)
+    // are all absent — the guard requires all of them.
+    await request(makeApp())
+      .post("/showings/book")
+      .send({ ...booking, smsConsent: true });
+    expect(vi.mocked(db.insert)).not.toHaveBeenCalled();
+  });
+
+  it("still returns 201 when the audit DB write throws", async () => {
+    // A DB failure must never roll back a confirmed booking.
+    showingsValues.mockRejectedValueOnce(new Error("db down"));
+    const res = await request(makeApp())
+      .post("/showings/book")
+      .send({
+        ...booking,
+        firstName: "Alex",
+        lastName: "Chen",
+        email: "alex@example.com",
+        phone: "3125550100",
+        smsConsent: true,
+      });
+    expect(res.status).toBe(201);
   });
 });

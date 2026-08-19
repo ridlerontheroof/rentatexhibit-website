@@ -15,6 +15,8 @@ export interface CreateLeadPayload {
   xh_note?: string;
   /** Milliseconds between first typing and submit; omitted when the visitor never typed (see BotGuard). */
   elapsedMs?: number;
+  /** Whether the visitor checked the SMS opt-in consent checkbox. Recorded for A2P/carrier compliance. */
+  smsConsent?: boolean;
 }
 
 export interface LeadResponse {

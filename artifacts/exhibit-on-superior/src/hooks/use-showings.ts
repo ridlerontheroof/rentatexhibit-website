@@ -59,6 +59,10 @@ export interface ShowingBookPayload {
   firstName?: string;
   lastName?: string;
   email?: string;
+  // Re-sent with every book request so the server can write a durable SMS
+  // consent audit record after the verified booking completes.
+  phone?: string;
+  smsConsent?: boolean;
 }
 
 export interface BookedShowing {

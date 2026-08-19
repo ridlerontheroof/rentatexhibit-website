@@ -137,3 +137,6 @@ components:
           type: string
           maxLength: 200
           description: Visit-scoped attribution label captured from the landing URL's UTM tags (e.g. "Website (GoogleAds-SpringPromo)"). Sanitized server-side; omitted or invalid values fall back to the default "Website (Exhibit)".
+        smsConsent:
+          type: boolean
+          description: Whether the visitor checked the SMS opt-in consent checkbox. Recorded with the lead for A2P/carrier compliance.

@@ -125,6 +125,21 @@ router.post("/leads", leadLimiter, async (req, res) => {
     "Lead-source attribution (lead submission)",
   );
   try {
+    // Append SMS consent record to the message so it is preserved in the DB
+    // without requiring a schema migration. The flag is stored as a plain line
+    // so the leasing team can audit opt-in status from the notification emails
+    // and the lead table alike.
+    const consentSuffix =
+      input.smsConsent === true
+        ? '\n[SMS opt-in consent: given]'
+        : input.smsConsent === false
+          ? '\n[SMS opt-in consent: not given]'
+          : '';
+    const messageWithConsent =
+      input.message != null
+        ? input.message + consentSuffix
+        : consentSuffix.trim() || null;
+
     const [row] = await db
       .insert(leadsTable)
       .values({
@@ -133,7 +148,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
         lastName: input.lastName,
         email: input.email,
         phone: input.phone,
-        message: input.message ?? null,
+        message: messageWithConsent,
         preferredDate: input.preferredDate ?? null,
       })
       .returning();

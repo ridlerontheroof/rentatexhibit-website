@@ -43,7 +43,7 @@ vi.mock('./hooks/use-availability', () => ({
 }));
 
 vi.mock('./hooks/use-create-lead', () => ({
-  useCreateLead: () => ({ mutate: vi.fn(), isPending: false }),
+  useCreateLead: () => ({ mutate: vi.fn(), isPending: false, isError: false }),
 }));
 
 // Mutable per-test behaviour for the showing hooks.

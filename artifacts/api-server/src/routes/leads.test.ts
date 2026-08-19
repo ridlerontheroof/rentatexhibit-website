@@ -457,3 +457,56 @@ describe("POST /leads visit-source attribution", () => {
     );
   });
 });
+
+describe("POST /leads smsConsent annotation", () => {
+  function mockSmsLead(id: number) {
+    const row = {
+      id,
+      type: "contact",
+      firstName: "Jane",
+      lastName: "Doe",
+      email: "jane@example.com",
+      phone: "3125550100",
+      message: null as string | null,
+      preferredDate: null,
+      createdAt: new Date(),
+      notifiedAt: null,
+    };
+    insertMock.mockImplementation((_table: unknown) => ({
+      values: vi.fn().mockImplementation((values: { message?: string }) => ({
+        returning: vi.fn().mockResolvedValue([{ ...row, message: values.message ?? null }]),
+      })),
+    }));
+  }
+
+  const smsLead = {
+    type: "contact",
+    firstName: "Jane",
+    lastName: "Doe",
+    email: "jane@example.com",
+    phone: "3125550100",
+    xh_note: "",
+    elapsedMs: 9_000,
+  };
+
+  it("annotates the message with 'given' when smsConsent is true", async () => {
+    mockSmsLead(21);
+    await request(makeApp())
+      .post("/leads")
+      .send({ ...smsLead, smsConsent: true });
+    const valuesMock = insertMock.mock.results[0]?.value?.values;
+    const insertedMessage = (valuesMock?.mock?.calls[0]?.[0] as { message?: string })?.message ?? "";
+    expect(insertedMessage).toContain("given");
+    expect(insertedMessage).not.toContain("not given");
+  });
+
+  it("annotates the message with 'not given' when smsConsent is false", async () => {
+    mockSmsLead(22);
+    await request(makeApp())
+      .post("/leads")
+      .send({ ...smsLead, smsConsent: false });
+    const valuesMock = insertMock.mock.results[0]?.value?.values;
+    const insertedMessage = (valuesMock?.mock?.calls[0]?.[0] as { message?: string })?.message ?? "";
+    expect(insertedMessage).toContain("not given");
+  });
+});

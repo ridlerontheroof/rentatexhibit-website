@@ -65,6 +65,7 @@ export function ScheduleShowing() {
   const unitInfo = availability?.units.find((u) => u.unit === unit);
   const isOnline = useOnlineStatus();
 
+  const [smsConsent, setSmsConsent] = useState(false);
   const botGuard = useBotGuard();
   const contact = useShowingContact();
   const book = useBookShowing();
@@ -83,14 +84,14 @@ export function ScheduleShowing() {
   // Server rejected the contact submission itself (validation / bot guard).
   // Terminal for this attempt — no fallback lead is created.
   const [contactRejected, setContactRejected] = useState(false);
-  const leadSubmittedRef = useRef(false);
-
   // Screen-reader focus management: when a failure banner appears mid-flow
   // (slot taken, fallback, unit gone) move focus onto it so the change of
   // state is announced and the keyboard user is standing on the next action.
   const slotTakenRef = useRef<HTMLDivElement>(null);
   const fallbackRef = useRef<HTMLDivElement>(null);
   const unitGoneRef = useRef<HTMLDivElement>(null);
+  // Guard: the fallback lead is submitted at most once per visit.
+  const leadSubmittedRef = useRef(false);
 
   const slots = useShowingSlots(unit || null, !!credentials && !fallback && !booked && !unitGone);
 
@@ -139,6 +140,7 @@ export function ScheduleShowing() {
           phone: data.phone,
           unit: unit || undefined,
           message: `Apartment: ${unit}\nSubmitted via the online showing scheduler; automatic booking was unavailable, please reach out to arrange a time.`,
+          smsConsent,
         },
         { onSuccess: () => trackLead('tour', { floorPlanPreference: 'showing_fallback' }) },
       );
@@ -197,11 +199,23 @@ export function ScheduleShowing() {
         jwt: credentials.jwt,
         slotTime: selectedSlot.time,
         agentId: selectedSlot.agentId,
+        // Contact fields re-sent so the server can write the SMS consent
+        // audit record server-side after the verified booking completes.
+        ...(contactData
+          ? {
+              firstName: contactData.firstName,
+              lastName: contactData.lastName,
+              email: contactData.email,
+              phone: contactData.phone,
+              smsConsent,
+            }
+          : {}),
       },
       {
         onSuccess: (res) => {
-          setBooked({ slot: selectedSlot, fullAddress: res.fullAddress });
           trackLead('tour', { floorPlanPreference: 'showing_booked' });
+          const bookedInfo: BookedInfo = { slot: selectedSlot, fullAddress: res.fullAddress };
+          setBooked(bookedInfo);
         },
         onError: (err) => {
           if (err.code === 'slot_taken') {
@@ -423,6 +437,27 @@ export function ScheduleShowing() {
                     )}
                   </div>
 
+                  {/* SMS opt-in consent checkbox (A2P/carrier compliance) */}
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="smsConsent"
+                      checked={smsConsent}
+                      onChange={(e) => setSmsConsent(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 flex-shrink-0 border-border accent-primary"
+                    />
+                    <label htmlFor="smsConsent" className="text-xs leading-relaxed text-muted-foreground">
+                      By checking this box, you consent to receive SMS messages from Exhibit On Superior
+                      regarding service updates and customer support. Message frequency may vary. Message
+                      and data rates may apply. Reply STOP to opt out at any time or HELP for assistance.
+                      Consent is not a condition of service.{' '}
+                      <Link href="/privacy-policy#sms-terms" aria-label="Privacy Policy — SMS Terms & Conditions" className="underline hover:text-primary">
+                        Privacy Policy
+                      </Link>
+                      .
+                    </label>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={contact.isPending || !isOnline}
@@ -476,7 +511,6 @@ export function ScheduleShowing() {
                 <p className="mb-6 text-sm text-muted-foreground">
                   All times are Chicago local time at 165 W Superior St.
                 </p>
-
                 <SlotPicker
                   isPending={slots.isPending}
                   days={slots.data?.days}

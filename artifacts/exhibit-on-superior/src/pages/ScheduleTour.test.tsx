@@ -151,9 +151,63 @@ describe('ScheduleTour — general path ("No specific apartment")', () => {
     expect(document.body.textContent).not.toContain('Apt. Tour');
     expect(document.body.textContent).not.toMatch(/Apartment TOUR/i);
     expect(screen.getByRole('link', { name: /browse available apartments/i })).toBeTruthy();
-    // The scheduler's contact step already created the guest card — no
-    // duplicate plain lead anywhere in the happy path.
+    // The SMS consent audit record is written server-side by the booking route;
+    // no client-side leads call is made.
+    await waitFor(() => expect(callsTo('api/leads')).toHaveLength(0));
+  });
+
+  it('sends smsConsent: true in the book payload when the consent box is checked', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(screen.getByRole('checkbox', { name: /consent to receive SMS/i }));
+    await fillForm(user);
+    await user.click(await screen.findByRole('button', { name: '10:00 AM' }));
+    await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+    await screen.findByRole('heading', { name: /you're all set/i });
+    // smsConsent travels in the book payload so the server writes the audit
+    // record server-side — no separate client-side leads call is needed.
+    await waitFor(() => {
+      const bookCall = callsTo('api/showings/book')[0];
+      expect(bookCall).toBeTruthy();
+      const body = JSON.parse(bookCall[1]!.body as string);
+      expect(body.smsConsent).toBe(true);
+    });
     expect(callsTo('api/leads')).toHaveLength(0);
+  });
+
+  it('sends smsConsent: false in the book payload when the consent box is unchecked', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    // Leave the consent box unchecked (default)
+    await fillForm(user);
+    await user.click(await screen.findByRole('button', { name: '10:00 AM' }));
+    await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+    await screen.findByRole('heading', { name: /you're all set/i });
+    await waitFor(() => {
+      const bookCall = callsTo('api/showings/book')[0];
+      expect(bookCall).toBeTruthy();
+      const body = JSON.parse(bookCall[1]!.body as string);
+      expect(body.smsConsent).toBe(false);
+    });
+    expect(callsTo('api/leads')).toHaveLength(0);
+  });
+
+  it('creates exactly one AppFolio guest card on booking success with no client-side leads call', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await fillForm(user);
+    await user.click(await screen.findByRole('button', { name: '10:00 AM' }));
+    await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
+
+    await screen.findByRole('heading', { name: /you're all set/i });
+    await waitFor(() => {
+      // One contact call (= one guest card). The SMS consent audit record is
+      // written server-side by the book route — no client-side leads call.
+      expect(callsTo('api/showings/contact')).toHaveLength(1);
+      expect(callsTo('api/leads')).toHaveLength(0);
+    });
   });
 
   it('falls back to today\u2019s plain lead (with preferences, WITHOUT hosted link) when the contact step fails', async () => {
@@ -227,7 +281,9 @@ describe('ScheduleTour — specific-apartment path', () => {
       'Your in-person showing of Apartment 2801 is booked',
     );
     expect(screen.getByRole('link', { name: /back to apartment 2801/i })).toBeTruthy();
-    expect(callsTo('api/leads')).toHaveLength(0);
+    // The SMS consent audit record is written server-side by the booking route;
+    // no client-side leads call is made.
+    await waitFor(() => expect(callsTo('api/leads')).toHaveLength(0));
   });
 
   it('booking failure falls back to a lead WITH the hosted AppFolio link', async () => {

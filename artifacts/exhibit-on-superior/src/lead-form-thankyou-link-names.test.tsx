@@ -169,7 +169,7 @@ describe('ScheduleTour post-submit states label-in-name (WCAG 2.5.3)', () => {
 describe('ContactUs post-submit states label-in-name (WCAG 2.5.3)', () => {
   async function submitContactForm() {
     await fillCommonFields();
-    fireEvent.input(screen.getByLabelText(/message/i), {
+    fireEvent.input(screen.getByLabelText(/^message/i), {
       target: { value: 'I would like to know more about availability.' },
     });
     await act(async () => {

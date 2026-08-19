@@ -78,6 +78,7 @@ export function ScheduleTour() {
   const book = useBookShowing();
   const isOnline = useOnlineStatus();
   const [showBackOnline, dismissBackOnline] = useBackOnlineNotice();
+  const [smsConsent, setSmsConsent] = useState(false);
   const botGuard = useBotGuard();
   const { data: availability } = useAvailability();
   const search = useSearch();
@@ -184,6 +185,7 @@ export function ScheduleTour() {
           preferredDate: data.moveInDate,
           message: leadDetails(data) || undefined,
           unit: data.unit || undefined,
+          smsConsent,
           ...botGuard.collect(),
         },
         {
@@ -250,21 +252,24 @@ export function ScheduleTour() {
         jwt: credentials.jwt,
         slotTime: selectedSlot.time,
         agentId: selectedSlot.agentId,
-        // General path only: the server sends the Exhibit-branded booking
-        // confirmation itself (AppFolio's auto-emails for this path carry
-        // corporate branding). Unit-specific bookings stay AppFolio-owned.
-        ...(isGeneral && tourData
+        // Contact fields re-sent so the server can write the SMS consent
+        // audit record server-side after the verified booking completes.
+        // email is also used by the general-path Exhibit-branded confirmation.
+        ...(tourData
           ? {
               firstName: tourData.firstName,
               lastName: tourData.lastName,
               email: tourData.email,
+              phone: tourData.phone,
+              smsConsent,
             }
           : {}),
       },
       {
         onSuccess: (res) => {
-          setBooked({ slot: selectedSlot, fullAddress: res.fullAddress });
           trackLead('tour', { floorPlanPreference: 'tour_booked' });
+          const bookedInfo: BookedInfo = { slot: selectedSlot, fullAddress: res.fullAddress };
+          setBooked(bookedInfo);
         },
         onError: (err) => {
           if (err.code === 'slot_taken') {
@@ -686,6 +691,27 @@ export function ScheduleTour() {
                         placeholder="Preferred tour times, questions, etc."
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 resize-none"
                       />
+                    </div>
+
+                    {/* SMS opt-in consent checkbox (A2P/carrier compliance) */}
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        id="smsConsent"
+                        checked={smsConsent}
+                        onChange={(e) => setSmsConsent(e.target.checked)}
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 border-border accent-primary"
+                      />
+                      <label htmlFor="smsConsent" className="text-xs leading-relaxed text-muted-foreground">
+                        By checking this box, you consent to receive SMS messages from Exhibit On Superior
+                        regarding service updates and customer support. Message frequency may vary. Message
+                        and data rates may apply. Reply STOP to opt out at any time or HELP for assistance.
+                        Consent is not a condition of service.{' '}
+                        <Link href="/privacy-policy#sms-terms" aria-label="Privacy Policy — SMS Terms & Conditions" className="underline hover:text-primary">
+                          Privacy Policy
+                        </Link>
+                        .
+                      </label>
                     </div>
 
                     <button
