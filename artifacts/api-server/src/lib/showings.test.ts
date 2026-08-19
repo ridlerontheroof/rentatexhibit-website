@@ -355,8 +355,21 @@ describe("createShowingGuestCard", () => {
       phone_number: "3125550100",
       listable_uid: "uid-1",
       source: "Website (Exhibit)",
+      notes: "[SMS opt-in consent: not given]",
       skip_cta_for_new_inquiries: true,
     });
+  });
+
+  it.each([
+    [true, "[SMS opt-in consent: given]"],
+    [false, "[SMS opt-in consent: not given]"],
+  ])("writes the standard AppFolio consent note for smsConsent=%s", async (smsConsent, notes) => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(jsonResponse({ guest_card_id: 12345 }));
+    await createShowingGuestCard({ ...input, smsConsent });
+    const [, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(JSON.parse(String(opts.body)).notes).toBe(notes);
   });
 
   it("splits a two-word first name so AppFolio doesn't 422 the card", async () => {

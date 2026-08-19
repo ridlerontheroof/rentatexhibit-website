@@ -190,6 +190,9 @@ const ContactBody = z.object({
       return digits.length >= 10 && digits.length <= 15;
     }, "invalid phone"),
   unit: z.string().min(1).max(10),
+  // Optional only for backward compatibility with an already-open older page;
+  // current scheduler clients always send true or false.
+  smsConsent: z.boolean().optional(),
   // Visit-scoped attribution label from the web app (UTM capture). Loose cap
   // here; sanitizeLeadSource() is the real gate and falls back to the default.
   source: z.string().max(200).optional(),

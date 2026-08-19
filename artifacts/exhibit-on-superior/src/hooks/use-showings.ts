@@ -34,6 +34,8 @@ export interface ShowingContactPayload {
   email: string;
   phone: string;
   unit: string;
+  /** Existing scheduler checkbox; AppFolio receives it in the guest-card Notes field. */
+  smsConsent: boolean;
   /** Honeypot field — always empty for real visitors (see BotGuard). */
   xh_note?: string;
   /** Milliseconds between first typing and submit; omitted when the visitor never typed (see BotGuard). */

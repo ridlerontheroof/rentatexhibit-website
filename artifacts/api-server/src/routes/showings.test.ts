@@ -259,7 +259,14 @@ describe("the dedicated tour unit (reserved TOUR token)", () => {
   it("POST /showings/contact with TOUR books the guest card against the tour unit", async () => {
     const res = await request(makeApp())
       .post("/showings/contact")
-      .send({ firstName: "Jane", lastName: "Doe", email: "jane@example.com", phone: "3125550100", unit: "TOUR" });
+      .send({
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "jane@example.com",
+        phone: "3125550100",
+        unit: "TOUR",
+        smsConsent: false,
+      });
     expect(res.status).toBe(201);
     expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
       expect.objectContaining({ listableUid: TOUR_UID }),
@@ -280,6 +287,7 @@ const contact = {
   email: "jane@example.com",
   phone: "3125550100",
   unit: "2801",
+  smsConsent: false,
 };
 
 describe("POST /showings/contact", () => {
@@ -293,6 +301,28 @@ describe("POST /showings/contact", () => {
     );
     expect(vi.mocked(recordLiveShowingSuccess)).toHaveBeenCalled();
     expect(vi.mocked(recordLiveShowingFailure)).not.toHaveBeenCalled();
+  });
+
+  it.each([true, false])(
+    "passes smsConsent=%s into the AppFolio guest-card request",
+    async (smsConsent) => {
+      const res = await request(makeApp())
+        .post("/showings/contact")
+        .send({ ...contact, smsConsent });
+      expect(res.status).toBe(201);
+      expect(vi.mocked(createShowingGuestCard)).toHaveBeenCalledWith(
+        expect.objectContaining({ smsConsent }),
+      );
+    },
+  );
+
+  it("rejects a non-boolean SMS consent value without touching AppFolio", async () => {
+    const res = await request(makeApp())
+      .post("/showings/contact")
+      .send({ ...contact, smsConsent: "yes" });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("invalid_submission");
+    expect(vi.mocked(createShowingGuestCard)).not.toHaveBeenCalled();
   });
 
   it("defaults the guest-card source when the visit has no campaign tags", async () => {

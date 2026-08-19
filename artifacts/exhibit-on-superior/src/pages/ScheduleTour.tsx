@@ -219,6 +219,7 @@ export function ScheduleTour() {
         email: data.email,
         phone: data.phone,
         unit: data.unit || GENERAL_TOUR_UNIT,
+        smsConsent,
         ...botGuard.collect(),
       },
       {

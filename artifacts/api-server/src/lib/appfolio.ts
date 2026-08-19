@@ -512,6 +512,11 @@ export interface GuestCardInput {
   source?: string;
 }
 
+/** Standard AppFolio Notes value used by every guest-card creation path. */
+export function smsConsentNote(smsConsent: boolean | null | undefined): string {
+  return `[SMS opt-in consent: ${smsConsent === true ? "given" : "not given"}]`;
+}
+
 /**
  * AppFolio's guest-card endpoint 422s (empty body) whenever the FIRST name
  * contains whitespace — "Mary Jane" is rejected while multi-word LAST names
@@ -567,7 +572,7 @@ export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
         // AppFolio does not expose a first-class SMS-consent field on this
         // guest-card endpoint. Keep the status on the card itself so the
         // leasing team does not need to cross-reference the notification email.
-        notes: `[SMS opt-in consent: ${input.smsConsent === true ? "given" : "not given"}]`,
+        notes: smsConsentNote(input.smsConsent),
         skip_cta_for_new_inquiries: true,
       }),
     });

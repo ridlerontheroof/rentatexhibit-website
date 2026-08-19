@@ -165,7 +165,7 @@ export function ScheduleShowing() {
     setContactRejected(false);
     setContactData(data);
     contact.mutate(
-      { ...data, unit, ...botGuard.collect() },
+      { ...data, unit, smsConsent, ...botGuard.collect() },
       {
         onSuccess: (res) => {
           setCredentials(res);

@@ -156,11 +156,16 @@ describe('ScheduleTour — general path ("No specific apartment")', () => {
     await waitFor(() => expect(callsTo('api/leads')).toHaveLength(0));
   });
 
-  it('sends smsConsent: true in the book payload when the consent box is checked', async () => {
+  it('sends smsConsent: true through contact and booking when the consent box is checked', async () => {
     const user = userEvent.setup();
     renderPage();
     await user.click(screen.getByRole('checkbox', { name: /consent to receive SMS/i }));
     await fillForm(user);
+    await waitFor(() => {
+      const contactCall = callsTo('api/showings/contact')[0];
+      expect(contactCall).toBeTruthy();
+      expect(JSON.parse(contactCall[1]!.body as string).smsConsent).toBe(true);
+    });
     await user.click(await screen.findByRole('button', { name: '10:00 AM' }));
     await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
 
@@ -176,11 +181,16 @@ describe('ScheduleTour — general path ("No specific apartment")', () => {
     expect(callsTo('api/leads')).toHaveLength(0);
   });
 
-  it('sends smsConsent: false in the book payload when the consent box is unchecked', async () => {
+  it('sends smsConsent: false through contact and booking when the consent box is unchecked', async () => {
     const user = userEvent.setup();
     renderPage();
     // Leave the consent box unchecked (default)
     await fillForm(user);
+    await waitFor(() => {
+      const contactCall = callsTo('api/showings/contact')[0];
+      expect(contactCall).toBeTruthy();
+      expect(JSON.parse(contactCall[1]!.body as string).smsConsent).toBe(false);
+    });
     await user.click(await screen.findByRole('button', { name: '10:00 AM' }));
     await user.click(screen.getByRole('button', { name: /confirm appointment/i }));
 

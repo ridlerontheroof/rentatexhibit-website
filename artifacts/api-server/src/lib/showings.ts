@@ -39,7 +39,7 @@ const APPFOLIO_DB = process.env.APPFOLIO_DATABASE ?? "highlandrealestatepartners
 const LISTINGS_BASE = `https://${APPFOLIO_DB}.appfolio.com/listings`;
 
 import { DEFAULT_LEAD_SOURCE } from "./leadSource";
-import { normalizeGuestCardName } from "./appfolio";
+import { normalizeGuestCardName, smsConsentNote } from "./appfolio";
 
 /** Attribution shown to the leasing team; keep in sync with the guest-card push. */
 export const SHOWING_SOURCE = DEFAULT_LEAD_SOURCE;
@@ -376,6 +376,8 @@ export interface ShowingContactInput {
   email: string;
   phone: string;
   listableUid: string;
+  /** Whether the prospect checked the scheduler's existing SMS consent box. */
+  smsConsent?: boolean;
   /**
    * Pre-sanitized visit source label (see lib/leadSource.ts). Defaults to
    * SHOWING_SOURCE — routes must sanitize before passing anything else.
@@ -463,6 +465,9 @@ export async function createShowingGuestCard(
         phone_number: input.phone,
         listable_uid: input.listableUid,
         source,
+        // The public guest-card endpoint has no first-class consent field.
+        // Match the standard lead-form note so leasing sees the choice on the card.
+        notes: smsConsentNote(input.smsConsent),
         skip_cta_for_new_inquiries: true,
       }),
     });
