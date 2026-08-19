@@ -422,9 +422,6 @@ router.post("/showings/book", showingLimiter, async (req, res) => {
       input.email &&
       input.phone
     ) {
-      const consentSuffix = input.smsConsent
-        ? '\n[SMS opt-in consent: given]'
-        : '\n[SMS opt-in consent: not given]';
       try {
         await db.insert(leadsTable).values({
           type: 'tour',
@@ -432,11 +429,11 @@ router.post("/showings/book", showingLimiter, async (req, res) => {
           lastName: input.lastName,
           email: input.email,
           phone: input.phone,
-          message:
-            `Booking confirmation audit — slot: ${input.slotTime}, unit: ${input.unit}` +
-            consentSuffix,
+          message: `Booking confirmation audit — slot: ${input.slotTime}, unit: ${input.unit}`,
           preferredDate: input.slotTime.slice(0, 10),
           notifiedAt: new Date(),
+          // Dedicated column — no message-text parsing required.
+          smsConsent: input.smsConsent,
         });
         req.log.info({ unit: input.unit }, "SMS consent audit record written after booking");
       } catch (auditErr) {

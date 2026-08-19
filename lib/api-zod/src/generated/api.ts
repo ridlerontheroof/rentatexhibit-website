@@ -57,7 +57,8 @@ export const CreateLeadResponse = zod.object({
   "phone": zod.string(),
   "message": zod.string().nullish(),
   "preferredDate": zod.string().nullish(),
-  "createdAt": zod.string()
+  "createdAt": zod.string(),
+  "smsConsent": zod.boolean().nullish().describe('Whether the visitor opted in to SMS messaging. Null for older leads where the checkbox was not shown.')
 })
 
 

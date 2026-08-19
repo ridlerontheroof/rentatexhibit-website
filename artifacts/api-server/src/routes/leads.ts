@@ -125,21 +125,6 @@ router.post("/leads", leadLimiter, async (req, res) => {
     "Lead-source attribution (lead submission)",
   );
   try {
-    // Append SMS consent record to the message so it is preserved in the DB
-    // without requiring a schema migration. The flag is stored as a plain line
-    // so the leasing team can audit opt-in status from the notification emails
-    // and the lead table alike.
-    const consentSuffix =
-      input.smsConsent === true
-        ? '\n[SMS opt-in consent: given]'
-        : input.smsConsent === false
-          ? '\n[SMS opt-in consent: not given]'
-          : '';
-    const messageWithConsent =
-      input.message != null
-        ? input.message + consentSuffix
-        : consentSuffix.trim() || null;
-
     const [row] = await db
       .insert(leadsTable)
       .values({
@@ -148,8 +133,11 @@ router.post("/leads", leadLimiter, async (req, res) => {
         lastName: input.lastName,
         email: input.email,
         phone: input.phone,
-        message: messageWithConsent,
+        message: input.message ?? null,
         preferredDate: input.preferredDate ?? null,
+        // Store consent in a dedicated column for clean querying and audit
+        // export — no message-text parsing required.
+        smsConsent: input.smsConsent ?? null,
       })
       .returning();
 
@@ -163,6 +151,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
       message: row.message,
       preferredDate: row.preferredDate,
       createdAt: row.createdAt.toISOString(),
+      smsConsent: row.smsConsent,
     });
 
     res.status(201).json(data);
@@ -184,6 +173,9 @@ router.post("/leads", leadLimiter, async (req, res) => {
       // Shown on the leasing notification only when it's real campaign
       // attribution — the default label would just be noise on every lead.
       source: source === DEFAULT_LEAD_SOURCE ? null : source,
+      // Pass consent status through so the notification email can surface it
+      // clearly without the leasing team having to parse message text.
+      smsConsent: row.smsConsent,
     };
 
     // Notify the leasing team out-of-band. This is intentionally not awaited

@@ -184,6 +184,29 @@ describe("renderLeadNotification", () => {
     expect(r.html).toContain("CT");
     expect(r.html).not.toContain("2026-07-24T15:30");
   });
+
+  it("shows 'Opted in' for the SMS consent row when smsConsent is true", () => {
+    const r = renderLeadNotification(lead({ smsConsent: true }));
+    expect(r.html).toContain("SMS consent");
+    expect(r.html).toContain("Opted in");
+    expect(r.text).toContain("SMS consent");
+    expect(r.text).toContain("Opted in");
+  });
+
+  it("shows 'Declined' for the SMS consent row when smsConsent is false", () => {
+    const r = renderLeadNotification(lead({ smsConsent: false }));
+    expect(r.html).toContain("SMS consent");
+    expect(r.html).toContain("Declined");
+    expect(r.text).toContain("Declined");
+  });
+
+  it("omits the SMS consent row when smsConsent is null or undefined", () => {
+    for (const val of [null, undefined]) {
+      const r = renderLeadNotification(lead({ smsConsent: val }));
+      expect(r.html).not.toContain("SMS consent");
+      expect(r.text).not.toContain("SMS consent");
+    }
+  });
 });
 
 describe("renderBlogDraftReviewNote", () => {

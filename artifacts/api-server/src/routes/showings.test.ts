@@ -710,6 +710,7 @@ describe("POST /showings/book — SMS consent audit record", () => {
       firstName: string;
       email: string;
       message: string;
+      smsConsent: boolean | null;
       notifiedAt: unknown;
     };
     expect(inserted.type).toBe("tour");
@@ -718,10 +719,12 @@ describe("POST /showings/book — SMS consent audit record", () => {
     // notifiedAt pre-stamped → retry sweeper's isNull(notifiedAt) permanently
     // excludes this audit-only row.
     expect(inserted.notifiedAt).toBeInstanceOf(Date);
-    expect(inserted.message).toContain("[SMS opt-in consent: given]");
+    // Consent stored in dedicated column — message must be clean (no suffix).
+    expect(inserted.smsConsent).toBe(true);
+    expect(inserted.message).not.toContain("opt-in");
   });
 
-  it("annotates the message with 'not given' when smsConsent is false", async () => {
+  it("stores smsConsent=false in the dedicated column when consent is declined", async () => {
     await request(makeApp())
       .post("/showings/book")
       .send({
@@ -732,8 +735,9 @@ describe("POST /showings/book — SMS consent audit record", () => {
         phone: "3125550100",
         smsConsent: false,
       });
-    const inserted = showingsValues.mock.calls[0]?.[0] as { message: string };
-    expect(inserted.message).toContain("[SMS opt-in consent: not given]");
+    const inserted = showingsValues.mock.calls[0]?.[0] as { smsConsent: boolean | null; message: string };
+    expect(inserted.smsConsent).toBe(false);
+    expect(inserted.message).not.toContain("opt-in");
   });
 
   it("skips the audit write when smsConsent is absent from the book body", async () => {

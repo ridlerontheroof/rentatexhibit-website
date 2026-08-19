@@ -63,6 +63,11 @@ export interface LeadNotification {
    * re-sends omit it.
    */
   source?: string | null;
+  /**
+   * Whether the visitor opted in to SMS messaging. Null/omitted means the
+   * consent checkbox was not shown (older leads or non-consent flows).
+   */
+  smsConsent?: boolean | null;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -16,6 +16,9 @@ export const leadsTable = pgTable("leads", {
   // lead. Stays null when the notification email failed to send, so un-notified
   // leads can be audited and manually followed up on.
   notifiedAt: timestamp("notified_at"),
+  // Whether the visitor opted in to SMS messaging. Null means the consent
+  // checkbox was not shown (older leads). True = opted in, false = declined.
+  smsConsent: boolean("sms_consent"),
 });
 
 export const insertLeadSchema = createInsertSchema(leadsTable).omit({

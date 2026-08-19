@@ -1266,6 +1266,13 @@ export function renderLeadNotification(lead: LeadNotification): RenderedEmail {
   const typeLabel = leadTypeLabel(lead.type);
   const subject = `New ${typeLabel.toLowerCase()} lead: ${fullName}`;
 
+  const smsConsentLabel =
+    lead.smsConsent === true
+      ? "✓ Opted in"
+      : lead.smsConsent === false
+        ? "✗ Declined"
+        : null;
+
   const rows: Array<[string, string | null, string | null]> = [
     ["Type", typeLabel, null],
     ["Name", fullName, null],
@@ -1273,6 +1280,9 @@ export function renderLeadNotification(lead: LeadNotification): RenderedEmail {
     ["Phone", lead.phone, `tel:${lead.phone}`],
     ["Preferred date", lead.preferredDate, null],
     ["Message", lead.message, null],
+    // SMS consent — only shown when the checkbox was presented to this lead;
+    // omitted for older leads and flows that don't collect consent.
+    ...(lead.smsConsent != null ? ([["SMS consent", smsConsentLabel, null]] as Array<[string, string | null, string | null]>) : []),
     // Campaign attribution (e.g. "Website (GoogleAds-SpringPromo)") — only present
     // when the visit carried UTM tags, so default-source leads are unchanged.
     ...(lead.source ? ([["Source", lead.source, null]] as Array<[string, string | null, string | null]>) : []),
