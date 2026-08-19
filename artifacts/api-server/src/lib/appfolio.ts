@@ -503,6 +503,8 @@ export interface GuestCardInput {
   phone: string;
   /** The AppFolio listing UID the prospect is asking about. */
   listableUid: string;
+  /** Whether the prospect consented to SMS messaging on the lead form. */
+  smsConsent?: boolean | null;
   /**
    * Pre-sanitized visit source label (see lib/leadSource.ts). Defaults to
    * DEFAULT_LEAD_SOURCE — routes must sanitize before passing anything else.
@@ -562,6 +564,10 @@ export async function createGuestCard(input: GuestCardInput): Promise<boolean> {
         // sanitized source (see lib/leadSource.ts and the web app's
         // lib/visitSource.ts).
         source,
+        // AppFolio does not expose a first-class SMS-consent field on this
+        // guest-card endpoint. Keep the status on the card itself so the
+        // leasing team does not need to cross-reference the notification email.
+        notes: `[SMS opt-in consent: ${input.smsConsent === true ? "given" : "not given"}]`,
         skip_cta_for_new_inquiries: true,
       }),
     });

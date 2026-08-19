@@ -516,6 +516,27 @@ describe("createGuestCard", () => {
     expect(body.last_name).toBe("Jane Watson");
   });
 
+  it.each([
+    [true, "[SMS opt-in consent: given]"],
+    [false, "[SMS opt-in consent: not given]"],
+    [null, "[SMS opt-in consent: not given]"],
+  ])("includes SMS consent in the guest-card notes (%s)", async (smsConsent, expectedNotes) => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ guest_card_id: 3 }), { status: 201 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    await createGuestCard({
+      firstName: "Jane",
+      lastName: "Doe",
+      email: "jane@example.com",
+      phone: "3125550100",
+      listableUid: "b4a6281b-d2ac-4c79-ac63-ea7dc852df51",
+      smsConsent,
+    });
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.notes).toBe(expectedNotes);
+  });
+
   it("retries a 422'd campaign source once with the default label", async () => {
     const fetchMock = vi
       .fn()

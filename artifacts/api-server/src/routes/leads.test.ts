@@ -287,11 +287,14 @@ describe("POST /leads visit-source attribution", () => {
 
   it("tags the guest card with the default source when no campaign is present", async () => {
     mockAcceptedTour(10);
-    const res = await request(makeApp()).post("/leads").send(tourLead);
+    const res = await request(makeApp()).post("/leads").send({ ...tourLead, smsConsent: true });
     expect(res.status).toBe(201);
     await flush();
     expect(vi.mocked(createGuestCard)).toHaveBeenCalledWith(
-      expect.objectContaining({ source: "Website (Exhibit)" }),
+      expect.objectContaining({
+        source: "Website (Exhibit)",
+        smsConsent: true,
+      }),
     );
     // Default-source leads keep the notification email unchanged.
     expect(vi.mocked(sendLeadNotification)).toHaveBeenCalledWith(

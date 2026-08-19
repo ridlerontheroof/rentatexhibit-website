@@ -232,6 +232,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
             phone: row.phone,
             listableUid,
             source,
+            smsConsent: input.smsConsent,
           });
           req.log.info(
             { leadId: row.id, unit },
