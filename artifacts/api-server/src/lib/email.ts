@@ -44,29 +44,41 @@ const LEASING_INBOX_EMAIL =
 /** Shape of the data we need to build a lead notification email. */
 export interface LeadNotification {
   type: string;
+
   firstName: string;
+
   lastName: string;
+
   email: string;
+
   phone: string;
+
   message: string | null;
+
   preferredDate: string | null;
+
   createdAt: Date;
   /**
    * Apartment number the tour lead named, when it came through the
    * "Request a Showing" fallback form (units without a posted AppFolio
    * listing). Not persisted on the leads table, so retry re-sends omit it.
    */
+
   unit?: string | null;
   /**
    * Campaign attribution captured from the visit's UTM tags ("Website (GoogleAds-SpringPromo)"), already sanitized server-side. Null/omitted for
    * default-source leads; not persisted on the leads table, so retry
    * re-sends omit it.
    */
+
   source?: string | null;
   /**
-   * Whether the visitor opted in to SMS messaging. Null/omitted means the
-   * consent checkbox was not shown (older leads or non-consent flows).
+   * Whether the prospect checked the SMS opt-in box on the lead form.
+   * `true` = consented, `false` = declined, `null`/omitted = field was not
+   * present (older form submissions or retry re-sends). Shown only in the
+   * leasing team notification, never in the prospect confirmation.
    */
+
   smsConsent?: boolean | null;
 }
 
