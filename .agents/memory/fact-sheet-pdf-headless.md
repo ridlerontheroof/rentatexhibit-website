@@ -18,3 +18,9 @@ The generate-fact-sheet script reprints its PDF automatically when facts change:
 **Update (Jul 2026):** the `~/.cache/ms-playwright/chromium-*` copy fails with missing `libglib-2.0.so.0`; use the `/nix/store/*-playwright-browsers-chromium/chromium-*/chrome-linux/chrome` binary instead — it also works for `--screenshot=` captures of local HTML (used for email template previews).
 
 **Screenshot gotcha (Jul 2026):** `--headless=new` CLI `--screenshot` captures a blank, unpainted frame with the nix-store Chromium (even with virtual-time-budget / compositor flags); use `--headless=old` for screenshots. PDF printing works fine in new headless.
+
+**Playwright gotcha (Aug 2026):** the bundled browser cache has the same missing-library failure. Launch Playwright with an explicit nix-store `executablePath`. The skill runner sanitizes absolute script paths, so pipe `/tmp` scripts through stdin instead of passing the path. On prerendered React pages, wait for hydration before filling forms or hydration can reset values typed into the SSR DOM.
+
+**Why:** These three failures look like an unavailable browser or broken form but are harness/environment issues; repeated retries without changing the browser path, runner input, and hydration timing produce misleading results.
+
+**How to apply:** For browser verification scripts, discover a working nix-store Chromium, use headless mode when no display server exists, feed the script over stdin, and wait for the hydrated app before entering data.
