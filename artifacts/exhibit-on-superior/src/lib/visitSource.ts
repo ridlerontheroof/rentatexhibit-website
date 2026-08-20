@@ -109,6 +109,14 @@ export function visitSourceFromUrl(url: string): string | null {
     for (const clickId of ['gclid', 'gbraid', 'wbraid']) {
       if (params.get(clickId)?.trim()) return sanitizeVisitSource('Website (GoogleAds)');
     }
+    // Zillow's live "Visit website" redirect uses its own stable referral
+    // parameter rather than UTM tags:
+    //   /available-units?zgRef=zillow
+    // Preserve that partner attribution for the visit. Keep this after Google
+    // click IDs so an explicitly auto-tagged paid click still wins.
+    if (params.get('zgRef')?.trim().toLowerCase() === 'zillow') {
+      return sanitizeVisitSource('Website (Zillow)');
+    }
     // No campaign tags at all — a hidden channel landing path (QR/print
     // short URL) is the only remaining attribution.
     return channelSourceFromPath(parsed.pathname);

@@ -78,3 +78,4 @@
 - [Stale-bundle asset retention](asset-retention.md) — previous builds' hashed bundles carried into each dist via gitignored store; lazy loaders reload once on stale chunks; check:assets guards live pages.
 - [Canvas comps need in-repo evidence](canvas-comps-review-evidence.md) — completion review can't see canvas shapes; commit a Board component + rationale doc or the task gets rejected.
 - [Prod DB writes impossible from workspace](prod-db-write-paths.md) — all workspace paths are read-only; hand owner exact SQL for the production pane, verify with read-only SELECT.
+- [One-shot validation workflows](one-shot-validation-workflows.md) — invoke their commands directly; restarting them can return early and leave a stale running state.

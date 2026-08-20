@@ -83,6 +83,16 @@ describe('visitSourceFromUrl', () => {
     ).toBe('Website (GoogleAds-Spring)');
   });
 
+  it('maps Zillow\'s live zgRef redirect parameter to "Website (Zillow)"', () => {
+    expect(
+      visitSourceFromUrl(
+        'https://www.rentatexhibit.com/available-units?zgRef=zillow',
+      ),
+    ).toBe('Website (Zillow)');
+    expect(visitSourceFromUrl('https://x.com/?zgRef=ZILLOW')).toBe('Website (Zillow)');
+    expect(visitSourceFromUrl('https://x.com/?zgRef=unrelated')).toBeNull();
+  });
+
   it('strips junk from campaigns down to safe tokens', () => {
     expect(
       visitSourceFromUrl(
@@ -172,6 +182,13 @@ describe('sanitizeVisitSource', () => {
 });
 
 describe('capture + persistence across in-site navigation', () => {
+  it('remembers Zillow attribution across the visit', () => {
+    captureVisitSource('https://www.rentatexhibit.com/available-units?zgRef=zillow');
+    expect(getVisitSource()).toBe('Website (Zillow)');
+    captureVisitSource('https://www.rentatexhibit.com/schedule-showing?unit=0208');
+    expect(getVisitSource()).toBe('Website (Zillow)');
+  });
+
   it('remembers the source for the visit and survives later tagless reads', () => {
     captureVisitSource('https://x.com/?utm_source=google&utm_campaign=tour_blitz');
     expect(getVisitSource()).toBe('Website (GoogleAds-TourBlitz)');
