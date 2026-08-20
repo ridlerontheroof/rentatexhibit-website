@@ -145,6 +145,30 @@ describe("isKnownNoise", () => {
     ).toBe(false);
   });
 
+  // --- Chrome extension source ---
+  it("suppresses the reported apis.google.com load when source is chrome-extension", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "https://apis.google.com/js/client.js",
+          sourceFile: "chrome-extension",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("still alerts on the same Google script when no extension source is reported", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "https://apis.google.com/js/client.js",
+        }),
+      ),
+    ).toBe(false);
+  });
+
   // --- country-domain ga-audiences ---
   it("suppresses country-domain google.ie (connect-src)", () => {
     expect(

@@ -111,20 +111,33 @@ export function violationSignature(v: CspViolation): string {
  * inline scripts are hash-allowlisted and verified by check:csp and the
  * post-publish hydrated-SEO checks. A genuinely missing GTM tag hash reports
  * with no eval-code sourceFile and still alerts.
+ *
+ * chrome-extension source: Chrome reports the source of an extension-injected
+ * script as exactly "chrome-extension". The observed blocked
+ * https://apis.google.com/js/client.js load is not a site dependency, so the
+ * resource must remain blocked rather than weakening the site's script-src to
+ * accommodate a visitor's extension. Keep the report in the warning log but
+ * omit it from the operational alert email.
  */
 export function isKnownNoise(v: CspViolation): boolean {
   const directive = v.effectiveDirective.toLowerCase();
   const blocked = v.blockedUri.trim();
+  const source = (v.sourceFile ?? "").trim().toLowerCase();
 
   // eval in script-src — browser-extension noise, not a site or GTM issue.
   if (blocked.toLowerCase() === "eval") return true;
+
+  // Chrome extension-injected script — the exact browser-reported source
+  // identifies the injection, so do not allow the blocked resource for the
+  // site. It remains logged above, but must not consume an email-alert slot.
+  if (source === "chrome-extension") return true;
 
   // Inline script injected by eval'd (extension/webview) code — noise.
   // Only suppressed when the reported source is eval code; inline violations
   // without that fingerprint (e.g. a GTM tag missing its hash) still alert.
   if (
     blocked.toLowerCase() === "inline" &&
-    /(^|\s)eval code$/.test((v.sourceFile ?? "").trim().toLowerCase())
+    /(^|\s)eval code$/.test(source)
   ) {
     return true;
   }

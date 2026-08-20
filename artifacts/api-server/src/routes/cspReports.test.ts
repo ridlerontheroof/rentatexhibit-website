@@ -151,6 +151,64 @@ describe("POST /csp-reports", () => {
     );
   });
 
+  it("logs but does not email the Chrome-extension apis.google.com report", async () => {
+    const app = makeApp();
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": "https://www.rentatexhibit.com/",
+            "effective-directive": "script-src-elem",
+            "blocked-uri": "https://apis.google.com/js/client.js",
+            "source-file": "chrome-extension",
+            disposition: "enforce",
+          },
+        }),
+      );
+    expect(res.status).toBe(204);
+    await settle();
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effectiveDirective: "script-src-elem",
+        blockedUri: "https://apis.google.com/js/client.js",
+        sourceFile: "chrome-extension",
+      }),
+      "Visitor browser reported a CSP violation",
+    );
+    expect(sendCspViolationAlert).not.toHaveBeenCalled();
+  });
+
+  it("emails the same blocked Google script when it has no extension source", async () => {
+    const app = makeApp();
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": "https://www.rentatexhibit.com/",
+            "effective-directive": "script-src-elem",
+            "blocked-uri": "https://apis.google.com/js/client.js",
+            disposition: "enforce",
+          },
+        }),
+      );
+    expect(res.status).toBe(204);
+    await settle();
+
+    expect(sendCspViolationAlert).toHaveBeenCalledTimes(1);
+    expect(sendCspViolationAlert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effectiveDirective: "script-src-elem",
+        blockedUri: "https://apis.google.com/js/client.js",
+        sourceFile: null,
+      }),
+    );
+  });
+
   it("treats different query strings on the same blocked origin as one signature", async () => {
     const app = makeApp();
     for (const url of [
