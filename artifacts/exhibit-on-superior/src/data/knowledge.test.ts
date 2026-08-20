@@ -10,6 +10,7 @@ import {
   knowledgeDescription,
   knowledgeJsonLd,
   knowledgeOgImage,
+  knowledgePath,
   knowledgeTitle,
   buildKnowledgeSeoModel,
   reviewAgeDays,
@@ -17,6 +18,7 @@ import {
   wordCount,
 } from './knowledge';
 import { PAGE_SEO } from './seo';
+import { linkifyText } from './blogLinkifier';
 // @ts-expect-error — plain-Node script module without type declarations
 import { loadKnowledgeArticles } from '../../scripts/lib/knowledge-slugs.mjs';
 
@@ -99,6 +101,26 @@ describe('knowledge center content rules', () => {
         // the path portion must still be a real route.
         const path = l.href.split('?')[0];
         expect(SITE_ROUTES.has(path), `${a.slug} -> unknown route ${l.href}`).toBe(true);
+      }
+    }
+  });
+
+  it('mapped in-prose links are unique per article and point at real routes', () => {
+    for (const a of KNOWLEDGE_ARTICLES) {
+      // Mirror KnowledgeArticle: one shared set covers every section
+      // paragraph and prevents repeated destinations within the article.
+      const usedDests = new Set<string>();
+      const linked = a.sections.flatMap((s) => s.paragraphs).flatMap((text) =>
+        linkifyText(text, usedDests, knowledgePath(a.slug)).filter((segment) => segment.href),
+      );
+      const hrefs = linked.map((segment) => segment.href!);
+
+      expect(
+        new Set(hrefs).size,
+        `${a.slug} repeats an in-prose destination; links should appear once per article`,
+      ).toBe(hrefs.length);
+      for (const href of hrefs) {
+        expect(SITE_ROUTES.has(href), `${a.slug} -> unknown in-prose route ${href}`).toBe(true);
       }
     }
   });

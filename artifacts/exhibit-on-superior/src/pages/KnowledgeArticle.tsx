@@ -10,6 +10,38 @@ import {
   knowledgeUpdatedDisplay,
   knowledgeUpdated,
 } from '../data/knowledge';
+import { linkifyText } from '../data/blogLinkifier';
+
+/**
+ * Render Knowledge Center prose as plain text plus naturally occurring
+ * internal links. The destination set is shared by every expanded paragraph
+ * so each destination is linked at most once per article. The direct answer
+ * remains one literal text node so it mirrors the FAQPage JSON-LD exactly.
+ */
+function LinkedProse({
+  text,
+  usedDests,
+  selfPath,
+}: {
+  text: string;
+  usedDests: Set<string>;
+  selfPath: string;
+}) {
+  const segments = linkifyText(text, usedDests, selfPath);
+  return (
+    <>
+      {segments.map((seg, i) =>
+        seg.href ? (
+          <Link key={i} href={seg.href} className="text-primary underline underline-offset-4">
+            {seg.text}
+          </Link>
+        ) : (
+          <span key={i}>{seg.text}</span>
+        ),
+      )}
+    </>
+  );
+}
 
 /**
  * One Knowledge Center article: the question as the H1, a direct under-100-word
@@ -22,6 +54,10 @@ export function KnowledgeArticle() {
   const { slug } = useParams<{ slug: string }>();
   const article = slug ? knowledgeArticle(slug) : undefined;
   if (!article) return <NotFound />;
+  // Created fresh per render and consumed in document order so the first
+  // natural phrase gets each destination link in both SSR and the browser.
+  const usedDests = new Set<string>();
+  const selfPath = knowledgePath(article.slug);
 
   return (
     <>
@@ -85,7 +121,7 @@ export function KnowledgeArticle() {
                 ) : null}
                 {s.paragraphs.map((p) => (
                   <p key={p.slice(0, 40)} className="leading-relaxed text-muted-foreground mb-4">
-                    {p}
+                    <LinkedProse text={p} usedDests={usedDests} selfPath={selfPath} />
                   </p>
                 ))}
               </div>
