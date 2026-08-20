@@ -1,5 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Logger } from "pino";
+import { startApexRedirectCheck } from "./apexRedirectCheck";
+import { startApplyLinkCheck } from "./applyLinkCheck";
+import { startAcceptedVolumeWatch } from "./botGuardAlert";
+import { startFloorPlanPageCheck } from "./floorPlanCheck";
+import { startGa4DataCheck } from "./ga4DataCheck";
+import { startGtmTrackingCheck } from "./gtmCheck";
+import { startKnowledgePageCheck } from "./knowledgeCheck";
+import { startLegacyRedirectCheck } from "./redirectCheck";
+import { startRentedNoindexCheck } from "./rentedCheck";
+import { startSeoWeeklyDigest } from "./seoWeeklyDigest";
+import { startShowingSchedulerCheck } from "./showingSchedulerCheck";
+import { startStartingPriceCheck } from "./startingPriceCheck";
 import {
   announceWatchdogStarted,
   EXPECTED_WATCHDOGS,
@@ -9,6 +21,7 @@ import {
   STARTUP_SUMMARY_DELAY_MS,
   __resetStartupSummaryForTests,
 } from "./startupSummary";
+import { startTourUnitCheck } from "./tourUnitCheck";
 
 function makeLogger() {
   const info = vi.fn();
@@ -17,6 +30,7 @@ function makeLogger() {
 
 afterEach(() => {
   __resetStartupSummaryForTests();
+  vi.unstubAllEnvs();
   vi.useRealTimers();
 });
 
@@ -89,5 +103,54 @@ describe("getStartedWatchdogs", () => {
     announceWatchdogStarted("apex-redirect");
     announceWatchdogStarted("knowledge-pages");
     expect(getStartedWatchdogs()).toEqual(["apex-redirect", "knowledge-pages"]);
+  });
+});
+
+describe("watchdog starter gates", () => {
+  const watchdogStarters = [
+    ["apex-redirect", startApexRedirectCheck],
+    ["knowledge-pages", startKnowledgePageCheck],
+    ["floor-plan-pages", startFloorPlanPageCheck],
+    ["showing-scheduler", startShowingSchedulerCheck],
+    ["tour-unit", startTourUnitCheck],
+    ["apply-link", startApplyLinkCheck],
+    ["rented-noindex", startRentedNoindexCheck],
+    ["legacy-redirects", startLegacyRedirectCheck],
+    ["ga4-tracking", startGtmTrackingCheck],
+    ["ga4-visitor-data", startGa4DataCheck],
+    ["accepted-lead-silence", startAcceptedVolumeWatch],
+    ["starting-price", startStartingPriceCheck],
+    ["seo-weekly-digest", startSeoWeeklyDigest],
+  ] as const;
+
+  it("does not announce any watchdog outside production", () => {
+    vi.stubEnv("NODE_ENV", "test");
+    const { log } = makeLogger();
+
+    expect(watchdogStarters.map(([name]) => name)).toEqual(EXPECTED_WATCHDOGS);
+
+    for (const [name, start] of watchdogStarters) {
+      __resetStartupSummaryForTests();
+      start(log);
+      expect(
+        getStartedWatchdogs(),
+        `${name} must not announce outside production`,
+      ).toEqual([]);
+    }
+  });
+
+  it("leaves the complete expected roster missing outside production", () => {
+    vi.stubEnv("NODE_ENV", "test");
+    const { log } = makeLogger();
+
+    for (const [, start] of watchdogStarters) {
+      start(log);
+    }
+
+    const started = getStartedWatchdogs();
+    expect(started).toEqual([]);
+    expect(EXPECTED_WATCHDOGS.filter((name) => !started.includes(name))).toEqual(
+      [...EXPECTED_WATCHDOGS],
+    );
   });
 });
