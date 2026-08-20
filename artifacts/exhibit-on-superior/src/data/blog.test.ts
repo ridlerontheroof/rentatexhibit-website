@@ -16,6 +16,7 @@ import {
 import { ALL_BLOG_ARTICLES } from './blogArticles';
 import { BLOG_AUTHORS } from './blogAuthors';
 import { CLUSTER_PLAN, PLANNED_SLUGS } from './blogClusterPlan';
+import { linkifyText } from './blogLinkifier';
 import { IMAGE_MANIFEST } from './imageManifest';
 import { PAGE_SEO } from './seo';
 
@@ -151,6 +152,26 @@ describe('blog E-E-A-T authorship', () => {
 
 describe('blog internal linking (no orphans)', () => {
   const published = new Set(BLOG_ARTICLES.map((a) => a.slug));
+
+  it('every published article has at least one in-prose internal link', () => {
+    for (const a of ALL_BLOG_ARTICLES) {
+      if (a.draft) continue;
+
+      // Mirror BlogArticle: each prose item is linkified independently while
+      // destinations remain shared across the full article body.
+      const usedDests = new Set<string>();
+      const linked = a.sections.flatMap((s) =>
+        [...s.paragraphs, ...(s.list ?? [])].flatMap((text) =>
+          linkifyText(text, usedDests, blogPath(a.slug)).filter((segment) => segment.href),
+        ),
+      );
+
+      expect(
+        linked.length,
+        `${a.slug} has no in-prose internal links; expand BLOG_LINK_PHRASES in blogLinkifier.ts`,
+      ).toBeGreaterThan(0);
+    }
+  });
 
   it('related links resolve to published articles', () => {
     for (const a of BLOG_ARTICLES) {
