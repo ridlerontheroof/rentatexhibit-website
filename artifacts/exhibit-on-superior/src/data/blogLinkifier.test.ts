@@ -5,6 +5,7 @@
 // reconstruction, and no-match passthrough.
 import { describe, expect, it } from 'vitest';
 import { linkifyText, BLOG_LINK_PHRASES } from './blogLinkifier';
+import { PAGE_SEO } from './seo';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -264,6 +265,16 @@ describe('BLOG_LINK_PHRASES map integrity', () => {
     for (const { href } of BLOG_LINK_PHRASES) {
       expect(href).toMatch(/^\//);
       expect(href.length).toBeGreaterThan(1);
+    }
+  });
+
+  it('every destination resolves to a current PAGE_SEO route', () => {
+    const routes = new Set(Object.keys(PAGE_SEO));
+    for (const { pattern, href } of BLOG_LINK_PHRASES) {
+      expect(
+        routes.has(href),
+        `BLOG_LINK_PHRASES entry ${pattern} links to stale destination "${href}"; update its href`,
+      ).toBe(true);
     }
   });
 
