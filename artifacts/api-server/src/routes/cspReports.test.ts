@@ -121,6 +121,34 @@ describe("POST /csp-reports", () => {
     );
   });
 
+  it("logs but does not email an incomplete legacy report with no blocked resource", async () => {
+    const app = makeApp();
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": "https://www.rentatexhibit.com/",
+            "violated-directive":
+              "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com",
+          },
+        }),
+      );
+    expect(res.status).toBe(204);
+    await settle();
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effectiveDirective: "script-src",
+        blockedUri: "",
+        documentUri: "https://www.rentatexhibit.com/",
+      }),
+      "Visitor browser reported a CSP violation",
+    );
+    expect(sendCspViolationAlert).not.toHaveBeenCalled();
+  });
+
   it("dedupes repeat reports of the same signature to a single email", async () => {
     const app = makeApp();
     for (let i = 0; i < 3; i++) {

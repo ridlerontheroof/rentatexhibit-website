@@ -86,11 +86,22 @@ function strOrNull(value: unknown): string | null {
   return typeof value === "string" && value !== "" ? value : null;
 }
 
+/**
+ * `effective-directive` is a directive name, while the legacy
+ * `violated-directive` fallback may contain the whole policy fragment
+ * (`script-src 'self' https://…`). Normalize either shape to the directive
+ * token so logs, signatures, and alerts remain stable across user agents.
+ */
+function directiveToken(value: unknown): string {
+  return str(value).trim().split(/\s+/, 1)[0] ?? "";
+}
+
 /** Normalize one legacy `csp-report` object. Returns null when unusable. */
 function fromLegacy(report: unknown): CspViolation | null {
   if (typeof report !== "object" || report === null) return null;
   const r = report as Record<string, unknown>;
-  const directive = str(r["effective-directive"]) || str(r["violated-directive"]);
+  const directive =
+    directiveToken(r["effective-directive"]) || directiveToken(r["violated-directive"]);
   if (!directive) return null;
   return {
     effectiveDirective: directive,
@@ -110,7 +121,7 @@ function fromReportingApi(report: unknown): CspViolation | null {
   const body = r.body;
   if (typeof body !== "object" || body === null) return null;
   const b = body as Record<string, unknown>;
-  const directive = str(b.effectiveDirective);
+  const directive = directiveToken(b.effectiveDirective);
   if (!directive) return null;
   return {
     effectiveDirective: directive,

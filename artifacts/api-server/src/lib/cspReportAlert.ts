@@ -87,6 +87,17 @@ export function violationSignature(v: CspViolation): string {
 }
 
 /**
+ * A report without a blocked URL/keyword cannot identify what failed and is
+ * therefore not actionable by the leasing-site team. Some legacy user agents
+ * emit this incomplete shape with the entire policy in `violated-directive`
+ * and no `blocked-uri`. Keep it in the warning log for evidence, but do not
+ * spend an operational email slot on it.
+ */
+export function hasActionableBlockedResource(v: CspViolation): boolean {
+  return v.blockedUri.trim() !== "";
+}
+
+/**
  * Returns true for violations that are known-acceptable noise: still logged
  * at warn level for full observability, but not emailed to the operational
  * inbox. Adding a violation here must always include a rationale comment.
@@ -188,6 +199,14 @@ export async function recordCspViolation(
   );
 
   if (!mailerConfigured()) return;
+
+  if (!hasActionableBlockedResource(violation)) {
+    log.info(
+      { signature },
+      "CSP violation email suppressed because the browser did not report the blocked resource",
+    );
+    return;
+  }
 
   // Known-noise violations (country-domain ga-audiences, eval from browser
   // extensions) are already logged above; skip the alert email so they

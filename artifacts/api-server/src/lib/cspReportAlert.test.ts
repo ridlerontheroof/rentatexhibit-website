@@ -8,6 +8,7 @@
 import { describe, expect, it } from "vitest";
 import {
   blockedUriSignature,
+  hasActionableBlockedResource,
   isKnownNoise,
   violationSignature,
 } from "./cspReportAlert";
@@ -75,6 +76,40 @@ describe("violationSignature", () => {
       blockedUri: "inline",
     });
     expect(violationSignature(v)).toBe("script-src-elem|inline");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// hasActionableBlockedResource
+// ---------------------------------------------------------------------------
+describe("hasActionableBlockedResource", () => {
+  it("rejects incomplete reports with no blocked URL or keyword", () => {
+    expect(
+      hasActionableBlockedResource(
+        violation({ effectiveDirective: "script-src", blockedUri: "" }),
+      ),
+    ).toBe(false);
+    expect(
+      hasActionableBlockedResource(
+        violation({ effectiveDirective: "script-src", blockedUri: "   " }),
+      ),
+    ).toBe(false);
+  });
+
+  it("accepts URL and inline-keyword reports", () => {
+    expect(
+      hasActionableBlockedResource(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "https://example.invalid/script.js",
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      hasActionableBlockedResource(
+        violation({ effectiveDirective: "script-src-elem", blockedUri: "inline" }),
+      ),
+    ).toBe(true);
   });
 });
 
