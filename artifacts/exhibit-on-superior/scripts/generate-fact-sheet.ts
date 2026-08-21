@@ -440,17 +440,18 @@ if (acceptPdf) {
   console.log('Recorded current facts hash for the PDF (fact-sheet.pdf.hash).');
 } else {
   const recorded = existsSync(pdfHashPath) ? readFileSync(pdfHashPath, 'utf8').trim() : null;
-  // Always report browser availability so a deployment build log answers
-  // "does the deploy image ship a Chromium?" even when the PDF is up to date.
-  // In deployment builds, never execute Chromium (existence check only):
-  // running a browser inside the publish builder has killed entire builds.
-  const chrome = forceNoBrowser ? null : findChromium(!isDeployBuild);
+  // Deployment builders have also died while merely discovering Chromium
+  // (PATH probes plus a /nix/store scan), before any browser was executed.
+  // A docs-only PDF must not put the served site at risk, so publish builds
+  // skip browser discovery entirely. Workspace builds still locate and use
+  // Chromium so stale PDFs are automatically regenerated before publishing.
+  const chrome = forceNoBrowser || isDeployBuild ? null : findChromium();
   console.log(
-    chrome
-      ? isDeployBuild
-        ? `Headless Chromium binary present (not executed in deployment builds): ${chrome}`
-        : `Headless Chromium available for PDF printing: ${chrome}`
-      : 'No headless Chromium found in this environment (PDF reprint unavailable here).',
+    isDeployBuild
+      ? 'Chromium discovery skipped in deployment build (docs PDF cannot block publish).'
+      : chrome
+        ? `Headless Chromium available for PDF printing: ${chrome}`
+        : 'No headless Chromium found in this environment (PDF reprint unavailable here).',
   );
   if (recorded !== factsHash || !existsSync(pdfPath)) {
     // Try to reprint the PDF ourselves with a headless Chromium before
