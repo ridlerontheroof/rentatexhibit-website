@@ -79,3 +79,4 @@
 - [Canvas comps need in-repo evidence](canvas-comps-review-evidence.md) — completion review can't see canvas shapes; commit a Board component + rationale doc or the task gets rejected.
 - [Prod DB writes impossible from workspace](prod-db-write-paths.md) — all workspace paths are read-only; hand owner exact SQL for the production pane, verify with read-only SELECT.
 - [One-shot validation workflows](one-shot-validation-workflows.md) — invoke their commands directly; restarting them can return early and leave a stale running state.
+- [Post-publish API bundle verification](postpublish-api-bundle-verification.md) — a new published commit can still run stale API code; prove behavior with a unique probe, not the web build ID alone.

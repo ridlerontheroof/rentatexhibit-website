@@ -185,9 +185,11 @@ export async function recordCspViolation(
   violation: CspViolation,
 ): Promise<void> {
   const signature = violationSignature(violation);
+  const knownNoise = isKnownNoise(violation);
   log.warn(
     {
       signature,
+      knownNoise,
       effectiveDirective: violation.effectiveDirective,
       blockedUri: violation.blockedUri.slice(0, 256),
       documentUri: violation.documentUri.slice(0, 256),
@@ -198,8 +200,8 @@ export async function recordCspViolation(
     "Visitor browser reported a CSP violation",
   );
 
-  if (!mailerConfigured()) return;
-
+  // A report without a blocked resource cannot identify what failed — keep
+  // it in the warning log above for evidence but do not spend an email slot.
   if (!hasActionableBlockedResource(violation)) {
     log.info(
       { signature },
@@ -211,10 +213,12 @@ export async function recordCspViolation(
   // Known-noise violations (country-domain ga-audiences, eval from browser
   // extensions) are already logged above; skip the alert email so they
   // don't fill the daily budget with un-actionable reports.
-  if (isKnownNoise(violation)) {
+  if (knownNoise) {
     log.info({ signature }, "CSP violation suppressed as known noise");
     return;
   }
+
+  if (!mailerConfigured()) return;
 
   // Hard per-process daily cap first — cheaper than the DB claim, and it
   // bounds the damage of an attacker rotating signatures. The slot is

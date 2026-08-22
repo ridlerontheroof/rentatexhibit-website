@@ -38,13 +38,14 @@ import cspReportsRouter, {
 } from "./cspReports";
 
 const warn = vi.fn();
+const info = vi.fn();
 const error = vi.fn();
 
 function makeApp() {
   const app = express();
   app.use((req, _res, next) => {
     (req as unknown as { log: object }).log = {
-      info: () => {},
+      info,
       warn,
       error,
     };
@@ -105,6 +106,7 @@ describe("POST /csp-reports", () => {
 
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({
+        knownNoise: false,
         effectiveDirective: "script-src-elem",
         blockedUri: "inline",
         scriptSample: "var evil = 1;",
@@ -180,6 +182,10 @@ describe("POST /csp-reports", () => {
   });
 
   it("logs but does not email the Chrome-extension apis.google.com report", async () => {
+    // Suppression is an observability event in its own right: it must remain
+    // visible even when SMTP is unavailable, rather than disappearing behind
+    // the mailer gate.
+    vi.mocked(mailerConfigured).mockReturnValue(false);
     const app = makeApp();
     const res = await request(app)
       .post("/csp-reports")
@@ -200,11 +206,16 @@ describe("POST /csp-reports", () => {
 
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({
+        knownNoise: true,
         effectiveDirective: "script-src-elem",
         blockedUri: "https://apis.google.com/js/client.js",
         sourceFile: "chrome-extension",
       }),
       "Visitor browser reported a CSP violation",
+    );
+    expect(info).toHaveBeenCalledWith(
+      { signature: "script-src-elem|https://apis.google.com" },
+      "CSP violation suppressed as known noise",
     );
     expect(sendCspViolationAlert).not.toHaveBeenCalled();
   });
@@ -234,6 +245,14 @@ describe("POST /csp-reports", () => {
         blockedUri: "https://apis.google.com/js/client.js",
         sourceFile: null,
       }),
+    );
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        knownNoise: false,
+        blockedUri: "https://apis.google.com/js/client.js",
+        sourceFile: null,
+      }),
+      "Visitor browser reported a CSP violation",
     );
   });
 
