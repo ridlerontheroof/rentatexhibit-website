@@ -85,6 +85,42 @@ async function main() {
       '',
     ].join('\n'),
   );
+
+  // Send a claim-gated ops-inbox alert (at most once per UTC day) so a
+  // missing watchdog is caught even when nobody watches the postpublish
+  // workflow at publish time. Best-effort: a network failure here does not
+  // change the non-zero exit that already flags the problem.
+  //
+  // WATCHDOG_ALERT_TOKEN must match the same env var configured on the
+  // api-server; without it the endpoint rejects the request with 401.
+  const alertToken = process.env['WATCHDOG_ALERT_TOKEN'] ?? '';
+  const ALERT_URL = `${API_BASE}/watchdog-roster/alert`;
+  console.log(`  Sending ops-inbox alert via ${ALERT_URL} …`);
+  if (!alertToken) {
+    console.warn('  WATCHDOG_ALERT_TOKEN not set — skipping alert POST (set it to enable ops emails).');
+  } else {
+    try {
+      const alertRes = await fetch(ALERT_URL, {
+        method: 'POST',
+        headers: {
+          'authorization': `Bearer ${alertToken}`,
+          'content-type': 'application/json',
+          'user-agent': 'check-watchdog-roster',
+        },
+        body: JSON.stringify({ missing }),
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (alertRes.status === 204) {
+        console.log('  Alert accepted (email claimed or already sent today).');
+      } else {
+        const txt = await alertRes.text().catch(() => '');
+        console.warn(`  Alert endpoint returned HTTP ${alertRes.status}: ${txt}`);
+      }
+    } catch (err) {
+      console.warn(`  Could not reach alert endpoint: ${err.message}`);
+    }
+  }
+
   process.exit(1);
 }
 

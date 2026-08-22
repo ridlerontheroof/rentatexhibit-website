@@ -1841,6 +1841,58 @@ export function renderCspViolationAlert(opts: {
  * figure no longer matches the live /api/availability minimum — the homepage
  * is advertising a stale rent to prospective renters and to search engines.
  */
+export function renderWatchdogRosterAlert(opts: {
+  missing: string[];
+  deploymentLogsUrl: string;
+}): RenderedEmail {
+  const { missing, deploymentLogsUrl } = opts;
+  const subject =
+    missing.length === 1
+      ? `Website alert: watchdog "${missing[0]}" did not start after the last publish`
+      : `Website alert: ${missing.length} watchdogs did not start after the last publish`;
+
+  const intro =
+    `${missing.length === 1 ? "One watchdog" : `${missing.length} watchdogs`} that should be running on the live server ` +
+    `did not register after the last publish. Each watchdog is a background health-check; a missing one means its ` +
+    `monitoring is silently off — possibly because the watchdog hit a kill switch, a missing env var, or crashed at startup.`;
+
+  const remedy =
+    `What to do: open the api-server deployment logs (${deploymentLogsUrl}) and look for the watchdog's own ` +
+    `"… watchdog started" line. If it never appears, check for an early-return condition (NODE_ENV guard, missing ` +
+    `env var, or an unhandled exception in the start* function). The EXPECTED_WATCHDOGS list in ` +
+    `api-server/src/lib/startupSummary.ts is the source of truth. This alert is sent at most once per day.`;
+
+  const html =
+    `<p style="${BODY_TEXT}">${escapeHtml(intro)}</p>` +
+    `<p style="${BODY_TEXT}"><strong>Missing watchdog${missing.length === 1 ? "" : "s"}:</strong></p>` +
+    `<ul style="${BODY_TEXT}">${missing.map((n) => `<li>${escapeHtml(n)}</li>`).join("")}</ul>` +
+    `<p style="${BODY_TEXT}"><strong>What to do:</strong> open the ` +
+    `<a href="${escapeHtml(deploymentLogsUrl)}" style="color:#8b6f47;">api-server deployment logs</a> ` +
+    `and look for the watchdog's "… watchdog started" line. If it never appears, check for a ` +
+    `NODE_ENV guard, missing env var, or unhandled exception in the start* function. ` +
+    `EXPECTED_WATCHDOGS in api-server/src/lib/startupSummary.ts is the source of truth. ` +
+    `This alert is sent at most once per day.</p>`;
+
+  const text = [
+    intro,
+    "",
+    `Missing watchdog${missing.length === 1 ? "" : "s"}:`,
+    ...missing.map((n) => `- ${n}`),
+    "",
+    remedy,
+    "",
+    TEXT_FOOTER,
+  ].join("\n");
+
+  const htmlShell = renderEmailShell({
+    preheader: `${missing.length === 1 ? `Watchdog "${missing[0]}"` : `${missing.length} watchdogs`} did not start after the last publish.`,
+    kicker: "Website Alert",
+    heading: `Watchdog${missing.length === 1 ? "" : "s"} Missing After Publish`,
+    bodyHtml: html,
+  });
+
+  return { subject, html: htmlShell, text };
+}
 export function renderStartingPriceCheckAlert(opts: {
   failures: string[];
 }): RenderedEmail {

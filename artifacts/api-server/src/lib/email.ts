@@ -25,6 +25,7 @@ import {
   renderSeoWeeklyDigest,
   renderSeoDigestFailureAlert,
   renderStartingPriceCheckAlert,
+  renderWatchdogRosterAlert,
   type SeoDigestEmailData,
 } from "./emailTemplates";
 import {
@@ -908,5 +909,33 @@ export async function sendStartingPriceCheckAlert(opts: {
   logger.info(
     { recipient: LEASING_INBOX_EMAIL },
     "Sent starting-price check failure alert email",
+  );
+}
+
+/**
+ * Ops alert: one or more watchdogs that should be running in production did
+ * not register themselves after the last publish. Goes to the operational
+ * inbox; the follow-up is checking deployment logs for the missing watchdog's
+ * startup line. Throws when the mailer is unconfigured or the send fails;
+ * deduping lives in the caller (watchdogRosterAlert).
+ */
+export async function sendWatchdogRosterAlert(opts: {
+  missing: string[];
+  deploymentLogsUrl: string;
+}): Promise<void> {
+  warnIfUnconfigured();
+  const { subject, html: htmlBody, text: textBody } = renderWatchdogRosterAlert(opts);
+  const { contentType, body } = buildMimeBody("watchdogroster", textBody, htmlBody);
+  const headers = [
+    `From: ${encodeHeader(PROPERTY_NAME)} <${SENDER_EMAIL}>`,
+    `To: ${SEED_ALERT_EMAIL}`,
+    `Subject: ${encodeHeader(subject)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: ${contentType}`,
+  ].join("\r\n");
+  await sendRawEmail(`${headers}\r\n\r\n${body}`, SEED_ALERT_EMAIL);
+  logger.info(
+    { recipient: SEED_ALERT_EMAIL, missing: opts.missing },
+    "Sent watchdog-roster missing-watchdog alert email",
   );
 }
