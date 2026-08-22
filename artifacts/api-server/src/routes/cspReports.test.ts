@@ -324,6 +324,63 @@ describe("POST /csp-reports", () => {
     expect(sendCspViolationAlert).toHaveBeenCalledTimes(CSP_ALERT_EMAIL_DAILY_MAX);
   });
 
+  it("resets the per-process alert cap across a UTC-day boundary", async () => {
+    const now = vi.spyOn(Date, "now");
+    const app = makeApp();
+    try {
+      // Exhaust the UTC-day budget immediately before midnight.
+      now.mockReturnValue(Date.parse("2026-08-22T23:59:59.000Z"));
+      for (let i = 0; i < CSP_ALERT_EMAIL_DAILY_MAX; i++) {
+        await request(app)
+          .post("/csp-reports")
+          .set("Content-Type", "application/reports+json")
+          .send(
+            JSON.stringify([
+              {
+                type: "csp-violation",
+                body: {
+                  documentURL: "https://www.rentatexhibit.com/",
+                  effectiveDirective: "script-src-elem",
+                  blockedURL: `https://before-midnight-${i}.example.com/x.js`,
+                },
+              },
+            ]),
+          );
+      }
+      expect(sendCspViolationAlert).toHaveBeenCalledTimes(CSP_ALERT_EMAIL_DAILY_MAX);
+
+      // The first distinct, actionable violation of the next UTC day gets a
+      // fresh slot rather than inheriting yesterday's exhausted cap.
+      now.mockReturnValue(Date.parse("2026-08-23T00:00:01.000Z"));
+      const res = await request(app)
+        .post("/csp-reports")
+        .set("Content-Type", "application/reports+json")
+        .send(
+          JSON.stringify([
+            {
+              type: "csp-violation",
+              body: {
+                documentURL: "https://www.rentatexhibit.com/",
+                effectiveDirective: "connect-src",
+                blockedURL: "https://first-new-day.example.com/beacon",
+              },
+            },
+          ]),
+        );
+
+      expect(res.status).toBe(204);
+      expect(sendCspViolationAlert).toHaveBeenCalledTimes(CSP_ALERT_EMAIL_DAILY_MAX + 1);
+      expect(sendCspViolationAlert).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          effectiveDirective: "connect-src",
+          blockedUri: "https://first-new-day.example.com/beacon",
+        }),
+      );
+    } finally {
+      now.mockRestore();
+    }
+  });
+
   it("holds the daily email cap when one batch carries more distinct violations than the cap", async () => {
     // Regression: violations in a batch are processed concurrently; the
     // email slot must be reserved synchronously or they all pass the cap
