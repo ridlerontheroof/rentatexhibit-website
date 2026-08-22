@@ -65,7 +65,7 @@ export const CARDS = {
   },
   'floor-plans': {
     src: 'image-014-exhibit-living-room-n5xrna.jpg',
-    tagline: 'Studio, 1, 2 & 3 bedroom homes in River North',
+    tagline: 'Studio, convertible, 1, 2 & 3 bedroom homes in River North',
     gravity: 'south',
   },
   'photo-gallery': {
