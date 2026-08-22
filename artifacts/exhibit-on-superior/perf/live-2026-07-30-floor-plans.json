@@ -3,7 +3,36 @@
   "date": "2026-07-30",
   "liveBuildId": "ms855j8k-254aef79",
   "formFactor": "mobile",
-  "note": "Live post-publish verification for the /floor-plans filter panel (visual stability). Lighthouse mobile runs against the published site; the filtered deep link was also functionally checked on a 390x844 mobile viewport via CDP: filters applied after hydration (1 studio ADA layout shown), ADA title variant served, inert SSR twins fully swapped out, and a buffered layout-shift PerformanceObserver recorded CLS 0 through hydration and the interactive swap. Field (CrUX/Search Console) CLS could not be fetched programmatically from the workspace: the CrUX API is disabled on the available Google Cloud project (key restricted / API not enabled) and the anonymous PageSpeed Insights quota is 0. Field confirmation for this page rests on the Search Console Core Web Vitals report once ~28 days of post-publish field data accumulate; page-level CrUX may never surface for this URL at current traffic, in which case the origin-level group in GSC is the source of truth.",
+  "note": "Live post-publish verification for the /floor-plans filter panel (visual stability). Lighthouse mobile runs against the published site; the filtered deep link was also functionally checked on a 390x844 mobile viewport via CDP: filters applied after hydration (1 studio ADA layout shown), ADA title variant served, inert SSR twins fully swapped out, and a buffered layout-shift PerformanceObserver recorded CLS 0 through hydration and the interactive swap. Field (CrUX/Search Console) CLS could not be fetched programmatically from the workspace on 2026-07-30 because the CrUX API was disabled on the available Google Cloud project (key restricted / API not enabled) and the anonymous PageSpeed Insights quota was 0. The CrUX API was re-queried on 2026-08-22 (late August, per the task schedule). Page-level mobile CrUX data for /floor-plans is below the reporting threshold. The origin-level result is green but the collection window (2026-07-24 to 2026-08-20) starts before the 2026-07-30 publish; a fully post-publish window is expected from CrUX approximately 2026-08-27 to 2026-09-03. Recheck at that time to confirm.",
+  "fieldVerification": {
+    "checkedAt": "2026-08-22",
+    "source": "Chrome UX Report API (programmatic — the alternative path specified by the task)",
+    "formFactor": "PHONE",
+    "status": "preliminary",
+    "nextCheckAfter": "2026-08-27",
+    "page": {
+      "url": "https://www.rentatexhibit.com/floor-plans",
+      "status": "not-found",
+      "reason": "Below CrUX reporting threshold (insufficient page-level sample). Origin-level group is the authoritative fallback per task acceptance criteria once its window is fully post-publish."
+    },
+    "origin": {
+      "url": "https://www.rentatexhibit.com",
+      "status": "green",
+      "collectionPeriod": {
+        "firstDate": "2026-07-24",
+        "lastDate": "2026-08-20",
+        "note": "Window starts 6 days before the 2026-07-30 publish and covers only 21 post-publish days. A fully post-publish rolling window is expected from the CrUX API around 2026-08-27 to 2026-09-03."
+      },
+      "cumulativeLayoutShift": {
+        "p75": 0.00,
+        "goodDensity": 0.9641,
+        "needsImprovementDensity": 0.0077,
+        "poorDensity": 0.0281,
+        "band": "good"
+      }
+    },
+    "conclusion": "Preliminary. Mobile origin p75 CLS is 0.00 (good band, 96.4 % of phone visits). Page-level CrUX data is absent (below threshold). The current collection window is not fully post-publish; recheck after 2026-08-27 for a window whose start date is on or after the 2026-07-30 publish."
+  },
   "runs": [
     { "page": "/floor-plans", "score": 98, "lcpMs": 1905, "cls": 0.0009, "tbtMs": 112 },
     { "page": "/floor-plans", "score": 97, "lcpMs": 1909, "cls": 0.0009, "tbtMs": 143 },
