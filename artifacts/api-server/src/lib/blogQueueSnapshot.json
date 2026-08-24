@@ -1,12 +1,6 @@
 {
   "queue": [
     {
-      "slug": "chicago-move-in-costs-explained",
-      "workingTitle": "Move-In Costs in Chicago: What Renters Actually Pay",
-      "targetQuery": "apartment move in costs chicago",
-      "pillarTitle": "How to Rent an Apartment in Chicago: The Complete Guide"
-    },
-    {
       "slug": "chicago-renters-insurance-basics",
       "workingTitle": "Renters Insurance in Chicago: What Buildings Require and Why",
       "targetQuery": "renters insurance requirements chicago apartment",
@@ -57,14 +51,10 @@
   ],
   "pendingDrafts": [
     {
-      "slug": "chicago-move-in-costs-explained",
-      "title": "Move-In Costs in Chicago: What Renters Actually Pay"
-    },
-    {
       "slug": "chicago-renters-insurance-basics",
       "title": "Renters Insurance in Chicago: What Buildings Require and Why"
     }
   ],
-  "publishedCount": 9,
+  "publishedCount": 10,
   "plannedTotal": 18
 }

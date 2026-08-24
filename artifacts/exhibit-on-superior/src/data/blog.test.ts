@@ -153,6 +153,18 @@ describe('blog E-E-A-T authorship', () => {
 describe('blog internal linking (no orphans)', () => {
   const published = new Set(BLOG_ARTICLES.map((a) => a.slug));
 
+  it('keeps prose plain text so the shared linkifier emits clean internal anchors', () => {
+    for (const a of ALL_BLOG_ARTICLES) {
+      const prose = a.sections.flatMap((s) => [...s.paragraphs, ...(s.list ?? [])]);
+      for (const text of prose) {
+        expect(
+          text,
+          `${a.slug} uses Markdown link syntax in plain-text prose; use a natural phrase from blogLinkifier.ts instead`,
+        ).not.toMatch(/\[[^\]]+\]\([^)]+\)/);
+      }
+    }
+  });
+
   it('every published article has at least one in-prose internal link', () => {
     for (const a of ALL_BLOG_ARTICLES) {
       if (a.draft) continue;

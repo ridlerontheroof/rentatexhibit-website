@@ -1448,6 +1448,14 @@ from = "/blog/chicago-apartment-application-documents/"
 to = "/blog/chicago-apartment-application-documents/index.html"
 
 [[services.production.rewrites]]
+from = "/blog/chicago-move-in-costs-explained"
+to = "/blog/chicago-move-in-costs-explained/index.html"
+
+[[services.production.rewrites]]
+from = "/blog/chicago-move-in-costs-explained/"
+to = "/blog/chicago-move-in-costs-explained/index.html"
+
+[[services.production.rewrites]]
 from = "/blog/first-apartment-chicago-guide"
 to = "/blog/first-apartment-chicago-guide/index.html"
 

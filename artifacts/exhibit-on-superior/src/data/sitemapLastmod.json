@@ -92,8 +92,8 @@
     "lastmod": "2026-08-17"
   },
   "/blog": {
-    "hash": "50013e625abaac1e0e040e2cf23fa4ed428d3795353663050134237f7197d2b2",
-    "lastmod": "2026-08-17"
+    "hash": "ef2bf30855e09b971eb460a7e776b3a88c5a5af08a418b9f1ae9ef0affdc2114",
+    "lastmod": "2026-08-24"
   },
   "/contact-us": {
     "hash": "317ed604d2dab2fd537435094b91ba5d13ca4bb2682025b537d1fea3afe1f8a8",
@@ -464,12 +464,16 @@
     "lastmod": "2026-08-22"
   },
   "/blog/how-to-rent-an-apartment-in-chicago": {
-    "hash": "3cbd0649f447a629978ebe3f085f083c23cda51771369e7124f79d2359430068",
-    "lastmod": "2026-08-22"
+    "hash": "1bce5082273e1608d8934f93d0ef0607146f02185080ac14115bef661f0714f3",
+    "lastmod": "2026-08-24"
   },
   "/blog/chicago-apartment-application-documents": {
     "hash": "ca24f32b890489ab8bffd33769e8283f3955d60444d992812dd52d8a3a381c71",
     "lastmod": "2026-08-22"
+  },
+  "/blog/chicago-move-in-costs-explained": {
+    "hash": "b1dd05ab1eda8b03386db3df2201c1e0efc96988054c004b6e2e1ea7ba9bbcbc",
+    "lastmod": "2026-08-24"
   },
   "/blog/first-apartment-chicago-guide": {
     "hash": "3c73c31eb682d4330a690681866d5543b6d34128b97d47a42f1e6efb618c23c2",

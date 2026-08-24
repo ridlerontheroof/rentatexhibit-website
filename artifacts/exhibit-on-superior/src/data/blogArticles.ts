@@ -768,6 +768,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       'river-north-commute-guide',
       'chicago-apartment-application-documents',
       'first-apartment-chicago-guide',
+      'chicago-move-in-costs-explained',
     ],
     links: [
       { label: 'Browse available apartments', href: '/available-units' },
@@ -947,7 +948,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
         heading: 'Start by separating upfront and monthly costs',
         paragraphs: [
           'When renters ask our leasing team about apartment move-in costs in Chicago, we recommend separating charges due during the application process from recurring monthly charges. This makes it easier to compare a building\u2019s fee schedule with the apartment\u2019s live rent and with the services a household plans to use.',
-          'At Exhibit On Superior, the application fee is $60 per applicant and is shown on each unit\u2019s secure online application before payment. The administration fee is $500 per apartment, is non-refundable, and is refunded only if the application is denied. For current apartment availability, pricing, photos, and move-in dates, renters can browse our [available apartments](/available-units).',
+          'At Exhibit On Superior, the application fee is $60 per applicant and is shown on each unit\u2019s secure online application before payment. The administration fee is $500 per apartment, is non-refundable, and is refunded only if the application is denied. For current apartment availability, pricing, photos, and move-in dates, renters can browse our available apartments.',
         ],
       },
       {
@@ -992,8 +993,8 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       {
         heading: 'Build a move-in checklist before applying',
         paragraphs: [
-          'Before submitting an application, our leasing team recommends reviewing the complete [Exhibit fee schedule](/fees), deciding whether parking, storage, or pets apply, and arranging renters insurance. Renters insurance is required with $300,000 liability-to-landlord coverage.',
-          'Applicants should also plan around the screening process. The minimum credit score is 700, or 600 with a qualified co-signer, and an approval decision is provided in 1\u20133 business days. Confirming these details before applying can help renters understand which charges are one-time, which are monthly, and which are optional for their household.',
+          'Before submitting an application, our leasing team recommends reviewing the complete fee schedule, deciding whether parking, storage, or pets apply, and arranging renters insurance. Renters insurance is required with $300,000 liability-to-landlord coverage.',
+          'Applicants should also plan around the screening process. The minimum credit score is 700, or 600 with a qualified co-signer, and an approval decision is provided in 1\u20133 business days. Confirming these details before applying can help renters understand which charges are one-time, which are monthly, and which are optional for their household. Renters who want to discuss the checklist with our team can schedule a tour.',
         ],
       },
     ],
@@ -1016,8 +1017,10 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     ],
     related: ['how-to-rent-an-apartment-in-chicago', 'chicago-apartment-application-documents'],
     links: [
-      { label: 'available apartments', href: '/available-units' },
-      { label: 'Exhibit fee schedule', href: '/fees' },
+      { label: 'Browse available apartments and move-in dates', href: '/available-units' },
+      { label: 'Compare floor plans and monthly fee tiers', href: '/floor-plans' },
+      { label: 'Review Exhibit On Superior fees', href: '/fees' },
+      { label: 'Schedule a tour with the leasing team', href: '/schedule-a-tour' },
     ],
     sources: [
       {
@@ -1027,8 +1030,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     ],
     ogCard: 'application-guide',
     published: '2026-08-13',
-    updated: '2026-08-13',
-    draft: true,
+    updated: '2026-08-24',
   },
 
   // ---------------------------------------------------------------------
@@ -1218,7 +1220,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
         heading: 'Keep insurance separate from lease fees and utilities',
         paragraphs: [
           'Renters insurance is a separate leasing requirement, so it should not be confused with Exhibit\u2019s listed application, administration, parking, storage, pet, or utility charges. Our committed fee table does not list a renters insurance premium. For a current view of the charges associated with leasing at Exhibit, review our fees page or contact our leasing team.',
-          'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. It ranges from $95 for studios to $195 for three-bedrooms. Electricity is billed directly to the resident by ComEd. For electric-service steps, residents can use [ComEd\u2019s start, stop, or move service guidance](https://www.comed.com/my-account/customer-support/start-stop-move).',
+          'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. It ranges from $95 for studios to $195 for three-bedrooms. Electricity is billed directly to the resident by ComEd. For electric-service steps, residents can use ComEd\u2019s start, stop, or move service guidance.',
         ],
       },
       {
