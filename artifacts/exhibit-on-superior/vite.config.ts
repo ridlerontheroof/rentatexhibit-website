@@ -80,7 +80,7 @@ function removeMaximumScale(): Plugin {
  *     check:prepublish and local dev can run without every var wired up.
  *     These vars MUST be set on the deployed artifact before going live.
  */
-function validateWebEnv(
+export function validateWebEnv(
   env: Record<string, string | undefined> = process.env,
 ): void {
   const REQUIRED_VARS = [
