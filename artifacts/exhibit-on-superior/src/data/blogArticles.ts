@@ -1281,4 +1281,117 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     updated: '2026-08-17',
     draft: true,
   },
+
+  // ---------------------------------------------------------------------
+  // CLUSTER — how far in advance to look for apartments chicago
+  // AI DRAFT — awaiting human review. To publish, ALL THREE edits are
+  // required (guard tests fail if any is missed):
+  //   1. remove `draft: true` below
+  //   2. add 'when-to-start-apartment-hunting-chicago' to the related: list of the
+  //      'how-to-rent-an-apartment-in-chicago' article above (inbound-link guard)
+  //   3. add the /blog/when-to-start-apartment-hunting-chicago rewrite pair in artifact.toml
+  // ---------------------------------------------------------------------
+  {
+    slug: 'when-to-start-apartment-hunting-chicago',
+    title: 'When to Start Apartment Hunting in Chicago',
+    metaTitle: 'When to Start Apartment Hunting',
+    targetQuery: 'how far in advance to look for apartments chicago',
+    role: 'cluster',
+    pillar: 'how-to-rent-an-apartment-in-chicago',
+    authorId: 'leasing-team',
+    summary:
+      'How far ahead should you look for an apartment in Chicago? Start when you know your move-in needs and can compare current homes. At Exhibit On Superior, approval decisions take 1\u20133 business days, so our leasing team recommends leaving time to tour, apply, arrange electricity, and meet insurance requirements before move-in.',
+    sections: [
+      {
+        heading: 'When should you start looking for a Chicago apartment?',
+        paragraphs: [
+          'There is no single lead time that fits every renter or every building. Our leasing team recommends starting when you can clearly identify your intended move-in timing, apartment type, budget, and any needs that could affect your choice, such as parking, storage, or pet arrangements.',
+          'For an apartment that is already available, build your plan around the home\u2019s listed move-in timing and leave room for a tour, an application, an approval decision, and your pre-move requirements. Starting with those concrete steps is more useful than relying on an unsupported seasonal rule.',
+        ],
+        list: [
+          'Your target move-in date and how flexible it is.',
+          'The apartment type and layout that fit your household.',
+          'Your budget for rent, recurring charges, and one-time fees.',
+          'Any parking, storage, or pet arrangements you may need.',
+        ],
+      },
+      {
+        heading: 'How should current availability shape your search?',
+        paragraphs: [
+          'Rather than relying on a generic Chicago timeline, we recommend reviewing current availability for your intended move-in. Available apartments, live pricing, and move-in dates are shown on our available-units page, giving you a practical starting point for comparing homes. Availability is the best place to begin because it reflects the residences that can actually be discussed now.',
+          'When a home fits your needs, schedule a tour promptly. A tour is the right time to confirm the specific residence, ask about its move-in timing, and discuss any building-specific steps with our team. If your date is flexible, tell the leasing team what range works; if it is fixed, use that date to narrow the homes you consider.',
+        ],
+      },
+      {
+        heading: 'How much time should you allow for application approval?',
+        paragraphs: [
+          'At Exhibit On Superior, an approval decision takes 1\u20133 business days. Treat that window as one part of the move plan rather than the final task. Before submitting an application, confirm that you are ready to proceed with the apartment you selected and that you understand the applicable costs and requirements.',
+          'Exhibit\u2019s screening example is a minimum credit score of 700, or 600 with a qualified co-signer. The application fee is $60 per applicant and is shown on each unit\u2019s secure online application before you pay. There is also a $500 administration fee per apartment; it is non-refundable and refunded only if the application is denied. Exhibit does not currently collect a security deposit.',
+          'Allow time to read the application, gather your information, and respond to any questions from the leasing team before the 1\u20133 business-day decision window begins. If you are ready to see a specific home, schedule a tour with our on-site leasing team before applying.',
+        ],
+      },
+      {
+        heading: 'What should you arrange before move-in?',
+        paragraphs: [
+          'Renters insurance is required at Exhibit On Superior with $300,000 liability-to-landlord coverage. We recommend planning for that requirement before move-in so you can provide the needed coverage information at the appropriate point in your leasing process. Ask your insurer how the required coverage appears on the policy documents.',
+          'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. The fee ranges from $95 for studios to $195 for three-bedrooms, depending on floor plan. Electricity is billed directly to the resident by ComEd, so include electric-service setup among your pre-move tasks and confirm the start date for your home.',
+        ],
+      },
+      {
+        heading: 'What if you need parking, storage, or pet arrangements?',
+        paragraphs: [
+          'Ask about add-ons while you are evaluating an apartment, not after you have built your move-in plan. Garage parking is $335 per space monthly, is unreserved, and is subject to availability. On-site storage lockers are $25 monthly, and complimentary bike storage is available on the ground floor.',
+          'Exhibit allows up to two dogs or two cats. The one-time dog fee is $650 for one dog or $750 for two dogs, and the one-time cat fee is $325. There is no pet deposit or monthly pet rent. Confirming these choices with our leasing team can help you organize the steps that apply to your household.',
+          'For a broader process checklist, use the related renter guides below alongside a conversation with our on-site leasing team. The right search timeline is the one that leaves room to compare the home, complete the application, and finish the requirements that apply to you.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How far in advance should I look for an apartment in Chicago?',
+        answer:
+          'Start when you know your intended move-in needs and can compare current homes. At Exhibit On Superior, approval decisions take 1\u20133 business days, and you should also allow time for a tour, renters insurance, electricity setup, and any building-specific move-in steps.',
+      },
+      {
+        question: 'Is one month enough time to find an apartment in Chicago?',
+        answer:
+          'It depends on your move-in date, apartment requirements, and the homes currently available. Our leasing team recommends starting once you can define those needs, then leaving time to tour, apply, allow 1\u20133 business days for an approval decision, and complete pre-move requirements.',
+      },
+      {
+        question: 'How long does apartment approval take at Exhibit On Superior?',
+        answer:
+          'An approval decision at Exhibit On Superior takes 1\u20133 business days. Having your application information ready and understanding the applicable requirements before submitting can help you use that window effectively.',
+      },
+      {
+        question: 'What should I have ready before applying for an apartment?',
+        answer:
+          'Be ready to identify the home you want, provide the information requested in the secure online application, and understand the applicable fees. Exhibit\u2019s screening example is a minimum credit score of 700, or 600 with a qualified co-signer, plus a $60 application fee per applicant.',
+      },
+      {
+        question: 'Should I wait until closer to my move-in date to start looking?',
+        answer:
+          'Do not wait for a generic calendar milestone if you already know your move-in needs and a suitable home is available. Review current availability, schedule a tour, and ask the leasing team about the home\u2019s move-in timing so you can plan around the 1\u20133 business-day approval window.',
+      },
+      {
+        question: 'What do I need to arrange before moving into Exhibit On Superior?',
+        answer:
+          'Renters insurance with $300,000 liability-to-landlord coverage is required. Electricity is billed directly to the resident by ComEd, while the monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer.',
+      },
+    ],
+    related: ['how-to-rent-an-apartment-in-chicago', 'chicago-apartment-application-documents'],
+    links: [
+      { label: 'Browse current available apartments', href: '/available-units' },
+      { label: 'Schedule a tour with the leasing team', href: '/schedule-a-tour' },
+    ],
+    sources: [
+      {
+        label: 'ComEd \u2014 start, stop, or move electric service',
+        href: 'https://www.comed.com/my-account/customer-support/start-stop-move',
+      },
+    ],
+    ogCard: 'application-guide',
+    published: '2026-08-24',
+    updated: '2026-08-24',
+    draft: true,
+  },
 ];
