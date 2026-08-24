@@ -27,6 +27,7 @@ can be run independently at any time.
     "fetch:vimeo": "node scripts/fetch-vimeo-oembed.mjs",
     "fetch:youtube": "node scripts/fetch-youtube-metadata.mjs",
 
+    "check:env-docs": "node scripts/check-web-env-docs.mjs",
     "check:hydrated-seo": "node scripts/check-hydrated-seo.mjs",
     "check:schema": "node scripts/check-schema-validator.mjs",
     "check:rented-noindex": "node scripts/check-rented-noindex.mjs",
@@ -41,7 +42,7 @@ can be run independently at any time.
     "check:floor-plan-pages": "node scripts/check-floor-plan-pages.mjs",
     "check:fold": "node scripts/check-units-above-fold.mjs",
 
-    "check:prepublish": "pnpm run check:hydrated-seo && pnpm run check:schema && pnpm run check:rented-noindex && pnpm run check:legacy-redirects && pnpm run check:gtm && pnpm run check:csp && pnpm run check:links",
+    "check:prepublish": "pnpm run check:env-docs && pnpm run check:hydrated-seo && pnpm run check:schema && pnpm run check:rented-noindex && pnpm run check:legacy-redirects && pnpm run check:gtm && pnpm run check:csp && pnpm run check:links",
     "check:postpublish": "pnpm run check:hydrated-seo && pnpm run check:schema && pnpm run check:rented-noindex",
 
     "watch:postpublish": "node scripts/watch-postpublish.mjs",
