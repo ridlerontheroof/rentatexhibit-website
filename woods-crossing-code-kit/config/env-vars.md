@@ -29,7 +29,7 @@ at `.agents/skills/property-site-onboarding/schema/property-config.schema.json`.
 | `SESSION_SECRET` | ✅ | No | `secrets.required` | Express session secret |
 | `NODE_ENV` | No | Yes (prod) | — | Set to `production` in deployed environment |
 | `LOG_LEVEL` | No | No | — | Pino log level (default: `info`) |
-| `PORT` | No | Yes | — | Server port (Replit injects this automatically) |
+| `PORT` | No | Yes (Replit) | — | Server port (Replit injects this automatically) |
 | `CONFIRMATION_EMAIL_PER_RECIPIENT_DAILY_MAX` | No | No | — | Max confirmations per email per day (default: 3) |
 | `CONFIRMATION_EMAIL_GLOBAL_DAILY_MAX` | No | No | — | Max total confirmations per day (default: 300) |
 | `CSP_ENFORCE` | No | No | — | Set to `1` to enforce CSP (vs report-only). Start report-only, enforce after `check:csp` passes. |

@@ -4,6 +4,25 @@ Copy the relevant blocks into your web artifact's `package.json` `scripts` secti
 The `&&`-chained build pipeline runs steps in dependency order; the check suite
 can be run independently at any time.
 
+## API Server
+
+Copy these checks into the API server artifact's `package.json`. The server
+validation workflow must run the environment-documentation check before
+typechecking or publishing.
+
+```json
+{
+  "scripts": {
+    "check:env-docs": "node scripts/check-api-env-docs.mjs",
+    "check:types": "pnpm run check:env-docs && pnpm run typecheck"
+  }
+}
+```
+
+`check-api-env-docs.mjs` is copied from `api-server/scripts/`. It compares the
+`REQUIRED_VARS` array in `api-server/src/lib/validateEnv.ts` with the API Server
+`Required=Yes` rows in `config/env-vars.md` and exits non-zero on drift.
+
 ```json
 {
   "scripts": {
