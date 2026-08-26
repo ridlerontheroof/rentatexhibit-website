@@ -61490,7 +61490,7 @@ var availabilitySeed_default = {
       description: "Separation is the strength of this two-bedroom, with bedrooms placed apart and two full baths supporting a more flexible day-to-day rhythm. It also offers north- and east-facing corner exposure. A private balcony extends the living space outdoors.\r\nThe plan makes everyday furniture placement feel straightforward, with space to cook, dine, work, and unwind. Finishes include quartz countertops, stainless-steel appliances, contemporary cabinetry, plank flooring, and an in-home washer and dryer.\r\nThe fifth-floor amenity level brings together an outdoor lap pool, hot tub, sauna, fitness center, and work-from-home spaces. Exhibit is located at Superior and Wells in River North, near CTA train service and the Chicago Riverwalk.\r\nThe required $150 monthly Utility and Service Amenity Fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. One-time fees are $500 administrative per apartment and $60 application per applicant. Electricity and internet are paid separately.\r\nTour apartment 2801 to explore the separated-bedroom layout, private balcony and north- and east-facing windows, then visit Exhibit\u2019s indoor and outdoor amenity spaces."
     }
   ],
-  updatedAt: "2026-08-26T14:51:38.227Z"
+  updatedAt: "2026-08-26T15:09:40.427Z"
 };
 
 // src/lib/indexnow.ts
