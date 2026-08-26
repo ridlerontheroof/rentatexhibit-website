@@ -27,6 +27,58 @@ const BASE = (args.find((a) => !a.startsWith('--')) || 'https://www.rentatexhibi
 
 const dataDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'data');
 
+/** Exit code reserved for a run that could not observe one or more URLs. */
+export const TRANSPORT_ONLY_EXIT_CODE = 2;
+/** Keep one short-lived network blip from becoming a failed run. */
+export const MAX_ATTEMPTS = 3;
+export const REQUEST_TIMEOUT_MS = 5_000;
+export const RETRY_DELAY_MS = 250;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Fetch a URL with bounded retries. HTTP responses are returned immediately:
+ * an observable 200/404/incorrect 301 is a definitive check result, not a
+ * transient transport failure. Only fetch/reachability errors are retried.
+ *
+ * Exported so the retry contract can be regression-tested without contacting
+ * the live site.
+ */
+export async function fetchWithRetries(
+  url,
+  fetchImpl = fetch,
+  {
+    maxAttempts = MAX_ATTEMPTS,
+    timeoutMs = REQUEST_TIMEOUT_MS,
+    retryDelayMs = RETRY_DELAY_MS,
+    log = console,
+  } = {},
+) {
+  let lastError;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetchImpl(url, {
+        redirect: 'manual',
+        headers: {
+          'user-agent': 'legacy-redirect-smoke-check',
+          'cache-control': 'no-cache',
+        },
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      return { response, attempts: attempt };
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxAttempts) {
+        log.warn?.(
+          `  Attempt ${attempt}/${maxAttempts} failed for ${url} (${err.message}), retrying in ${retryDelayMs}ms`,
+        );
+        await sleep(retryDelayMs);
+      }
+    }
+  }
+  return { error: lastError, attempts: maxAttempts };
+}
+
 // --- Load the redirect map from the source of truth -------------------------
 async function loadLegacyRedirects() {
   const src = await readFile(path.join(dataDir, 'legacyRedirects.ts'), 'utf8');
@@ -58,53 +110,60 @@ async function loadLegacyRedirects() {
   return map;
 }
 
-let redirects;
-try {
-  redirects = await loadLegacyRedirects();
-} catch (err) {
-  console.error(String(err.message || err));
-  process.exit(1);
-}
-
-// --- Check each entry: single-hop 301 to the mapped target ------------------
-let failures = 0;
-const fail = (what, msg) => {
-  failures++;
-  console.error(`FAIL  ${what}: ${msg}`);
-};
-
-for (const [from, to] of Object.entries(redirects)) {
-  const url = `${BASE}${from}`;
-  let res;
-  try {
-    res = await fetch(url, {
-      redirect: 'manual',
-      headers: { 'user-agent': 'legacy-redirect-smoke-check' },
-    });
-  } catch (err) {
-    fail(url, `fetch error: ${err.message}`);
-    continue;
-  }
-  if (res.status !== 301) {
-    fail(
+/**
+ * Probe one expected redirect. Transport errors are returned separately from
+ * definitive HTTP/Location failures so callers can classify the whole run.
+ */
+async function checkExpectedResponse(
+  url,
+  expectedStatus,
+  expectedLocation,
+  {
+    fetchImpl = fetch,
+    log = console,
+    base = BASE,
+  } = {},
+) {
+  const result = await fetchWithRetries(url, fetchImpl, { log });
+  if (result.error) {
+    return {
+      kind: 'transport',
       url,
-      `HTTP ${res.status}, expected a single-hop 301. ` +
+      message: `fetch error after ${result.attempts} attempts: ${result.error.message}`,
+    };
+  }
+
+  const res = result.response;
+  if (res.status !== expectedStatus) {
+    return {
+      kind: 'definitive',
+      url,
+      message:
+        `HTTP ${res.status}, expected a single-hop ${expectedStatus}` +
+        (expectedLocation ? ` to ${expectedLocation}` : '') +
+        `. ` +
         (res.status === 200
           ? 'Likely serving the SPA shell/stub (soft 404) — the redirect stub or its artifact.toml rewrite pair is missing.'
           : 'Redirect wiring broken.'),
-    );
-    continue;
+    };
   }
-  const location = res.headers.get('location') || '';
-  // The target may be site-relative ('/available-units') or absolute
-  // (APPLY_URL). Accept the exact relative path or the absolute equivalent.
-  const expectedAbs = to.startsWith('http') ? to : `${BASE}${to}`;
-  const ok = location === to || location === expectedAbs;
-  if (!ok) {
-    fail(url, `301 points to "${location}", expected "${to}" (or "${expectedAbs}").`);
-    continue;
+
+  if (expectedLocation !== undefined) {
+    const location = res.headers.get('location') || '';
+    const expectedAbs = expectedLocation.startsWith('http')
+      ? expectedLocation
+      : `${base}${expectedLocation}`;
+    if (location !== expectedLocation && location !== expectedAbs) {
+      return {
+        kind: 'definitive',
+        url,
+        message: `301 points to "${location}", expected "${expectedLocation}" (or "${expectedAbs}").`,
+      };
+    }
+    return { kind: 'ok', url, location, status: res.status };
   }
-  console.log(`ok    ${url} -> ${location} (301)`);
+
+  return { kind: 'ok', url, status: res.status };
 }
 
 // --- Legacy ?plan= deep links on /available-units ---------------------------
@@ -114,7 +173,11 @@ for (const [from, to] of Object.entries(redirects)) {
 // client-side redirect (extra hop + JS required), so probe one known id
 // (expect a single-hop 301 to the mapped landing page) and one unknown id
 // (expect 200 on /available-units — unknown ids must fall through).
-async function checkPlanRedirects() {
+async function checkPlanRedirects({
+  base = BASE,
+  fetchImpl = fetch,
+  log = console,
+} = {}) {
   const distMapPath = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
     '..',
@@ -125,74 +188,118 @@ async function checkPlanRedirects() {
   try {
     planMap = JSON.parse(await readFile(distMapPath, 'utf8'));
   } catch (err) {
-    fail(
-      'plan-redirects.json',
-      `could not read ${distMapPath} (${err.code ?? err.message}) — build the site first; without the map the server cannot 301 ?plan= deep links.`,
-    );
-    return;
+    return [{
+      kind: 'definitive',
+      url: 'plan-redirects.json',
+      message: `could not read ${distMapPath} (${err.code ?? err.message}) — build the site first; without the map the server cannot 301 ?plan= deep links.`,
+    }];
   }
   const entries = Object.entries(planMap);
   if (entries.length === 0) {
-    fail('plan-redirects.json', 'map is empty — ?plan= deep links would never 301.');
-    return;
+    return [{
+      kind: 'definitive',
+      url: 'plan-redirects.json',
+      message: 'map is empty — ?plan= deep links would never 301.',
+    }];
   }
 
   // Known id → single-hop 301 to the mapped /floor-plans/<slug> page.
   const [knownId, target] = entries[0];
-  const knownUrl = `${BASE}/available-units?plan=${encodeURIComponent(knownId)}`;
-  try {
-    const res = await fetch(knownUrl, {
-      redirect: 'manual',
-      headers: { 'user-agent': 'legacy-redirect-smoke-check' },
-    });
-    if (res.status !== 301) {
-      fail(
-        knownUrl,
-        `HTTP ${res.status}, expected a single-hop 301 to ${target}. ` +
-          (res.status === 200
-            ? 'The published server has no plan-redirects.json (or an outdated one) — visitors fall back to the slower client-side redirect.'
-            : 'Plan-redirect wiring broken.'),
-      );
-    } else {
-      const location = res.headers.get('location') || '';
-      const expectedAbs = `${BASE}${target}`;
-      if (location !== target && location !== expectedAbs) {
-        fail(knownUrl, `301 points to "${location}", expected "${target}" (or "${expectedAbs}").`);
-      } else {
-        console.log(`ok    ${knownUrl} -> ${location} (301)`);
-      }
-    }
-  } catch (err) {
-    fail(knownUrl, `fetch error: ${err.message}`);
-  }
+  const knownUrl = `${base}/available-units?plan=${encodeURIComponent(knownId)}`;
+  const knownCheck = checkExpectedResponse(knownUrl, 301, target, {
+    fetchImpl,
+    log,
+    base,
+  });
 
   // Unknown id → 200 on /available-units (must fall through, never redirect
   // or error).
-  const unknownUrl = `${BASE}/available-units?plan=smoke-check-unknown-id`;
-  try {
-    const res = await fetch(unknownUrl, {
-      redirect: 'manual',
-      headers: { 'user-agent': 'legacy-redirect-smoke-check' },
-    });
-    if (res.status !== 200) {
-      fail(
-        unknownUrl,
-        `HTTP ${res.status}, expected 200 — unknown ?plan= ids must fall through to the normal /available-units page.`,
+  const unknownUrl = `${base}/available-units?plan=smoke-check-unknown-id`;
+  const unknownCheck = checkExpectedResponse(unknownUrl, 200, undefined, {
+    fetchImpl,
+    log,
+    base,
+  });
+  return Promise.all([knownCheck, unknownCheck]);
+}
+
+export async function runLegacyRedirectCheck({
+  redirects,
+  base = BASE,
+  fetchImpl = fetch,
+  log = console,
+} = {}) {
+  let definitiveFailures = 0;
+  let transportFailures = 0;
+  const diagnostics = [];
+  const fail = (result) => {
+    diagnostics.push(result);
+    if (result.kind === 'transport') transportFailures++;
+    else definitiveFailures++;
+  };
+
+  const checks = Object.entries(redirects).map(([from, to]) => {
+    const url = `${base}${from}`;
+    return checkExpectedResponse(url, 301, to, { fetchImpl, log, base });
+  });
+  const results = await Promise.all(checks);
+  for (const result of results) {
+    if (result.kind === 'ok') {
+      log.log(`ok    ${result.url} -> ${result.location} (301)`);
+    } else {
+      fail(result);
+      log.error(`${result.kind === 'transport' ? 'UNREACHABLE' : 'FAIL'}  ${result.url}: ${result.message}`);
+    }
+  }
+
+  const planResults = await checkPlanRedirects({ base, fetchImpl, log });
+  for (const result of planResults) {
+    if (result.kind === 'ok') {
+      log.log(
+        result.location
+          ? `ok    ${result.url} -> ${result.location} (301)`
+          : `ok    ${result.url} -> 200 (falls through)`,
       );
     } else {
-      console.log(`ok    ${unknownUrl} -> 200 (falls through)`);
+      fail(result);
+      log.error(`${result.kind === 'transport' ? 'UNREACHABLE' : 'FAIL'}  ${result.url}: ${result.message}`);
     }
-  } catch (err) {
-    fail(unknownUrl, `fetch error: ${err.message}`);
   }
-}
-await checkPlanRedirects();
 
-console.log(`\nChecked ${Object.keys(redirects).length} legacy redirects (+2 ?plan= probes) against ${BASE}`);
-if (failures) {
-  console.error(
-    `\n${failures} redirect(s) FAILED. Legacy URLs must 301 in one hop — inspect the prerendered redirect stubs and their [[services.production.rewrites]] pairs in .replit-artifact/artifact.toml, then re-publish.`,
+  log.log(
+    `\nChecked ${Object.keys(redirects).length} legacy redirects (+2 ?plan= probes) against ${base}`,
   );
-  process.exit(1);
+  log.log(
+    `Definitive failures: ${definitiveFailures}; unreachable probes: ${transportFailures}`,
+  );
+
+  if (definitiveFailures) {
+    log.error(
+      `\n${definitiveFailures} redirect(s) FAILED. Legacy URLs must 301 in one hop — inspect the prerendered redirect stubs and their [[services.production.rewrites]] pairs in .replit-artifact/artifact.toml, then re-publish.`,
+    );
+    return { exitCode: 1, definitiveFailures, transportFailures };
+  }
+  if (transportFailures) {
+    log.error(
+      `\n${transportFailures} probe(s) were unreachable after ${MAX_ATTEMPTS} attempts. This run is ambiguous; the always-on watchdog will use its consecutive-run escalation before alerting.`,
+    );
+    return { exitCode: TRANSPORT_ONLY_EXIT_CODE, definitiveFailures, transportFailures };
+  }
+  log.log('All legacy-redirect checks passed.');
+  return { exitCode: 0, definitiveFailures, transportFailures };
 }
-console.log('All legacy-redirect checks passed.');
+
+async function main() {
+  let redirects;
+  try {
+    redirects = await loadLegacyRedirects();
+  } catch (err) {
+    console.error(String(err.message || err));
+    return 1;
+  }
+  return (await runLegacyRedirectCheck({ redirects })).exitCode;
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  process.exitCode = await main();
+}

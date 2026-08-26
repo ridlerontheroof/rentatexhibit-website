@@ -33,7 +33,7 @@ import { sendRedirectCheckAlert } from "./email";
  *   - Definitive FAIL exit (broken/missing 301) → outcome `unhealthy`:
  *     email alert, at most one per UTC day, deduped cluster-wide via the
  *     shared dailyClaim.
- *   - Spawn/timeout problems → outcome `errored`: ambiguous, logged only,
+ *   - Spawn/timeout/transport-only problems → outcome `errored`: ambiguous, logged only,
  *     but escalated to an alert after several consecutive runs via a counter
  *     persisted in the shared `email_throttle_counters` table.
  *   - Missing script in the deployed bundle → outcome `unsupported`: logged
@@ -208,7 +208,12 @@ export async function checkLegacyRedirectsOnce(
   }
 
   // --- classify ------------------------------------------------------------
-  const errored = run.exitCode === null;
+  // check-legacy-redirects.mjs reserves exit code 2 for a run where retries
+  // exhausted without observing a definitive HTTP/Location failure. Keep that
+  // separate from exit code 1: an unreachable origin is ambiguous, while a
+  // response proving a broken redirect is immediately alert-worthy.
+  const transportOnly = run.exitCode === 2;
+  const errored = run.exitCode === null || transportOnly;
   if (errored) {
     consecutiveErroredRuns += 1;
     try {
@@ -234,11 +239,11 @@ export async function checkLegacyRedirectsOnce(
 
   let failureSummary: string | null = null;
   let isBlindEscalation = false;
-  if (run.exitCode !== null && run.exitCode !== 0) {
+  if (run.exitCode !== null && run.exitCode !== 0 && !transportOnly) {
     failureSummary = `check-legacy-redirects.mjs exited ${run.exitCode} — a Google-indexed legacy URL may be soft-404ing into the SPA shell instead of 301-redirecting.`;
   } else if (errored && consecutiveErroredRuns >= ERROR_ESCALATION_RUNS) {
     isBlindEscalation = true;
-    failureSummary = `The legacy-redirect check has failed to complete for ${consecutiveErroredRuns} consecutive runs (${run.error ?? "unknown error"}) — the watchdog has effectively been blind for ~a day.`;
+    failureSummary = `The legacy-redirect check has failed to complete for ${consecutiveErroredRuns} consecutive runs (${run.error ?? (transportOnly ? "transport errors reported by the checker" : "unknown error")}) — the watchdog has effectively been blind for ~a day.`;
   }
 
   heartbeat.record(
@@ -250,8 +255,8 @@ export async function checkLegacyRedirectsOnce(
   if (!failureSummary) {
     if (errored) {
       log.warn(
-        { error: run.error, consecutiveErroredRuns },
-        "Legacy-redirect check run errored (ambiguous — not alert-worthy yet)",
+        { error: run.error, outputTail: run.outputTail, consecutiveErroredRuns },
+        "Legacy-redirect check run unreachable/errored (ambiguous — not alert-worthy yet)",
       );
     } else {
       // info (not debug): deployment logs must show each run's outcome —

@@ -67,6 +67,18 @@ const fail = (): Promise<RedirectCheckRun> =>
   });
 const spawnError = (): Promise<RedirectCheckRun> =>
   Promise.resolve({ exitCode: null, outputTail: "", error: "killed after timeout" });
+const transportOnly = (): Promise<RedirectCheckRun> =>
+  Promise.resolve({
+    exitCode: 2,
+    outputTail:
+      "UNREACHABLE  https://www.rentatexhibit.com/apartments/il/chicago: fetch error after 3 attempts: fetch failed",
+  });
+const mixedFailure = (): Promise<RedirectCheckRun> =>
+  Promise.resolve({
+    exitCode: 1,
+    outputTail:
+      "FAIL  https://www.rentatexhibit.com/apartments/il/chicago: HTTP 200, expected 301\nUNREACHABLE  https://www.rentatexhibit.com/floorplans.aspx: fetch error after 3 attempts: fetch failed",
+  });
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -110,6 +122,14 @@ describe("checkLegacyRedirectsOnce", () => {
     expect(sendAlert).toHaveBeenCalledTimes(2);
   });
 
+  it("alerts immediately when a mixed run includes a definitive redirect failure", async () => {
+    await checkLegacyRedirectsOnce(log, DAY1, mixedFailure);
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+    expect(sendAlert.mock.calls[0]![0].summary).toContain("exited 1");
+    expect(sendAlert.mock.calls[0]![0].outputTail).toContain("FAIL");
+    expect(sendAlert.mock.calls[0]![0].outputTail).toContain("UNREACHABLE");
+  });
+
   it("dedupes across a restart via the shared claim", async () => {
     await checkLegacyRedirectsOnce(log, DAY1, fail);
     expect(sendAlert).toHaveBeenCalledTimes(1);
@@ -142,6 +162,18 @@ describe("checkLegacyRedirectsOnce", () => {
     expect(sendAlert.mock.calls[0]![0].summary).toContain("4 consecutive runs");
   });
 
+  it("treats a transport-only checker result as ambiguous, then escalates after 4 in a row", async () => {
+    for (let i = 0; i < 3; i++) {
+      await checkLegacyRedirectsOnce(log, DAY1, transportOnly);
+    }
+    expect(sendAlert).not.toHaveBeenCalled();
+
+    await checkLegacyRedirectsOnce(log, DAY1, transportOnly);
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+    expect(sendAlert.mock.calls[0]![0].summary).toContain("4 consecutive runs");
+    expect(sendAlert.mock.calls[0]![0].outputTail).toContain("UNREACHABLE");
+  });
+
   it("persists the errored-run streak across restarts", async () => {
     await checkLegacyRedirectsOnce(log, DAY1, spawnError);
     await checkLegacyRedirectsOnce(log, DAY1, spawnError);
@@ -159,6 +191,17 @@ describe("checkLegacyRedirectsOnce", () => {
     await checkLegacyRedirectsOnce(log, DAY1, pass);
     for (let i = 0; i < 3; i++) {
       await checkLegacyRedirectsOnce(log, DAY1, spawnError);
+    }
+    expect(sendAlert).not.toHaveBeenCalled();
+  });
+
+  it("a recovered transport-only run resets the unreachable streak", async () => {
+    for (let i = 0; i < 3; i++) {
+      await checkLegacyRedirectsOnce(log, DAY1, transportOnly);
+    }
+    await checkLegacyRedirectsOnce(log, DAY1, pass);
+    for (let i = 0; i < 3; i++) {
+      await checkLegacyRedirectsOnce(log, DAY1, transportOnly);
     }
     expect(sendAlert).not.toHaveBeenCalled();
   });
