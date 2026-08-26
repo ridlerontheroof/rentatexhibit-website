@@ -1,0 +1,42 @@
+WEBSITE ALERT
+
+LEGACY-REDIRECT CHECK FAILED
+
+The automatic legacy-redirect check of www.rentatexhibit.com reported a problem: check-legacy-redirects.mjs exited 1 — a Google-indexed legacy URL may be soft-404ing into the SPA shell instead of 301-redirecting.
+
+Check output (tail):
+
+ok    https://www.rentatexhibit.com/apartments/il/chicago/floor-plans -> /floor-plans (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/photo-gallery -> /photo-gallery (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/virtual-tour -> /virtual-tour (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/amenities -> /amenities (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/pet-friendly -> /pet-friendly (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/neighborhood -> /neighborhood (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/contact-us -> /contact-us (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/map-directions -> /map-directions (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/residents -> /residents (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/schedule-a-tour -> /schedule-a-tour (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/reviews -> /reviews (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/apply -> https://www.highlandptrs.com/exhibit-on-superior (301)
+ok    https://www.rentatexhibit.com/apartments/il/chicago/magellan-rewards -> / (301)
+FAIL  https://www.rentatexhibit.com/apartments/il/chicago: fetch error: fetch failed
+ok    https://www.rentatexhibit.com/availableunits -> /available-units (301)
+ok    https://www.rentatexhibit.com/floorplans.aspx -> /floor-plans (301)
+ok    https://www.rentatexhibit.com/availableunits.aspx -> /available-units (301)
+ok    https://www.rentatexhibit.com/amenities.aspx -> /amenities (301)
+ok    https://www.rentatexhibit.com/contactus.aspx -> /contact-us (301)
+ok    https://www.rentatexhibit.com/brochure.aspx -> /apartment-guide (301)
+ok    https://www.rentatexhibit.com/mapsanddirections.aspx -> /map-directions (301)
+ok    https://www.rentatexhibit.com/knowledge/internet-options -> /knowledge (301)
+ok    https://www.rentatexhibit.com/video.aspx -> /virtual-tour (301)
+ok    https://www.rentatexhibit.com/apartmentphotos.aspx -> /photo-gallery (301)
+ok    https://www.rentatexhibit.com/go/lobby-qr -> /available-units?source=LobbyQR (301)
+ok    https://www.rentatexhibit.com/go/print -> /available-units?source=Print (301)
+ok    https://www.rentatexhibit.com/go/banner -> /available-units?source=Banner (301)
+ok    https://www.rentatexhibit.com/available-units?plan=5-2br-1-std -> /floor-plans/two-bedroom-one-bath-821-sf (301)
+ok    https://www.rentatexhibit.com/available-units?plan=smoke-check-unknown-id -> 200 (falls through)
+
+Checked 27 legacy redirects (+2 ?plan= probes) against https://www.rentatexhibit.com
+
+1 redirect(s) FAILED. Legacy URLs must 301 in one hop — inspect the prerendered redirect stubs and their [[services.production.rewrites]] pairs in .replit-artifact/artifact.toml, then re-publish.
+What to do: run the check-legacy-redirects script from the workspace for full detail, inspect the redirect stubs and their artifact.toml rewrite pairs, then re-publish. This alert is sent at most once per day.
