@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-17T12:29:31.866Z",
+  "fetchedAt": "2026-08-25T21:17:53.122Z",
   "videos": {
     "4zM9PbNBufM": {
       "videoUrl": "https://www.youtube.com/watch?v=4zM9PbNBufM",
@@ -35,6 +35,13 @@
       "uploadDate": "2026-07-21T18:09:42-07:00",
       "thumbnailUrl": "https://i.ytimg.com/vi/-nA3GqVNVGw/maxresdefault.jpg",
       "durationSeconds": 123
+    },
+    "fZ9sc1q-opQ": {
+      "videoUrl": "https://www.youtube.com/watch?v=fZ9sc1q-opQ",
+      "title": "0207 - 1 Bed North Facing",
+      "uploadDate": "2026-07-21T16:03:27-07:00",
+      "thumbnailUrl": "https://i.ytimg.com/vi/fZ9sc1q-opQ/maxresdefault.jpg",
+      "durationSeconds": 141
     }
   }
 }
