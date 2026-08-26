@@ -125,14 +125,9 @@ export function Redirect({ to, cta }: { to: string; cta?: 'apply' | 'availabilit
 /**
  * Legacy Wix/WordPress URLs -> canonical routes. The shared map lives in
  * data/legacyRedirects.ts (also consumed by the build-time redirect-stub
- * generator); the artist-in-residence variants are client-side-only extras
- * because their no-JS stub is hand-written in public/.
+ * generator and production smoke check).
  */
-const LEGACY_REDIRECTS: Record<string, string> = {
-  ...SHARED_LEGACY_REDIRECTS,
-  '/apartments/il/chicago/artist-in-residence': '/',
-  '/artist-in-residence': '/',
-};
+const LEGACY_REDIRECTS: Record<string, string> = SHARED_LEGACY_REDIRECTS;
 
 /**
  * SPA navigations preserve the previous page's scroll position by default —

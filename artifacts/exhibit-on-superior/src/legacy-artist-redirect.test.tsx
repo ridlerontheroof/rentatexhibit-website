@@ -10,8 +10,8 @@ afterEach(() => cleanup());
 /**
  * The Artist-in-Residence page was removed from the site. Its old URLs must
  * not dead-end in a 404 — the SPA router must redirect them to the homepage.
- * (Non-JS crawlers are handled separately by the static meta-refresh stub in
- * public/artist-in-residence/index.html plus artifact.toml rewrites.)
+ * (Non-JS crawlers are handled by generated redirect stubs plus artifact.toml
+ * rewrites from the shared legacyRedirects.ts source of truth.)
  */
 describe('legacy Artist-in-Residence URLs redirect to the homepage', () => {
   const legacyPaths = [

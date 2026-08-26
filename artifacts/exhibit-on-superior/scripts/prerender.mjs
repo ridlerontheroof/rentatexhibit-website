@@ -671,9 +671,8 @@ for (const [from, to] of Object.entries(LEGACY_REDIRECT_STUBS)) {
   </body>
 </html>
 `;
-  // Same layout as the public/artist-in-residence stub: the file lives at the
-  // legacy path itself, and artifact.toml rewrites route both the bare and
-  // trailing-slash forms to it.
+  // The file lives at the legacy path itself, and artifact.toml rewrites route
+  // both the bare and trailing-slash forms to it.
   const stubPath = path.join(publicDir, from.replace(/^\//, ''), 'index.html');
   await fs.mkdir(path.dirname(stubPath), { recursive: true });
   await fs.writeFile(stubPath, stub, 'utf8');

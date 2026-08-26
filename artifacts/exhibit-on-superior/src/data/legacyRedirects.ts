@@ -8,10 +8,21 @@ import { APPLY_URL } from './seo';
  *   (artifact.toml rewrites route these paths to the stubs; a parity guard in
  *   the prerenderer fails the build if the rewrites drift from this map)
  *
- * /artist-in-residence variants are intentionally absent: they're served by a
- * hand-written static stub in public/artist-in-residence/.
+ * Search Console expired-removal URLs belong here too: temporary removals are
+ * not a permanent disposition, so every site-owned URL with a current
+ * replacement must keep a real single-hop 301 indefinitely.
  */
 export const LEGACY_REDIRECTS: Record<string, string> = {
+  // Expired Search Console temporary removals (2026-08): permanent canonical
+  // replacements. These paths were still known to Google after the temporary
+  // hides expired, so they must never fall through to a 200 SPA shell or 404.
+  '/index.aspx': '/',
+  '/video': '/virtual-tour',
+  '/scheduleouter.aspx': '/schedule-a-tour',
+  '/scheduletour.aspx': '/schedule-a-tour',
+  '/support/faq': '/faq',
+  '/artist-in-residence': '/',
+  '/apartments/il/chicago/artist-in-residence': '/',
   // Points at the /floor-plans hub (2026-07): Google still ranks this legacy
   // URL for floor-plan queries, so its 301 must hand that equity to the new
   // hub — not /available-units — or Google keeps re-learning the wrong page.
@@ -65,4 +76,14 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/go/lobby-qr': '/available-units?source=LobbyQR',
   '/go/print': '/available-units?source=Print',
   '/go/banner': '/available-units?source=Banner',
+};
+
+/**
+ * Query-bearing URLs from the expired-removal inventory that require an exact
+ * live smoke probe. The path redirect above is authoritative; this companion
+ * map pins the query-preservation behavior that Search Console actually saw.
+ */
+export const LEGACY_QUERY_REDIRECTS: Record<string, string> = {
+  '/availableunits.aspx?myOlePropertyId=538057':
+    '/available-units?myOlePropertyId=538057',
 };

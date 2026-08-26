@@ -101,6 +101,48 @@ to = "/neighborhood/index.html"
 from = "/neighborhood/"
 to = "/neighborhood/index.html"
 
+# Expired Search Console removals: permanent single-hop canonical replacements.
+# Source of truth: src/data/legacyRedirects.ts.
+[[services.production.rewrites]]
+from = "/index.aspx"
+to = "/index.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/index.aspx/"
+to = "/index.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/video"
+to = "/video/index.html"
+
+[[services.production.rewrites]]
+from = "/video/"
+to = "/video/index.html"
+
+[[services.production.rewrites]]
+from = "/scheduleouter.aspx"
+to = "/scheduleouter.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/scheduleouter.aspx/"
+to = "/scheduleouter.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/scheduletour.aspx"
+to = "/scheduletour.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/scheduletour.aspx/"
+to = "/scheduletour.aspx/index.html"
+
+[[services.production.rewrites]]
+from = "/support/faq"
+to = "/support/faq/index.html"
+
+[[services.production.rewrites]]
+from = "/support/faq/"
+to = "/support/faq/index.html"
+
 # Legacy Artist-in-Residence URLs: page removed. Serve a static no-JS
 # meta-refresh redirect (noindex, canonical /) so crawlers migrate without JS.
 [[services.production.rewrites]]
@@ -113,11 +155,11 @@ to = "/artist-in-residence/index.html"
 
 [[services.production.rewrites]]
 from = "/apartments/il/chicago/artist-in-residence"
-to = "/artist-in-residence/index.html"
+to = "/apartments/il/chicago/artist-in-residence/index.html"
 
 [[services.production.rewrites]]
 from = "/apartments/il/chicago/artist-in-residence/"
-to = "/artist-in-residence/index.html"
+to = "/apartments/il/chicago/artist-in-residence/index.html"
 
 [[services.production.rewrites]]
 from = "/contact-us"

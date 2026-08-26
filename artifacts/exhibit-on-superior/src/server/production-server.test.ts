@@ -211,6 +211,11 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
   // a 200 with stub/shell content (soft-404) and never a redirect chain.
   // -------------------------------------------------------------------------
   const LEGACY_301S: Array<[string, string]> = [
+    ['/index.aspx', '/'],
+    ['/video', '/virtual-tour'],
+    ['/scheduleouter.aspx', '/schedule-a-tour'],
+    ['/scheduletour.aspx', '/schedule-a-tour'],
+    ['/support/faq', '/faq'],
     ['/apartments/il/chicago', '/available-units'],
     ['/apartments/il/chicago/floor-plans', '/floor-plans'],
     ['/apartments/il/chicago/photo-gallery', '/photo-gallery'],
@@ -236,6 +241,7 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     ['/video.aspx', '/virtual-tour'],
     ['/apartmentphotos.aspx', '/photo-gallery'],
     ['/artist-in-residence', '/'],
+    ['/apartments/il/chicago/artist-in-residence', '/'],
   ];
 
   it('301s every legacy URL to its canonical equivalent in a single hop', async () => {
@@ -265,6 +271,14 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     const res = await get('/floorplans.aspx?plan=a1');
     expect(res.status).toBe(301);
     expect(res.headers.get('location')).toBe('/floor-plans?plan=a1');
+  });
+
+  it('preserves the exact Search Console property query on /availableunits.aspx', async () => {
+    const res = await get('/availableunits.aspx?myOlePropertyId=538057');
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe(
+      '/available-units?myOlePropertyId=538057',
+    );
   });
 
   // -------------------------------------------------------------------------

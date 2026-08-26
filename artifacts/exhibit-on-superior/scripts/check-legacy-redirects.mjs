@@ -107,7 +107,24 @@ async function loadLegacyRedirects() {
       `Parsed ${parsed} legacy redirects but legacyRedirects.ts contains ${expected} entries — the parser in scripts/check-legacy-redirects.mjs needs updating.`,
     );
   }
-  return map;
+  const queryBody = src.match(/LEGACY_QUERY_REDIRECTS[^{]*\{([\s\S]*?)\n\};/);
+  if (!queryBody) {
+    throw new Error('Could not locate LEGACY_QUERY_REDIRECTS map in legacyRedirects.ts');
+  }
+  const queryRedirects = {};
+  const queryEntryRe = /'([^']+)':\s*'([^']+)'/g;
+  for (let m; (m = queryEntryRe.exec(queryBody[1])); ) queryRedirects[m[1]] = m[2];
+  const expectedQueryEntries = (queryBody[1].match(/':\s/g) || []).length;
+  if (
+    Object.keys(queryRedirects).length !== expectedQueryEntries ||
+    expectedQueryEntries === 0
+  ) {
+    throw new Error(
+      `Parsed ${Object.keys(queryRedirects).length} query redirects but legacyRedirects.ts contains ${expectedQueryEntries} entries — the parser in scripts/check-legacy-redirects.mjs needs updating.`,
+    );
+  }
+
+  return { redirects: map, queryRedirects };
 }
 
 /**
@@ -225,6 +242,7 @@ async function checkPlanRedirects({
 
 export async function runLegacyRedirectCheck({
   redirects,
+  queryRedirects = {},
   base = BASE,
   fetchImpl = fetch,
   log = console,
@@ -252,6 +270,22 @@ export async function runLegacyRedirectCheck({
     }
   }
 
+  // Exact query-bearing URLs from the expired Search Console removal list.
+  // These prove the generic path 301 preserves the original useful query
+  // rather than dropping it or producing a second-hop redirect.
+  const queryChecks = Object.entries(queryRedirects).map(([from, to]) =>
+    checkExpectedResponse(`${base}${from}`, 301, to, { fetchImpl, log, base }),
+  );
+  const queryResults = await Promise.all(queryChecks);
+  for (const result of queryResults) {
+    if (result.kind === 'ok') {
+      log.log(`ok    ${result.url} -> ${result.location} (301, query preserved)`);
+    } else {
+      fail(result);
+      log.error(`${result.kind === 'transport' ? 'UNREACHABLE' : 'FAIL'}  ${result.url}: ${result.message}`);
+    }
+  }
+
   const planResults = await checkPlanRedirects({ base, fetchImpl, log });
   for (const result of planResults) {
     if (result.kind === 'ok') {
@@ -267,7 +301,7 @@ export async function runLegacyRedirectCheck({
   }
 
   log.log(
-    `\nChecked ${Object.keys(redirects).length} legacy redirects (+2 ?plan= probes) against ${base}`,
+    `\nChecked ${Object.keys(redirects).length} legacy redirects, ${Object.keys(queryRedirects).length} query-bearing redirect(s), and 2 ?plan= probes against ${base}`,
   );
   log.log(
     `Definitive failures: ${definitiveFailures}; unreachable probes: ${transportFailures}`,
@@ -291,13 +325,14 @@ export async function runLegacyRedirectCheck({
 
 async function main() {
   let redirects;
+  let queryRedirects;
   try {
-    redirects = await loadLegacyRedirects();
+    ({ redirects, queryRedirects } = await loadLegacyRedirects());
   } catch (err) {
     console.error(String(err.message || err));
     return 1;
   }
-  return (await runLegacyRedirectCheck({ redirects })).exitCode;
+  return (await runLegacyRedirectCheck({ redirects, queryRedirects })).exitCode;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
