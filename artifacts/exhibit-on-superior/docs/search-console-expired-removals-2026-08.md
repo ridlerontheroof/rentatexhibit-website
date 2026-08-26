@@ -29,13 +29,49 @@ prevent the former page from resurfacing through old links.
 submitted for temporary removal more than once and did not resolve from the
 workspace during the August 2026 review.
 
-Owner action:
+### Final disposition — formally retired (2026-08-26 UTC)
 
-1. Confirm who owns the `mta-sts.rentatexhibit.com` DNS record and hosting.
-2. If the MTA-STS host is still required, restore DNS/TLS and verify its policy
-   and `robots.txt` directly on that host.
-3. If it is intentionally retired, remove the stale DNS/hosting configuration
-   according to the mail-security owner's plan.
+The accountable business/mail-security owner is **Highland Management LLC**,
+the legal owner named by the production site's Organization metadata. The
+public operational contact for the property is the Exhibit On Superior leasing team at
+`exhibit@highlandptrs.com`. The DNS/registration owner is identified as
+follows:
+
+| Responsibility | Identified owner/provider | Evidence |
+| --- | --- | --- |
+| Business/mail-security owner | Highland Management LLC | Production `Organization` JSON-LD (`legalName`) |
+| Authoritative DNS zone | Squarespace DNS | Parent NS: `nse1.squarespacedns.com` through `nse4.squarespacedns.com` |
+| Domain registrar | Squarespace Domains LLC | ICANN RDAP for `rentatexhibit.com` |
+| Current host for `mta-sts.rentatexhibit.com` | None publicly active | No A, CNAME, delegated NS, or child SOA record exists |
+
+The recorded permanent disposition is to **retire** this host. This is
+supported by the mail configuration: as of the verification below,
+`rentatexhibit.com` has no MX record, no `_mta-sts` TXT marker, and no
+`_smtp._tls` TLS-reporting record.
+There is therefore no inbound mail service on this domain for an MTA-STS
+policy to protect. The `mta-sts` label is already NXDOMAIN in the authoritative
+Squarespace-backed zone, so there is no current DNS record or live hosting
+configuration left to remove. No app route or redirect should be added.
+
+The certificate-transparency log contains a historical Let's Encrypt
+certificate for this hostname issued on 2026-06-15 (valid through 2026-09-13).
+That proves the hostname was configured recently, but does not identify a
+current hosting service; the hostname now has no DNS target or TLS endpoint.
+If Highland finds a separately managed orphaned hosting account outside the
+public DNS zone, it should be closed as part of this retirement, but that
+account is not reachable or identifiable from this codebase.
+
+#### Retirement verification
+
+Verified 2026-08-26 UTC from the workspace against both Cloudflare DNS and
+Google Public DNS:
+
+- `mta-sts.rentatexhibit.com` A, CNAME, NS, and SOA lookups: **NXDOMAIN**.
+- `_mta-sts.rentatexhibit.com` TXT lookup: **NXDOMAIN**.
+- `_smtp._tls.rentatexhibit.com` TXT lookup: **NXDOMAIN**.
+- `rentatexhibit.com` MX lookup: **NOERROR with no answer** (no MX service).
+- `https://mta-sts.rentatexhibit.com/robots.txt`: cannot resolve, as expected
+  for a retired host; there is no direct HTTP response to verify.
 
 Do not add an app route or redirect for this hostname: requests never reach the
 `www.rentatexhibit.com` production server, and DNS/hosting changes are outside
