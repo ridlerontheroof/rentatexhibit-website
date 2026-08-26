@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import type { Logger } from "pino";
 import { createDailyClaim } from "./dailyClaim";
 import { mailerConfigured } from "./mailer";
@@ -55,6 +56,128 @@ export const CSP_ALERT_EMAIL_DAILY_MAX = 5;
  * handled it, without adding general deployment fingerprinting.
  */
 export const CSP_ALERT_CLASSIFIER_REVISION = "safari-web-extension-v1";
+
+const CSP_PROBE_PATH =
+  /^\/__postpublish-csp-probe\/([A-Za-z0-9_-]{8,96})\/(known-noise|actionable)$/;
+const MAX_PROBE_EVIDENCE = 32;
+const PROBE_EVIDENCE_TTL_MS = 15 * 60 * 1000;
+
+export type CspProbeKind = "known-noise" | "actionable";
+
+export interface CspProbeEvidence {
+  tag: string;
+  kind: CspProbeKind;
+  classifierRevision: string;
+  knownNoise: boolean;
+  logged: boolean;
+  suppressionLogged: boolean;
+  alertAttempted: boolean;
+  alertSent: boolean;
+  alertStatus:
+    | "pending"
+    | "suppressed-known-noise"
+    | "mailer-unconfigured"
+    | "daily-cap"
+    | "deduped"
+    | "sent"
+    | "failed";
+  capturedAt: number;
+  runtime: {
+    entrypoint: string;
+    nodeExecutable: string;
+    processArgs: string[];
+    configuredEntrypoint: string | null;
+    configuredClassifierRevision: string | null;
+  };
+}
+
+const probeEvidence = new Map<string, CspProbeEvidence>();
+
+function probeEvidenceKey(probe: { tag: string; kind: CspProbeKind }): string {
+  return `${probe.tag}:${probe.kind}`;
+}
+
+/** Extract the opt-in post-publish probe marker from a report document URL. */
+export function cspProbeFromDocumentUri(
+  documentUri: string,
+): { tag: string; kind: CspProbeKind } | null {
+  try {
+    const url = new URL(documentUri);
+    const match = url.pathname.match(CSP_PROBE_PATH);
+    if (!match) return null;
+    return { tag: match[1], kind: match[2] as CspProbeKind };
+  } catch {
+    return null;
+  }
+}
+
+/** Runtime provenance included with probe evidence, without exposing env vars. */
+export function cspRuntimeEvidence(): CspProbeEvidence["runtime"] {
+  return {
+    entrypoint: fileURLToPath(import.meta.url),
+    nodeExecutable: process.execPath,
+    processArgs: process.argv.slice(1),
+    configuredEntrypoint: process.env["API_RUNTIME_EXPECTED_ENTRYPOINT"] ?? null,
+    configuredClassifierRevision:
+      process.env["API_CSP_CLASSIFIER_REVISION"] ?? null,
+  };
+}
+
+function rememberProbeEvidence(
+  violation: CspViolation,
+  patch: Partial<CspProbeEvidence> = {},
+): CspProbeEvidence | null {
+  const probe = cspProbeFromDocumentUri(violation.documentUri);
+  if (!probe) return null;
+  const key = probeEvidenceKey(probe);
+
+  const now = Date.now();
+  for (const [tag, evidence] of probeEvidence) {
+    if (now - evidence.capturedAt > PROBE_EVIDENCE_TTL_MS) {
+      probeEvidence.delete(tag);
+    }
+  }
+  while (probeEvidence.size >= MAX_PROBE_EVIDENCE) {
+    const oldest = probeEvidence.keys().next().value;
+    if (!oldest) break;
+    probeEvidence.delete(oldest);
+  }
+
+  const existing = probeEvidence.get(key);
+  const evidence: CspProbeEvidence = {
+    tag: probe.tag,
+    kind: probe.kind,
+    classifierRevision: CSP_ALERT_CLASSIFIER_REVISION,
+    knownNoise: isKnownNoise(violation),
+    logged: false,
+    suppressionLogged: false,
+    alertAttempted: false,
+    alertSent: false,
+    alertStatus: "pending",
+    capturedAt: now,
+    runtime: cspRuntimeEvidence(),
+    ...existing,
+    ...patch,
+  };
+  probeEvidence.delete(key);
+  probeEvidence.set(key, evidence);
+  return evidence;
+}
+
+/** Return bounded evidence for a tagged post-publish probe on this process. */
+export function getCspProbeEvidence(
+  tag: string,
+  kind: CspProbeKind,
+): CspProbeEvidence | null {
+  const key = probeEvidenceKey({ tag, kind });
+  const evidence = probeEvidence.get(key);
+  if (!evidence) return null;
+  if (Date.now() - evidence.capturedAt > PROBE_EVIDENCE_TTL_MS) {
+    probeEvidence.delete(key);
+    return null;
+  }
+  return evidence;
+}
 
 const dailyClaim = createDailyClaim({
   prefix: "cspreport",
@@ -188,6 +311,7 @@ export function resetCspReportAlertState(): void {
   emailDay = "";
   emailsSentToday = 0;
   dailyClaim.reset();
+  probeEvidence.clear();
 }
 
 /**
@@ -199,9 +323,11 @@ export async function recordCspViolation(
   log: Logger,
   now: number,
   violation: CspViolation,
+  options: { bypassAlertCap?: boolean } = {},
 ): Promise<void> {
   const signature = violationSignature(violation);
   const knownNoise = isKnownNoise(violation);
+  rememberProbeEvidence(violation);
   log.warn(
     {
       signature,
@@ -216,6 +342,7 @@ export async function recordCspViolation(
     },
     "Visitor browser reported a CSP violation",
   );
+  rememberProbeEvidence(violation, { logged: true });
 
   // A report without a blocked resource cannot identify what failed — keep
   // it in the warning log above for evidence but do not spend an email slot.
@@ -224,6 +351,10 @@ export async function recordCspViolation(
       { signature },
       "CSP violation email suppressed because the browser did not report the blocked resource",
     );
+    rememberProbeEvidence(violation, {
+      suppressionLogged: true,
+      alertStatus: "suppressed-known-noise",
+    });
     return;
   }
 
@@ -232,10 +363,17 @@ export async function recordCspViolation(
   // don't fill the daily budget with un-actionable reports.
   if (knownNoise) {
     log.info({ signature }, "CSP violation suppressed as known noise");
+    rememberProbeEvidence(violation, {
+      suppressionLogged: true,
+      alertStatus: "suppressed-known-noise",
+    });
     return;
   }
 
-  if (!mailerConfigured()) return;
+  if (!mailerConfigured()) {
+    rememberProbeEvidence(violation, { alertStatus: "mailer-unconfigured" });
+    return;
+  }
 
   // Hard per-process daily cap first — cheaper than the DB claim, and it
   // bounds the damage of an attacker rotating signatures. The slot is
@@ -247,16 +385,27 @@ export async function recordCspViolation(
     emailDay = day;
     emailsSentToday = 0;
   }
-  if (emailsSentToday >= CSP_ALERT_EMAIL_DAILY_MAX) return;
-  emailsSentToday += 1;
+  if (
+    !options.bypassAlertCap &&
+    emailsSentToday >= CSP_ALERT_EMAIL_DAILY_MAX
+  ) {
+    rememberProbeEvidence(violation, { alertStatus: "daily-cap" });
+    return;
+  }
+  if (!options.bypassAlertCap) emailsSentToday += 1;
 
   try {
     if (!(await dailyClaim.claim(log, now, { subKey: signature, logFields: { signature } }))) {
       // A repeat signature already alerted today — hand the reserved slot
       // back so dedupe losses never eat the budget for new signatures.
-      emailsSentToday -= 1;
+      if (!options.bypassAlertCap) emailsSentToday -= 1;
+      rememberProbeEvidence(violation, { alertStatus: "deduped" });
       return;
     }
+    rememberProbeEvidence(violation, {
+      alertAttempted: true,
+      alertStatus: "pending",
+    });
     await sendCspViolationAlert({
       effectiveDirective: violation.effectiveDirective,
       blockedUri: violation.blockedUri.slice(0, 256),
@@ -265,6 +414,11 @@ export async function recordCspViolation(
       scriptSample: violation.scriptSample?.slice(0, 100) ?? null,
       disposition: violation.disposition,
     });
+    rememberProbeEvidence(violation, {
+      alertAttempted: true,
+      alertSent: true,
+      alertStatus: "sent",
+    });
   } catch (err) {
     // The claim AND the reserved email slot are deliberately NOT released
     // on a failed send: a broken
@@ -272,5 +426,9 @@ export async function recordCspViolation(
     // same signature, and the violation is already in the logs above. The
     // next distinct signature (or the next day) alerts again.
     log.error({ err, signature }, "Failed to send CSP violation alert email");
+    rememberProbeEvidence(violation, {
+      alertAttempted: true,
+      alertStatus: "failed",
+    });
   }
 }

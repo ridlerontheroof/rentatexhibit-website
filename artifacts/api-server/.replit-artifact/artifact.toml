@@ -15,9 +15,9 @@ run = "pnpm --filter @workspace/api-server run dev"
 [services.production]
 
 [services.production.build]
-# Production starts the tracked, release-verified API bundle. Rebuilding here
-# can replace it with a stale deployment source snapshot.
-args = ["sh", "-c", "test -f artifacts/api-server/dist/index.mjs"]
+# Build the API from the reviewed deployment source so a clean publish cannot
+# inherit an ignored workspace dist bundle from an older release.
+args = ["pnpm", "--filter", "@workspace/api-server", "run", "build"]
 
 [services.production.build.env]
 NODE_ENV = "production"
@@ -30,6 +30,8 @@ args = ["sh", "-c", "exec node --enable-source-maps artifacts/api-server/dist/in
 [services.production.run.env]
 PORT = "8080"
 NODE_ENV = "production"
+API_RUNTIME_EXPECTED_ENTRYPOINT = "artifacts/api-server/dist/index.mjs"
+API_CSP_CLASSIFIER_REVISION = "safari-web-extension-v1"
 
 [services.production.health.startup]
 path = "/api/healthz"

@@ -1,6 +1,13 @@
+import { timingSafeEqual } from "node:crypto";
 import express, { Router, type IRouter, type Request, type Response } from "express";
 import type { Logger } from "pino";
-import { recordCspViolation, type CspViolation } from "../lib/cspReportAlert";
+import {
+  cspProbeFromDocumentUri,
+  getCspProbeEvidence,
+  recordCspViolation,
+  type CspProbeEvidence,
+  type CspViolation,
+} from "../lib/cspReportAlert";
 
 /**
  * POST /csp-reports — receiver for browser CSP violation reports.
@@ -58,6 +65,24 @@ export function resetCspReportWindow(): void {
   suppressionLogged = false;
 }
 
+function isAuthorizedProbe(req: Request): boolean {
+  const expected = process.env.WATCHDOG_ALERT_TOKEN;
+  const auth = req.headers.authorization;
+  if (!expected || typeof auth !== "string" || !auth.startsWith("Bearer ")) {
+    return false;
+  }
+  const token = auth.slice(7);
+  if (token.length === 0 || token.length !== expected.length) return false;
+  try {
+    return timingSafeEqual(
+      Buffer.from(token, "utf8"),
+      Buffer.from(expected, "utf8"),
+    );
+  } catch {
+    return false;
+  }
+}
+
 function underRateCap(log: Logger, now: number): boolean {
   if (now - windowStart >= 60_000) {
     windowStart = now;
@@ -76,6 +101,24 @@ function underRateCap(log: Logger, now: number): boolean {
   }
   processedInWindow += 1;
   return true;
+}
+
+function setProbeEvidenceHeaders(
+  res: Response,
+  evidence: CspProbeEvidence,
+): void {
+  res.set({
+    "X-CSP-Probe-Classifier-Revision": evidence.classifierRevision,
+    "X-CSP-Probe-Known-Noise": String(evidence.knownNoise),
+    "X-CSP-Probe-Logged": String(evidence.logged),
+    "X-CSP-Probe-Suppression-Logged": String(evidence.suppressionLogged),
+    "X-CSP-Probe-Alert-Status": evidence.alertStatus,
+    "X-CSP-Probe-Alert-Sent": String(evidence.alertSent),
+    "X-CSP-Probe-Runtime": Buffer.from(
+      JSON.stringify(evidence.runtime),
+      "utf8",
+    ).toString("base64url"),
+  });
 }
 
 function str(value: unknown): string {
@@ -165,10 +208,12 @@ router.post(
   async (req: Request, res: Response) => {
     const log = (req as unknown as { log: Logger }).log;
     const now = Date.now();
+    const authorizedProbe = isAuthorizedProbe(req);
 
     const accepted: CspViolation[] = [];
     for (const violation of violationsFromBody(req.body)) {
-      if (!underRateCap(log, now)) break;
+      const probe = cspProbeFromDocumentUri(violation.documentUri);
+      if (!(authorizedProbe && probe) && !underRateCap(log, now)) break;
       accepted.push(violation);
     }
 
@@ -180,9 +225,15 @@ router.post(
     if (accepted.length > 0) {
       let timer: NodeJS.Timeout | undefined;
       const timedOut = await Promise.race([
-        Promise.allSettled(accepted.map((v) => recordCspViolation(log, now, v))).then(
-          () => false,
-        ),
+        Promise.allSettled(
+          accepted.map((violation) =>
+            recordCspViolation(log, now, violation, {
+              bypassAlertCap:
+                authorizedProbe &&
+                cspProbeFromDocumentUri(violation.documentUri) !== null,
+            }),
+          ),
+        ).then(() => false),
         new Promise<true>((resolve) => {
           timer = setTimeout(() => resolve(true), processingTimeoutMs());
           timer.unref?.();
@@ -195,6 +246,14 @@ router.post(
           "CSP report alert processing exceeded its timeout; the alert email may not have been delivered",
         );
       }
+    }
+
+    const probe = accepted
+      .map((violation) => cspProbeFromDocumentUri(violation.documentUri))
+      .find((candidate) => candidate !== null);
+    if (authorizedProbe && probe) {
+      const evidence = getCspProbeEvidence(probe.tag, probe.kind);
+      if (evidence) setProbeEvidenceHeaders(res, evidence);
     }
 
     // Browsers ignore the response entirely, so always acknowledge; parse

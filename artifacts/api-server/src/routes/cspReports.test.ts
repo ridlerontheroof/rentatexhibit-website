@@ -90,11 +90,213 @@ beforeEach(() => {
   vi.mocked(mailerConfigured).mockReturnValue(true);
   vi.mocked(sendCspViolationAlert).mockResolvedValue(undefined);
   delete process.env.CSP_REPORT_PROCESSING_TIMEOUT_MS;
+  process.env.API_RUNTIME_EXPECTED_ENTRYPOINT =
+    "artifacts/api-server/dist/index.mjs";
+  process.env.API_CSP_CLASSIFIER_REVISION = "safari-web-extension-v1";
+  process.env.WATCHDOG_ALERT_TOKEN = "test-postpublish-probe-token";
   resetCspReportAlertState();
   resetCspReportWindow();
 });
 
 describe("POST /csp-reports", () => {
+  it("returns tagged known-noise classification and suppression evidence", async () => {
+    const app = makeApp();
+    const tag = "known-noise-probe-1234";
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .set("Authorization", "Bearer test-postpublish-probe-token")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": `https://www.rentatexhibit.com/__postpublish-csp-probe/${tag}/known-noise`,
+            "effective-directive": "script-src-elem",
+            "blocked-uri":
+              "safari-web-extension://com.example.extension/probe.js",
+            disposition: "enforce",
+          },
+        }),
+      );
+
+    expect(res.status).toBe(204);
+    expect(res.headers["x-csp-probe-classifier-revision"]).toBe(
+      "safari-web-extension-v1",
+    );
+    expect(res.headers["x-csp-probe-known-noise"]).toBe("true");
+    expect(res.headers["x-csp-probe-logged"]).toBe("true");
+    expect(res.headers["x-csp-probe-suppression-logged"]).toBe("true");
+    expect(res.headers["x-csp-probe-alert-status"]).toBe(
+      "suppressed-known-noise",
+    );
+    expect(res.headers["x-csp-probe-alert-sent"]).toBe("false");
+    expect(sendCspViolationAlert).not.toHaveBeenCalled();
+  });
+
+  it("returns tagged actionable alert-delivery evidence", async () => {
+    const app = makeApp();
+    const tag = "actionable-probe-1234";
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .set("Authorization", "Bearer test-postpublish-probe-token")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": `https://www.rentatexhibit.com/__postpublish-csp-probe/${tag}/actionable`,
+            "effective-directive": "connect-src",
+            "blocked-uri": `https://${tag}.postpublish-csp-probe.invalid/beacon`,
+            disposition: "enforce",
+          },
+        }),
+      );
+
+    expect(res.status).toBe(204);
+    expect(res.headers["x-csp-probe-known-noise"]).toBe("false");
+    expect(res.headers["x-csp-probe-logged"]).toBe("true");
+    expect(res.headers["x-csp-probe-suppression-logged"]).toBe("false");
+    expect(res.headers["x-csp-probe-alert-status"]).toBe("sent");
+    expect(res.headers["x-csp-probe-alert-sent"]).toBe("true");
+    expect(sendCspViolationAlert).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps sequential known-noise and actionable evidence isolated", async () => {
+    const app = makeApp();
+    const tag = "sequential-probe-1234";
+    const auth = "Bearer test-postpublish-probe-token";
+
+    const knownNoise = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .set("Authorization", auth)
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": `https://www.rentatexhibit.com/__postpublish-csp-probe/${tag}/known-noise`,
+            "effective-directive": "script-src-elem",
+            "blocked-uri": "safari-web-extension://com.example/probe.js",
+          },
+        }),
+      );
+    expect(knownNoise.headers["x-csp-probe-known-noise"]).toBe("true");
+    expect(knownNoise.headers["x-csp-probe-suppression-logged"]).toBe("true");
+
+    const actionable = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .set("Authorization", auth)
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": `https://www.rentatexhibit.com/__postpublish-csp-probe/${tag}/actionable`,
+            "effective-directive": "connect-src",
+            "blocked-uri": `https://${tag}.postpublish-csp-probe.invalid/beacon`,
+          },
+        }),
+      );
+    expect(actionable.headers["x-csp-probe-known-noise"]).toBe("false");
+    expect(actionable.headers["x-csp-probe-suppression-logged"]).toBe("false");
+    expect(actionable.headers["x-csp-probe-alert-status"]).toBe("sent");
+  });
+
+  it("does not expose probe evidence headers without authentication", async () => {
+    const app = makeApp();
+    const tag = "unauthenticated-probe-1234";
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": `https://www.rentatexhibit.com/__postpublish-csp-probe/${tag}/known-noise`,
+            "effective-directive": "script-src-elem",
+            "blocked-uri": "safari-web-extension://com.example/probe.js",
+          },
+        }),
+      );
+
+    expect(res.status).toBe(204);
+    expect(res.headers["x-csp-probe-classifier-revision"]).toBeUndefined();
+    expect(res.headers["x-csp-probe-runtime"]).toBeUndefined();
+    expect(sendCspViolationAlert).not.toHaveBeenCalled();
+  });
+
+  it("reserves authenticated probes from the public report-rate cap", async () => {
+    const app = makeApp();
+    for (let requestIndex = 0; requestIndex < 6; requestIndex++) {
+      const batch = Array.from({ length: 10 }, (_, reportIndex) => ({
+        type: "csp-violation",
+        body: {
+          documentURL: "https://www.rentatexhibit.com/",
+          effectiveDirective: "img-src",
+          blockedURL: `https://rate-${requestIndex}-${reportIndex}.example.com/a.png`,
+        },
+      }));
+      await request(app)
+        .post("/csp-reports")
+        .set("Content-Type", "application/reports+json")
+        .send(JSON.stringify(batch));
+    }
+
+    const tag = "rate-cap-probe-1234";
+    const probe = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .set("Authorization", "Bearer test-postpublish-probe-token")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": `https://www.rentatexhibit.com/__postpublish-csp-probe/${tag}/known-noise`,
+            "effective-directive": "script-src-elem",
+            "blocked-uri": "safari-web-extension://com.example/probe.js",
+          },
+        }),
+      );
+
+    expect(probe.status).toBe(204);
+    expect(probe.headers["x-csp-probe-known-noise"]).toBe("true");
+    expect(probe.headers["x-csp-probe-suppression-logged"]).toBe("true");
+  });
+
+  it("reserves authenticated actionable probes from the public daily email cap", async () => {
+    const app = makeApp();
+    for (let i = 0; i < CSP_ALERT_EMAIL_DAILY_MAX; i++) {
+      await request(app)
+        .post("/csp-reports")
+        .set("Content-Type", "application/csp-report")
+        .send(
+          JSON.stringify({
+            "csp-report": {
+              "document-uri": "https://www.rentatexhibit.com/",
+              "effective-directive": "connect-src",
+              "blocked-uri": `https://daily-cap-${i}.example.com/beacon`,
+            },
+          }),
+        );
+    }
+
+    const tag = "daily-cap-probe-1234";
+    const probe = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .set("Authorization", "Bearer test-postpublish-probe-token")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": `https://www.rentatexhibit.com/__postpublish-csp-probe/${tag}/actionable`,
+            "effective-directive": "connect-src",
+            "blocked-uri": `https://${tag}.postpublish-csp-probe.invalid/beacon`,
+          },
+        }),
+      );
+
+    expect(probe.status).toBe(204);
+    expect(probe.headers["x-csp-probe-alert-status"]).toBe("sent");
+    expect(probe.headers["x-csp-probe-alert-sent"]).toBe("true");
+    expect(sendCspViolationAlert).toHaveBeenCalledTimes(
+      CSP_ALERT_EMAIL_DAILY_MAX + 1,
+    );
+  });
+
   it("accepts a legacy application/csp-report body, logs it, and emails once", async () => {
     const app = makeApp();
     const res = await request(app)

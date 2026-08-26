@@ -225,6 +225,17 @@ const CSP = [
   'report-to csp-endpoint',
 ].join('; ');
 
+// Browser extensions are an untrusted visitor-side execution context. Their
+// injected resources may produce known-noise reports, but the site must never
+// weaken its policy by allowlisting an extension scheme to silence them.
+const BROWSER_EXTENSION_CSP_SOURCE =
+  /\b(?:chrome-extension|moz-extension|safari-web-extension):/i;
+if (BROWSER_EXTENSION_CSP_SOURCE.test(CSP)) {
+  throw new Error(
+    'Refusing to start: CSP must not allowlist browser-extension origins.',
+  );
+}
+
 // Reporting API endpoint group referenced by the CSP `report-to` directive.
 const REPORTING_ENDPOINTS = 'csp-endpoint="/api/csp-reports"';
 const cspHeader =
