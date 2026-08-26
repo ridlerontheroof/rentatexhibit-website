@@ -204,6 +204,29 @@ describe("isKnownNoise", () => {
     ).toBe(false);
   });
 
+  it("suppresses Safari extension resources by their browser-reported scheme", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "safari-web-extension://com.example.extension/unique-probe.js",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("still alerts on an inline site report without an extension or eval source", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "inline",
+          sourceFile: "https://www.rentatexhibit.com/assets/site.js",
+        }),
+      ),
+    ).toBe(false);
+  });
+
   // --- country-domain ga-audiences ---
   it("suppresses country-domain google.ie (connect-src)", () => {
     expect(

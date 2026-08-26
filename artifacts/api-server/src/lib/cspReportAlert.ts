@@ -49,6 +49,13 @@ export interface CspViolation {
 /** Max alert emails per process per UTC day, whatever the signatures say. */
 export const CSP_ALERT_EMAIL_DAILY_MAX = 5;
 
+/**
+ * Identifies the CSP noise-classifier release in warning logs. This is scoped
+ * to CSP-report evidence so a production probe can prove the API bundle that
+ * handled it, without adding general deployment fingerprinting.
+ */
+export const CSP_ALERT_CLASSIFIER_REVISION = "safari-web-extension-v1";
+
 const dailyClaim = createDailyClaim({
   prefix: "cspreport",
   claimFailedMessage:
@@ -129,6 +136,11 @@ export function hasActionableBlockedResource(v: CspViolation): boolean {
  * resource must remain blocked rather than weakening the site's script-src to
  * accommodate a visitor's extension. Keep the report in the warning log but
  * omit it from the operational alert email.
+ *
+ * safari-web-extension blocked URI: Safari reports extension-injected
+ * resources with the safari-web-extension:// scheme. The scheme itself is the
+ * extension fingerprint; keep the resource blocked and suppress only the
+ * resulting operational alert, never ordinary site-origin inline reports.
  */
 export function isKnownNoise(v: CspViolation): boolean {
   const directive = v.effectiveDirective.toLowerCase();
@@ -142,6 +154,10 @@ export function isKnownNoise(v: CspViolation): boolean {
   // identifies the injection, so do not allow the blocked resource for the
   // site. It remains logged above, but must not consume an email-alert slot.
   if (source === "chrome-extension") return true;
+
+  // Safari extension-injected resource — the non-site scheme identifies the
+  // injection. Keep it blocked; only suppress its un-actionable alert.
+  if (blocked.toLowerCase().startsWith("safari-web-extension://")) return true;
 
   // Inline script injected by eval'd (extension/webview) code — noise.
   // Only suppressed when the reported source is eval code; inline violations
@@ -189,6 +205,7 @@ export async function recordCspViolation(
   log.warn(
     {
       signature,
+      classifierRevision: CSP_ALERT_CLASSIFIER_REVISION,
       knownNoise,
       effectiveDirective: violation.effectiveDirective,
       blockedUri: violation.blockedUri.slice(0, 256),

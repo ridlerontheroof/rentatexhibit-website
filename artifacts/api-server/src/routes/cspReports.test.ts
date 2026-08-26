@@ -206,6 +206,7 @@ describe("POST /csp-reports", () => {
 
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({
+        classifierRevision: "safari-web-extension-v1",
         knownNoise: true,
         effectiveDirective: "script-src-elem",
         blockedUri: "https://apis.google.com/js/client.js",
@@ -254,6 +255,41 @@ describe("POST /csp-reports", () => {
       }),
       "Visitor browser reported a CSP violation",
     );
+  });
+
+  it("logs but does not email a uniquely tagged Safari Web Extension report", async () => {
+    const app = makeApp();
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": "https://www.rentatexhibit.com/",
+            "effective-directive": "script-src-elem",
+            "blocked-uri":
+              "safari-web-extension://com.example.extension/unique-safari-csp-probe.js",
+            disposition: "enforce",
+          },
+        }),
+      );
+    expect(res.status).toBe(204);
+    await settle();
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        knownNoise: true,
+        effectiveDirective: "script-src-elem",
+        blockedUri:
+          "safari-web-extension://com.example.extension/unique-safari-csp-probe.js",
+      }),
+      "Visitor browser reported a CSP violation",
+    );
+    expect(info).toHaveBeenCalledWith(
+      { signature: "script-src-elem|null" },
+      "CSP violation suppressed as known noise",
+    );
+    expect(sendCspViolationAlert).not.toHaveBeenCalled();
   });
 
   it("treats different query strings on the same blocked origin as one signature", async () => {
