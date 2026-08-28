@@ -140,6 +140,7 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     const res = await get('/amenities.md');
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toContain('text/markdown');
+    expect(res.headers.get('x-robots-tag')).toBe('noindex, follow');
     const body = await res.text();
     expect(body).toContain('---'); // frontmatter
     expect(body).toContain('# ');
@@ -157,6 +158,43 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
       expect(res.status, p).toBe(200);
       expect(res.headers.get('content-type'), p).toContain('text/markdown');
       expect(res.headers.get('vary'), p).toContain('Accept');
+      expect(res.headers.get('vary'), p).toContain('Accept-Encoding');
+      expect(res.headers.get('x-robots-tag'), p).toBe('noindex, follow');
+    }
+  });
+
+  it('keeps HTML and Markdown representations isolated in either request order', async () => {
+    for (const requests of [
+      [
+        { accept: 'text/markdown' },
+        { accept: 'text/html' },
+      ],
+      [
+        { accept: 'text/html' },
+        { accept: 'text/markdown' },
+      ],
+    ]) {
+      const first = await get('/amenities', requests[0]);
+      const second = await get('/amenities', requests[1]);
+
+      expect(first.status).toBe(200);
+      expect(second.status).toBe(200);
+      expect(first.headers.get('vary')).toContain('Accept');
+      expect(first.headers.get('vary')).toContain('Accept-Encoding');
+      expect(second.headers.get('vary')).toContain('Accept');
+      expect(second.headers.get('vary')).toContain('Accept-Encoding');
+
+      if (requests[0].accept === 'text/markdown') {
+        expect(first.headers.get('content-type')).toContain('text/markdown');
+        expect(await first.text()).toContain('---');
+        expect(second.headers.get('content-type')).toContain('text/html');
+        expect(await second.text()).toContain('<!');
+      } else {
+        expect(first.headers.get('content-type')).toContain('text/html');
+        expect(await first.text()).toContain('<!');
+        expect(second.headers.get('content-type')).toContain('text/markdown');
+        expect(await second.text()).toContain('---');
+      }
     }
   });
 
@@ -192,6 +230,25 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
   // -------------------------------------------------------------------------
   // Redirects
   // -------------------------------------------------------------------------
+  it('301s implementation index.html URLs to clean URLs, preserving queries', async () => {
+    for (const [from, to] of [
+      ['/index.html?utm_source=test', '/?utm_source=test'],
+      ['/about/index.html?ref=shared', '/about?ref=shared'],
+    ]) {
+      const res = await get(from);
+      expect(res.status, from).toBe(301);
+      expect(res.headers.get('location'), from).toBe(to);
+      const destination = await get(to);
+      expect(destination.status, `${from} → ${to}`).toBe(200);
+    }
+  });
+
+  it('redirects trailing-slash implementation index paths directly to clean URLs', async () => {
+    const res = await get('/about/index.html/?ref=shared');
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe('/about?ref=shared');
+  });
+
   it('301s trailing-slash URLs to the non-slash canonical (/amenities/ → /amenities)', async () => {
     const res = await get('/amenities/');
     expect(res.status).toBe(301);

@@ -951,8 +951,10 @@ console.log(`Prerendered ${allPaths.length} routes.`);
 // rendered <main> content — answer-first text without the markup overhead
 // (page HTML is <15% visible text; the twin is ~90%+). The production server
 // (server/index.mjs) serves these directly and via `Accept: text/markdown`
-// content negotiation. Guarded: a page whose twin comes out empty or heading-
-// less fails the build.
+// content negotiation. Direct and negotiated twins carry X-Robots-Tag
+// noindex, follow so they remain available to answer engines without becoming
+// duplicate search results. Guarded: a page whose twin comes out empty or
+// heading-less fails the build.
 const mdPathFor = (routePath) =>
   routePath === '/'
     ? path.join(publicDir, 'index.md')
@@ -1111,7 +1113,7 @@ const contentHashes = new Map();
     '# Exhibit On Superior — Full Page Catalog',
     '',
     '> Every indexable page on rentatexhibit.com with its title and a one-line description.',
-    '> Every page also has a clean Markdown twin: append `.md` to its URL (homepage: /index.md),',
+    '> Every page also has a noindex Markdown retrieval twin: append `.md` to its URL (homepage: /index.md),',
     '> or request any page URL with `Accept: text/markdown`.',
     '> Exhibit On Superior: 298-unit luxury apartment tower at 165 W Superior St, Chicago, IL 60654 (River North). Phone 312-450-0635. Email exhibit@highlandptrs.com.',
     '',

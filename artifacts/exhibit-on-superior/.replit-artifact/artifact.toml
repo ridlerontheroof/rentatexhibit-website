@@ -15,9 +15,11 @@ run = "pnpm --filter @workspace/exhibit-on-superior run dev"
 
 # SEO Phase 1: production serves via server/index.mjs (Express) instead of the
 # platform static edge, adding compression, cache headers, security headers,
-# non-slash 301s, and real 404s. The rewrite table below stays authoritative:
-# the server parses it at startup, and the prerender/unit-rewrite guards keep
-# it in sync with the page data.
+# non-slash 301s, implementation-index 301s, and real 404s. The rewrite table
+# below stays authoritative: the server parses it at startup, and the
+# prerender/unit-rewrite guards keep it in sync with the page data. The
+# implementation index redirects are intentionally handled before this table
+# so /index.html and /<route>/index.html cannot remain public duplicate pages.
 [services.production]
 
 [services.production.run]
