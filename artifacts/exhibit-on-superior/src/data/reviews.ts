@@ -1,9 +1,9 @@
-// Shared review data + JSON-LD builder for the /reviews page.
+// Shared review data + JSON-LD enrichment builder for the /reviews page.
 //
 // One module feeds BOTH the Reviews page (visible quotes + aggregate) and the
-// Review/AggregateRating structured data (client <Seo extraJsonLd> and the
-// build-time prerenderer), so the schema can never claim reviews or ratings
-// that visitors don't actually see on the page.
+// Review/AggregateRating structured data (client <Seo> and the build-time
+// prerenderer), so the schema can never claim reviews or ratings that visitors
+// don't actually see on the page.
 
 import { SITE_URL } from './seo';
 import type { GoogleReviewsData } from '../hooks/use-google-reviews';
@@ -141,39 +141,19 @@ export function homepageAggregateRatingJsonLd(model?: Pick<ReviewsPageModel, 'ra
 }
 
 /**
- * Review + AggregateRating JSON-LD for /reviews, derived from the SAME model
+ * Review + AggregateRating JSON-LD enrichment for /reviews, derived from the SAME model
  * the page renders. Google requires that rating values in schema be visibly
  * displayed on the page and come from genuine reviews — so this must only ever
  * be called with the model actually rendered, and never padded or fabricated.
  *
- * Emitted as a LocalBusiness node with the same @id as the site-wide
- * ApartmentComplex node in the base @graph, so validators merge the reviews
- * and aggregate rating into that entity. LocalBusiness (not ApartmentComplex,
- * a Residence/Place subtype) is used because Google's review-snippet feature
- * only accepts LocalBusiness/Product/etc. as the reviewed parent type —
- * ApartmentComplex triggers GSC's 'Invalid object type for field
- * "<parent_node>"' error.
+ * This returns only properties to merge into the canonical property node in
+ * the page's base @graph. The node already carries both ApartmentComplex and
+ * LocalBusiness types; keeping the enrichment on that one node avoids
+ * duplicate root-level entity declarations while preserving Google's
+ * LocalBusiness review eligibility.
  */
 export function reviewsJsonLd(model: ReviewsPageModel): Record<string, unknown> {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    '@id': `${SITE_URL}#apartmentcomplex`,
-    name: 'Exhibit On Superior',
-    url: SITE_URL,
-    // Address + telephone repeated here (not only on the merged
-    // ApartmentComplex node) so validators that check each JSON-LD block in
-    // isolation — without merging nodes by @id — still see a complete
-    // LocalBusiness entity.
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '165 W Superior St',
-      addressLocality: 'Chicago',
-      addressRegion: 'IL',
-      postalCode: '60654',
-      addressCountry: 'US',
-    },
-    telephone: '312-450-0635',
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: model.rating,

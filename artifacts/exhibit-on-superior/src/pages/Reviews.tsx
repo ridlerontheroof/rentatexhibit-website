@@ -24,7 +24,7 @@ export function Reviews() {
 
   return (
     <>
-      <Seo path="/reviews" extraJsonLd={[reviewsJsonLd(model)]} />
+      <Seo path="/reviews" reviewData={reviewsJsonLd(model)} />
       <div>
         <PageHero
           image="/images/image-088-20170808-0868-1-odeo9b.jpg"

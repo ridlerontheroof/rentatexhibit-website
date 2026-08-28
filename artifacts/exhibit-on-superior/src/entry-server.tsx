@@ -132,7 +132,6 @@ const EXTRA_JSONLD: Record<string, () => Record<string, unknown>[]> = {
   '/floor-plans': () => [floorPlanHubItemListJsonLd()],
   '/knowledge': () => [knowledgeHubJsonLd()],
   '/blog': () => [blogHubJsonLd()],
-  '/reviews': () => [reviewsJsonLd(buildReviewsPageModel())],
   '/photo-gallery': () => [photoGalleryJsonLd()],
   '/virtual-tour': () => [virtualToursJsonLd(), virtualTourVideoJsonLd()],
 };
@@ -263,9 +262,13 @@ export async function render(pathname: string): Promise<RenderResult> {
   // For the homepage, merge the AggregateRating into the main @graph's
   // ApartmentComplex node (not as a second root-level JSON-LD document).
   const aggregateRating = pathname === '/' ? aggregateRatingFragment() : undefined;
+  // Reviews are merged into the same canonical property node as the base
+  // graph, rather than emitted as a second root-level entity.
+  const reviewData = pathname === '/reviews' ? reviewsJsonLd(buildReviewsPageModel()) : undefined;
   const model = buildSeoModel(pathname, {
     extraJsonLd: EXTRA_JSONLD[pathname]?.(),
     ...(aggregateRating ? { aggregateRating } : {}),
+    ...(reviewData ? { reviewData } : {}),
   });
   const head = model ? renderHeadTags(model) : '';
 

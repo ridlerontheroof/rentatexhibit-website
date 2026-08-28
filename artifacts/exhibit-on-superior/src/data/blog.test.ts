@@ -14,7 +14,7 @@ import {
   type BlogArticle,
 } from './blog';
 import { ALL_BLOG_ARTICLES } from './blogArticles';
-import { BLOG_AUTHORS } from './blogAuthors';
+import { BLOG_AUTHORS, blogAuthorNodeId } from './blogAuthors';
 import { CLUSTER_PLAN, PLANNED_SLUGS } from './blogClusterPlan';
 import { linkifyText } from './blogLinkifier';
 import { IMAGE_MANIFEST } from './imageManifest';
@@ -247,6 +247,28 @@ describe('blog JSON-LD', () => {
         | undefined;
       expect(faq, `${a.slug} has FAQs but no FAQPage node`).toBeTruthy();
       expect(faq?.mainEntity?.length).toBe(a.faqs.length);
+    }
+  });
+
+  it('keeps structured author and reviewer names identical to the visible byline', () => {
+    for (const a of BLOG_ARTICLES) {
+      const author = blogAuthor(a);
+      const graph = blogJsonLd(a)['@graph'] as Record<string, unknown>[];
+      const article = graph.find(
+        (node) => Array.isArray(node['@type']) && (node['@type'] as string[]).includes('Article'),
+      ) as { author?: Record<string, unknown>; reviewedBy?: Record<string, unknown> } | undefined;
+      const fullAuthor = graph.find((node) => node['@id'] === blogAuthorNodeId(author));
+
+      expect(article?.author?.name, `${a.slug} structured author differs from byline`).toBe(author.name);
+      expect(article?.reviewedBy?.name, `${a.slug} structured reviewer differs from byline`).toBe(author.name);
+      expect(fullAuthor?.name, `${a.slug} full author node differs from byline`).toBe(author.name);
+
+      if (author.type === 'Organization') {
+        expect(fullAuthor?.['@id']).not.toBe('https://www.rentatexhibit.com#organization');
+        expect(fullAuthor?.parentOrganization).toEqual({
+          '@id': 'https://www.rentatexhibit.com#organization',
+        });
+      }
     }
   });
 

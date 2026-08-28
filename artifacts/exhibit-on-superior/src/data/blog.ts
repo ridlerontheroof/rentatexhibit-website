@@ -186,13 +186,19 @@ export function blogWordCount(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-/** JSON-LD author node: a full Person node (with credentials) or the org. */
+/** JSON-LD author node: a full Person node or a distinct leasing-team org. */
 function authorNode(author: BlogAuthor): Record<string, unknown> {
   if (author.type === 'Organization') {
     return {
       '@type': 'Organization',
       '@id': blogAuthorNodeId(author),
-      name: ORGANIZATION_NODE.name,
+      name: author.name,
+      description: author.bio,
+      url: ORGANIZATION_NODE.url,
+      logo: ORGANIZATION_NODE.logo,
+      telephone: ORGANIZATION_NODE.telephone,
+      email: ORGANIZATION_NODE.email,
+      parentOrganization: { '@id': `${SITE_URL}#organization` },
     };
   }
   return {
@@ -210,7 +216,7 @@ export function blogJsonLd(a: BlogArticle): Record<string, unknown> {
   const author = blogAuthor(a);
   const authorRef =
     author.type === 'Organization'
-      ? { '@type': 'Organization', '@id': blogAuthorNodeId(author), name: ORGANIZATION_NODE.name }
+      ? { '@type': 'Organization', '@id': blogAuthorNodeId(author), name: author.name }
       : { '@type': 'Person', '@id': blogAuthorNodeId(author), name: author.name };
 
   const publisher = {
@@ -264,9 +270,10 @@ export function blogJsonLd(a: BlogArticle): Record<string, unknown> {
     breadcrumb,
   ];
 
-  // Full author Person node with credentials (E-E-A-T), only for person
-  // authors — the org author already IS the ORGANIZATION_NODE above.
-  if (author.type === 'Person') graph.push(authorNode(author));
+  // Full author node with credentials. The leasing team is deliberately a
+  // distinct organization from the publisher so its visible byline remains
+  // precise while still relating back to the property organization.
+  graph.push(authorNode(author));
 
   if (a.faqs.length) {
     graph.push({

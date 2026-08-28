@@ -1485,7 +1485,11 @@ export const APARTMENT_COMPLEX_NODE = {
 };
 
 /** Build the JSON-LD @graph for a page path. */
-export function buildJsonLd(path: string, aggregateRating?: Record<string, unknown>): Record<string, unknown> {
+export function buildJsonLd(
+  path: string,
+  aggregateRating?: Record<string, unknown>,
+  reviewData?: Record<string, unknown>,
+): Record<string, unknown> {
   const page = PAGE_SEO[path];
   const canonical = canonicalFor(path);
   const idBase = path === '/' ? `${SITE_URL}/` : `${SITE_URL}${path}`;
@@ -1523,10 +1527,16 @@ export function buildJsonLd(path: string, aggregateRating?: Record<string, unkno
     itemListElement: breadcrumbItems,
   };
 
+  const propertyNode = {
+    ...APARTMENT_COMPLEX_NODE,
+    ...(aggregateRating ? { aggregateRating } : {}),
+    ...(reviewData ?? {}),
+  };
+
   const graph: Record<string, unknown>[] = [
     WEBSITE_NODE,
     ORGANIZATION_NODE,
-    aggregateRating ? { ...APARTMENT_COMPLEX_NODE, aggregateRating } : APARTMENT_COMPLEX_NODE,
+    propertyNode,
     webPage,
     breadcrumb,
   ];
@@ -1584,6 +1594,11 @@ export interface SeoOptions {
    * JSON-LD document avoids GSC duplicate-entity warnings.
    */
   aggregateRating?: Record<string, unknown>;
+  /**
+   * Review/AggregateRating properties to merge into the canonical property
+   * node. Pass the object returned by reviewsJsonLd() from reviews.ts.
+   */
+  reviewData?: Record<string, unknown>;
 }
 
 export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | null {
@@ -1596,7 +1611,8 @@ export function buildSeoModel(path: string, opts: SeoOptions = {}): SeoModel | n
   // Only known routes self-canonicalize; a 404 must not canonicalize a bad URL.
   const canonical = page ? canonicalFor(path) : undefined;
   const ogImage = page?.ogImage ?? DEFAULT_OG_IMAGE;
-  const baseJsonLd = page && !isNoindex ? buildJsonLd(path, opts.aggregateRating) : null;
+  const baseJsonLd =
+    page && !isNoindex ? buildJsonLd(path, opts.aggregateRating, opts.reviewData) : null;
   const jsonLd = [...(baseJsonLd ? [baseJsonLd] : []), ...(opts.extraJsonLd ?? [])];
 
   const metas: SeoMeta[] = [

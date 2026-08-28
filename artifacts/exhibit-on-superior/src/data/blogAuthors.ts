@@ -44,9 +44,7 @@ export const BLOG_AUTHORS: Record<BlogAuthorId, BlogAuthor> = {
   },
 };
 
-/** Stable JSON-LD @id for an author node (person nodes get a site-scoped id). */
+/** Stable JSON-LD @id for an author node (separate from the publisher entity). */
 export function blogAuthorNodeId(author: BlogAuthor): string {
-  return author.type === 'Organization'
-    ? `${SITE_URL}#organization`
-    : `${SITE_URL}#author-${author.id}`;
+  return `${SITE_URL}#author-${author.id}`;
 }
