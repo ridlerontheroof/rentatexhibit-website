@@ -264,6 +264,13 @@
   color: #fff;
 }
 
+/* Standalone gold text/icons need the dark-context token too; the regular
+   primary token is intentionally reserved for light backgrounds. */
+.bg-dark-section .text-primary,
+.bg-dark-section .hover\:text-primary:hover {
+  color: hsl(var(--primary-on-dark));
+}
+
 .bg-footer {
   background-color: #3c3c3e;
   color: #fff;

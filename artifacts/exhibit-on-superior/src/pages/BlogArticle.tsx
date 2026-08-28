@@ -280,11 +280,11 @@ export function BlogArticle() {
             />
             <p className="text-white/80 mb-6">
               Email{' '}
-              <a href="mailto:exhibit@highlandptrs.com" className="text-primary underline">
+              <a href="mailto:exhibit@highlandptrs.com" className="text-primary-on-dark underline">
                 exhibit@highlandptrs.com
               </a>{' '}
               or call{' '}
-              <a href="tel:312-450-0635" className="text-primary underline">
+              <a href="tel:312-450-0635" className="text-primary-on-dark underline">
                 312-450-0635
               </a>
               .

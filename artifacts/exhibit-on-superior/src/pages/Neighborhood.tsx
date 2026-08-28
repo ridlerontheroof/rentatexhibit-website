@@ -53,13 +53,13 @@ export function Neighborhood() {
                 const Icon = SCORE_ICONS[i];
                 return (
                   <div key={metric.name} className="border border-white/20 p-6">
-                    <Icon aria-hidden="true" className="w-8 h-8 text-primary mx-auto mb-3" />
+                    <Icon aria-hidden="true" className="w-8 h-8 text-primary-on-dark mx-auto mb-3" />
                     <p className="text-4xl text-white mb-1">
                       {metric.score}
                       <span className="text-lg text-white/60">/100</span>
                     </p>
                     <p className="text-sm uppercase tracking-wider text-white/80 mb-1">{metric.name}</p>
-                    <p className="text-sm text-primary">{metric.label}</p>
+                    <p className="text-sm text-primary-on-dark">{metric.label}</p>
                   </div>
                 );
               })}
