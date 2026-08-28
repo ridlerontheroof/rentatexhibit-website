@@ -335,6 +335,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Canonicalize the apex host before any static-file or rewrite handling.
+// Crawlers and link-preview clients may not execute index.html's defensive
+// client-side redirect, so this must be a real single-hop HTTP redirect.
+app.use((req, res, next) => {
+  if (req.hostname === 'rentatexhibit.com') {
+    return res.redirect(301, `https://www.rentatexhibit.com${req.originalUrl}`);
+  }
+  next();
+});
+
 app.get('/healthz', (_req, res) => res.type('text/plain').send('ok'));
 
 app.use((req, res) => {

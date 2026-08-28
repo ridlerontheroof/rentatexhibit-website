@@ -80,3 +80,4 @@
 - [Prod DB writes impossible from workspace](prod-db-write-paths.md) — all workspace paths are read-only; hand owner exact SQL for the production pane, verify with read-only SELECT.
 - [One-shot validation workflows](one-shot-validation-workflows.md) — invoke their commands directly; restarting them can return early and leave a stale running state.
 - [Post-publish API bundle verification](postpublish-api-bundle-verification.md) — a new published commit can still run stale API code; prove behavior with a unique probe, not the web build ID alone.
+- [Host redirect testing](host-redirect-testing.md) — Node fetch rewrites Host; use native HTTP/curl for direct-host coverage or X-Forwarded-Host for proxy-path tests.

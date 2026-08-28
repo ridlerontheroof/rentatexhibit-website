@@ -204,6 +204,18 @@ describe.skipIf(!hasBuild)('production server (server/index.mjs) against dist/pu
     expect(res.headers.get('location')).toBe('/amenities?utm_source=x');
   });
 
+  it('301s the apex host to www while preserving path and query', async () => {
+    // Node fetch owns the Host header; use the trusted forwarded host that
+    // Replit's proxy supplies in production.
+    const apex = await get('/amenities?utm_source=apex', {
+      'x-forwarded-host': 'rentatexhibit.com',
+    });
+    expect(apex.status).toBe(301);
+    expect(apex.headers.get('location')).toBe(
+      'https://www.rentatexhibit.com/amenities?utm_source=apex',
+    );
+  });
+
   // -------------------------------------------------------------------------
   // Legacy URL 301s (RentCafe .aspx + G5 /apartments/il/chicago/*)
   //

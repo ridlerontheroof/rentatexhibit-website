@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Host standardization: the canonical host is www.rentatexhibit.com.
-         Static hosting here cannot issue a server-side 301 for the apex host,
-         so this early client-side redirect is the best supported equivalent
-         (canonical tags + sitemap remain www-only). Path, query string, and
-         hash are all preserved. See SEO_PLAN.md finding 4 ("Canonical / host consistency"). -->
+    <!-- Host standardization: production issues an HTTP 301 from the apex host
+         to canonical www.rentatexhibit.com before serving this document.
+         Keep this early client-side redirect as a defensive fallback for
+         hosting layers that bypass the production server. Path, query string,
+         and hash are preserved. Canonical tags + sitemap remain www-only. -->
     <script>
       if (location.hostname === 'rentatexhibit.com') {
         location.replace(
