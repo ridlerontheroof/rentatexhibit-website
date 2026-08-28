@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { Route, Router } from 'wouter';
 import { memoryLocation } from 'wouter/memory-location';
 import type { AvailabilityData } from './hooks/use-availability';
@@ -124,6 +124,59 @@ describe('interactive surfaces label-in-name (WCAG 2.5.3)', () => {
     }
 
     expectNoOffenders('Header (mobile menu + nav dropdowns open)');
+  });
+
+  it('Header: nests Floor Plans under Available Units on desktop', () => {
+    mountAt('/', <Header />);
+
+    const desktopNav = screen.getByRole('navigation', { name: 'Primary' });
+    const availableUnitsMenu = within(desktopNav).getByRole('button', {
+      name: 'Available Units submenu',
+    });
+
+    expect(availableUnitsMenu.getAttribute('aria-expanded')).toBe('false');
+    expect(availableUnitsMenu.getAttribute('aria-controls')).toBeNull();
+    expect(within(desktopNav).queryByRole('link', { name: 'Floor Plans' })).toBeNull();
+
+    act(() => {
+      fireEvent.mouseEnter(availableUnitsMenu);
+    });
+    act(() => {
+      fireEvent.click(availableUnitsMenu);
+    });
+
+    expect(availableUnitsMenu.getAttribute('aria-expanded')).toBe('true');
+    const floorPlansLink = within(desktopNav).getByRole('link', { name: 'Floor Plans' });
+    expect(floorPlansLink.getAttribute('href')).toBe('/floor-plans');
+    expect(within(desktopNav).getAllByRole('link', { name: 'Floor Plans' })).toHaveLength(1);
+    expect(availableUnitsMenu.getAttribute('aria-controls')).toBe('menu-available-units');
+    expect(document.getElementById('menu-available-units')?.contains(floorPlansLink)).toBe(true);
+
+    act(() => {
+      fireEvent.keyDown(availableUnitsMenu, { key: 'Escape' });
+    });
+    expect(availableUnitsMenu.getAttribute('aria-expanded')).toBe('false');
+    expect(within(desktopNav).queryByRole('link', { name: 'Floor Plans' })).toBeNull();
+  });
+
+  it('Header: keeps Floor Plans as one indented secondary mobile link', () => {
+    mountAt('/', <Header />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /toggle menu/i }));
+    });
+
+    const mobileNav = document.getElementById('mobile-nav');
+    expect(mobileNav).not.toBeNull();
+    const mobile = within(mobileNav as HTMLElement);
+    const availableUnitsLink = mobile.getByRole('link', { name: 'Available Units' });
+    const floorPlansLinks = mobile.getAllByRole('link', { name: 'Floor Plans' });
+
+    expect(availableUnitsLink.getAttribute('href')).toBe('/available-units');
+    expect(floorPlansLinks).toHaveLength(1);
+    expect(floorPlansLinks[0].getAttribute('href')).toBe('/floor-plans');
+    expect(floorPlansLinks[0].classList.contains('pl-4')).toBe(true);
+    expect(floorPlansLinks[0].classList.contains('opacity-80')).toBe(true);
   });
 
   it('PhotoGallery: lightbox open', () => {

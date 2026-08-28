@@ -26,6 +26,7 @@ function NavDropdown({
   align?: 'left' | 'right';
 }) {
   const [open, setOpen] = useState(false);
+  const [pointerOver, setPointerOver] = useState(false);
   const menuId = `menu-${label.replace(/\s+/g, '-').toLowerCase()}`;
 
   function handleBlur(e: FocusEvent<HTMLDivElement>) {
@@ -41,8 +42,14 @@ function NavDropdown({
   return (
     <div
       className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={() => {
+        setPointerOver(true);
+        setOpen(true);
+      }}
+      onMouseLeave={() => {
+        setPointerOver(false);
+        setOpen(false);
+      }}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
     >
@@ -57,7 +64,7 @@ function NavDropdown({
           // a dangling aria-controls is an accessibility error.
           aria-controls={open ? menuId : undefined}
           aria-label={`${label} submenu`}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen((v) => (pointerOver ? true : !v))}
           className="p-1 hover:text-primary transition-colors"
         >
           <ChevronDown className="w-4 h-4" />
@@ -136,22 +143,11 @@ export function Header() {
               ]}
             />
 
-            <Link
+            <NavDropdown
+              label="Available Units"
               href="/available-units"
-              className="flex flex-col items-center text-base uppercase tracking-wider font-semibold text-primary hover:opacity-80 transition-opacity"
-            >
-              Available Units
-              {/* Short gold rule mimicking the page headline underline (.headline-rule). */}
-              <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
-            </Link>
-
-            <Link
-              href="/floor-plans"
-              className="flex flex-col items-center text-base uppercase tracking-wider font-semibold text-primary hover:opacity-80 transition-opacity"
-            >
-              Floor Plans
-              <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
-            </Link>
+              items={[{ href: '/floor-plans', label: 'Floor Plans' }]}
+            />
 
             <NavDropdown
               label="Neighborhood"
@@ -227,11 +223,8 @@ export function Header() {
                     <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
                   </span>
                 </Link>
-                <Link href="/floor-plans" className="text-base uppercase tracking-wider py-2 text-center font-semibold text-primary">
-                  <span className="inline-flex flex-col">
-                    Floor Plans
-                    <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
-                  </span>
+                <Link href="/floor-plans" className="text-sm uppercase tracking-wider py-2 pl-4 opacity-80">
+                  Floor Plans
                 </Link>
               </div>
               <Link href="/photo-gallery" className="text-sm uppercase tracking-wider py-2">Photo Gallery</Link>
