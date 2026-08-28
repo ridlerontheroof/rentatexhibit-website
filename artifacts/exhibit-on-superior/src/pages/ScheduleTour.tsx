@@ -375,7 +375,7 @@ export function ScheduleTour() {
                     <div
                       ref={errorRef}
                       tabIndex={-1}
-                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none focus:ring-2 focus:ring-ring text-left"
+                      className="bg-destructive/10 text-destructive-text p-4 mb-6 border border-destructive focus:outline-none focus:ring-2 focus:ring-ring text-left"
                       role="alert"
                     >
                       Something went wrong and your tour request couldn't be sent. Please check
@@ -475,7 +475,7 @@ export function ScheduleTour() {
 
                   {!isOnline && (
                     <div
-                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive"
+                      className="bg-destructive/10 text-destructive-text p-4 mb-6 border border-destructive"
                       role="status"
                       aria-live="polite"
                     >
@@ -505,7 +505,7 @@ export function ScheduleTour() {
                     <div
                       ref={errorRef}
                       tabIndex={-1}
-                      className="bg-destructive/10 text-destructive p-4 mb-6 border border-destructive focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="bg-destructive/10 text-destructive-text p-4 mb-6 border border-destructive focus:outline-none focus:ring-2 focus:ring-ring"
                       role="alert"
                     >
                       Your submission couldn't be verified. Please review your details and try
@@ -544,7 +544,7 @@ export function ScheduleTour() {
                           className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                         />
                         {errors.firstName && (
-                          <p id="firstName-error" role="alert" className="text-destructive text-xs mt-1">
+                          <p id="firstName-error" role="alert" className="text-destructive-text text-xs mt-1">
                             {errors.firstName.message}
                           </p>
                         )}
@@ -564,7 +564,7 @@ export function ScheduleTour() {
                           className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                         />
                         {errors.lastName && (
-                          <p id="lastName-error" role="alert" className="text-destructive text-xs mt-1">
+                          <p id="lastName-error" role="alert" className="text-destructive-text text-xs mt-1">
                             {errors.lastName.message}
                           </p>
                         )}
@@ -587,7 +587,7 @@ export function ScheduleTour() {
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       />
                       {errors.email && (
-                        <p id="email-error" role="alert" className="text-destructive text-xs mt-1">
+                        <p id="email-error" role="alert" className="text-destructive-text text-xs mt-1">
                           {errors.email.message}
                         </p>
                       )}
@@ -608,7 +608,7 @@ export function ScheduleTour() {
                         className="w-full px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       />
                       {errors.phone && (
-                        <p id="phone-error" role="alert" className="text-destructive text-xs mt-1">
+                        <p id="phone-error" role="alert" className="text-destructive-text text-xs mt-1">
                           {errors.phone.message}
                         </p>
                       )}
@@ -629,7 +629,7 @@ export function ScheduleTour() {
                         className="w-full appearance-none px-4 py-2 border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
                       />
                       {errors.moveInDate && (
-                        <p id="moveInDate-error" role="alert" className="text-destructive text-xs mt-1">
+                        <p id="moveInDate-error" role="alert" className="text-destructive-text text-xs mt-1">
                           {errors.moveInDate.message}
                         </p>
                       )}
@@ -654,7 +654,7 @@ export function ScheduleTour() {
                         <option value="Any">Any / Not Sure</option>
                       </select>
                       {errors.bedrooms && (
-                        <p id="bedrooms-error" role="alert" className="text-destructive text-xs mt-1">
+                        <p id="bedrooms-error" role="alert" className="text-destructive-text text-xs mt-1">
                           {errors.bedrooms.message}
                         </p>
                       )}

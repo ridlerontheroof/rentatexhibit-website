@@ -321,7 +321,7 @@ export function StartApplication() {
                           <p
                             id={`${name}-error`}
                             role="alert"
-                            className="mt-1 text-xs text-destructive"
+                            className="mt-1 text-xs text-destructive-text"
                           >
                             {errors[name]?.message}
                           </p>
@@ -344,7 +344,7 @@ export function StartApplication() {
                       className={inputClass}
                     />
                     {errors.email && (
-                      <p id="email-error" role="alert" className="mt-1 text-xs text-destructive">
+                      <p id="email-error" role="alert" className="mt-1 text-xs text-destructive-text">
                         {errors.email.message}
                       </p>
                     )}
@@ -364,7 +364,7 @@ export function StartApplication() {
                       className={inputClass}
                     />
                     {errors.phone && (
-                      <p id="phone-error" role="alert" className="mt-1 text-xs text-destructive">
+                      <p id="phone-error" role="alert" className="mt-1 text-xs text-destructive-text">
                         {errors.phone.message}
                       </p>
                     )}

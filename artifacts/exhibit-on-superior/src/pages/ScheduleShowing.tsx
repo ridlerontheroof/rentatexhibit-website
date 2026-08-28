@@ -329,7 +329,7 @@ export function ScheduleShowing() {
 
                 {!isOnline && (
                   <div
-                    className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive"
+                    className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive-text"
                     role="status"
                     aria-live="polite"
                   >
@@ -349,7 +349,7 @@ export function ScheduleShowing() {
                 </p>
                 {contactRejected && (
                   <div
-                    className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive"
+                    className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive-text"
                     role="alert"
                   >
                     Your submission couldn't be verified. Please review your details and try
@@ -389,7 +389,7 @@ export function ScheduleShowing() {
                           className={inputClass}
                         />
                         {errors[name] && (
-                          <p id={`${name}-error`} role="alert" className="mt-1 text-xs text-destructive">
+                          <p id={`${name}-error`} role="alert" className="mt-1 text-xs text-destructive-text">
                             {errors[name]?.message}
                           </p>
                         )}
@@ -411,7 +411,7 @@ export function ScheduleShowing() {
                       className={inputClass}
                     />
                     {errors.email && (
-                      <p id="email-error" role="alert" className="mt-1 text-xs text-destructive">
+                      <p id="email-error" role="alert" className="mt-1 text-xs text-destructive-text">
                         {errors.email.message}
                       </p>
                     )}
@@ -431,7 +431,7 @@ export function ScheduleShowing() {
                       className={inputClass}
                     />
                     {errors.phone && (
-                      <p id="phone-error" role="alert" className="mt-1 text-xs text-destructive">
+                      <p id="phone-error" role="alert" className="mt-1 text-xs text-destructive-text">
                         {errors.phone.message}
                       </p>
                     )}

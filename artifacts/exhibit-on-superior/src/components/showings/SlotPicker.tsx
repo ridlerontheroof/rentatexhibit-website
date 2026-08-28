@@ -58,7 +58,7 @@ export function SlotPicker({
         <div
           ref={slotTakenRef}
           tabIndex={-1}
-          className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive focus:outline-none focus:ring-2 focus:ring-ring"
+          className="mb-6 border border-destructive bg-destructive/10 p-4 text-destructive-text focus:outline-none focus:ring-2 focus:ring-ring"
           role="alert"
         >
           That time was just booked by someone else. Please pick another time below.
