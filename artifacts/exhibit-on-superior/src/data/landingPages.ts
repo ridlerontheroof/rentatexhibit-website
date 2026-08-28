@@ -115,6 +115,7 @@ const NEAR_RELATED: { href: string; label: string }[] = [
   { href: '/apartments-near-merchandise-mart', label: 'Near the Merchandise Mart' },
   { href: '/apartments-near-the-loop', label: 'Near the Loop' },
   { href: '/neighborhood', label: 'River North Neighborhood Guide' },
+  { href: '/floor-plans', label: 'All Floor Plans' },
 ];
 
 const relatedExcept = (list: { href: string; label: string }[], path: string) =>

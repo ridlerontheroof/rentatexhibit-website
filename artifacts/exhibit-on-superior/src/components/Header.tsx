@@ -145,6 +145,14 @@ export function Header() {
               <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
             </Link>
 
+            <Link
+              href="/floor-plans"
+              className="flex flex-col items-center text-base uppercase tracking-wider font-semibold text-primary hover:opacity-80 transition-opacity"
+            >
+              Floor Plans
+              <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
+            </Link>
+
             <NavDropdown
               label="Neighborhood"
               href="/neighborhood"
@@ -216,6 +224,12 @@ export function Header() {
                 <Link href="/available-units" className="text-base uppercase tracking-wider py-2 text-center font-semibold text-primary">
                   <span className="inline-flex flex-col">
                     Available Units
+                    <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
+                  </span>
+                </Link>
+                <Link href="/floor-plans" className="text-base uppercase tracking-wider py-2 text-center font-semibold text-primary">
+                  <span className="inline-flex flex-col">
+                    Floor Plans
                     <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
                   </span>
                 </Link>
