@@ -133,9 +133,14 @@ describe('interactive surfaces label-in-name (WCAG 2.5.3)', () => {
     const availableUnitsMenu = within(desktopNav).getByRole('button', {
       name: 'Available Units submenu',
     });
+    const availableUnitsLink = within(desktopNav).getByRole('link', { name: 'Available Units' });
 
     expect(availableUnitsMenu.getAttribute('aria-expanded')).toBe('false');
     expect(availableUnitsMenu.getAttribute('aria-controls')).toBeNull();
+    expect(availableUnitsLink.classList.contains('text-base')).toBe(true);
+    expect(availableUnitsLink.classList.contains('font-semibold')).toBe(true);
+    expect(availableUnitsLink.classList.contains('text-primary')).toBe(true);
+    expect(availableUnitsLink.querySelector('.bg-primary')).not.toBeNull();
     expect(within(desktopNav).queryByRole('link', { name: 'Floor Plans' })).toBeNull();
 
     act(() => {
@@ -149,6 +154,9 @@ describe('interactive surfaces label-in-name (WCAG 2.5.3)', () => {
     const floorPlansLink = within(desktopNav).getByRole('link', { name: 'Floor Plans' });
     expect(floorPlansLink.getAttribute('href')).toBe('/floor-plans');
     expect(within(desktopNav).getAllByRole('link', { name: 'Floor Plans' })).toHaveLength(1);
+    expect(floorPlansLink.classList.contains('text-sm')).toBe(true);
+    expect(floorPlansLink.classList.contains('font-semibold')).toBe(false);
+    expect(floorPlansLink.classList.contains('text-primary')).toBe(false);
     expect(availableUnitsMenu.getAttribute('aria-controls')).toBe('menu-available-units');
     expect(document.getElementById('menu-available-units')?.contains(floorPlansLink)).toBe(true);
 

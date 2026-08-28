@@ -19,11 +19,13 @@ function NavDropdown({
   href,
   items,
   align = 'left',
+  prominent = false,
 }: {
   label: string;
   href: string;
   items: DropdownItem[];
   align?: 'left' | 'right';
+  prominent?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [pointerOver, setPointerOver] = useState(false);
@@ -54,8 +56,22 @@ function NavDropdown({
       onKeyDown={handleKeyDown}
     >
       <div className="flex items-center gap-1">
-        <Link href={href} className={navLink}>
-          {label}
+        <Link
+          href={href}
+          className={
+            prominent
+              ? 'text-base uppercase tracking-wider font-semibold text-primary hover:text-primary transition-colors'
+              : navLink
+          }
+        >
+          {prominent ? (
+            <span className="inline-flex flex-col">
+              {label}
+              <span className="block h-px w-full bg-primary mt-0.5" aria-hidden="true" />
+            </span>
+          ) : (
+            label
+          )}
         </Link>
         <button
           type="button"
@@ -146,6 +162,7 @@ export function Header() {
             <NavDropdown
               label="Available Units"
               href="/available-units"
+              prominent
               items={[{ href: '/floor-plans', label: 'Floor Plans' }]}
             />
 
