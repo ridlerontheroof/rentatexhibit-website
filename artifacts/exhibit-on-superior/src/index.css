@@ -141,7 +141,7 @@
   --popover-border: 0 0% 90%;
 
   --primary: 42 40% 30%; /* accessible gold — 4.5:1 on white (WCAG AA) */
-  --primary-on-dark: 42 36% 54%; /* original gold — passes on dark backgrounds (#3c3c3e, #1c1c1c) */
+  --primary-on-dark: 42 36% 60%; /* lighter gold — 4.7:1 on #3c3c3e and 5.5:1 on #1c1c1c (WCAG AA) */
   --primary-foreground: 0 0% 100%;
 
   --secondary: 0 0% 11%; /* #1c1c1c dark */
@@ -295,7 +295,7 @@
 .bg-footer .btn-gold-outline:hover,
 .bg-dark-section .btn-gold-outline:hover {
   background-color: hsl(var(--primary-on-dark));
-  color: white;
+  color: #1c1c1c;
 }
 /* Dark-context focus override: dark gap + white outer ring — 21:1 on #1c1c1c / #3c3c3e */
 .bg-footer .btn-gold-outline:focus-visible,
