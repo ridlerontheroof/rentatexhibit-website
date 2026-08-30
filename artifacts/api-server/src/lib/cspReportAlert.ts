@@ -55,7 +55,7 @@ export const CSP_ALERT_EMAIL_DAILY_MAX = 5;
  * to CSP-report evidence so a production probe can prove the API bundle that
  * handled it, without adding general deployment fingerprinting.
  */
-export const CSP_ALERT_CLASSIFIER_REVISION = "safari-web-extension-v1";
+export const CSP_ALERT_CLASSIFIER_REVISION = "csp-noise-v2";
 
 const CSP_PROBE_PATH =
   /^\/__postpublish-csp-probe\/([A-Za-z0-9_-]{8,96})\/(known-noise|actionable)$/;
@@ -264,6 +264,12 @@ export function hasActionableBlockedResource(v: CspViolation): boolean {
  * resources with the safari-web-extension:// scheme. The scheme itself is the
  * extension fingerprint; keep the resource blocked and suppress only the
  * resulting operational alert, never ordinary site-origin inline reports.
+ *
+ * Google Translate stylesheet: browser-based Google Translate can inject the
+ * exact https://www.gstatic.com/_/translate_http/.../*.css stylesheet. The
+ * site does not depend on Google Translate, so keep that visitor-side
+ * stylesheet blocked and suppress only its operational alert. This remains
+ * deliberately narrower than all gstatic resources or Google-hosted styles.
  */
 export function isKnownNoise(v: CspViolation): boolean {
   const directive = v.effectiveDirective.toLowerCase();
@@ -281,6 +287,26 @@ export function isKnownNoise(v: CspViolation): boolean {
   // Safari extension-injected resource — the non-site scheme identifies the
   // injection. Keep it blocked; only suppress its un-actionable alert.
   if (blocked.toLowerCase().startsWith("safari-web-extension://")) return true;
+
+  // Google Translate stylesheet injection — browser translation is an
+  // optional visitor-side behavior, not a site dependency. Match the exact
+  // HTTPS host/path plus a CSS resource, never arbitrary gstatic resources or
+  // other Google-hosted stylesheets.
+  if (directive === "style-src-elem") {
+    try {
+      const url = new URL(blocked);
+      if (
+        url.protocol === "https:" &&
+        url.hostname.toLowerCase() === "www.gstatic.com" &&
+        url.pathname.startsWith("/_/translate_http/") &&
+        url.pathname.endsWith(".css")
+      ) {
+        return true;
+      }
+    } catch {
+      // Non-URL blocked-uri values are handled by the other classifiers.
+    }
+  }
 
   // Inline script injected by eval'd (extension/webview) code — noise.
   // Only suppressed when the reported source is eval code; inline violations

@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const EXPECTED_CLASSIFIER_REVISION = 'safari-web-extension-v1';
+export const EXPECTED_CLASSIFIER_REVISION = 'csp-noise-v2';
 export const EXPECTED_API_ENTRYPOINT = 'artifacts/api-server/dist/index.mjs';
 const EXTENSION_SOURCE = /\b(?:chrome-extension|moz-extension|safari-web-extension):/i;
 

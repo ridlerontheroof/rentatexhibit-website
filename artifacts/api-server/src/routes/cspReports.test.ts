@@ -92,7 +92,7 @@ beforeEach(() => {
   delete process.env.CSP_REPORT_PROCESSING_TIMEOUT_MS;
   process.env.API_RUNTIME_EXPECTED_ENTRYPOINT =
     "artifacts/api-server/dist/index.mjs";
-  process.env.API_CSP_CLASSIFIER_REVISION = "safari-web-extension-v1";
+  process.env.API_CSP_CLASSIFIER_REVISION = "csp-noise-v2";
   process.env.WATCHDOG_ALERT_TOKEN = "test-postpublish-probe-token";
   resetCspReportAlertState();
   resetCspReportWindow();
@@ -120,7 +120,7 @@ describe("POST /csp-reports", () => {
 
     expect(res.status).toBe(204);
     expect(res.headers["x-csp-probe-classifier-revision"]).toBe(
-      "safari-web-extension-v1",
+      "csp-noise-v2",
     );
     expect(res.headers["x-csp-probe-known-noise"]).toBe("true");
     expect(res.headers["x-csp-probe-logged"]).toBe("true");
@@ -408,7 +408,7 @@ describe("POST /csp-reports", () => {
 
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({
-        classifierRevision: "safari-web-extension-v1",
+        classifierRevision: "csp-noise-v2",
         knownNoise: true,
         effectiveDirective: "script-src-elem",
         blockedUri: "https://apis.google.com/js/client.js",
@@ -421,6 +421,73 @@ describe("POST /csp-reports", () => {
       "CSP violation suppressed as known noise",
     );
     expect(sendCspViolationAlert).not.toHaveBeenCalled();
+  });
+
+  it("logs but does not email the browser-injected Google Translate stylesheet", async () => {
+    const app = makeApp();
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": "https://www.rentatexhibit.com/",
+            "effective-directive": "style-src-elem",
+            "blocked-uri":
+              "https://www.gstatic.com/_/translate_http/_/css/translateelement.css",
+            disposition: "enforce",
+          },
+        }),
+      );
+    expect(res.status).toBe(204);
+    await settle();
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        classifierRevision: "csp-noise-v2",
+        knownNoise: true,
+        effectiveDirective: "style-src-elem",
+        blockedUri:
+          "https://www.gstatic.com/_/translate_http/_/css/translateelement.css",
+      }),
+      "Visitor browser reported a CSP violation",
+    );
+    expect(info).toHaveBeenCalledWith(
+      { signature: "style-src-elem|https://www.gstatic.com" },
+      "CSP violation suppressed as known noise",
+    );
+    expect(sendCspViolationAlert).not.toHaveBeenCalled();
+  });
+
+  it("emails a gstatic stylesheet near miss so unrelated CSS stays actionable", async () => {
+    const app = makeApp();
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": "https://www.rentatexhibit.com/",
+            "effective-directive": "style-src-elem",
+            "blocked-uri":
+              "https://www.gstatic.com/_/other_service/_/css/translateelement.css",
+            disposition: "enforce",
+          },
+        }),
+      );
+    expect(res.status).toBe(204);
+    await settle();
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        knownNoise: false,
+        effectiveDirective: "style-src-elem",
+        blockedUri:
+          "https://www.gstatic.com/_/other_service/_/css/translateelement.css",
+      }),
+      "Visitor browser reported a CSP violation",
+    );
+    expect(sendCspViolationAlert).toHaveBeenCalledTimes(1);
   });
 
   it("emails the same blocked Google script when it has no extension source", async () => {

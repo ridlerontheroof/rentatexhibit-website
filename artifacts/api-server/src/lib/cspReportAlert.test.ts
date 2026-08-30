@@ -215,6 +215,69 @@ describe("isKnownNoise", () => {
     ).toBe(true);
   });
 
+  // --- Google Translate stylesheet ---
+  it("suppresses the browser-injected Google Translate stylesheet", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "style-src-elem",
+          blockedUri:
+            "https://www.gstatic.com/_/translate_http/_/css/translateelement.css",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("allows Translate stylesheet query strings without broadening the match", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "STYLE-SRC-ELEM",
+          blockedUri:
+            "https://www.gstatic.com/_/translate_http/_/css/translateelement.css?x=1",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("does not suppress arbitrary gstatic resources or non-CSS Translate resources", () => {
+    const cases = [
+      "https://www.gstatic.com/s/translate_http/_/css/translateelement.css",
+      "https://www.gstatic.com/_/translate_http/_/js/translateelement.js",
+      "https://www.gstatic.com/_/other_service/_/css/translateelement.css",
+    ];
+    for (const blockedUri of cases) {
+      expect(
+        isKnownNoise(
+          violation({ effectiveDirective: "style-src-elem", blockedUri }),
+        ),
+      ).toBe(false);
+    }
+  });
+
+  it("does not suppress the Translate stylesheet under another directive", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri:
+            "https://www.gstatic.com/_/translate_http/_/css/translateelement.css",
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it("does not suppress an unrelated Google-hosted stylesheet", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "style-src-elem",
+          blockedUri: "https://fonts.googleapis.com/css2?family=Inter",
+        }),
+      ),
+    ).toBe(false);
+  });
+
   it("still alerts on an inline site report without an extension or eval source", () => {
     expect(
       isKnownNoise(
