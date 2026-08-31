@@ -3,7 +3,14 @@ import { extname, resolve, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const roots = ["api-server/src/runtime.ts", "packages", "web/src/App.tsx", "web/src/main.tsx", "content", "standards", "release.json"];
+export const propertyBearingRoots = [
+  "api-server/src/runtime.ts",
+  "packages",
+  "web/src/App.tsx",
+  "web/src/main.tsx",
+  "content",
+  "standards",
+];
 const forbidden = [/\bwoods crossing\b/i, /woodscrossing/i, /\bexhibit on superior\b/i, /rentatexhibit/i];
 const files = [];
 async function collect(path) {
@@ -16,7 +23,7 @@ async function collect(path) {
     else if ([".ts", ".tsx", ".mjs", ".json"].includes(extname(entry.name))) files.push(child);
   }
 }
-for (const item of roots) await collect(resolve(root, item));
+for (const item of propertyBearingRoots) await collect(resolve(root, item));
 const failures = [];
 for (const file of files) {
   const text = await readFile(file, "utf8");

@@ -17,17 +17,24 @@
     "requiredCommands": ["pnpm validate:release", "pnpm validate:source", "pnpm check:prepublish", "pnpm build"],
     "evidence": "The publication record below identifies the verified commit, annotated tag object, implementation digest, clean-checkout release preparation, and clean consumer bootstrap evidence."
   },
-  "implementationDigest": "b042b33a280ed2b00825c1a37f8ad9c2933603cce2881e34b20ee0fea2792767",
+  "implementationDigest": "354963579607d339611c55497d848d3590e27668fa13507ebe641e1efa8de440",
   "publication": {
-    "status": "published",
+    "status": "withdrawn",
     "publishedAt": "2026-08-31T19:20:40Z",
     "repository": "https://github.com/ridlerontheroof/rentatexhibit-website",
     "commit": "3c0fba372c02d3475379716b2c8874aef7266c4f",
     "tagObject": "7a0c2f35641a25fb78d5bf6de8d1f60d79ab391b",
-    "validation": {
+    "withdrawnAt": "2026-08-31",
+    "withdrawalReason": "A release-owner reproduction found that pnpm release:prepare failed because publication provenance in release.json was incorrectly included in the runnable/property-bearing neutrality surface. The tag object and evidence hashes are retained below for auditability, but this record must not be treated as a passing release.",
+    "replacement": {
+      "status": "pending",
+      "requirement": "Publish only from a clean candidate commit whose recorded pnpm release:prepare evidence passes; use a new annotated replacement tag and do not move or overwrite kit-v2.0.0."
+    },
+    "invalidatedValidation": {
       "releasePreparation": {
         "commands": ["corepack pnpm install --frozen-lockfile", "pnpm release:prepare"],
-        "result": "passed from a clean checkout with a clean final status",
+        "originalClaim": "passed from a clean checkout with a clean final status",
+        "result": "invalidated by a reproduced neutrality-validation failure",
         "installLogSha256": "a94a3cd466a3d411118aa10e6946ec7dca319e9bd46f5b0f49b8646cffe32f2f",
         "releaseLogSha256": "0bb705f08df1c11dc5ef5c0f6c6086e385dc7ae6a763eb72d8222a2157bc482f"
       },
