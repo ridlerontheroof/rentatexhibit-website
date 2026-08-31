@@ -55,7 +55,7 @@ export const CSP_ALERT_EMAIL_DAILY_MAX = 5;
  * to CSP-report evidence so a production probe can prove the API bundle that
  * handled it, without adding general deployment fingerprinting.
  */
-export const CSP_ALERT_CLASSIFIER_REVISION = "csp-noise-v2";
+export const CSP_ALERT_CLASSIFIER_REVISION = "csp-noise-v3";
 
 const CSP_PROBE_PATH =
   /^\/__postpublish-csp-probe\/([A-Za-z0-9_-]{8,96})\/(known-noise|actionable)$/;
@@ -253,23 +253,25 @@ export function hasActionableBlockedResource(v: CspViolation): boolean {
  * post-publish hydrated-SEO checks. A genuinely missing GTM tag hash reports
  * with no eval-code sourceFile and still alerts.
  *
- * chrome-extension source: Chrome reports the source of an extension-injected
- * script as exactly "chrome-extension". The observed blocked
- * https://apis.google.com/js/client.js load is not a site dependency, so the
- * resource must remain blocked rather than weakening the site's script-src to
- * accommodate a visitor's extension. Keep the report in the warning log but
- * omit it from the operational alert email.
- *
- * safari-web-extension blocked URI: Safari reports extension-injected
- * resources with the safari-web-extension:// scheme. The scheme itself is the
- * extension fingerprint; keep the resource blocked and suppress only the
- * resulting operational alert, never ordinary site-origin inline reports.
+ * Browser-extension locations: browsers may identify an extension either in
+ * sourceFile or blockedUri, using chrome-extension://, moz-extension://, or
+ * safari-web-extension://. Some Chrome reports shorten sourceFile to exactly
+ * "chrome-extension". The extension location is conclusive visitor-side
+ * evidence, so keep every resource blocked and suppress only its email.
  *
  * Google Translate stylesheet: browser-based Google Translate can inject the
  * exact https://www.gstatic.com/_/translate_http/.../*.css stylesheet. The
  * site does not depend on Google Translate, so keep that visitor-side
  * stylesheet blocked and suppress only its operational alert. This remains
  * deliberately narrower than all gstatic resources or Google-hosted styles.
+ *
+ * Meta Pixel script fetched through connect-src: the site and its published
+ * GTM container do not contain Meta Pixel. A real Pixel loader also inserts
+ * fbevents.js as a script, which browsers govern with script-src, not
+ * connect-src. The exact connect-src report for the standard loader URL is
+ * therefore visitor-side injection. Keep Facebook blocked and suppress only
+ * that directive-and-URL pairing; a future real Pixel tag would still alert
+ * under script-src until deliberately reviewed and allowlisted.
  */
 export function isKnownNoise(v: CspViolation): boolean {
   const directive = v.effectiveDirective.toLowerCase();
@@ -279,14 +281,17 @@ export function isKnownNoise(v: CspViolation): boolean {
   // eval in script-src — browser-extension noise, not a site or GTM issue.
   if (blocked.toLowerCase() === "eval") return true;
 
-  // Chrome extension-injected script — the exact browser-reported source
-  // identifies the injection, so do not allow the blocked resource for the
-  // site. It remains logged above, but must not consume an email-alert slot.
-  if (source === "chrome-extension") return true;
-
-  // Safari extension-injected resource — the non-site scheme identifies the
-  // injection. Keep it blocked; only suppress its un-actionable alert.
-  if (blocked.toLowerCase().startsWith("safari-web-extension://")) return true;
+  // Browser-extension injection — the non-site scheme may appear in either
+  // field. Keep the resource blocked; only suppress its un-actionable alert.
+  const extensionLocation =
+    /^(?:chrome-extension|moz-extension|safari-web-extension):\/\//;
+  if (
+    source === "chrome-extension" ||
+    extensionLocation.test(source) ||
+    extensionLocation.test(blocked.toLowerCase())
+  ) {
+    return true;
+  }
 
   // Google Translate stylesheet injection — browser translation is an
   // optional visitor-side behavior, not a site dependency. Match the exact
@@ -306,6 +311,16 @@ export function isKnownNoise(v: CspViolation): boolean {
     } catch {
       // Non-URL blocked-uri values are handled by the other classifiers.
     }
+  }
+
+  // Visitor-side Meta Pixel injection fetched as data rather than loaded as a
+  // script. Match the exact directive and canonical loader URL only; do not
+  // suppress Meta scripts, beacons, other locales, or query-string variants.
+  if (
+    directive === "connect-src" &&
+    blocked === "https://connect.facebook.net/en_US/fbevents.js"
+  ) {
+    return true;
   }
 
   // Inline script injected by eval'd (extension/webview) code — noise.

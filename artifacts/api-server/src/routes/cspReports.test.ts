@@ -92,7 +92,7 @@ beforeEach(() => {
   delete process.env.CSP_REPORT_PROCESSING_TIMEOUT_MS;
   process.env.API_RUNTIME_EXPECTED_ENTRYPOINT =
     "artifacts/api-server/dist/index.mjs";
-  process.env.API_CSP_CLASSIFIER_REVISION = "csp-noise-v2";
+  process.env.API_CSP_CLASSIFIER_REVISION = "csp-noise-v3";
   process.env.WATCHDOG_ALERT_TOKEN = "test-postpublish-probe-token";
   resetCspReportAlertState();
   resetCspReportWindow();
@@ -120,7 +120,7 @@ describe("POST /csp-reports", () => {
 
     expect(res.status).toBe(204);
     expect(res.headers["x-csp-probe-classifier-revision"]).toBe(
-      "csp-noise-v2",
+      "csp-noise-v3",
     );
     expect(res.headers["x-csp-probe-known-noise"]).toBe("true");
     expect(res.headers["x-csp-probe-logged"]).toBe("true");
@@ -408,7 +408,7 @@ describe("POST /csp-reports", () => {
 
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({
-        classifierRevision: "csp-noise-v2",
+        classifierRevision: "csp-noise-v3",
         knownNoise: true,
         effectiveDirective: "script-src-elem",
         blockedUri: "https://apis.google.com/js/client.js",
@@ -444,7 +444,7 @@ describe("POST /csp-reports", () => {
 
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({
-        classifierRevision: "csp-noise-v2",
+        classifierRevision: "csp-noise-v3",
         knownNoise: true,
         effectiveDirective: "style-src-elem",
         blockedUri:
@@ -484,6 +484,71 @@ describe("POST /csp-reports", () => {
         effectiveDirective: "style-src-elem",
         blockedUri:
           "https://www.gstatic.com/_/other_service/_/css/translateelement.css",
+      }),
+      "Visitor browser reported a CSP violation",
+    );
+    expect(sendCspViolationAlert).toHaveBeenCalledTimes(1);
+  });
+
+  it("logs but does not email the visitor-injected Meta Pixel connect fetch", async () => {
+    const app = makeApp();
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": "https://www.rentatexhibit.com/",
+            "effective-directive": "connect-src",
+            "blocked-uri":
+              "https://connect.facebook.net/en_US/fbevents.js",
+            disposition: "enforce",
+          },
+        }),
+      );
+    expect(res.status).toBe(204);
+    await settle();
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        classifierRevision: "csp-noise-v3",
+        knownNoise: true,
+        effectiveDirective: "connect-src",
+        blockedUri:
+          "https://connect.facebook.net/en_US/fbevents.js",
+      }),
+      "Visitor browser reported a CSP violation",
+    );
+    expect(info).toHaveBeenCalledWith(
+      { signature: "connect-src|https://connect.facebook.net" },
+      "CSP violation suppressed as known noise",
+    );
+    expect(sendCspViolationAlert).not.toHaveBeenCalled();
+  });
+
+  it("emails a Meta Pixel script load so a future intentional tag remains actionable", async () => {
+    const app = makeApp();
+    const res = await request(app)
+      .post("/csp-reports")
+      .set("Content-Type", "application/csp-report")
+      .send(
+        JSON.stringify({
+          "csp-report": {
+            "document-uri": "https://www.rentatexhibit.com/",
+            "effective-directive": "script-src-elem",
+            "blocked-uri":
+              "https://connect.facebook.net/en_US/fbevents.js",
+            disposition: "enforce",
+          },
+        }),
+      );
+    expect(res.status).toBe(204);
+    await settle();
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        knownNoise: false,
+        effectiveDirective: "script-src-elem",
       }),
       "Visitor browser reported a CSP violation",
     );

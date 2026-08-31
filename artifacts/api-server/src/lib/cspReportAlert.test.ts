@@ -193,6 +193,32 @@ describe("isKnownNoise", () => {
     ).toBe(true);
   });
 
+  it("suppresses extension-scheme resources when the browser reports the page as source", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "font-src",
+          blockedUri:
+            "chrome-extension://example-extension/fonts/Inter-Variable.ttf",
+          sourceFile: "https://www.rentatexhibit.com/amenities",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("suppresses HTTPS resources when sourceFile identifies a Safari extension", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "script-src-elem",
+          blockedUri: "https://cdn.segment.com/injected-extension-code.js",
+          sourceFile:
+            "safari-web-extension://example-extension/content/script.js",
+        }),
+      ),
+    ).toBe(true);
+  });
+
   it("still alerts on the same Google script when no extension source is reported", () => {
     expect(
       isKnownNoise(
@@ -276,6 +302,42 @@ describe("isKnownNoise", () => {
         }),
       ),
     ).toBe(false);
+  });
+
+  // --- visitor-side Meta Pixel injection ---
+  it("suppresses the exact Meta Pixel loader fetched through connect-src", () => {
+    expect(
+      isKnownNoise(
+        violation({
+          effectiveDirective: "connect-src",
+          blockedUri: "https://connect.facebook.net/en_US/fbevents.js",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("does not suppress a real Meta Pixel script load or nearby Facebook URLs", () => {
+    const cases = [
+      violation({
+        effectiveDirective: "script-src-elem",
+        blockedUri: "https://connect.facebook.net/en_US/fbevents.js",
+      }),
+      violation({
+        effectiveDirective: "connect-src",
+        blockedUri: "https://connect.facebook.net/es_LA/fbevents.js",
+      }),
+      violation({
+        effectiveDirective: "connect-src",
+        blockedUri: "https://connect.facebook.net/en_US/fbevents.js?injected=1",
+      }),
+      violation({
+        effectiveDirective: "connect-src",
+        blockedUri: "https://www.facebook.com/tr?id=123",
+      }),
+    ];
+    for (const candidate of cases) {
+      expect(isKnownNoise(candidate)).toBe(false);
+    }
   });
 
   it("still alerts on an inline site report without an extension or eval source", () => {
