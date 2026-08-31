@@ -17,7 +17,7 @@
     "requiredCommands": ["pnpm validate:release", "pnpm validate:source", "pnpm check:prepublish", "pnpm build"],
     "evidence": "The publication record below identifies the verified commit, annotated tag object, implementation digest, clean-checkout release preparation, and clean consumer bootstrap evidence."
   },
-  "implementationDigest": "c4caf374813d4073caab700331ad037f180e67904c373a277c218612bfd8842f",
+  "implementationDigest": "27624aee0b6a824b54650c49f0009c984f7e1631213a493eca50c4491e0ed458",
   "publication": {
     "status": "withdrawn",
     "publishedAt": "2026-08-31T19:20:40Z",
@@ -27,16 +27,9 @@
     "withdrawnAt": "2026-08-31",
     "withdrawalReason": "A release-owner reproduction found that pnpm release:prepare failed because publication provenance in release.json was incorrectly included in the runnable/property-bearing neutrality surface. The tag object and evidence hashes are retained below for auditability, but this record must not be treated as a passing release.",
     "replacement": {
-      "status": "candidate-validated",
+      "status": "pending",
       "tag": "kit-v2.0.0-r1",
-      "requirement": "Publish only by creating this new annotated tag at the validated candidate commit; do not move or overwrite kit-v2.0.0.",
-      "candidateCommit": "a4763011a0be5161e15b82ce6af2bd09eac329c1",
-      "validation": {
-        "commands": ["corepack pnpm install --frozen-lockfile", "pnpm release:prepare"],
-        "result": "passed from a detached clean checkout with a clean final status",
-        "installLogSha256": "717b674da7caeb46cc176fd1f69bdef0a4983760feb32c02fab39397ab862c60",
-        "releaseLogSha256": "c37a1d4b616951205b19ac1a1ee84561419e53310622e371f069b147e0ea7d35"
-      }
+      "requirement": "Publish only by creating this new annotated tag at the validated candidate commit; do not move or overwrite kit-v2.0.0."
     },
     "invalidatedValidation": {
       "releasePreparation": {

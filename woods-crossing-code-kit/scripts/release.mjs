@@ -19,4 +19,24 @@ const tag =
     : release.tag;
 if (!tag) throw new Error("Release metadata must identify the annotated tag for this candidate.");
 const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
-process.stdout.write(`Candidate verified at HEAD ${head}. Release owner may now run: git tag -a ${tag} HEAD\n`);
+const recordedCandidate =
+  release.publication?.replacement?.status === "candidate-validated"
+    ? release.publication.replacement.candidateCommit
+    : null;
+if (recordedCandidate) {
+  execFileSync("git", ["cat-file", "-e", `${recordedCandidate}^{commit}`], { cwd: root });
+  execFileSync(
+    "git",
+    ["diff", "--quiet", recordedCandidate, head, "--", ".", ":(exclude)release.json"],
+    { cwd: root },
+  );
+}
+const finalStatus = execFileSync("git", ["status", "--porcelain", "--", root], {
+  cwd: root,
+  encoding: "utf8",
+});
+if (finalStatus.trim()) throw new Error("Release gates modified the kit tree; the final checkout is not clean.");
+const tagTarget = recordedCandidate || head;
+process.stdout.write(
+  `Candidate verified at ${tagTarget}. Release owner may now run: git tag -a ${tag} ${tagTarget}\n`,
+);
