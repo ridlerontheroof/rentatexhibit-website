@@ -1174,7 +1174,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     targetQuery: 'renters insurance requirements chicago apartment',
     role: 'cluster',
     pillar: 'how-to-rent-an-apartment-in-chicago',
-    authorId: 'leasing-team',
+    authorId: 'rebbekah-hallberg',
     summary:
       'Chicago apartment buildings may set their own renters insurance requirements. Exhibit On Superior requires $300,000 in liability-to-landlord coverage. The Illinois Department of Insurance notes that landlord insurance protects the building, not a renter\u2019s personal property, so renters should confirm both the building\u2019s liability requirement and what their own policy covers.',
     images: [
