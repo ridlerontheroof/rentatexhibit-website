@@ -1,0 +1,24 @@
+~/workspace$ cd woods-crossing-code-kit
+~/workspace/woods-crossing-code-kit$ pnpm install --frozen-lockfile
+pnpm release:prepare
+ ERROR  Failed to switch pnpm to v10.28.2. Looks like pnpm CLI is missing at "/home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin" or is incorrect
+spawnSync /home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin/pnpm ENOENT
+~/workspace/woods-crossing-code-kit$ pnpm release:prepare
+ ERROR  Failed to switch pnpm to v10.28.2. Looks like pnpm CLI is missing at "/home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin" or is incorrect
+spawnSync /home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin/pnpm ENOENT
+~/workspace/woods-crossing-code-kit$ pnpm install --frozen-lockfile pnpm release:prepare
+ ERROR  Unknown option: 'frozen-lockfile pnpm'
+Did you mean 'lockfile-only'? Use "--config.unknown=value" to force an unknown option.
+For help, run: pnpm help add
+~/workspace/woods-crossing-code-kit$ pnpm install --frozen-lockfile
+ ERROR  Failed to switch pnpm to v10.28.2. Looks like pnpm CLI is missing at "/home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin" or is incorrect
+spawnSync /home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin/pnpm ENOENT
+~/workspace/woods-crossing-code-kit$ pnpm release:prepare
+ ERROR  Failed to switch pnpm to v10.28.2. Looks like pnpm CLI is missing at "/home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin" or is incorrect
+spawnSync /home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin/pnpm ENOENT
+~/workspace/woods-crossing-code-kit$ pnpm install --frozen-lockfile
+ ERROR  Failed to switch pnpm to v10.28.2. Looks like pnpm CLI is missing at "/home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin" or is incorrect
+spawnSync /home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin/pnpm ENOENT
+~/workspace/woods-crossing-code-kit$ pnpm install --frozen-lockfile
+ ERROR  Failed to switch pnpm to v10.28.2. Looks like pnpm CLI is missing at "/home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin" or is incorrect
+spawnSync /home/runner/workspace/.local/share/pnpm/.tools/pnpm/10.28.2/bin/pnpm ENOENT
