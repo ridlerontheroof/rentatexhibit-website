@@ -31,6 +31,7 @@ const baseline = JSON.parse(await readFile(resolve(root, "standards/baseline-gua
 const errors = [];
 if (release.tag !== "kit-v2.0.0" || release.version !== "2.0.0") errors.push("release tag/version must be kit-v2.0.0/2.0.0");
 if (!release.standardsCompatibility?.baselineGuardsVersion || !release.migration?.note || !release.verification?.evidence) errors.push("standardsCompatibility, migration note, and verification evidence are required");
+if (release.publication?.status === "withdrawn" && !release.publication?.replacement?.tag) errors.push("a withdrawn publication must name its immutable replacement tag");
 if (release.implementationDigest !== digest) errors.push(`implementationDigest mismatch: expected ${digest}`);
 if (release.standardsCompatibility?.baselineGuardsVersion !== baseline.version) errors.push("baseline guard compatibility version mismatch");
 if (errors.length) throw new Error(`Invalid release metadata:\n- ${errors.join("\n- ")}`);

@@ -1,6 +1,10 @@
 # Highland Property Site Kit
 
-Pinned release **kit-v2.0.0** is a property-neutral production starter for a
+The original **kit-v2.0.0** publication record is withdrawn. Do not move that
+tag. Its auditable replacement is **kit-v2.0.0-r1**, which may be published only
+from the clean candidate and evidence identified in `release.json`.
+
+The kit is a property-neutral production starter for a
 property website and API. A generated project owns its property configuration,
 content, assets, environment settings, and launch decisions; it never floats on
 the kit's main branch.
@@ -161,7 +165,8 @@ From that clean candidate commit,
 the release owner runs `pnpm release:prepare`; it runs the full prepublish and
 build gates, verifies the digest, and confirms the exact candidate `HEAD`, but
 deliberately does **not** mutate Git. Only after it passes does the release owner
-run `git tag -a kit-v2.0.0 HEAD` in the kit repository and publish that tag,
+run the exact `git tag -a … HEAD` command printed by `release:prepare` in the kit
+repository and publish that tag,
 then record the commit/tag with verification evidence. If a published record is
 later contradicted by reproduction, retain it as withdrawn and publish a new
 annotated replacement tag only after a fresh candidate passes; never move or

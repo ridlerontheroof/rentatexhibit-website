@@ -17,7 +17,7 @@
     "requiredCommands": ["pnpm validate:release", "pnpm validate:source", "pnpm check:prepublish", "pnpm build"],
     "evidence": "The publication record below identifies the verified commit, annotated tag object, implementation digest, clean-checkout release preparation, and clean consumer bootstrap evidence."
   },
-  "implementationDigest": "354963579607d339611c55497d848d3590e27668fa13507ebe641e1efa8de440",
+  "implementationDigest": "c4caf374813d4073caab700331ad037f180e67904c373a277c218612bfd8842f",
   "publication": {
     "status": "withdrawn",
     "publishedAt": "2026-08-31T19:20:40Z",
@@ -28,6 +28,7 @@
     "withdrawalReason": "A release-owner reproduction found that pnpm release:prepare failed because publication provenance in release.json was incorrectly included in the runnable/property-bearing neutrality surface. The tag object and evidence hashes are retained below for auditability, but this record must not be treated as a passing release.",
     "replacement": {
       "status": "pending",
+      "tag": "kit-v2.0.0-r1",
       "requirement": "Publish only from a clean candidate commit whose recorded pnpm release:prepare evidence passes; use a new annotated replacement tag and do not move or overwrite kit-v2.0.0."
     },
     "invalidatedValidation": {
