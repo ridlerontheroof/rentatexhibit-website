@@ -17,6 +17,11 @@ A legacy URL, extra owner assets, or a Replit custom template may be supplied, b
 The custom template is only a launcher. It is never the source of reusable code, standards, property
 facts, or release history.
 
+The factory repository's `property-site-replit-starter/` is the pin-ready custom-template payload.
+Before pinning or repinning it in Replit, run `npm test` in that directory. Its release lock must
+match the reviewed kit tag and digest; its Agent instructions request the ZIP and OM and then hand
+control to this skill.
+
 ## Source and release rules
 
 - The versioned **production code kit registry/repository** is the sole reusable implementation

@@ -5,6 +5,17 @@ property website and API. A generated project owns its property configuration,
 content, assets, environment settings, and launch decisions; it never floats on
 the kit's main branch.
 
+## Start a new property in Replit
+
+The factory repository includes `property-site-replit-starter/`, a code-free custom-template
+launcher pinned to this release's exact tag and implementation digest. On first run it requests the
+Claude-generated website ZIP and offering memorandum, then hands control to the
+`property-site-onboarding` skill for inventory and gated onboarding. The launcher is not an
+alternative kit source and carries no property facts, credentials, or pre-linked Account Secrets.
+
+Future upgrades must use a property-specific copy of the skill's
+`templates/PROPERTY_UPGRADE_PLAN.md`; never change a generated site's pin automatically.
+
 ## Run from a clean checkout
 
 ```sh

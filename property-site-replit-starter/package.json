@@ -1,0 +1,13 @@
+{
+  "name": "@highland/property-site-replit-starter",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/first-run.mjs",
+    "test": "node --test scripts/validate-launcher.test.mjs",
+    "validate": "node scripts/validate-launcher.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
