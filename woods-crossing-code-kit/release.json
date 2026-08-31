@@ -27,9 +27,16 @@
     "withdrawnAt": "2026-08-31",
     "withdrawalReason": "A release-owner reproduction found that pnpm release:prepare failed because publication provenance in release.json was incorrectly included in the runnable/property-bearing neutrality surface. The tag object and evidence hashes are retained below for auditability, but this record must not be treated as a passing release.",
     "replacement": {
-      "status": "pending",
+      "status": "candidate-validated",
       "tag": "kit-v2.0.0-r1",
-      "requirement": "Publish only from a clean candidate commit whose recorded pnpm release:prepare evidence passes; use a new annotated replacement tag and do not move or overwrite kit-v2.0.0."
+      "requirement": "Publish only by creating this new annotated tag at the validated candidate commit; do not move or overwrite kit-v2.0.0.",
+      "candidateCommit": "a4763011a0be5161e15b82ce6af2bd09eac329c1",
+      "validation": {
+        "commands": ["corepack pnpm install --frozen-lockfile", "pnpm release:prepare"],
+        "result": "passed from a detached clean checkout with a clean final status",
+        "installLogSha256": "717b674da7caeb46cc176fd1f69bdef0a4983760feb32c02fab39397ab862c60",
+        "releaseLogSha256": "c37a1d4b616951205b19ac1a1ee84561419e53310622e371f069b147e0ea7d35"
+      }
     },
     "invalidatedValidation": {
       "releasePreparation": {
