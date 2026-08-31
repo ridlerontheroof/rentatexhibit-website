@@ -6,6 +6,7 @@
 - [Floor-plan unit numbers](floor-plan-unit-numbers.md) — apartment # = pad2(floor)+pad2(unitLine) (e.g. 0606); "Residence" label is a code mislabel, source says "UNIT".
 - [vitest DOM/hook tests](vitest-dom-hook-tests.md) — web artifact's vitest defaults to node env; add `// @vitest-environment jsdom` pragma + testing-library, unmount manually.
 - [Tailwind v4 unlayered classes beat utilities](tailwind-v4-unlayered-classes.md) — custom .btn-* classes override JSX utilities; use `!` important (e.g. `bg-black/50!`).
+- [Tailwind v4 Vite compiler is required](tailwind-v4-vite-compiler.md) — `@import "tailwindcss"` alone can emit theme CSS but zero utilities; verify compiled utility selectors.
 - [Google reviews listing discrepancy](google-reviews-listing.md) — live feed reads the correct listing; the old 4.2/136 lives on a duplicate profile awaiting a Google merge, not a proxy bug.
 - [Stale workspace lib dist](stale-workspace-dist.md) — cross-package "property does not exist" errors after merges: rebuild the lib's dist before debugging.
 - [Vite build quirks](vite-build-quirks.md) — env vars only required for serve; no 'use client' directives (RSC-less SPA, they cause sourcemap build warnings).

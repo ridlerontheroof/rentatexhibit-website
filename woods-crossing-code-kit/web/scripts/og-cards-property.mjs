@@ -2,7 +2,7 @@
  * Per-property OG card map — the ONLY file that carries property-specific
  * photo references, page slugs, and taglines for social share card generation.
  *
- * WOODS-CROSSING: replace every entry below with your property's pages,
+ * PROPERTY CONFIG: replace every entry below with the property's pages,
  * source photos (in images-src/), and taglines before running
  * `node scripts/generate-og-cards.mjs`.
  *
@@ -29,45 +29,45 @@
  */
 
 export const CARDS = {
-  // WOODS-CROSSING: replace each entry with your property's photo + tagline.
+  // PROPERTY CONFIG: replace each entry with an approved photo and tagline.
   // Add or remove slugs to match your PAGE_SEO map.
   // ──────────────────────────────────────────────────────────────────────────
 
   home: {
-    // WOODS-CROSSING: hero shot of exterior or skyline view
+    // PROPERTY CONFIG: approved hero shot of exterior or skyline view
     src: 'REPLACE-WITH-YOUR-HERO-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: your neighborhood tagline here',
+    tagline: 'REPLACE: approved neighborhood tagline',
     gravity: 'center',
   },
   'available-units': {
-    // WOODS-CROSSING: amenity deck, courtyard, or best unit interior
+    // PROPERTY CONFIG: approved amenity deck, courtyard, or unit interior
     src: 'REPLACE-WITH-YOUR-AVAILABILITY-PHOTO.jpg',
     tagline: 'Apartments available now — live pricing & move-in dates',
   },
   'floor-plans': {
-    // WOODS-CROSSING: living room or kitchen interior
+    // PROPERTY CONFIG: approved living room or kitchen interior
     src: 'REPLACE-WITH-YOUR-FLOOR-PLAN-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: bedroom mix tagline, e.g. "Studio to 3-bedroom homes"',
+    tagline: 'REPLACE: verified bedroom mix tagline',
   },
   'photo-gallery': {
     src: 'REPLACE-WITH-YOUR-GALLERY-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: "See life at [Property Name]"',
+    tagline: 'REPLACE: approved gallery tagline',
   },
   'virtual-tour': {
     src: 'REPLACE-WITH-YOUR-TOUR-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: "Tour [Property Name] from anywhere"',
+    tagline: 'REPLACE: approved virtual tour tagline',
   },
   amenities: {
     src: 'REPLACE-WITH-YOUR-AMENITY-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: amenity headline, e.g. "Resort-style amenities"',
+    tagline: 'REPLACE: verified amenity headline',
   },
   'pet-friendly': {
     src: 'REPLACE-WITH-YOUR-PET-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: pet tagline, e.g. "Pet-friendly living in [City]"',
+    tagline: 'REPLACE: verified pet-policy tagline',
   },
   neighborhood: {
     src: 'REPLACE-WITH-YOUR-NEIGHBORHOOD-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: location tagline',
+    tagline: 'REPLACE: approved location tagline',
   },
   'apartment-guide': {
     src: 'REPLACE-WITH-YOUR-GUIDE-PHOTO.jpg',
@@ -79,7 +79,7 @@ export const CARDS = {
   },
   'parking-transportation': {
     src: 'REPLACE-WITH-YOUR-PARKING-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: commute/transit tagline',
+    tagline: 'REPLACE: verified transportation tagline',
   },
   'application-guide': {
     src: 'REPLACE-WITH-YOUR-APPLICATION-PHOTO.jpg',
@@ -99,27 +99,27 @@ export const CARDS = {
   },
   'map-directions': {
     src: 'REPLACE-WITH-YOUR-MAP-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: address / directions tagline',
+    tagline: 'REPLACE: verified directions tagline',
   },
   residents: {
     src: 'REPLACE-WITH-YOUR-RESIDENTS-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: "Resident services and community at [Property Name]"',
+    tagline: 'REPLACE: approved resident-services tagline',
   },
   'schedule-a-tour': {
     src: 'REPLACE-WITH-YOUR-TOUR-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: "Schedule your tour of [Property Name]"',
+    tagline: 'REPLACE: approved tour tagline',
   },
   reviews: {
     src: 'REPLACE-WITH-YOUR-REVIEWS-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: "See what residents say about [Property Name]"',
+    tagline: 'REPLACE: approved reviews tagline',
   },
   about: {
     src: 'REPLACE-WITH-YOUR-ABOUT-PHOTO.jpg',
-    tagline: 'WOODS-CROSSING: short descriptor, e.g. "A [N]-story community in [City]"',
+    tagline: 'REPLACE: verified property descriptor',
   },
 
   // ── Floor-plan landing pages ───────────────────────────────────────────────
-  // WOODS-CROSSING: add one entry per /floor-plans/<slug> landing page.
+  // PROPERTY CONFIG: add one entry per /floor-plans/<slug> landing page.
   // Remove entries that don't apply to your property.
 
   // 'studio-apartments-your-city': {
@@ -132,10 +132,10 @@ export const CARDS = {
   // },
 
   // ── Neighborhood landing pages ────────────────────────────────────────────
-  // WOODS-CROSSING: add one entry per /apartments-near-<landmark> page.
+  // PROPERTY CONFIG: add one entry per /apartments-near-<landmark> page.
 
   // 'apartments-near-your-landmark': {
   //   src: 'REPLACE.jpg',
-  //   tagline: 'WOODS-CROSSING: distance + landmark tagline',
+  //   tagline: 'REPLACE: verified distance and landmark tagline',
   // },
 };

@@ -18,9 +18,9 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, basename as path_basename } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
-// WOODS-CROSSING: pass your unit-map spreadsheet as the first argument, or set
+// PROPERTY CONFIG: pass the unit-map spreadsheet as the first argument, or set
 // UNIT_MAP_XLSX env var to its path. This is a per-property data input file.
-// No default is provided — the Exhibit spreadsheet is not shipped with the kit.
+// No default is provided — source-property spreadsheets are not shipped with the kit.
 // Example: node scripts/generate-unit-map.mjs attached_assets/YOUR_UNIT_MAP.xlsx
 const XLSX =
   process.argv[2] ??

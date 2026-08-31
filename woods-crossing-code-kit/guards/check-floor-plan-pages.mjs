@@ -11,7 +11,7 @@
 // failure.
 //
 // Usage: node scripts/check-floor-plan-pages.mjs [baseUrl] [--all]
-//   default baseUrl: https://www.woodscrossing.com /* WOODS-CROSSING: replace */
+//   baseUrl example: https://www.example-property.invalid
 //   default: the hub + a deterministic ~8-slug sample (first, last, every
 //   Nth) + the not-found stub; --all checks every slug page.
 //
@@ -26,7 +26,8 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 
 const args = process.argv.slice(2);
 const checkAll = args.includes('--all');
-const BASE = (args.find((a) => !a.startsWith('--')) || 'https://www.woodscrossing.com') // WOODS-CROSSING: replace
+const BASE = args.find((a) => !a.startsWith('--')) || process.env.SITE_URL
+if (!BASE) throw new Error('Provide SITE_URL or a base URL argument')
   .replace(
   /\/$/,
   '',

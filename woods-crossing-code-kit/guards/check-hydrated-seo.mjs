@@ -38,7 +38,7 @@
 // scripts/lib/hydrated-seo.test.mjs).
 //
 // Usage: node scripts/check-hydrated-seo.mjs [baseUrl] [--http-only]
-//   default baseUrl: https://www.woodscrossing.com /* WOODS-CROSSING: replace */
+//   baseUrl example: https://www.example-property.invalid
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -53,7 +53,8 @@ import {
 
 const args = process.argv.slice(2);
 const HTTP_ONLY = args.includes('--http-only');
-const BASE = (args.find((a) => !a.startsWith('--')) || 'https://www.woodscrossing.com') // WOODS-CROSSING: replace
+const BASE = args.find((a) => !a.startsWith('--')) || process.env.SITE_URL
+if (!BASE) throw new Error('Provide SITE_URL or a base URL argument')
   .replace(/\/$/, '');
 const UA = 'hydrated-seo-check';
 

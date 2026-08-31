@@ -1,6 +1,7 @@
 {
   "configVersion": "1",
-  "kitVersion": "kit-v1.1.0",
+  "kitVersion": "kit-v2.0.0",
+  "environmentManifestPath": "example-environment-manifest.json",
   "property": {
     "name": "Woods Crossing Apartments",
     "shortName": "Woods Crossing",

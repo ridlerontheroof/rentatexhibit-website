@@ -1,25 +1,38 @@
 ---
 name: property-site-onboarding
-description: Turnkey onboarding of a newly acquired Highland property's website — legacy-site discovery, gap analysis vs the flagship-derived baseline standard, owner-asset intake, scaffold from the pinned template kit, prelaunch checks, and go-live. Use when Highland acquires a property, when asked to migrate/replace a legacy property site, or to run discovery/parity/gap analysis on a property website.
+description: Onboard a Highland property site from the standard Claude website ZIP and offering memorandum, then guide fact review, discovery, design, scaffold from a pinned production-kit release, environment setup, verification, and go-live. Use for acquisitions, property-site replacement, standards promotion, or an explicit pinned-site upgrade.
 ---
 
 # Property-site onboarding
 
-Drives a "we bought property X" session end-to-end. Everything property-specific lives in ONE
-property config; the template kit carries all machinery. Only genuine human decisions stop the line.
+Drives a "we bought property X" session end-to-end. The **two standard inputs** are (1) the
+Claude-generated website ZIP and (2) the property offering memorandum (OM). A legacy URL and other
+owner assets are optional supplements. Only genuine human decisions stop the line.
 
 **Ground rules**
-- The baseline standard is the current release of the standards manifest (`standards/standards-manifest.json`, shipped with this skill and re-cut from the flagship property site whenever it improves). When manifest and flagship disagree, shipped flagship behavior wins.
-- The template kit lives in the dedicated template project (pinned releases, e.g. `kit-v1.0.0`). New sites are generated from a pinned release and record it in `property-config.json → kitVersion`. Never copy code from another property's live repo.
+- Follow the formal three-layer contract in `docs/FACTORY_CONTRACT.md`: this skill is the process,
+  the released production code kit is the reusable implementation source of truth, and an optional
+  Replit custom template is a launcher only. A launcher may select a kit release; it may not become
+  a fork or supply reusable production code.
+- The baseline standard is the released `standards/standards-manifest.json`. A live property,
+  including the flagship, is evidence for a proposed change—not authority. Promote learnings through
+  `docs/STANDARDS_GOVERNANCE.md`.
+- New sites are generated from a pinned semantic kit release and record it in
+  `property-config.json → kitVersion`. Never copy code from another property's live repo.
 - **Flag, never infer.** Facts, reuse rights, design direction, deletions, secrets, DNS — all human gates (G1–G8 below). Uncertain facts go into the uncertainty register, never into copy.
-- Secrets: env-var NAMES in the config only. Values are set by the operator in Replit Secrets.
+- Secret values never enter chat, source, templates, manifests, reports, or evidence. Follow
+  `docs/ENVIRONMENT_AND_SECRETS.md`: explicitly approve/link reusable Account Secrets; request
+  property-specific secrets securely; keep non-secret settings out of Secrets.
 
 ## Artifacts of a session
 
 All phase outputs live in the property project under `onboarding/`:
-`property-config.json`, `discovery/` (inventories, crawl report, gap report), `parity/`
+`property-config.json`, `source-inventory.json`, `candidate-facts`, `discovery/` (inventories, crawl
+report, gap report), `parity/`
 (parity-map.csv + URL_PARITY_MAP.draft.md), `UNCERTAINTY_REGISTER.md`, `DISCOVERY_REPORT.md`,
-`INTAKE_CHECKLIST.md`. Templates for each are in `templates/`.
+`INTAKE_CHECKLIST.md`, and `environment-manifest.json`. Templates and schemas are shipped with this
+skill. Preserve the original ZIP and OM as read-only provenance inputs; never overwrite project files
+while inspecting the ZIP.
 
 ## Human gates (enforced — the workflow stops until resolved)
 
@@ -29,7 +42,7 @@ All phase outputs live in the property project under `onboarding/`:
 | G2 | Content/image reuse rights confirmed (`brand.reuseRightsConfirmed`) | any legacy photo/copy reuse |
 | G3 | Design direction pick (present ≥2 comps; owner picks; record in `brand.designDirection`) | build phase |
 | G4 | Parity map review: every row APPROVED (incl. deletions/410s) | redirect module generation |
-| G5 | Secrets set by operator (names from `secrets.required`) | prelaunch |
+| G5 | Required Account Secrets explicitly approved/linked, property secrets securely configured, and non-secret settings configured per artifact/environment manifest | prelaunch |
 | G6 | DNS / GA4+GTM / Search Console access & setup | go-live |
 | G7 | AppFolio: exact property name verified via unit_directory + hidden "Tour" unit created by leasing team | leads/tours going live |
 | G8 | Publish approval after prelaunch evidence package reviewed | go-live |
@@ -40,14 +53,19 @@ Validate the config at every phase boundary:
 `node tools/validate-config.mjs onboarding/property-config.json --phase <phase>`
 
 ### Phase 1 — Intake
-**In:** acquisition announcement; owner uploads (offering memorandum, high-res photos, logos/brand
-assets, fact sheets); legacy URL(s).
-**Do:** start `property-config.json` (property, identity, legacySite). Extract candidate facts from
-the OM into `leasing.facts` AND the uncertainty register — every extracted fact starts UNCONFIRMED
-(G1). Route photos into the kit's image pipeline intake folder (originals dir; the kit's
+**In (standard):** Claude website ZIP + property OM. **Optional:** Replit launcher/template, legacy
+URL, additional photos, logos, fact sheets, and analytics exports. Missing optional inputs do not
+change which artifacts are authoritative.
+**Do:** inventory the ZIP without executing it. Treat its code as design/content/legacy-parity
+evidence only; identify placeholder integrations, credentials, unsupported claims, generated assets,
+and reuse-rights questions. Start `property-config.json` (property, identity, optional legacySite).
+Extract OM statements into the candidate-fact register and uncertainty register—every statement
+starts UNCONFIRMED (G1), and no candidate fact enters `leasing.facts` until confirmed. Route approved
+photos into the kit's image pipeline intake folder (originals dir; the kit's
 optimize-images script builds rungs; queue alt-text prompts; add entries to the OG-card map).
 Produce `INTAKE_CHECKLIST.md` from the template listing everything still owed by the owner.
-**Out:** config valid for `--phase intake`; uncertainty register started; intake checklist.
+**Out:** source inventory, candidate-fact register with page/provenance, integration/placeholder gap
+report, config valid for `--phase intake`, uncertainty register, and next-step intake checklist.
 **Gate:** none (G1/G2 opened here, resolved later).
 
 ### Phase 2 — Legacy-site discovery
@@ -77,36 +95,24 @@ Record `brand` in config.
 
 ### Phase 4 — Scaffold & build (from the kit)
 **In:** pinned kit release, config valid for `--phase build`.
-**Do:** generate the new project from the kit release; set `kitVersion` to the pinned release (current
-pinned release: `kit-v1.1.0`). Apply the config: identity, NAP/JSON-LD, brand tokens, AppFolio
+**Do:** obtain the reviewed release from the production code-kit registry and verify its tag/digest;
+generate the new project and set `kitVersion` to that exact release. If a Replit custom template was
+used, discard/replace any bundled implementation and use it only to launch this step. Apply the
+config: identity, NAP/JSON-LD, brand tokens, AppFolio
 (database/propertyName/tourUnitName — G7), analytics IDs, email routing, redirects module generated
 from the APPROVED parity map. Wire ALL FOUR content systems live with empty property slots (see
 `docs/CONTENT_SYSTEM_WIRING.md` — the per-system instantiation contract): interpage linking +
 link-name guard, FAQ machinery, Knowledge Center, blog engine.
 Only CONFIRMED facts (G1) enter copy; unresolved facts render nothing and stay in the register.
 
-**Env-var setup (kit-v1.1.0 — all required before `check:prepublish` can pass):**
-
-*Replit Secrets — api-server artifact:*
-`APPFOLIO_CLIENT_ID`, `APPFOLIO_CLIENT_SECRET`, `GMAIL_APP_PASSWORD`, `SESSION_SECRET`
-
-*Plain env vars — api-server artifact:*
-- `SITE_URL` — canonical `https://www.<domain>` URL (used by apex check, IndexNow, SEO digest, snapshot fetcher, post-publish watcher)
-- `ALLOWED_ORIGIN` — web artifact's deployed HTTPS origin for CORS (same as `SITE_URL` unless the API is on a separate subdomain)
-- `PROPERTY_NAME` — full marketing name used in email from-name, e.g. `Woods Crossing Apartments`
-- `APPFOLIO_DATABASE` — subdomain prefix from the AppFolio portal URL, e.g. `woodscrossingmgmt`
-- `APPFOLIO_PROPERTY_NAME` — exact property name for AppFolio row-matching (verify via unit_directory — G7), e.g. `Woods Crossing`
-- `APPFOLIO_LEAD_SOURCE_DEFAULT` — AppFolio lead-source label, e.g. `Website (WoodsCrossing)` (alnum + hyphens only inside parens)
-- `PROPERTY_TIMEZONE` — IANA timezone string, e.g. `America/Chicago`; always set explicitly — fallback is `America/Chicago` and wrong timezone causes booking-time errors
-- `GMAIL_SMTP_USER` — sending Gmail address (no fallback; missing causes silent send failures)
-- `LEASING_INBOX_EMAIL` — leasing team's notification inbox
-- `SEED_ALERT_EMAIL` — operational-alerts recipient
-- `INDEXNOW_KEY` — key string from indexnow.org; also host `<SITE_URL>/<key>.txt` before first publish
-
-*Plain env vars — web artifact:*
-- `VITE_GA4_MEASUREMENT_ID` — GA4 Measurement ID (required; missing throws at build time), e.g. `G-XXXXXXXXXX`
-- `VITE_UTM_STORAGE_KEY` — sessionStorage key for UTM capture, e.g. `woodscrossing_utm_params`
-- `VITE_API_URL` — deployed api-server origin + `/api`, e.g. `https://api.woodscrossing.replit.app/api`
+**Environment setup:** create `onboarding/environment-manifest.json` from the supplied example and
+validate it with the phase command below (it resolves `environmentManifestPath` relative to
+`property-config.json` and applies `schema/environment-manifest.schema.json`):
+`node tools/validate-config.mjs onboarding/property-config.json --phase build`.
+Every entry identifies artifact,
+environment, classification (`account-secret-link`, `property-secret`, or `non-secret`), owner,
+approval, and link/configuration status—names and metadata only, never values. Follow
+`docs/ENVIRONMENT_AND_SECRETS.md`; G5 is not satisfied by a name merely existing.
 
 *CSP property file — `web/server/csp-property.mjs`:*
 Fill all four exports (`GTM_INJECTED_SCRIPT_HASHES`, `EXTRA_SCRIPT_SRC_HOSTS`,
@@ -145,9 +151,19 @@ a test tour booking end-to-end, confirm alert-vs-leasing email routing.
 ## Kit-version pinning
 
 Each generated site records `kitVersion` and never floats. Kit improvements are released as new
-tags with re-cut manifest versions; upgrading a property site is an explicit task: diff kit
-releases, apply, re-run the guard suite. The manifest's `manifestVersion` in a gap report records
-which standard the site was measured against.
+semantic tags. Standards and kit versions move independently but trace one another in reviewed
+release metadata. Upgrading a property site requires a reviewed plan generated from
+`templates/PROPERTY_UPGRADE_PLAN.md`; it is never automatic. See
+`docs/STANDARDS_GOVERNANCE.md`. The manifest version in a gap report records which standard was used.
+
+## Fresh-session bootstrap
+
+1. Read this skill plus `docs/FACTORY_CONTRACT.md`; create a clean property project.
+2. Locate the Claude ZIP and OM; inventory both read-only. Label any other input optional.
+3. Create `onboarding/`, copy the report templates, and record input hashes/provenance.
+4. Stop for unresolved gates; do not ask for or print secret values.
+5. Pin and verify a released kit only after intake/design gates permit scaffold. A Replit template
+   may open the project but is never an implementation or facts source.
 
 ## Tool reference
 
@@ -160,4 +176,6 @@ which standard the site was measured against.
 
 Supporting docs: `docs/OPERATOR_GUIDE.md` (session flow, kit location, versioning),
 `docs/CONTENT_SYSTEM_WIRING.md` (content-system instantiation contract),
+`docs/FACTORY_CONTRACT.md`, `docs/STANDARDS_GOVERNANCE.md`,
+`docs/ENVIRONMENT_AND_SECRETS.md`,
 `templates/` (discovery report, uncertainty register, intake checklist).

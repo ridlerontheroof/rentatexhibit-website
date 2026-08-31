@@ -46,7 +46,7 @@
 // reach the noindex branch. The output clearly marks the reduced mode.
 //
 // Usage: node scripts/check-rented-noindex.mjs [baseUrl] [--unit NNNN] [--http-only]
-//   default baseUrl: https://www.woodscrossing.com /* WOODS-CROSSING: replace */
+//   baseUrl example: https://www.example-property.invalid
 //   --unit: force a specific absent unit number (default: prefer a
 //           published-but-now-rented unit page; otherwise derive a synthetic
 //           absent number from the live feed).
@@ -62,10 +62,9 @@ const args = process.argv.slice(2);
 const unitFlag = args.indexOf('--unit');
 const FORCED_UNIT = unitFlag >= 0 ? args[unitFlag + 1] : null;
 const HTTP_ONLY = args.includes('--http-only');
-const BASE = (
-  args.find((a, i) => !a.startsWith('--') && i !== unitFlag + 1) ||
-  'https://www.woodscrossing.com' // WOODS-CROSSING: replace
-).replace(/\/$/, '');
+const rawBase = args.find((a, i) => !a.startsWith('--') && i !== unitFlag + 1) || process.env.SITE_URL;
+if (!rawBase) throw new Error('Provide SITE_URL or a base URL argument');
+const BASE = rawBase.replace(/\/$/, '');
 
 // Sold-out <title> comes from the same source the build uses
 // (src/data/seo.ts SOLD_OUT_UNIT_TITLE), so this check can never drift when

@@ -14,7 +14,7 @@ import { logger } from "./lib/logger";
  * Resolve the CORS origin from the environment.
  *
  * Set ALLOWED_ORIGIN env var to your web app's deployed HTTPS origin, e.g.
- * "https://www.woodscrossing.com". Maps to property-config identity.canonicalOrigin.
+ * "https://www.example-property.invalid". Maps to property-config identity.canonicalOrigin.
  *
  * A wildcard ("*") or any non-HTTPS/malformed value is rejected outright.
  * In production there is no hard-coded fallback — a missing ALLOWED_ORIGIN is a

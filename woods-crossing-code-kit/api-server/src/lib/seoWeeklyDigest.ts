@@ -71,11 +71,11 @@ const SITE = _SITE_FOR_DIGEST.replace(/\/$/, "");
 /**
  * Default Search Console property. The site is verified at the domain level;
  * override with GSC_SITE_URL (e.g. a url-prefix property
- * "https://YOUR-DOMAIN.com /* WOODS-CROSSING: replace *//") if the grant lands elsewhere.
+ * the configured canonical origin) if the grant lands elsewhere.
  */
 // Derived from SITE_URL env var (property-config identity.canonicalOrigin) by
 // stripping "https://www." and prepending "sc-domain:", e.g.:
-//   SITE_URL=https://www.woodscrossing.com → sc-domain:woodscrossing.com
+//   SITE_URL=https://www.example-property.invalid → sc-domain:example-property.invalid
 // Override with GSC_SITE_URL env var if your Search Console property is
 // a URL-prefix property instead of a domain property.
 const _SITE_URL_FOR_GSC = process.env.SITE_URL?.trim();

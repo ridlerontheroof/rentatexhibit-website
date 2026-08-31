@@ -1,0 +1,26 @@
+{
+  "configVersion": "1",
+  "kitVersion": "kit-v2.0.0",
+  "property": {
+    "name": "Blair Street Apartments",
+    "shortName": "Blair Street",
+    "slug": "blair-street"
+  },
+  "identity": {
+    "canonicalOrigin": "https://liveatblairstreet.com",
+    "domains": [
+      "liveatblairstreet.com"
+    ]
+  },
+  "nap": {
+    "streetAddress": "2846 S Blair Street",
+    "locality": "South Salt Lake",
+    "region": "UT",
+    "postalCode": "84115",
+    "phone": "(801) 896-9844",
+    "timezone": "America/Denver"
+  },
+  "leasing": {
+    "facts": {}
+  }
+}

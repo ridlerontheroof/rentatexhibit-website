@@ -12,8 +12,8 @@ import { logger } from "./logger";
  *   - GMAIL_SMTP_USER      the sending account (env var)
  *   - GMAIL_APP_PASSWORD   16-character Google app password (Replit Secret)
  *
- * WOODS-CROSSING: create a dedicated Google Workspace account for the property
- * (e.g. leasingwoodscrossing@yourdomain.com), generate an app password in
+ * PROPERTY CONFIG: create a dedicated Google Workspace account for the property
+ * (e.g. leasing-property@yourdomain.example), generate an app password in
  * Google Account → Security → 2-Step Verification → App passwords, and store
  * it as the GMAIL_APP_PASSWORD Replit Secret.
  * Set GMAIL_SMTP_USER env var to the sending account address.
@@ -35,6 +35,10 @@ if (!_SENDER_EMAIL) {
 export const SENDER_EMAIL = _SENDER_EMAIL;
 
 let transporter: nodemailer.Transporter | null = null;
+let testSender: ((raw: string, to: string) => Promise<void>) | null = null;
+export function setMailTransportForTests(sender: ((raw: string, to: string) => Promise<void>) | null): void {
+  testSender = sender;
+}
 
 function getTransporter(): nodemailer.Transporter | null {
   const pass = process.env.GMAIL_APP_PASSWORD;
@@ -62,6 +66,7 @@ export function mailerConfigured(): boolean {
  * whether the failure should be recorded or swallowed.
  */
 export async function sendRawEmail(raw: string, to: string): Promise<void> {
+  if (testSender) return testSender(raw, to);
   const t = getTransporter();
   if (!t) {
     throw new Error(

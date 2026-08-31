@@ -1,0 +1,18 @@
+{
+  "manifestVersion": "1.0.0",
+  "propertySlug": "example-property",
+  "status": "APPROVED",
+  "reviewedBy": "Fictional kit fixture reviewer",
+  "reviewedAt": "2026-08-18T00:00:00Z",
+  "provenance": { "source": "Explicitly fictional kit release fixture", "rightsConfirmed": true },
+  "home": { "heading": "Find your next home", "description": "Explore the fictional Example Property kit release fixture." },
+  "amenities": [{ "title": "Resident lounge", "description": "Fictional fixture amenity used only for kit validation." }],
+  "neighborhood": [{ "title": "Example district", "description": "Fictional fixture neighborhood content." }],
+  "gallery": [{ "src": "/images/example.svg", "alt": "Fictional Example Property exterior illustration", "width": 1200, "height": 800, "category": "Community" }],
+  "floorPlans": [{ "id": "fixture-one", "slug": "fixture-one", "name": "Fixture One", "beds": 1, "baths": 1, "sqft": 700, "image": "/images/example-floor-plan.svg" }],
+  "faqs": [{ "question": "How is this fixture used?", "answer": "Only to validate the property-neutral production kit." }],
+  "knowledge": [{ "slug": "fixture-renting-guide", "title": "Fixture renting guide", "excerpt": "Fictional release content.", "content": "This fictional article validates article routing and prerendering." }],
+  "blog": [{ "slug": "fixture-update", "title": "Fixture property update", "excerpt": "Fictional release update.", "content": "This fictional post validates blog routing and prerendering." }],
+  "neighborhoodGuides": [{ "slug": "fixture-area-guide", "title": "Fixture area guide", "excerpt": "Fictional area information.", "content": "This fictional guide validates neighborhood guide routing." }],
+  "legacyRedirects": [{ "from": "/old-home", "to": "/" }]
+}

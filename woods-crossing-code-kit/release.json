@@ -1,0 +1,25 @@
+{
+  "kit": "@highland/property-site-kit",
+  "version": "2.0.0",
+  "tag": "kit-v2.0.0",
+  "released": "2026-08-18",
+  "configVersion": "1",
+  "standardsCompatibility": {
+    "baselineGuardsVersion": "2.0.0",
+    "propertyConfigSchema": "config/property-config.schema.json",
+    "minimumConfigVersion": "1"
+  },
+  "migration": {
+    "from": "kit-v1.x",
+    "note": "Move property facts into property-config.json, add environmentManifestPath, replace source-property defaults, and run check:prepublish before deployment."
+  },
+  "verification": {
+    "requiredCommands": ["pnpm validate:release", "pnpm validate:source", "pnpm check:prepublish", "pnpm build"],
+    "evidence": "Release owner records command output, repository commit, and created tag in the release record. This file declares the intended tag; it does not assert an external tag already exists."
+  },
+  "implementationDigest": "71d95af9d2a9fba8c1f2836d379a3a64aeaa670725085c1c589c42d79ab5a91d",
+  "upgradePolicy": "Projects pin an exact kit tag. Upgrades are explicit and never automatic.",
+  "artifacts": ["@highland/property-api", "@highland/property-web"],
+  "contentSystems": ["faqs", "knowledge", "blog", "neighborhoodGuides"],
+  "baselineContract": "standards/baseline-guards.json"
+}

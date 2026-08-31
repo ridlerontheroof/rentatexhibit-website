@@ -17,6 +17,8 @@
   "properties": {
     "configVersion": { "type": "string", "description": "Version of this schema the config was written against, e.g. \"1\"." },
     "kitVersion": { "type": "string", "description": "Pinned template-kit release tag this site is generated from (e.g. kit-v1.0.0). Sites never float on the kit." },
+    "environmentManifestPath": { "type": "string", "description": "Path, relative to this property config, to the reviewed environment manifest. Required by validation at build, prelaunch, and golive." },
+    "contentManifestPath": { "type": "string", "description": "Path, relative to this property config, to the property content manifest. Required and structurally validated at build, prelaunch, and golive." },
     "property": {
       "type": "object",
       "additionalProperties": false,
@@ -150,7 +152,7 @@
     "secrets": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Env-var NAMES only. Values are set in Replit Secrets by the operator (gate G5).",
+      "description": "Env-var NAMES only. Classification, artifact/environment placement, approvals, and status live in the referenced environment manifest. Values never appear here.",
       "required": ["required"],
       "properties": {
         "required": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" } },

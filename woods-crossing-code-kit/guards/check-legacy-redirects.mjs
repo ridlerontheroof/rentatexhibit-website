@@ -13,14 +13,15 @@
 // scripts/lib/knowledge-slugs.mjs.
 //
 // Usage: node scripts/check-legacy-redirects.mjs [baseUrl]
-//   default baseUrl: https://www.woodscrossing.com /* WOODS-CROSSING: replace */
+//   baseUrl example: https://www.example-property.invalid
 
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const args = process.argv.slice(2);
-const BASE = (args.find((a) => !a.startsWith('--')) || 'https://www.woodscrossing.com') // WOODS-CROSSING: replace
+const BASE = args.find((a) => !a.startsWith('--')) || process.env.SITE_URL
+if (!BASE) throw new Error('Provide SITE_URL or a base URL argument')
   .replace(
   /\/$/,
   '',

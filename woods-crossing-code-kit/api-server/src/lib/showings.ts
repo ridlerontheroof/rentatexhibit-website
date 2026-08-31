@@ -35,14 +35,14 @@
  * own the fallback (lead capture + hosted-page handoff).
  */
 
-// WOODS-CROSSING: set APPFOLIO_DATABASE env var to your management company's
-// AppFolio database name (e.g. "woodscrossingmgmt"). See appfolio.ts for details.
+// PROPERTY CONFIG: set APPFOLIO_DATABASE to the management company's
+// AppFolio database name (e.g. "propertymanagement"). See appfolio.ts for details.
 const _SHOWINGS_APPFOLIO_DATABASE = process.env.APPFOLIO_DATABASE?.trim();
 if (!_SHOWINGS_APPFOLIO_DATABASE) {
   throw new Error(
     "APPFOLIO_DATABASE env var is required for showings but not set. " +
     "Set it to your management company's AppFolio database name " +
-    "(the subdomain prefix in your AppFolio portal URL, e.g. \"woodscrossingmgmt\"). " +
+    "(the subdomain prefix in your AppFolio portal URL, e.g. \"propertymanagement\"). " +
     "Maps to appfolio.database in property-config.json.",
   );
 }
@@ -59,7 +59,7 @@ export const SHOWING_SOURCE = DEFAULT_LEAD_SOURCE;
  * Timezone the property's slot wall times are quoted in.
  * Read from PROPERTY_TIMEZONE env var (nap.timezone from property-config.json).
  * Examples: "America/Chicago", "America/Denver", "America/New_York"
- * WOODS-CROSSING: set PROPERTY_TIMEZONE env var for your property's timezone.
+ * PROPERTY CONFIG: set PROPERTY_TIMEZONE for the property's timezone.
  * Missing = loud startup failure — a silent wrong-timezone default mis-schedules showings.
  */
 const _PROPERTY_TIMEZONE = process.env.PROPERTY_TIMEZONE?.trim();

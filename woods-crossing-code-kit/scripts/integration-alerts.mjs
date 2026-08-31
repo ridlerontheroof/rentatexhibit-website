@@ -1,0 +1,5 @@
+process.env.PROPERTY_NAME="Alert Integration Property";process.env.GMAIL_SMTP_USER="sender@example.invalid";process.env.SEED_ALERT_EMAIL="ops@example.invalid";process.env.GMAIL_APP_PASSWORD="test-injected";
+const attempts=[];const {setMailTransportForTests}=await import("../api-server/src/lib/mailer.ts");setMailTransportForTests(async(raw,to)=>attempts.push({raw,to}));
+const email=await import("../api-server/src/lib/email.ts");
+for(const [name,subject] of [["sendRedirectCheckAlert","Redirect alert"],["sendGtmCheckAlert","GTM alert"],["sendRentedCheckAlert","Rented unit alert"],["sendShowingSchedulerAlert","Showing scheduler alert"],["sendBotGuardAlert","Bot guard alert"],["sendSeoDigestFailureAlert","SEO digest failure alert"]]){const before=attempts.length;await email[name]({failure:"deterministic"});if(!attempts.slice(before).some(sent=>sent.to==="ops@example.invalid"&&sent.raw.includes(subject)))throw new Error(`${name} did not route expected recipient/subject`)}
+process.stdout.write(`alert integration passed: ${attempts.length} injected transport sends\n`);

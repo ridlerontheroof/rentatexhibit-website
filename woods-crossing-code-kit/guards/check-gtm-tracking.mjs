@@ -31,7 +31,7 @@ import { fileURLToPath } from 'node:url';
 // Read from VITE_GA4_MEASUREMENT_ID env var (analytics.ga4MeasurementId from
 // property-config.json). Fails loudly if unset — a missing ID means the guard
 // cannot validate the correct property stream, which defeats its purpose.
-// WOODS-CROSSING: set VITE_GA4_MEASUREMENT_ID in your web artifact's env vars.
+// PROPERTY CONFIG: set VITE_GA4_MEASUREMENT_ID in the web artifact environment.
 const _EXPECTED_GA4_ID = process.env.VITE_GA4_MEASUREMENT_ID?.trim();
 if (!_EXPECTED_GA4_ID) {
   console.error(

@@ -28,14 +28,14 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
-// WOODS-CROSSING: all property-specific page slugs, source photos, and taglines
+// PROPERTY CONFIG: all property-specific page slugs, source photos, and taglines
 // live in og-cards-property.mjs. Edit that file — do not add property content here.
 import { CARDS } from './og-cards-property.mjs';
 
 const run = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourcesDir = path.join(root, 'images-src');
-// WOODS-CROSSING: replace with your property's white wordmark SVG filename in public/images/.
+// PROPERTY CONFIG: set the approved white wordmark SVG filename in public/images/.
 // Maps to the first entry of property-config brand.logoAssets (the white/light variant).
 const LOGO_FILENAME = process.env.OG_LOGO_FILENAME || 'property-logo-white.svg';
 const logoPath = path.join(root, 'public', 'images', LOGO_FILENAME);

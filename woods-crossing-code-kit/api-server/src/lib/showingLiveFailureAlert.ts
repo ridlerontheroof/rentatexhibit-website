@@ -6,7 +6,7 @@ import { mailerConfigured } from "./mailer";
 import { sendShowingSchedulerAlert } from "./email";
 
 /**
- * Live-traffic escalation for the Exhibit-branded showing scheduler.
+ * Live-traffic escalation for the property showing scheduler.
  *
  * The watchdog (showingSchedulerCheck.ts) probes only the anonymous halves
  * of the AppFolio flow — the slot fetch and the IDV status endpoint —

@@ -30,6 +30,7 @@
  *     excluded — they have documented defaults or are truly optional.
  */
 const REQUIRED_VARS = [
+  "DATABASE_URL",
   "APPFOLIO_CLIENT_ID",
   "APPFOLIO_CLIENT_SECRET",
   "APPFOLIO_DATABASE",
@@ -44,6 +45,10 @@ const REQUIRED_VARS = [
   "GMAIL_SMTP_USER",
   "LEASING_INBOX_EMAIL",
   "SEED_ALERT_EMAIL",
+  "SESSION_SECRET",
+  "VITE_API_URL",
+  "VITE_GA4_MEASUREMENT_ID",
+  "VITE_UTM_STORAGE_KEY",
 ] as const;
 
 export type RequiredEnvVar = (typeof REQUIRED_VARS)[number];

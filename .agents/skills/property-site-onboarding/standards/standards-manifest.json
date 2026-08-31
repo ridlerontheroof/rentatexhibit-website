@@ -1,7 +1,14 @@
 {
-  "manifestVersion": "1.0.0",
-  "standard": "Exhibit On Superior production implementation (rentatexhibit.com)",
-  "note": "Distilled from Exhibit's shipped guard suite and playbooks. When this manifest and Exhibit disagree, Exhibit's shipped behavior wins; re-cut this manifest when Exhibit improves (versioned releases alongside the kit).",
+  "manifestVersion": "1.1.0",
+  "standard": "Highland property-site production standard",
+  "governance": {
+    "authority": "This released manifest is the normative capability baseline. Live property behavior is evidence for a change proposal, never implicit authority.",
+    "versioning": "Semantic: MAJOR removes or incompatibly changes a requirement; MINOR adds or materially strengthens a requirement; PATCH clarifies without changing conformance.",
+    "promotionWorkflow": "../docs/STANDARDS_GOVERNANCE.md",
+    "requiredApprovals": ["standards-owner", "technical-reviewer", "security-or-privacy-reviewer-when-applicable"],
+    "releaseStatus": "APPROVED"
+  },
+  "note": "Originally distilled from shipped Exhibit machinery. Changes require a reviewed standards-change manifest; kit releases and property upgrades are separately versioned and approved.",
   "checks": [
     { "id": "head.per-url", "category": "canonicals/metadata", "description": "Every indexable route ships static prerendered HTML with unique <title>, meta description, canonical, OG/Twitter tags, and JSON-LD in the initial response (no JS required).", "automation": "linter", "kitGuard": "check:hydrated-seo + prerender parity guard" },
     { "id": "head.parity", "category": "canonicals/metadata", "description": "Routes ⇄ SEO-map keys match exactly; a page missing its SEO entry (or vice versa) fails the build.", "automation": "kit-guard", "kitGuard": "prerender.mjs parity guard" },

@@ -58,7 +58,7 @@ const OUTPUT_TAIL_CHARS = 4000;
 
 const SCRIPT_REL = path.join(
   "artifacts",
-  "YOUR-PROPERTY-SLUG" // WOODS-CROSSING: replace with your artifact slug,
+  process.env.WEB_ARTIFACT_SLUG ?? "property-web",
   "scripts",
   "check-legacy-redirects.mjs",
 );

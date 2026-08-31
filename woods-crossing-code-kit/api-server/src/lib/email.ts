@@ -6,7 +6,7 @@ import {
   renderProspectConfirmation,
   renderSeedStaleAlert,
   renderGeneralTourConfirmation,
-  // WOODS-CROSSING: import the alert renderers you implement in emailTemplates.ts
+  // PROPERTY CONFIG: import implemented alert renderers from emailTemplates.ts
 } from "./emailTemplates";
 import {
   EMAIL_LOGO_BASE64,
@@ -16,17 +16,17 @@ import {
 
 /**
  * The leasing inbox that receives new lead notifications.
- * WOODS-CROSSING: set LEASING_INBOX_EMAIL env var to your leasing team's inbox.
+ * PROPERTY CONFIG: set LEASING_INBOX_EMAIL to the leasing team inbox.
  */
 const LEASING_INBOX_EMAIL =
-  process.env.LEASING_INBOX_EMAIL ?? "leasing@yourproperty.com"; // WOODS-CROSSING: update default
+  process.env.LEASING_INBOX_EMAIL ?? "leasing@example.invalid";
 
 /**
  * Recipient for operational alerts (stale seed, rented-check failures, etc.).
- * WOODS-CROSSING: set SEED_ALERT_EMAIL env var to the person who can redeploy.
+ * PROPERTY CONFIG: set SEED_ALERT_EMAIL to the approved operations inbox.
  */
 const SEED_ALERT_EMAIL =
-  process.env.SEED_ALERT_EMAIL ?? "ops@yourmanagementcompany.com"; // WOODS-CROSSING: update default
+  process.env.SEED_ALERT_EMAIL ?? "ops@example.invalid";
 
 /**
  * The from-name shown on all emails from this property.
@@ -230,6 +230,31 @@ export async function sendSeedStaleAlert(opts: {
   logger.info({ recipient: SEED_ALERT_EMAIL }, "Sent stale availability-seed alert email");
 }
 
-// WOODS-CROSSING: add sendXxxAlert functions here following the same pattern
-// for each alert type you implement (rented-check, legacy-redirect, GTM, etc.).
-// Each alert: warnIfUnconfigured(), render from emailTemplates.ts, buildAlertMessage(), sendRawEmail().
+async function sendWatchdogAlert(kind: string, values: unknown[]): Promise<void> {
+  warnIfUnconfigured();
+  const label = kind;
+  const subject = `${PROPERTY_NAME}: ${label}`;
+  const detail = values.map((value) => {
+    try { return JSON.stringify(value); } catch { return String(value); }
+  }).join("\n");
+  const text = `${label}\n\n${detail || "The watchdog reported a failure."}`;
+  const html = `<h1>${label}</h1><pre>${detail.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]!))}</pre>`;
+  await sendRawEmail(buildAlertMessage("watchdog", subject, html, text, SEED_ALERT_EMAIL), SEED_ALERT_EMAIL);
+  logger.info({ recipient: SEED_ALERT_EMAIL, kind }, "Sent watchdog alert email");
+}
+export const sendApexRedirectAlert = (...v: unknown[]) => sendWatchdogAlert("Apex redirect alert", v);
+export const sendApplyLinkAlert = (...v: unknown[]) => sendWatchdogAlert("Apply link alert", v);
+export const sendAcceptedSilenceAlert = (...v: unknown[]) => sendWatchdogAlert("Accepted lead silence alert", v);
+export const sendAcceptedSpikeAlert = (...v: unknown[]) => sendWatchdogAlert("Accepted lead spike alert", v);
+export const sendBotGuardAlert = (...v: unknown[]) => sendWatchdogAlert("Bot guard alert", v);
+export const sendFeeCopyAlert = (...v: unknown[]) => sendWatchdogAlert("Fee copy alert", v);
+export const sendFloorPlanCheckAlert = (...v: unknown[]) => sendWatchdogAlert("Floor plan alert", v);
+export const sendGa4DataCheckAlert = (...v: unknown[]) => sendWatchdogAlert("GA4 data alert", v);
+export const sendGtmCheckAlert = (...v: unknown[]) => sendWatchdogAlert("GTM alert", v);
+export const sendGuestCardFailureAlert = (...v: unknown[]) => sendWatchdogAlert("Guest card failure alert", v);
+export const sendKnowledgeCheckAlert = (...v: unknown[]) => sendWatchdogAlert("Knowledge alert", v);
+export const sendRedirectCheckAlert = (...v: unknown[]) => sendWatchdogAlert("Redirect alert", v);
+export const sendRentedCheckAlert = (...v: unknown[]) => sendWatchdogAlert("Rented unit alert", v);
+export const sendSeoWeeklyDigest = (...v: unknown[]) => sendWatchdogAlert("SEO weekly digest", v);
+export const sendSeoDigestFailureAlert = (...v: unknown[]) => sendWatchdogAlert("SEO digest failure alert", v);
+export const sendShowingSchedulerAlert = (...v: unknown[]) => sendWatchdogAlert("Showing scheduler alert", v);

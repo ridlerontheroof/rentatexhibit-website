@@ -14,16 +14,16 @@
  * The label is validated on write AND read; the server re-validates before
  * anything reaches AppFolio — this module is convenience, not the trust boundary.
  *
- * WOODS-CROSSING: update STORAGE_KEY (1 value marked below).
+ * PROPERTY CONFIG: update STORAGE_KEY below.
  */
 
 import { LEGACY_REDIRECTS } from '../data/legacyRedirects';
 
 // Derived from VITE_UTM_STORAGE_KEY build-time env var (property-config analytics.utmStorageKey).
 // Strips the trailing "_utm_params" suffix and appends "-visit-source", e.g.:
-//   "woodscrossing_utm_params" → "woodscrossing-visit-source"
+//   "example_property_utm_params" → "example-property-visit-source"
 // If the key has no "_utm_params" suffix, "-visit-source" is appended directly.
-// WOODS-CROSSING: set VITE_UTM_STORAGE_KEY in your web artifact's environment variables.
+// PROPERTY CONFIG: set VITE_UTM_STORAGE_KEY in the web artifact environment.
 const _UTM_KEY: string = (import.meta.env.VITE_UTM_STORAGE_KEY as string | undefined)?.trim() ||
   (() => { throw new Error('VITE_UTM_STORAGE_KEY build env var is required (analytics.utmStorageKey from property-config.json).'); })();
 const STORAGE_KEY = _UTM_KEY.replace(/_utm_params$/, '') + '-visit-source';

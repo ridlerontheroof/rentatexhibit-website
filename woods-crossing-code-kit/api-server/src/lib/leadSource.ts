@@ -17,12 +17,12 @@ import { createHash } from "node:crypto";
 
 // Read from APPFOLIO_LEAD_SOURCE_DEFAULT env var (property-config appfolio.leadSourceDefault).
 // Must match the pattern "Website (Token)" — the schema enforces this.
-// Example: "Website (WoodsCrossing)"
+// Example: "Website (ExampleProperty)"
 const _DEFAULT_LEAD_SOURCE = process.env.APPFOLIO_LEAD_SOURCE_DEFAULT?.trim();
 if (!_DEFAULT_LEAD_SOURCE) {
   throw new Error(
     "APPFOLIO_LEAD_SOURCE_DEFAULT env var is required but not set. " +
-    'Set it to your default AppFolio lead-source label, e.g. "Website (WoodsCrossing)" ' +
+    'Set it to your default AppFolio lead-source label, e.g. "Website (PropertyName)" ' +
     "(appfolio.leadSourceDefault from property-config.json).",
   );
 }
@@ -36,7 +36,7 @@ export const LEAD_SOURCE_MAX_LENGTH = 80;
  * The only accepted shape: `Website (Token)` where Token is alphanumerics,
  * hyphens and underscores — no spaces or other special characters inside the
  * parentheses. (Underscore admits the contact-link label
- * "Website (Exhibit_ContactUs)".)
+ * "Website (ExampleProperty_ContactUs)".)
  */
 const LABEL_RE = /^Website \([A-Za-z0-9_-]+\)$/;
 

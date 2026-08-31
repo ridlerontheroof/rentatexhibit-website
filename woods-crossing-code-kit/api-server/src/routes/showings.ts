@@ -1,5 +1,5 @@
 /**
- * Exhibit-branded showing scheduler routes.
+ * Property-branded showing scheduler routes.
  *
  * The web app's /schedule-showing page drives the same two-step flow as
  * AppFolio's hosted "Schedule a Showing" page through these proxies, so all
@@ -212,7 +212,7 @@ router.post("/showings/contact", showingLimiter, async (req, res) => {
       heartbeat.record(req.log, Date.now(), "contact_failed");
       req.log.error(
         { unit: input.unit },
-        "AppFolio identity verification is now enabled — Exhibit scheduler cannot book; sending visitors to hosted page",
+        "AppFolio identity verification is now enabled — embedded scheduler cannot book; sending visitors to hosted page",
       );
       res.status(409).json({ error: "idv_required", hostedUrl: hostedShowingsUrl(listableUid) });
       return;
@@ -275,7 +275,7 @@ const BookBody = z.object({
   slotTime: z.string().regex(/^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}$/),
   agentId: z.number().int().positive(),
   // Prospect contact info, re-sent by the page for the general ("TOUR") path
-  // only, so the site can send its own Exhibit-branded confirmation email —
+  // only, so the site can send its own property-branded confirmation email —
   // AppFolio's auto-emails for the non-listed tour unit carry the Highland
   // corporate template (verified live 2026-07-30). Optional so unit-specific
   // bookings (whose confirmations AppFolio owns) are unchanged.
@@ -320,7 +320,7 @@ router.post("/showings/book", showingLimiter, async (req, res) => {
     });
     heartbeat.record(req.log, Date.now(), "book_ok");
     void recordLiveShowingSuccess(req.log);
-    // General-path bookings get the site's own Exhibit-branded confirmation
+    // General-path bookings get the site's own property-branded confirmation
     // (fire-and-forget — a mail failure never affects the booking AppFolio
     // already made). Unit-specific bookings are untouched by design.
     //

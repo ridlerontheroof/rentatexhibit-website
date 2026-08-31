@@ -25,7 +25,7 @@
 // every slug.
 //
 // Usage: node scripts/check-schema-validator.mjs [baseUrl]
-//   default baseUrl: https://www.woodscrossing.com /* WOODS-CROSSING: replace */
+//   baseUrl example: https://www.example-property.invalid
 
 import { loadKnowledgeSlugs } from './lib/knowledge-slugs.mjs';
 

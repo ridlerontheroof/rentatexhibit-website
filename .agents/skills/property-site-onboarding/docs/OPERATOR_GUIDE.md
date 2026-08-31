@@ -1,33 +1,45 @@
 # Operator guide — how a future acquisition session flows
 
-## The 10-minute version
+## Fresh session: the 10-minute version
 
-1. Create a NEW Replit project for the property (never build inside another property's project).
-2. Promote/confirm this skill at the workspace level (Workspace Settings → Customization → Skills)
-   so the new project inherits it. Open a session: "We bought <Property X>; legacy site is <URL>.
-   Run property-site onboarding."
-3. The skill walks phases 1–6 (intake → discovery → design/IA → scaffold from kit → prelaunch →
-   go-live). You only get stopped at the human gates (G1–G8): confirming facts, picking a design,
-   approving the parity map, setting secrets, DNS/GA/GSC, AppFolio property + Tour unit, publish
-   approval.
-4. Evidence packages accumulate in `onboarding/` — that's the audit trail.
+1. Create a **new, empty property project**. Never start from or copy a live property repository.
+2. Make this workspace skill available and upload the **two standard inputs**:
+   - Claude-generated website ZIP
+   - property offering memorandum (OM)
+3. Start: “Onboard `<Property>` from `<ZIP path>` and `<OM path>`. Inventory only; do not publish.”
+4. The agent reads the factory contract, inventories both inputs without executing or trusting the
+   ZIP, creates `onboarding/`, and records provenance, candidate facts, placeholders/integration
+   gaps, uncertainties, and next steps.
+5. Continue through intake → discovery → design/IA → scaffold from a verified pinned kit release →
+   prelaunch → go-live. The agent stops at gates G1–G8. `onboarding/` is the audit trail.
 
-## Where the template kit lives
+A legacy URL, extra owner assets, or a Replit custom template may be supplied, but they are optional.
+The custom template is only a launcher. It is never the source of reusable code, standards, property
+facts, or release history.
 
-- Dedicated template project (operator-created): **Highland property-site template kit** — upload
-  the kit contents (produced from the flagship property's export kit) plus
-  `schema/property-config.schema.json`. Tag releases (`kit-v1.0.0`, `kit-v1.1.0`, …); never edit a
-  tagged release in place.
-- Each property site records the release it was generated from in `property-config.json →
-  kitVersion` and stays pinned. Upgrades are explicit tasks (diff releases → apply → guard suite
-  green), never automatic.
+## Source and release rules
 
-## How the standard stays current
+- The versioned **production code kit registry/repository** is the sole reusable implementation
+  source of truth. Releases use immutable semantic tags (`kit-vMAJOR.MINOR.PATCH`) and a digest.
+- This workspace skill owns process and schemas. `standards/standards-manifest.json` owns the
+  normative capability baseline.
+- An optional Replit custom template can create/open a project and invoke onboarding. It must fetch
+  or select a reviewed kit release; bundled template code must not be treated as authoritative.
+- Each property records its exact kit release and stays pinned. Never edit a released tag in place,
+  copy from a live site, or automatically upgrade a property.
+- Full ownership and acceptance rules are in `FACTORY_CONTRACT.md`.
 
-- The flagship production property site IS the standard. When it ships an improvement worth
-  propagating, re-cut: (1) export kit refreshed from the flagship, (2) new kit release tag,
-  (3) `standards-manifest.json` bumped (`manifestVersion`) with any new checks.
-- Gap reports embed the manifest version they measured against, so old evidence stays interpretable.
+## Promote a learning or upgrade a site
+
+- A live-site improvement is evidence, not automatically a standard. Open a change manifest from
+  `templates/STANDARDS_CHANGE_MANIFEST.json`; document evidence, scope, migration, checks, semantic
+  bump, and owner/security/technical approvals.
+- After approval, change the manifest and kit, run the kit guard suite, issue immutable releases, and
+  record their linkage. Never claim promotion before all required reviews are APPROVED.
+- For each pinned property that may adopt it, create a separate
+  `templates/PROPERTY_UPGRADE_PLAN.md`, assess property conflicts and rollback, obtain owner/publish
+  approval, then apply and verify. Deferral is valid and does not alter the site's pin.
+- See `STANDARDS_GOVERNANCE.md` for the complete state machine and semantic rules.
 
 ## Known traps (read before your first session)
 
@@ -46,8 +58,15 @@
 
 ## Secrets model
 
-`property-config.json → secrets.required` lists env-var NAMES (typical set: APPFOLIO_CLIENT_ID,
-APPFOLIO_CLIENT_SECRET, GMAIL_APP_PASSWORD, SESSION_SECRET, GA4_PROPERTY_ID,
-GA4_SERVICE_ACCOUNT_JSON, GOOGLE_MAPS_BROWSER_API_KEY). The config validator hard-fails if anything
-value-shaped appears in the config. Values go into Replit Secrets (dev) and the deployment's
-secrets (prod) by the operator at gate G5.
+Create `onboarding/environment-manifest.json` by artifact and environment. It contains names and
+status metadata only:
+
+- `account-secret-link`: an existing Replit Account Secret that an operator explicitly approves and
+  links to this app/environment. Existence is not consent; never assume its scope fits a property.
+- `property-secret`: a new property-scoped credential requested through the secure Secrets flow.
+- `non-secret`: ordinary configuration set as environment settings, never stored as a Secret.
+
+Check existence/link status only; never read, print, paste, or record secret values. Development and
+production are separate approvals. Gate G5 closes only when every required manifest row is linked or
+configured in its declared artifact/environment and an operator records reviewer/date. Follow
+`ENVIRONMENT_AND_SECRETS.md`; validate structure with `schema/environment-manifest.schema.json`.

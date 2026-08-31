@@ -1,0 +1,51 @@
+{
+  "manifestVersion": "1.0.0",
+  "propertySlug": "exhibit-on-superior",
+  "status": "APPROVED",
+  "reviewedBy": "Existing production content migration",
+  "reviewedAt": "2026-08-31T00:00:00Z",
+  "provenance": {
+    "source": "Existing published Exhibit site and verified property configuration",
+    "rightsConfirmed": true
+  },
+  "home": {
+    "heading": "Luxury apartments in Chicago's River North",
+    "description": "Exhibit On Superior offers studio, one-, two-, and three-bedroom apartments at 165 W Superior St in Chicago."
+  },
+  "amenities": [
+    {
+      "title": "75-foot lap pool",
+      "description": "Existing published Exhibit amenity."
+    }
+  ],
+  "neighborhood": [
+    {
+      "title": "River North",
+      "description": "Exhibit On Superior is located at 165 W Superior St in Chicago's River North neighborhood."
+    }
+  ],
+  "gallery": [
+    {
+      "src": "/images/image-030-012417-5663-hxwee6-2000w.webp",
+      "alt": "Exhibit On Superior apartment community",
+      "width": 2000,
+      "height": 1333,
+      "category": "Community"
+    }
+  ],
+  "floorPlans": [
+    {
+      "id": "existing-live-catalog",
+      "slug": "studio-one-two-three-bedroom-floor-plans",
+      "name": "Studio, one-, two-, and three-bedroom floor plans",
+      "beds": 0,
+      "baths": 1,
+      "sqft": 478
+    }
+  ],
+  "faqs": [],
+  "knowledge": [],
+  "blog": [],
+  "neighborhoodGuides": [],
+  "legacyRedirects": []
+}

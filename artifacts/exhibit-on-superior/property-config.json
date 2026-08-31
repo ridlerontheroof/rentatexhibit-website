@@ -1,6 +1,8 @@
 {
   "configVersion": "1",
   "kitVersion": "kit-v1.1.0",
+  "environmentManifestPath": "environment-manifest.json",
+  "contentManifestPath": "property-content-manifest.json",
   "property": {
     "name": "Exhibit On Superior",
     "shortName": "Exhibit On Superior",

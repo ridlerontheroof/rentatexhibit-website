@@ -1,0 +1,40 @@
+{
+  "mode": "offline",
+  "purpose": "Deterministic implementation contracts. Each assertion names a shipped file and source-level behavior required before a live verification can be trusted.",
+  "requirements": {
+    "head.per-url": [
+      { "path": "web/scripts/prerender.mjs", "patterns": ["SEO_BLOCK", "canonical", "JSON-LD", "sitemap\\.xml"] }
+    ],
+    "index.real-404": [
+      { "path": "web/server/index.mjs", "patterns": ["Content-Security-Policy", "status\\(404\\)|statusCode = 404|404", "Cache-Control"] }
+    ],
+    "jsonld.valid": [
+      { "path": "web/scripts/validate-jsonld.mjs", "patterns": ["JSON\\.parse", "@context", "@type"] },
+      { "path": "guards/check-schema-validator.mjs", "patterns": ["JSON-LD|jsonld", "schema"] }
+    ],
+    "a11y.axe": [
+      { "path": "guards/check-a11y.mjs", "patterns": ["axe", "violations"] },
+      { "path": "guards/check-link-names.mjs", "patterns": ["descriptive|link"] }
+    ],
+    "redirects.one-hop": [
+      { "path": "guards/check-legacy-redirects.mjs", "patterns": ["301", "redirect"] },
+      { "path": "api-server/src/lib/redirectCheck.ts", "patterns": ["check-legacy-redirects", "301"] }
+    ],
+    "leads.bot-guard": [
+      { "path": "api-server/src/lib/botGuard.ts", "patterns": ["xh_note", "elapsedMs"] },
+      { "path": "api-server/src/routes/leads.ts", "patterns": ["inspectSubmission", "if \\(verdict\\.bot", "\\.insert\\("] }
+    ],
+    "appfolio.feed-health": [
+      { "path": "api-server/src/lib/appfolio.ts", "patterns": ["includes\\(\"rented\"\\)", "isPropertyRow", "fetch"] },
+      { "path": "api-server/src/routes/availability.ts", "patterns": ["bakedSeed", "last good|lastGood|lastGoodSnapshot", "SEED_MAX_AGE_MS"] }
+    ],
+    "ops.postpublish-watch": [
+      { "path": "web/scripts/watch-postpublish.mjs", "patterns": ["build-id", "check:postpublish", "submit-indexnow"] },
+      { "path": "api-server/src/lib/indexnow.ts", "patterns": ["IndexNow", "INDEXNOW_KEY"] }
+    ],
+    "content.systems-live": [
+      { "path": "content/content-systems.json", "patterns": ["\"faqs\"", "\"knowledge\"", "\"blog\"", "\"neighborhoodGuides\""] },
+      { "path": "standards/baseline-guards.json", "patterns": ["content\\.systems-live"] }
+    ]
+  }
+}

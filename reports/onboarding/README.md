@@ -9,6 +9,7 @@ Produced by the `property-site-onboarding` skill's tooling (`.agents/skills/prop
 - `de-exhibit-audit.md` — audit of the Task #748 code kit for Exhibit literals; the definitive
   move-behind-config list for the next kit release.
 
-Operator next steps: promote the skill to workspace level (Workspace Settings → Customization),
-create the dedicated template project from `woods-crossing-code-kit/` + the config schema, tag
-`kit-v1.0.0` (see `.agents/skills/property-site-onboarding/docs/OPERATOR_GUIDE.md`).
+Operator next steps: make the skill available at workspace level, create a clean property project,
+and supply the Claude website ZIP plus OM. Obtain a reviewed, pinned release from the production code
+kit; an optional Replit custom template is only a launcher and never source of truth. See
+`.agents/skills/property-site-onboarding/docs/OPERATOR_GUIDE.md`.

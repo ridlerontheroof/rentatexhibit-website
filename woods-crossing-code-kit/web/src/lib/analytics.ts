@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * GA4 analytics helpers. Two operating modes:
  *
@@ -12,7 +13,7 @@
  *
  * Nothing here runs during SSR/prerender.
  *
- * WOODS-CROSSING: 1 value to set (marked below).
+ * PROPERTY CONFIG: one value must be set below.
  */
 
 declare global {
@@ -31,7 +32,7 @@ const MEASUREMENT_ID: string | undefined = import.meta.env.VITE_GA_MEASUREMENT_I
  * Read from VITE_GA4_MEASUREMENT_ID build env var (analytics.ga4MeasurementId
  * from property-config.json). Throws at build time if not set so a missing ID
  * can never silently route events to the wrong property stream.
- * WOODS-CROSSING: set VITE_GA4_MEASUREMENT_ID in your web artifact's env vars.
+ * PROPERTY CONFIG: set VITE_GA4_MEASUREMENT_ID in the web artifact environment.
  */
 const GTM_GA4_ID: string = (import.meta.env.VITE_GA4_MEASUREMENT_ID as string | undefined)?.trim() ||
   (() => {
@@ -59,8 +60,8 @@ let currentPath: string | null = null;
 
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
 // Read from VITE_UTM_STORAGE_KEY build-time env var (property-config analytics.utmStorageKey).
-// Example: VITE_UTM_STORAGE_KEY=woodscrossing_utm_params
-// WOODS-CROSSING: set this in your web artifact's environment variables.
+// Example: VITE_UTM_STORAGE_KEY=example_property_utm_params
+// PROPERTY CONFIG: set this in the web artifact environment.
 const UTM_STORAGE_KEY: string = (import.meta.env.VITE_UTM_STORAGE_KEY as string | undefined)?.trim() ||
   (() => { throw new Error('VITE_UTM_STORAGE_KEY build env var is required (analytics.utmStorageKey from property-config.json).'); })();
 

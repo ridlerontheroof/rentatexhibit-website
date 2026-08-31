@@ -1,0 +1,325 @@
+{
+  "policy": "Every candidate is UNCONFIRMED until owner review (G1). OM investment claims are not leasing facts.",
+  "candidates": [
+    {
+      "id": "ZIP-001",
+      "field": "property.name",
+      "value": "Blair Street Apartments",
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "\"Blair Street Apartments\""
+    },
+    {
+      "id": "ZIP-002",
+      "field": "identity.canonicalOrigin",
+      "value": "https://liveatblairstreet.com",
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "\"https://liveatblairstreet.com\""
+    },
+    {
+      "id": "ZIP-003",
+      "field": "nap.phone",
+      "value": "(801) 896-9844",
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "\"(801) 896-9844\""
+    },
+    {
+      "id": "ZIP-004",
+      "field": "nap.streetAddress",
+      "value": "2846 S Blair Street",
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "\"2846 S Blair Street\""
+    },
+    {
+      "id": "ZIP-005",
+      "field": "nap.locality",
+      "value": "South Salt Lake",
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "\"South Salt Lake\""
+    },
+    {
+      "id": "ZIP-006",
+      "field": "nap.region",
+      "value": "UT",
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "\"UT\""
+    },
+    {
+      "id": "ZIP-007",
+      "field": "nap.postalCode",
+      "value": "84115",
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "\"84115\""
+    },
+    {
+      "id": "ZIP-008",
+      "field": "nap.geo.latitude",
+      "value": 40.7093,
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "40.7093"
+    },
+    {
+      "id": "ZIP-009",
+      "field": "nap.geo.longitude",
+      "value": -111.881,
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "-111.881"
+    },
+    {
+      "id": "ZIP-010",
+      "field": "property.unitCount",
+      "value": 24,
+      "status": "UNCONFIRMED",
+      "sourceType": "claude-package",
+      "source": "replit-blairstreet_1788186628725.zip:replit-blairstreet/index.html",
+      "page": null,
+      "evidence": "24"
+    },
+    {
+      "id": "OM-001",
+      "field": "nap.streetAddress",
+      "value": "2846 S Blair Street | Salt Lake City, UT 84115",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Address 2846 S Blair Street | Salt Lake City, UT 84115"
+    },
+    {
+      "id": "OM-002",
+      "field": "property.unitCount",
+      "value": "24",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Number of Units 24"
+    },
+    {
+      "id": "OM-003",
+      "field": "property.yearCompleted",
+      "value": "1977",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Year Completed 1977"
+    },
+    {
+      "id": "OM-004",
+      "field": "property.netRentableSquareFeet",
+      "value": "±21600",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Net Rentable Square Feet ±21600"
+    },
+    {
+      "id": "OM-005",
+      "field": "property.averageUnitSizeSf",
+      "value": "±840",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Average Unit Size (SF) ±840"
+    },
+    {
+      "id": "OM-006",
+      "field": "property.buildingCount",
+      "value": "2",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Number of Buildings 2"
+    },
+    {
+      "id": "OM-007",
+      "field": "property.floorCount",
+      "value": "3",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Number of Floors 3"
+    },
+    {
+      "id": "OM-008",
+      "field": "property.parcelSize",
+      "value": "0.87 Acres",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Parcel Size 0.87 Acres"
+    },
+    {
+      "id": "OM-009",
+      "field": "utilities.electric",
+      "value": "Rocky Mountain Power",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Electric Rocky Mountain Power"
+    },
+    {
+      "id": "OM-010",
+      "field": "utilities.gas",
+      "value": "Enbridge Gas",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Gas [1] Enbridge Gas"
+    },
+    {
+      "id": "OM-011",
+      "field": "utilities.water",
+      "value": "City of South Salt Lake",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Water City of South Salt Lake"
+    },
+    {
+      "id": "OM-012",
+      "field": "utilities.internet",
+      "value": "Xfinity",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 22,
+      "evidence": "Internet Xfinity"
+    },
+    {
+      "id": "OM-013",
+      "field": "property.taxParcelNumber",
+      "value": "16-30-206-001-0000",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 23,
+      "evidence": "Tax Parcel Number 16-30-206-001-0000"
+    },
+    {
+      "id": "OM-014",
+      "field": "leasing.amenity",
+      "value": "Open-concept floor plans",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 25,
+      "evidence": "Open-concept floor plans"
+    },
+    {
+      "id": "OM-015",
+      "field": "leasing.amenity",
+      "value": "Fully equipped kitchens + appliance package",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 25,
+      "evidence": "Fully equipped kitchens + appliance package"
+    },
+    {
+      "id": "OM-016",
+      "field": "leasing.amenity",
+      "value": "Refrigerator, oven, and dishwasher",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 25,
+      "evidence": "Refrigerator, oven, and dishwasher"
+    },
+    {
+      "id": "OM-017",
+      "field": "leasing.amenity",
+      "value": "Central air conditioning",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 25,
+      "evidence": "Central air conditioning"
+    },
+    {
+      "id": "OM-018",
+      "field": "leasing.amenity",
+      "value": "Fireplace in select units",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 25,
+      "evidence": "Fireplace in select units"
+    },
+    {
+      "id": "OM-019",
+      "field": "leasing.amenity",
+      "value": "Covered parking available",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 25,
+      "evidence": "Covered parking available"
+    },
+    {
+      "id": "OM-020",
+      "field": "leasing.amenity",
+      "value": "Ample in-unit storage",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 25,
+      "evidence": "Ample in-unit storage"
+    },
+    {
+      "id": "OM-021",
+      "field": "leasing.amenity",
+      "value": "Pet-Friendly Community",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 26,
+      "evidence": "Pet-Friendly Community"
+    },
+    {
+      "id": "OM-022",
+      "field": "leasing.amenity",
+      "value": "Off-Street Parking",
+      "status": "UNCONFIRMED",
+      "sourceType": "offering-memorandum",
+      "source": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "page": 26,
+      "evidence": "Off-Street Parking"
+    }
+  ]
+}

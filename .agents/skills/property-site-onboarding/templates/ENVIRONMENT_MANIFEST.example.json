@@ -1,0 +1,52 @@
+{
+  "manifestVersion": "1.0.0",
+  "propertySlug": "woods-crossing",
+  "kitVersion": "kit-v2.0.0",
+  "reviewStatus": "DRAFT",
+  "entries": [
+    {
+      "name": "APPFOLIO_CLIENT_ID",
+      "classification": "account-secret-link",
+      "artifact": "api-server",
+      "environment": "production",
+      "required": true,
+      "owner": "credential owner to confirm",
+      "accountSecretName": "APPFOLIO_CLIENT_ID",
+      "scopeVerified": false,
+      "approval": "PENDING",
+      "status": "NOT_CONFIGURED",
+      "notes": "Link only after the owner verifies account and property scope."
+    },
+    {
+      "name": "SESSION_SECRET",
+      "classification": "property-secret",
+      "artifact": "api-server",
+      "environment": "production",
+      "required": true,
+      "owner": "property application operator",
+      "approval": "PENDING",
+      "status": "NOT_CONFIGURED"
+    },
+    {
+      "name": "SITE_URL",
+      "classification": "non-secret",
+      "artifact": "api-server",
+      "environment": "production",
+      "required": true,
+      "owner": "property owner",
+      "approval": "PENDING",
+      "status": "NOT_CONFIGURED",
+      "notes": "Value comes from confirmed identity.canonicalOrigin and is set as a plain environment variable."
+    },
+    {
+      "name": "VITE_GA4_MEASUREMENT_ID",
+      "classification": "non-secret",
+      "artifact": "web",
+      "environment": "production",
+      "required": true,
+      "owner": "analytics owner",
+      "approval": "PENDING",
+      "status": "NOT_CONFIGURED"
+    }
+  ]
+}

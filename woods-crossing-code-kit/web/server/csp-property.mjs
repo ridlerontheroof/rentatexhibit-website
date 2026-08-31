@@ -14,7 +14,7 @@
  *      to the EXTRA_* arrays (one host per entry, full origin, no wildcards).
  *   5. Set CSP_ENFORCE=1 once check:csp passes cleanly.
  *
- * WOODS-CROSSING: fill in all four exports below before first deploy.
+ * PROPERTY CONFIG: fill in all four exports below before first deploy.
  */
 
 /**
@@ -23,7 +23,7 @@
  *
  * Format: "'sha256-<base64>'"  (note the single-quote wrapping)
  *
- * WOODS-CROSSING: replace the empty array with your container's hash(es)
+ * PROPERTY CONFIG: replace the empty array with the container hash values
  * after running `pnpm run check:csp` post-deploy.
  */
 export const GTM_INJECTED_SCRIPT_HASHES = [
@@ -35,7 +35,7 @@ export const GTM_INJECTED_SCRIPT_HASHES = [
  * Additional script-src hosts required by your property's third-party tools
  * (analytics, chat widgets, map SDKs, etc.).
  *
- * WOODS-CROSSING: add hosts for tools your GTM container or pages load.
+ * PROPERTY CONFIG: add hosts for tools the GTM container or pages load.
  * Example entries (uncomment if applicable):
  *   'https://analytics.ahrefs.com',
  *   'https://www.clarity.ms',
@@ -49,7 +49,7 @@ export const EXTRA_SCRIPT_SRC_HOSTS = [
 /**
  * Additional connect-src hosts (fetch/XHR targets) for your property.
  *
- * WOODS-CROSSING: add hosts that your analytics, embeds, or API calls reach.
+ * PROPERTY CONFIG: add hosts that analytics, embeds, or API calls reach.
  * Example entries:
  *   'https://analytics.ahrefs.com',
  *   'https://sightmap.com',
@@ -62,7 +62,7 @@ export const EXTRA_CONNECT_SRC_HOSTS = [
  * Additional frame-src hosts for iframes your property embeds
  * (virtual tour players, map embeds, Matterport, SightMap, etc.).
  *
- * WOODS-CROSSING: add origins for any <iframe> src values your pages use.
+ * PROPERTY CONFIG: add origins for any iframe source values the pages use.
  * Example entries:
  *   'https://my.matterport.com',
  *   'https://app.sightmap.com',

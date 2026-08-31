@@ -12,6 +12,10 @@ import { recordAcceptedSubmission, recordBotRejection } from "../lib/botGuardAle
 import { reportGuestCardFailure } from "../lib/guestCardAlert";
 
 const router: IRouter = Router();
+let guestCardAttemptForTests: ((leadId: number, unit: string) => boolean | Promise<boolean>) | null = null;
+export function setGuestCardAttemptForTests(hook: typeof guestCardAttemptForTests): void {
+  guestCardAttemptForTests = hook;
+}
 
 // Every accepted lead triggers two outbound emails (leasing team + prospect),
 // so this endpoint is an attractive spam/abuse vector. Throttle submissions per
@@ -158,6 +162,7 @@ router.post("/leads", leadLimiter, async (req, res) => {
       const unit = input.unit;
       void (async () => {
         try {
+          if (guestCardAttemptForTests && await guestCardAttemptForTests(row.id, unit)) return;
           const snapshot = await getAvailabilitySnapshot();
           const match = snapshot?.units.find((u) => u.unit === unit);
           const listableUid = match?.listingUrl

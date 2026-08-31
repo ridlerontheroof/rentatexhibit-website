@@ -4,6 +4,7 @@ import { sendSeedStaleAlert } from "../lib/email";
 import bakedSeed from "../data/availabilitySeed.json";
 import { changedUnitUrls, inventoryChanged, notifyAvailabilityChanged } from "../lib/indexnow";
 import { logger } from "../lib/logger";
+import { getAvailabilityFixture } from "../lib/availabilityFixture";
 
 const router: IRouter = Router();
 
@@ -130,6 +131,7 @@ export function startAvailabilityCacheWarmer(
     warn: () => {},
   },
 ): NodeJS.Timeout | null {
+  if (getAvailabilityFixture()) return null;
   const clientId = process.env.APPFOLIO_CLIENT_ID;
   const clientSecret = process.env.APPFOLIO_CLIENT_SECRET;
   if (!clientId || !clientSecret) return null;
@@ -156,6 +158,8 @@ export function startAvailabilityCacheWarmer(
 }
 
 export async function getAvailabilitySnapshot(): Promise<AvailabilityPayload | null> {
+  const fixture = getAvailabilityFixture();
+  if (fixture) return fixture;
   if (cached) return cached.payload;
   const clientId = process.env.APPFOLIO_CLIENT_ID;
   const clientSecret = process.env.APPFOLIO_CLIENT_SECRET;
@@ -168,6 +172,11 @@ export async function getAvailabilitySnapshot(): Promise<AvailabilityPayload | n
 }
 
 router.get("/availability", async (req, res) => {
+  const fixture = getAvailabilityFixture();
+  if (fixture) {
+    res.json(fixture);
+    return;
+  }
   const clientId = process.env.APPFOLIO_CLIENT_ID;
   const clientSecret = process.env.APPFOLIO_CLIENT_SECRET;
 

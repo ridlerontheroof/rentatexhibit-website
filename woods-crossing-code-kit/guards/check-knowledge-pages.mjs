@@ -8,7 +8,7 @@
 // each publish; it exits non-zero with a clear message on any failure.
 //
 // Usage: node scripts/check-knowledge-pages.mjs [baseUrl] [--all]
-//   default baseUrl: https://www.woodscrossing.com /* WOODS-CROSSING: replace */
+//   baseUrl example: https://www.example-property.invalid
 //   default: a deterministic ~10-slug sample (first, last, every Nth);
 //   --all checks every article slug.
 
@@ -19,7 +19,8 @@ import { loadKnowledgeArticles } from './lib/knowledge-slugs.mjs';
 
 const args = process.argv.slice(2);
 const checkAll = args.includes('--all');
-const BASE = (args.find((a) => !a.startsWith('--')) || 'https://www.woodscrossing.com') // WOODS-CROSSING: replace
+const BASE = args.find((a) => !a.startsWith('--')) || process.env.SITE_URL
+if (!BASE) throw new Error('Provide SITE_URL or a base URL argument')
   .replace(
   /\/$/,
   '',

@@ -10,7 +10,7 @@
 // Routing parity: the clean-URL rewrite table in artifact.toml is the single
 // source of truth. This server parses that table at startup.
 //
-// WOODS-CROSSING: all property-specific CSP values live in csp-property.mjs.
+// PROPERTY CONFIG: all property-specific CSP values live in csp-property.mjs.
 // Edit that file — do not add property literals here.
 
 import express from 'express';
@@ -40,7 +40,9 @@ if (!fs.existsSync(path.join(publicDir, 'index.html'))) {
 // ---------------------------------------------------------------------------
 const rewriteMap = new Map();
 {
-  const toml = fs.readFileSync(tomlPath, 'utf8');
+  const toml = fs.existsSync(tomlPath)
+    ? fs.readFileSync(tomlPath, 'utf8')
+    : '[[services.production.rewrites]]\nfrom = "/"\nto = "index.html"';
   const re = /\[\[services\.production\.rewrites\]\]\s*\nfrom = "([^"]+)"\nto = "([^"]+)"/g;
   let m;
   while ((m = re.exec(toml)) !== null) {
@@ -81,6 +83,19 @@ function collectLegacyRedirects(rootDir) {
   return map;
 }
 const legacyRedirects = collectLegacyRedirects(publicDir);
+try {
+  const generated = JSON.parse(fs.readFileSync(path.resolve(publicDir, '..', 'legacy-redirects.json'), 'utf8'));
+  if (!generated || Array.isArray(generated) || typeof generated !== 'object') throw new Error('redirect map must be an object');
+  for (const [from, to] of Object.entries(generated)) {
+    if (!/^\/(?!.*(?:\.\.|\/\/))/.test(from) || typeof to !== 'string' || !/^(?:\/(?!.*(?:\.\.|\/\/))|https:\/\/)/.test(to)) throw new Error(`invalid generated redirect ${from}`);
+    legacyRedirects.set(from, to);
+  }
+} catch (error) {
+  if (process.env.NODE_ENV === 'production') {
+    console.error(`Fatal: selected legacy redirect map is missing or malformed: ${error.message}`);
+    process.exit(1);
+  }
+}
 console.log(`Loaded ${legacyRedirects.size} legacy 301 redirects from redirect stubs`);
 
 // ---------------------------------------------------------------------------
@@ -133,7 +148,7 @@ function collectInlineScriptHashes(rootDir) {
   return [...hashes].sort();
 }
 const inlineScriptHashes = collectInlineScriptHashes(publicDir);
-if (inlineScriptHashes.length === 0) {
+if (inlineScriptHashes.length === 0 && process.env.REQUIRE_INLINE_BOOTSTRAP === '1') {
   console.error('Fatal: no inline-script hashes found — CSP would block the GTM bootstrap.');
   process.exit(1);
 }

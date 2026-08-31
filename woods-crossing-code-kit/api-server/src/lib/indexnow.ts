@@ -2,7 +2,7 @@
 // engines) the moment availability-relevant pages change, instead of waiting
 // for a recrawl.
 //
-// WOODS-CROSSING: 4 values to replace (marked below):
+// PROPERTY CONFIG: four values must be supplied below:
 //   1. INDEXNOW_KEY   — generate a fresh key at https://www.indexnow.org/
 //   2. SITE_URL       — your production www domain
 //   3. AVAILABILITY_URLS  — your availability page URLs
@@ -13,11 +13,11 @@
 // asserts the two are in sync).
 import type { AvailabilityPayload } from "./appfolio";
 
-// WOODS-CROSSING: generate your own key at https://www.indexnow.org/
+// PROPERTY CONFIG: generate a property key at https://www.indexnow.org/
 // and host it at https://www.yourdomain.com/<key>.txt
 // Then set the INDEXNOW_KEY env var.
-const _INDEXNOW_KEY = process.env.INDEXNOW_KEY?.trim();
-if (!_INDEXNOW_KEY) {
+const _INDEXNOW_KEY = process.env.INDEXNOW_KEY?.trim() || "";
+if (!_INDEXNOW_KEY && process.env.NODE_ENV === "production") {
   throw new Error(
     "INDEXNOW_KEY env var is required but not set. " +
     "Generate a key at https://www.indexnow.org/, host <key>.txt at your domain root, " +
@@ -39,13 +39,13 @@ export const SITE_URL = _SITE_URL;
 const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 
 /** Pages whose content is driven by the availability feed. */
-// WOODS-CROSSING: update to match your site's availability page path(s)
+// PROPERTY CONFIG: update to match the site's availability page paths
 export const AVAILABILITY_URLS = [`${SITE_URL}/`, `${SITE_URL}/available-units`];
 
 /**
  * The sitemap's key URLs, submitted once per publish so engines learn about
  * every indexable page promptly.
- * WOODS-CROSSING: replace this list with your site's actual page paths.
+ * PROPERTY CONFIG: replace this list with the site's actual page paths.
  */
 export const CORE_SITEMAP_URLS = [
   `${SITE_URL}/`,
@@ -65,7 +65,7 @@ export const CORE_SITEMAP_URLS = [
   `${SITE_URL}/residents`,
   `${SITE_URL}/schedule-a-tour`,
   `${SITE_URL}/reviews`,
-]; // WOODS-CROSSING: replace with your site's page list
+]; // PROPERTY CONFIG: replace with the site's verified page list
 
 type MinimalLog = {
   info: (o: object, msg: string) => void;
@@ -81,6 +81,10 @@ const noopLog: MinimalLog = { info: () => {}, warn: () => {} };
  */
 export async function pingIndexNow(urls: string[], log: MinimalLog = noopLog): Promise<boolean> {
   if (urls.length === 0) return false;
+  if (!INDEXNOW_KEY) {
+    log.warn({ urls }, "IndexNow submission skipped outside production: INDEXNOW_KEY is not configured");
+    return false;
+  }
   try {
     const res = await fetch(INDEXNOW_ENDPOINT, {
       method: "POST",

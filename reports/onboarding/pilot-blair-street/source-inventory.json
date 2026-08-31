@@ -1,0 +1,458 @@
+{
+  "dryRun": true,
+  "launchAuthorized": false,
+  "sources": [
+    {
+      "type": "claude-package",
+      "file": "replit-blairstreet_1788186628725.zip",
+      "bytes": 46934,
+      "sha256": "3db4342915211593acce03c628b4a127b7695ac15421e60941e08b1b0784a985",
+      "entries": 62,
+      "extractionPolicy": "streamed individual entries for inventory/scan; never extracted over project files"
+    },
+    {
+      "type": "offering-memorandum",
+      "file": "Offering_Memorandum_(OM)_v1_SSLC_Portfolio_OM_20260622_1788186626314.pdf",
+      "bytes": 12053352,
+      "sha256": "2dfbd1cb8b7e54baeaf872e1fc486c750e40a5a5ee0aea290e5ac39e77be9171",
+      "pages": 42,
+      "extraction": "pdftotext -layout; page provenance retained"
+    }
+  ],
+  "archiveEntries": [
+    {
+      "path": "replit-blairstreet/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/._replit-blairstreet",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/llms.txt",
+      "bytes": 992,
+      "directory": false,
+      "sha256": "804588bff1d352f22fb7f6c11d49893d594be26fc7ed3058aead644ddd582c8f",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._llms.txt",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/amenities/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._amenities",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/contact/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._contact",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/index.html",
+      "bytes": 10127,
+      "directory": false,
+      "sha256": "e72eaf567fd61b56012e490be479cdba4a0beda82751a61d6905abfc8f8a3017",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/css/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._css",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/js/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._js",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/gallery/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._gallery",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/fees-and-pets/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._fees-and-pets",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/README.md",
+      "bytes": 1805,
+      "directory": false,
+      "sha256": "b0da6aa59bf04a9bfc9ed7957b75cbe67917bbd18d858ef420a97d4c228582ed",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._README.md",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/floor-plans/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._floor-plans",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/neighborhood/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._neighborhood",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/scripts/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._scripts",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/availability/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._availability",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/sitemap.xml",
+      "bytes": 958,
+      "directory": false,
+      "sha256": "fb39d9b8a4a96a30710da49506cb5faa3da791625ee725c3de87f7aecf10503d",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._sitemap.xml",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/SEO-AUDIT.md",
+      "bytes": 5007,
+      "directory": false,
+      "sha256": "16a542f27bcfbf68b08253ef2f739ce21f75ab8712dd3e0eab381c67911512e8",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._SEO-AUDIT.md",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/robots.txt",
+      "bytes": 75,
+      "directory": false,
+      "sha256": "b518112fad48845e419971b7692435aba3b114eb75d54ab07bf34d7e651f6824",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._robots.txt",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/data/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._data",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/virtual-tours/",
+      "bytes": 0,
+      "directory": true,
+      "sha256": null,
+      "scanned": false
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/._virtual-tours",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/amenities/index.html",
+      "bytes": 6564,
+      "directory": false,
+      "sha256": "b4cf0b737b4e68de527bb2109850cff725a5ab69894e6ab357bf8af28fbfb9bb",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/amenities/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/contact/index.html",
+      "bytes": 7714,
+      "directory": false,
+      "sha256": "19dcec583cc029daaaaaefe5991fb542a78ad2f2322295095a076881ebc9359d",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/contact/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/css/site.css",
+      "bytes": 6706,
+      "directory": false,
+      "sha256": "d90479e1f6cdc551b42b9c31d502a07ed0336cf5ddb31d290274d45d584821f7",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/css/._site.css",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/js/availability.js",
+      "bytes": 1737,
+      "directory": false,
+      "sha256": "44eb5206ae84c2f30c29290243f6f1be972085a1e68d6d6e9f2d10026877f42a",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/js/._availability.js",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/gallery/index.html",
+      "bytes": 4424,
+      "directory": false,
+      "sha256": "f793f0fa2147e9b5d5426a59080f17903424c7b92aacef828f66b2b94e91708a",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/gallery/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/fees-and-pets/index.html",
+      "bytes": 7408,
+      "directory": false,
+      "sha256": "06e6823eacd8214c25fbf06acd7b309161bd0a52a7d1c18a5e062ad15247f06b",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/fees-and-pets/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/floor-plans/index.html",
+      "bytes": 7572,
+      "directory": false,
+      "sha256": "425149d2e9ef33aebf75454540aeac00eae56bf8f2c7ff609e37e498d32f1ec2",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/floor-plans/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/neighborhood/index.html",
+      "bytes": 5882,
+      "directory": false,
+      "sha256": "4feb46556139f86500a171f5e4b22dd21deca6408dd99e71cd3ebf44ed2378a7",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/neighborhood/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/scripts/download-assets.mjs",
+      "bytes": 1588,
+      "directory": false,
+      "sha256": "e47d27f6231f1e63a770c83067b2fe1ca34a9fdbe48d45d70dfeed7a2b35b81b",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/scripts/._download-assets.mjs",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/availability/index.html",
+      "bytes": 4680,
+      "directory": false,
+      "sha256": "52de8c2fe30ee2c725b395ee634afd50bd567abc6fa3b27fc0df7548f0569583",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/availability/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/data/units.json",
+      "bytes": 827,
+      "directory": false,
+      "sha256": "a7adcb4b480e6ebb1ae05c87896ae58c24227eb14c5ac84f6de5f862937c2ffb",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/data/._units.json",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    },
+    {
+      "path": "replit-blairstreet/virtual-tours/index.html",
+      "bytes": 5188,
+      "directory": false,
+      "sha256": "a719d64600769de3cf6a0fd071a8b3eab7a23e7bc37ff38ac2b0d1cecc0e50d9",
+      "scanned": true
+    },
+    {
+      "path": "__MACOSX/replit-blairstreet/virtual-tours/._index.html",
+      "bytes": 212,
+      "directory": false,
+      "sha256": "dd99694dcc9e3f1199b9ab6b0d4da2d6cdf5581eab2e8462fee936444eb53773",
+      "scanned": false
+    }
+  ]
+}

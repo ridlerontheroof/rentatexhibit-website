@@ -10,14 +10,14 @@
  * normalizer matches keys tolerantly (case/format-insensitive substring
  * matching) instead of hard-coding exact column names.
  *
- * ── WOODS CROSSING: change the three lines marked WOODS-CROSSING ────────────
+ * Property-specific values are required through environment configuration.
  */
 
 import { recordFeeCopyCheck, reportStrippedFeeCopy } from "./feeCopyAlert";
 import { DEFAULT_LEAD_SOURCE } from "./leadSource";
 import { isTourUnitName } from "./tourUnit";
 
-// WOODS-CROSSING: Set APPFOLIO_DATABASE env var to your management company's
+// PROPERTY CONFIG: set APPFOLIO_DATABASE to the management company's
 // AppFolio database name (visible in your AppFolio portal URL:
 // <database>.appfolio.com). Maps to property-config appfolio.database.
 const _APPFOLIO_DATABASE = process.env.APPFOLIO_DATABASE?.trim();
@@ -25,7 +25,7 @@ if (!_APPFOLIO_DATABASE) {
   throw new Error(
     "APPFOLIO_DATABASE env var is required but not set. " +
     "Set it to your management company's AppFolio database name " +
-    "(the subdomain prefix in your AppFolio portal URL, e.g. \"woodscrossingmgmt\"). " +
+    "(the subdomain prefix in your AppFolio portal URL, e.g. \"propertymanagement\"). " +
     "Maps to appfolio.database in property-config.json.",
   );
 }
@@ -43,7 +43,7 @@ if (!_APPFOLIO_PROPERTY_NAME) {
     "Set it to the exact property name shown in AppFolio (appfolio.propertyName from property-config.json).",
   );
 }
-/** Exact property name for the AppFolio listings filter (e.g. "Woods Crossing"). */
+/** Exact property name for the AppFolio listings filter (e.g. "Example Property"). */
 const APPFOLIO_PROPERTY_NAME = _APPFOLIO_PROPERTY_NAME;
 /** Lowercase substring for tolerant row-level filtering. */
 const PROPERTY_MATCH = APPFOLIO_PROPERTY_NAME.toLowerCase();
@@ -225,12 +225,10 @@ export function parseListingsHtml(html: string): Map<string, ListingMedia> {
 /**
  * Photo IDs to drop from unit galleries. AppFolio appends management-company
  * logo photos to every listing. Add any such IDs here.
- * WOODS-CROSSING: replace or clear this set with IDs specific to your
+ * PROPERTY CONFIG: replace or clear this set with IDs specific to the
  * management company's AppFolio logo/watermark photos.
  */
-const EXCLUDED_PHOTO_IDS = new Set([
-  "a2d081fb-43de-4bf9-9089-5e9d2525575a", // WOODS-CROSSING: Highland Partners logo — replace with yours
-]);
+const EXCLUDED_PHOTO_IDS = new Set<string>();
 
 export function parseDetailPhotos(html: string): string[] {
   const galleryRe =
@@ -283,7 +281,7 @@ function decodeEntities(text: string): string {
 
 /**
  * Known misspellings in the AppFolio amenity/appliance feed → corrected label.
- * WOODS-CROSSING: add any typos you observe in your property's AppFolio feed.
+ * PROPERTY CONFIG: add only typos observed in the property's AppFolio feed.
  */
 const AMENITY_SPELLING_FIXES: [RegExp, string][] = [
   [/\bDiswasher\b/gi, "Dishwasher"],
@@ -298,7 +296,7 @@ export function fixAmenitySpelling(item: string): string {
 /**
  * Sentences in AppFolio marketing descriptions that contradict the
  * leasing-confirmed fee policy.
- * WOODS-CROSSING: update this regex to match any contradictory copy in YOUR
+ * PROPERTY CONFIG: update this regex to match contradictory copy in the
  * AppFolio listings, or set it to never match if your feed is clean.
  */
 const CONTRADICTORY_FEE_SENTENCE_RE =
@@ -328,7 +326,7 @@ export function stripContradictoryFeeSentences(text: string, removed?: string[])
 
 /**
  * Property-wide amenities that must not appear in a unit's headline.
- * WOODS-CROSSING: update to match your property's building-level amenities.
+ * PROPERTY CONFIG: update to match verified building-level amenities.
  */
 const PROPERTY_AMENITY_RE = /^(sauna|pool|hot\s*tub)$/i;
 
@@ -419,7 +417,7 @@ async function fetchDetailInfo(listingUrl: string): Promise<DetailInfo> {
 
 /**
  * Fetch listing media from the public listings page.
- * WOODS-CROSSING: update the "filters[property_list]" value to match your
+ * PROPERTY CONFIG: update the "filters[property_list]" value to match the
  * property's name as it appears in AppFolio's public listings filter.
  */
 async function fetchListingMedia(): Promise<Map<string, ListingMedia>> {
@@ -509,8 +507,8 @@ export async function createGuestCard(input: GuestCardInput): Promise<void> {
 }
 
 export async function resolveTourUnitListableUid(): Promise<string | null> {
-  // WOODS-CROSSING: implement the tour-unit resolution for your property.
-  // See the dedicated-tour-unit pattern in the Exhibit APPFOLIO_INTEGRATION_PLAYBOOK.md.
+  // PROPERTY CONFIG: implement the tour-unit resolution for the property.
+  // See the generic dedicated-tour-unit integration pattern.
   // The pattern: a hidden AppFolio unit reserved for general (non-specific-apartment)
   // tour bookings, resolved via the Unit Directory report.
   return null;
@@ -560,8 +558,8 @@ export async function fetchAvailability(
       try {
         const info = await fetchDetailInfo(media.listingUrl);
         const removed = info.strippedFeeCopy;
-        if (removed.length > 0) reportStrippedFeeCopy(removed, u.unit, media.listingUrl);
-        recordFeeCopyCheck(u.unit, media.listingUrl, removed.length > 0);
+        if (removed.length > 0) void reportStrippedFeeCopy(u.unit, removed);
+        recordFeeCopyCheck(removed.length > 0 ? "stripped" : "clean");
         return {
           ...enrichedUnit,
           photos: info.photos,

@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@highland/property-config": ["../packages/config/src/index.ts"]
+      ,"@workspace/db": ["../packages/db/src/index.ts"]
+      ,"@workspace/api-zod": ["../packages/api-zod/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "../packages/db/src/**/*.ts", "../packages/api-zod/src/**/*.ts"]
+}

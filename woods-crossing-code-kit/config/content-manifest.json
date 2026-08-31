@@ -1,0 +1,16 @@
+{
+  "manifestVersion": "1.0.0",
+  "propertySlug": "example-property",
+  "status": "DRAFT",
+  "provenance": { "source": "Pending operator intake", "rightsConfirmed": false },
+  "home": { "heading": "Property content intake", "description": "Draft content remains under operator review and is not approved for publication." },
+  "amenities": [],
+  "neighborhood": [],
+  "gallery": [],
+  "floorPlans": [],
+  "faqs": [],
+  "knowledge": [],
+  "blog": [],
+  "neighborhoodGuides": [],
+  "legacyRedirects": []
+}
