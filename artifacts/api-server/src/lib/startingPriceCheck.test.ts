@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { readFile } from "node:fs/promises";
 
 vi.mock("./email", () => ({
   sendStartingPriceCheckAlert: vi.fn(async () => {}),
@@ -125,6 +126,38 @@ beforeEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("extractStartingRentFromText", () => {
+  it("parses the actual homepage starting-rent sentence helper output", async () => {
+    // Keep this as a runtime import so the API package's TypeScript build does
+    // not pull the web artifact into its rootDir. Vitest still loads the real
+    // helper and its baked availability snapshot.
+    const startingRentModule = new URL(
+      "../../../exhibit-on-superior/src/data/startingRent.ts",
+      import.meta.url,
+    ).href;
+    const snapshotUrl = new URL(
+      "../../../exhibit-on-superior/src/data/availabilitySnapshot.json",
+      import.meta.url,
+    );
+    const snapshot = JSON.parse(await readFile(snapshotUrl, "utf8")) as {
+      updatedAt: string;
+    };
+    const { getStartingRent, startingRentSentence } =
+      await import(startingRentModule);
+
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date(snapshot.updatedAt));
+      const startingRent = getStartingRent();
+      const sentence = startingRentSentence();
+
+      expect(startingRent).not.toBeNull();
+      expect(sentence).not.toBeNull();
+      expect(extractStartingRentFromText(sentence!)).toBe(startingRent!.rent);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("extracts the rent from the canonical sentence", () => {
     expect(
       extractStartingRentFromText(
