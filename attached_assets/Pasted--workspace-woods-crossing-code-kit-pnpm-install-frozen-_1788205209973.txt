@@ -1,0 +1,78 @@
+~/workspace/woods-crossing-code-kit$ pnpm install --frozen-lockfile
+Scope: all 6 workspace projects
+Lockfile is up to date, resolution step is skipped
+Packages: +310
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 310, reused 181, downloaded 129, added 310, done
+
+devDependencies:
++ axe-core 4.10.3
++ express 5.2.1
++ jsdom 26.1.0
++ pg-mem 3.0.14
++ tsx 4.21.0
++ typescript 5.9.3
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: esbuild@0.27.7.                                                   │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 5.2s using pnpm v10.28.2
+~/workspace/woods-crossing-code-kit$ pnpm release:prepare
+
+> @highland/property-site-kit@2.0.0 release:prepare /home/runner/workspace/woods-crossing-code-kit
+> node scripts/release.mjs
+
+
+> @highland/property-site-kit@2.0.0 check:kit-release /home/runner/workspace/woods-crossing-code-kit
+> PROPERTY_CONFIG_PATH=config/example-property-config.json pnpm check:prepublish
+
+
+> @highland/property-site-kit@2.0.0 check:prepublish /home/runner/workspace/woods-crossing-code-kit
+> node scripts/require-property-config.mjs && KIT_GUARD_MODE=offline pnpm validate && pnpm validate:config "$PROPERTY_CONFIG_PATH" --phase prelaunch && pnpm validate:release && pnpm validate:source && pnpm check:hydrated-seo && pnpm check:server:built && pnpm check:schema && pnpm check:a11y && pnpm check:redirects && pnpm check:api && pnpm check:rented && pnpm check:postpublish && pnpm check:content && pnpm test:g5-roster && pnpm typecheck && pnpm smoke && pnpm build && pnpm check:acceptance && pnpm test:accepted-lead && pnpm test:alerts
+
+property release config selected: config/example-property-config.json
+
+> @highland/property-site-kit@2.0.0 validate /home/runner/workspace/woods-crossing-code-kit
+> node scripts/validate-kit.mjs
+
+valid config: /home/runner/workspace/woods-crossing-code-kit/config/example-property-config.json
+live content systems: faqs, knowledge, blog, neighborhoodGuides (empty content is valid)
+baseline guards: 11
+file:///home/runner/workspace/woods-crossing-code-kit/scripts/validate-neutrality.mjs:25
+if (failures.length) throw new Error(`Property literals found in runnable release files:\n- ${failures.join("\n- ")}`);
+                           ^
+
+Error: Property literals found in runnable release files:
+- release.json
+    at file:///home/runner/workspace/woods-crossing-code-kit/scripts/validate-neutrality.mjs:25:28
+
+Node.js v24.13.0
+ ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Command failed with exit code 1.
+node:internal/errors:985
+  const err = new Error(message);
+              ^
+
+Error: Command failed: pnpm check:kit-release
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:925:11)
+    at execFileSync (node:child_process:961:15)
+    at file:///home/runner/workspace/woods-crossing-code-kit/scripts/release.mjs:12:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  status: 1,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 7246,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v24.13.0
+ ELIFECYCLE  Command failed with exit code 1.
