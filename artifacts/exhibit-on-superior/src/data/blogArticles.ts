@@ -769,6 +769,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       'chicago-apartment-application-documents',
       'first-apartment-chicago-guide',
       'chicago-move-in-costs-explained',
+      'chicago-renters-insurance-basics',
     ],
     links: [
       { label: 'Browse available apartments', href: '/available-units' },
@@ -1165,12 +1166,6 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
 
   // ---------------------------------------------------------------------
   // CLUSTER — renters insurance requirements chicago apartment
-  // AI DRAFT — awaiting human review. To publish, ALL THREE edits are
-  // required (guard tests fail if any is missed):
-  //   1. remove `draft: true` below
-  //   2. add 'chicago-renters-insurance-basics' to the related: list of the
-  //      'how-to-rent-an-apartment-in-chicago' article above (inbound-link guard)
-  //   3. add the /blog/chicago-renters-insurance-basics rewrite pair in artifact.toml
   // ---------------------------------------------------------------------
   {
     slug: 'chicago-renters-insurance-basics',
@@ -1277,9 +1272,8 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       },
     ],
     ogCard: 'application-guide',
-    published: '2026-08-17',
-    updated: '2026-08-17',
-    draft: true,
+    published: '2026-08-30',
+    updated: '2026-08-30',
   },
 
   // ---------------------------------------------------------------------

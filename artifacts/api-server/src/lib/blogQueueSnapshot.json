@@ -1,12 +1,6 @@
 {
   "queue": [
     {
-      "slug": "chicago-renters-insurance-basics",
-      "workingTitle": "Renters Insurance in Chicago: What Buildings Require and Why",
-      "targetQuery": "renters insurance requirements chicago apartment",
-      "pillarTitle": "How to Rent an Apartment in Chicago: The Complete Guide"
-    },
-    {
       "slug": "when-to-start-apartment-hunting-chicago",
       "workingTitle": "When to Start Apartment Hunting in Chicago",
       "targetQuery": "how far in advance to look for apartments chicago",
@@ -51,14 +45,10 @@
   ],
   "pendingDrafts": [
     {
-      "slug": "chicago-renters-insurance-basics",
-      "title": "Renters Insurance in Chicago: What Buildings Require and Why"
-    },
-    {
       "slug": "when-to-start-apartment-hunting-chicago",
       "title": "When to Start Apartment Hunting in Chicago"
     }
   ],
-  "publishedCount": 10,
+  "publishedCount": 11,
   "plannedTotal": 18
 }
