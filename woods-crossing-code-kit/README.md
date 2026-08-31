@@ -1,6 +1,10 @@
 # Highland Property Site Kit
 
-Pinned release **kit-v2.0.0** is a property-neutral production starter for a
+The original **kit-v2.0.0** publication record is withdrawn. Do not move that
+tag. Its auditable replacement is **kit-v2.0.0-r1**, which may be published only
+from the clean candidate and evidence identified in `release.json`.
+
+The kit is a property-neutral production starter for a
 property website and API. A generated project owns its property configuration,
 content, assets, environment settings, and launch decisions; it never floats on
 the kit's main branch.
@@ -127,8 +131,10 @@ inventing property claims. Add entries only after fact and editorial review.
   origins, attribution format, and secret-name discipline.
 - `pnpm validate:guards` checks all four content registries and the machine-readable
   baseline in `standards/baseline-guards.json`.
-- `pnpm validate:neutral` checks the runnable release surface for source-property
-  literals.
+- `pnpm validate:neutral` checks runnable and property-bearing release surfaces
+  for source-property literals. Publication provenance in `release.json` is
+  intentionally outside that boundary and is covered by
+  `pnpm test:neutrality-boundary`.
 - `pnpm validate` runs all three focused checks.
 - `PROPERTY_CONFIG_PATH=/absolute/path/property-config.json pnpm check:prepublish`
   validates the exact property candidate at prelaunch/G5 before all offline
@@ -139,7 +145,9 @@ inventing property claims. Add entries only after fact and editorial review.
 - `pnpm prepublish:online` requires `SITE_URL` and runs every live adapter.
 - `pnpm check:postpublish` remains separately executable for watcher evidence.
 
-`release.json` and `CHANGELOG.md` identify the semantic release. The retained
+`release.json` and `CHANGELOG.md` identify the semantic release. Publication
+records may legitimately name the source repository; they are provenance, not
+property defaults or runnable content. The retained
 AppFolio, lead/tour, SEO/prerender, analytics, CSP, IndexNow, image, and
 post-publish modules are included in source validation; the full retained API
 source is typechecked and its routes are mounted by the runtime. External calls
@@ -157,6 +165,9 @@ From that clean candidate commit,
 the release owner runs `pnpm release:prepare`; it runs the full prepublish and
 build gates, verifies the digest, and confirms the exact candidate `HEAD`, but
 deliberately does **not** mutate Git. Only after it passes does the release owner
-run `git tag -a kit-v2.0.0 HEAD` in the kit repository and publish that tag,
-then record the commit/tag with verification evidence. This workspace task
-never creates a release tag.
+run the exact `git tag -a … HEAD` command printed by `release:prepare` in the kit
+repository and publish that tag,
+then record the commit/tag with verification evidence. If a published record is
+later contradicted by reproduction, retain it as withdrawn and publish a new
+annotated replacement tag only after a fresh candidate passes; never move or
+silently overwrite the old tag. This workspace task never creates a release tag.

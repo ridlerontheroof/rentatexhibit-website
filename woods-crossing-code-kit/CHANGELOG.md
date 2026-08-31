@@ -2,6 +2,12 @@
 
 ## 2.0.0 - 2026-08-18
 
+- Withdrew the original publication record after its claimed clean-checkout
+  release preparation result could not be reproduced; the historical tag and
+  evidence identifiers remain recorded for auditability pending a separately
+  tagged replacement.
+- Corrected neutrality validation so publication provenance is not treated as
+  runnable property content, with a regression test protecting that boundary.
 - Cut the first property-neutral, independently runnable production-kit release.
 - Added pinned workspace and artifact manifests, config bootstrap, and validation commands.
 - Added minimal web and API surfaces backed by validated property configuration.

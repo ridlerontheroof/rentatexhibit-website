@@ -17,17 +17,32 @@
     "requiredCommands": ["pnpm validate:release", "pnpm validate:source", "pnpm check:prepublish", "pnpm build"],
     "evidence": "The publication record below identifies the verified commit, annotated tag object, implementation digest, clean-checkout release preparation, and clean consumer bootstrap evidence."
   },
-  "implementationDigest": "b042b33a280ed2b00825c1a37f8ad9c2933603cce2881e34b20ee0fea2792767",
+  "implementationDigest": "27624aee0b6a824b54650c49f0009c984f7e1631213a493eca50c4491e0ed458",
   "publication": {
-    "status": "published",
+    "status": "withdrawn",
     "publishedAt": "2026-08-31T19:20:40Z",
     "repository": "https://github.com/ridlerontheroof/rentatexhibit-website",
     "commit": "3c0fba372c02d3475379716b2c8874aef7266c4f",
     "tagObject": "7a0c2f35641a25fb78d5bf6de8d1f60d79ab391b",
-    "validation": {
+    "withdrawnAt": "2026-08-31",
+    "withdrawalReason": "A release-owner reproduction found that pnpm release:prepare failed because publication provenance in release.json was incorrectly included in the runnable/property-bearing neutrality surface. The tag object and evidence hashes are retained below for auditability, but this record must not be treated as a passing release.",
+    "replacement": {
+      "status": "candidate-validated",
+      "tag": "kit-v2.0.0-r1",
+      "requirement": "Publish only by creating this new annotated tag at the validated candidate commit; do not move or overwrite kit-v2.0.0.",
+      "candidateCommit": "7706c203a0e5365f0d85373e135e27119ced6730",
+      "validation": {
+        "commands": ["corepack pnpm install --frozen-lockfile", "pnpm release:prepare"],
+        "result": "passed from a detached clean checkout with a clean final status",
+        "installLogSha256": "5f9a82dcf365a24226699afa19abf59a1913e9ba1fb2e64ae4c53b19474023eb",
+        "releaseLogSha256": "700761df4e82c7b443897f5ea2356c578a9b8b208fb3b1f31e445aa00548ffb7"
+      }
+    },
+    "invalidatedValidation": {
       "releasePreparation": {
         "commands": ["corepack pnpm install --frozen-lockfile", "pnpm release:prepare"],
-        "result": "passed from a clean checkout with a clean final status",
+        "originalClaim": "passed from a clean checkout with a clean final status",
+        "result": "invalidated by a reproduced neutrality-validation failure",
         "installLogSha256": "a94a3cd466a3d411118aa10e6946ec7dca319e9bd46f5b0f49b8646cffe32f2f",
         "releaseLogSha256": "0bb705f08df1c11dc5ef5c0f6c6086e385dc7ae6a763eb72d8222a2157bc482f"
       },
