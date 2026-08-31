@@ -20,7 +20,10 @@ facts, or release history.
 The factory repository's `property-site-replit-starter/` is the pin-ready custom-template payload.
 Before pinning or repinning it in Replit, run `npm test` in that directory. Its release lock must
 match the reviewed kit tag and digest; its Agent instructions request the ZIP and OM and then hand
-control to this skill.
+control to this skill. Registration requires a Replit organization administrator: create a clean
+standalone app from that payload, validate it there, then use the app's three-dot menu and select
+**Pin to Agent input box**. Replit does not currently expose this registration through the Admin API.
+Run the documented disposable-app drill before treating the template as available.
 
 ## Source and release rules
 

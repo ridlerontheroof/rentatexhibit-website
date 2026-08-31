@@ -187,3 +187,10 @@ uri = "file://woods-crossing-code-kit.zip"
 type = "unspecified"
 title = "Woods Crossing Code Export Kit"
 description = "68-file production code kit (256 KB zip). Includes: AppFolio client + availability feed, lead/tour routing, email system, prerender pipeline, production server, image/OG scripts, 12 guard scripts, and config templates. Every file annotated as portable / needs-Woods-config / pattern-only. Exhibit content excluded; no secret values."
+
+[[outputs]]
+id = "Ft960lFQcrmpxiU705BHr"
+uri = "file://deliverables/highland-property-template-launcher.zip"
+type = "unspecified"
+title = "Highland Property Template Launcher"
+description = "Validated, secret-free standalone launcher payload pinned to kit-v2.0.0-r1, with administrator registration instructions and evidence record."

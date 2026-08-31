@@ -1,0 +1,34 @@
+{
+  "templateName": "Highland Property Website — New Property",
+  "registrationMethod": "Replit organization app menu: Pin to Agent input box",
+  "registrationStatus": "awaiting-organization-admin",
+  "requiredRole": "system_admins",
+  "launcherPin": {
+    "tag": "kit-v2.0.0-r1",
+    "tagCommit": "7706c203a0e5365f0d85373e135e27119ced6730",
+    "implementationDigest": "27624aee0b6a824b54650c49f0009c984f7e1631213a493eca50c4491e0ed458"
+  },
+  "automatedValidation": {
+    "status": "passed",
+    "verifiedAt": "2026-08-31",
+    "launcherFingerprint": "fe2e7966a366",
+    "commands": [
+      "npm test",
+      "npm run validate",
+      "npm start"
+    ],
+    "result": "Source launcher and an isolated temporary copy both passed; first-run output requested the Claude ZIP and OM and required inventory-only onboarding."
+  },
+  "cleanLaunchDrill": {
+    "status": "awaiting-registered-template",
+    "preRegistrationStandaloneCopyPassed": true,
+    "propertyFactsFound": false,
+    "credentialValuesFound": false,
+    "environmentSettingsFound": false,
+    "accountSecretLinksFound": false,
+    "requestedClaudeZipAndOm": true,
+    "inventoryOnlyHandoffConfirmed": true,
+    "registeredTemplateForkConfirmed": null
+  },
+  "notes": "No secret values may be recorded in this file."
+}
