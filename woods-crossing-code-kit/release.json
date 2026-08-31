@@ -17,7 +17,7 @@
     "requiredCommands": ["pnpm validate:release", "pnpm validate:source", "pnpm check:prepublish", "pnpm build"],
     "evidence": "Release owner records command output, repository commit, and created tag in the release record. This file declares the intended tag; it does not assert an external tag already exists."
   },
-  "implementationDigest": "71d95af9d2a9fba8c1f2836d379a3a64aeaa670725085c1c589c42d79ab5a91d",
+  "implementationDigest": "b042b33a280ed2b00825c1a37f8ad9c2933603cce2881e34b20ee0fea2792767",
   "upgradePolicy": "Projects pin an exact kit tag. Upgrades are explicit and never automatic.",
   "artifacts": ["@highland/property-api", "@highland/property-web"],
   "contentSystems": ["faqs", "knowledge", "blog", "neighborhoodGuides"],
