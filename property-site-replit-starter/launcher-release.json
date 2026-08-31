@@ -2,9 +2,9 @@
   "kit": "@highland/property-site-kit",
   "repository": "https://github.com/ridlerontheroof/rentatexhibit-website.git",
   "subdirectory": "woods-crossing-code-kit",
-  "tag": "kit-v2.0.0",
-  "tagCommit": "3c0fba372c02d3475379716b2c8874aef7266c4f",
+  "tag": "kit-v2.0.0-r1",
+  "tagCommit": "7706c203a0e5365f0d85373e135e27119ced6730",
   "version": "2.0.0",
-  "implementationDigest": "b042b33a280ed2b00825c1a37f8ad9c2933603cce2881e34b20ee0fea2792767",
+  "implementationDigest": "27624aee0b6a824b54650c49f0009c984f7e1631213a493eca50c4491e0ed458",
   "upgradePolicy": "Pinned. Never upgrade automatically; use the governed property upgrade-plan workflow."
 }

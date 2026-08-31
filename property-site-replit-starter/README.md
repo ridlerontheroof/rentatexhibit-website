@@ -7,7 +7,7 @@ The launcher is intentionally not a site:
 
 - it contains no reusable production implementation or property-specific facts;
 - it contains no credential values, environment variables, or Account Secret links;
-- it pins the `kit-v2.0.0` repository, annotated tag commit, and reviewed implementation digest in
+- it pins the `kit-v2.0.0-r1` repository, annotated tag commit, and reviewed implementation digest in
   `launcher-release.json`;
 - it starts intake by requesting the Claude website ZIP and offering memorandum; and
 - it sends all onboarding and upgrades through the `property-site-onboarding` skill.

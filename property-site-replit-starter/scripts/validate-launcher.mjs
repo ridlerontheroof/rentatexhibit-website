@@ -50,12 +50,17 @@ export async function validateLauncher() {
 
   const lock = JSON.parse(await readFile(join(root, "launcher-release.json"), "utf8"));
   const factory = JSON.parse(await readFile(factoryReleasePath, "utf8"));
-  for (const field of ["kit", "tag", "version", "implementationDigest"]) {
+  const effectiveFactoryTag =
+    factory.publication?.status === "withdrawn" && factory.publication?.replacement?.tagObject
+      ? factory.publication.replacement.tag
+      : factory.tag;
+  for (const field of ["kit", "version", "implementationDigest"]) {
     if (lock[field] !== factory[field]) {
       errors.push(`launcher ${field} does not match factory release`);
     }
   }
-  if (!/^kit-v\d+\.\d+\.\d+$/.test(lock.tag)) errors.push("launcher tag is not immutable semantic form");
+  if (lock.tag !== effectiveFactoryTag) errors.push("launcher tag does not match effective factory release");
+  if (!/^kit-v\d+\.\d+\.\d+(?:-r\d+)?$/.test(lock.tag)) errors.push("launcher tag is not immutable semantic form");
   if (!/^[a-f0-9]{64}$/.test(lock.implementationDigest)) errors.push("launcher digest is not SHA-256");
   if (!/^https:\/\/github\.com\/[^/]+\/[^/]+\.git$/.test(lock.repository)) {
     errors.push("launcher repository must be an explicit HTTPS Git repository");
