@@ -1176,7 +1176,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     pillar: 'how-to-rent-an-apartment-in-chicago',
     authorId: 'leasing-team',
     summary:
-      'At Exhibit On Superior, renters insurance is required with $300,000 liability-to-landlord coverage. Before signing, our leasing team recommends confirming that your policy documentation shows this requirement and asking your insurer how it is listed. Review electricity setup separately, since residents are billed directly by ComEd.',
+      'Chicago apartment buildings may set their own renters insurance requirements. Exhibit On Superior requires $300,000 in liability-to-landlord coverage. The Illinois Department of Insurance notes that landlord insurance protects the building, not a renter\u2019s personal property, so renters should confirm both the building\u2019s liability requirement and what their own policy covers.',
     images: [
       {
         src: '/images/image-003-gettyimages-1216663469-cc9uxz.jpg',
@@ -1191,42 +1191,42 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     ],
     sections: [
       {
-        heading: 'Exhibit\u2019s renters insurance requirement',
+        heading: 'What renters insurance does Exhibit On Superior require?',
         paragraphs: [
           'At Exhibit On Superior, renters insurance is required as part of the leasing requirements. The specific standard is $300,000 liability-to-landlord coverage. We recommend treating that amount and coverage description as a checklist item early in your apartment search, rather than waiting until the rest of your move details are in place.',
           'This is a property-specific requirement. Renters comparing Chicago apartments should not assume every building requests the same amount or uses the same coverage language; requirements vary by building. Our leasing team can confirm Exhibit\u2019s current requirement and answer property-specific questions before you finalize your leasing steps.',
         ],
       },
       {
-        heading: 'Liability-to-landlord vs. renters insurance: two different protections',
+        heading: 'What do landlord insurance and renters insurance protect?',
         paragraphs: [
-          'Liability-to-landlord insurance (LLI) and renters insurance protect different things, and it helps to keep them separate on your checklist. LLI protects the apartment and the building itself: if a renter-caused accident \u2014 such as a kitchen fire or an overflowing tub \u2014 damages the unit or the property, LLI is the coverage that responds to the landlord\u2019s loss.',
-          'Renters insurance, in the everyday sense, protects you: your personal property (furniture, electronics, clothing), temporary relocation or displacement costs if the apartment becomes unlivable while repairs are made, and your personal liability beyond the building itself. A full renters policy typically includes liability coverage that can satisfy an LLI requirement, but the two are not the same thing \u2014 which is why we recommend verifying the documentation rather than the policy name.',
+          'The Illinois Department of Insurance explains that a landlord\u2019s insurance protects the building structure, not a renter\u2019s personal property. The department says renters insurance can protect a renter\u2019s belongings and that liability protection is standard with most renters policies. Exact coverage, exclusions, limits, and deductibles depend on the policy, so confirm them with the insurer.',
+          'Liability-to-landlord coverage addresses the building\u2019s property-specific lease requirement, while a renters policy may include protection for a resident\u2019s belongings and personal liability. Because policy wording varies, our leasing team recommends verifying that the documents supplied by the insurer explicitly show the coverage Exhibit requires.',
           'Leases at Exhibit On Superior require LLI coverage \u2014 the specific standard is $300,000 liability-to-landlord coverage. Residents who prefer not to shop for a policy can enroll in an LLI option directly through the resident portal, and residents who bring their own renters policy can ask their insurer to document the liability-to-landlord coverage it includes.',
         ],
         list: [
-          'LLI: covers the unit and building when a renter-caused accident damages the property.',
-          'Renters insurance: covers your personal property, temporary relocation or displacement costs, and your broader personal liability.',
+          'Landlord insurance: protects the building structure, not a renter\u2019s personal property.',
+          'Renters insurance: can protect personal belongings and commonly includes liability protection; exact terms depend on the policy.',
           'Exhibit leases require $300,000 liability-to-landlord coverage; an LLI option is available through the resident portal.',
-          'A personal renters policy is still worth considering even when LLI is handled through the portal \u2014 LLI alone does not cover your belongings.',
+          'Ask the insurer and Exhibit\u2019s leasing team to confirm that the policy documents satisfy the lease requirement.',
         ],
       },
       {
-        heading: 'Keep insurance separate from lease fees and utilities',
+        heading: 'Are insurance, lease fees, and utilities separate costs?',
         paragraphs: [
           'Renters insurance is a separate leasing requirement, so it should not be confused with Exhibit\u2019s listed application, administration, parking, storage, pet, or utility charges. Our committed fee table does not list a renters insurance premium. For a current view of the charges associated with leasing at Exhibit, review our fees page or contact our leasing team.',
           'The monthly Utility & Service Amenity fee covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. It ranges from $95 for studios to $195 for three-bedrooms. Electricity is billed directly to the resident by ComEd. For electric-service steps, residents can use ComEd\u2019s start, stop, or move service guidance.',
         ],
       },
       {
-        heading: 'Questions to ask before you submit proof',
+        heading: 'What should renters ask before submitting proof of insurance?',
         paragraphs: [
           'Our leasing team recommends asking your insurer whether the policy documentation can show the $300,000 liability-to-landlord coverage requested by Exhibit. If the insurer uses different terms, bring that wording to us before assuming it meets the requirement.',
           'It is also useful to ask our team what documentation to provide and when it is needed in your leasing process. That keeps the insurance conversation focused on the actual Exhibit requirement instead of general advice that may apply differently at another building.',
         ],
       },
       {
-        heading: 'Get confirmation from the on-site leasing team',
+        heading: 'How can renters confirm Exhibit\u2019s current requirement?',
         paragraphs: [
           'Exhibit On Superior is located at 165 W Superior St in River North. Our on-site leasing team is available Monday\u2013Friday from 9:00 AM\u20136:00 PM and Saturday from 10:00 AM\u20135:00 PM; the office is closed Sunday.',
           'Use our contact page to request confirmation of the current renters insurance requirement, discuss documentation questions, or review other leasing details. We recommend obtaining that confirmation directly from the office if your insurer\u2019s wording does not clearly match the $300,000 liability-to-landlord coverage requirement.',
@@ -1242,7 +1242,7 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
       {
         question: 'What is the difference between liability-to-landlord insurance and renters insurance?',
         answer:
-          'Liability-to-landlord insurance (LLI) covers the unit and building if a renter-caused accident damages the property. Renters insurance covers your side: personal property, temporary relocation or displacement costs, and broader personal liability. Exhibit leases require $300,000 LLI coverage; a renters policy protects your belongings on top of that.',
+          'A landlord\u2019s insurance protects the building structure, while renters insurance can protect a renter\u2019s belongings and commonly includes liability protection. Exhibit leases specifically require $300,000 in liability-to-landlord coverage, so ask the insurer and leasing team to confirm that the policy documents satisfy the lease requirement.',
       },
       {
         question: 'Can I get liability-to-landlord coverage through Exhibit?',
@@ -1262,10 +1262,16 @@ export const ALL_BLOG_ARTICLES: BlogArticle[] = [
     ],
     related: ['how-to-rent-an-apartment-in-chicago', 'chicago-apartment-application-documents'],
     links: [
+      { label: 'Browse current available apartments', href: '/available-units' },
       { label: 'Review leasing fees at Exhibit On Superior', href: '/fees' },
+      { label: 'Schedule a tour with the leasing team', href: '/schedule-a-tour' },
       { label: 'Contact the Exhibit On Superior leasing team', href: '/contact-us' },
     ],
     sources: [
+      {
+        label: 'Illinois Department of Insurance \u2014 renter\u2019s insurance',
+        href: 'https://idoi.illinois.gov/consumers/consumerinsurance/homeownerrenter/renter-s-insurance.html',
+      },
       {
         label: 'ComEd \u2014 start, stop, or move electric service',
         href: 'https://www.comed.com/my-account/customer-support/start-stop-move',
