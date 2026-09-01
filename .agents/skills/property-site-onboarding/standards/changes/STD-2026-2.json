@@ -1,0 +1,47 @@
+{
+  "changeId": "STD-2026-2",
+  "status": "IMPLEMENTED",
+  "summary": "Require a second GA4 Data API query before a low visitor reading can trigger an email alert.",
+  "evidence": [
+    "A newly started autoscale process returned one isolated zero between healthy readings in the hundreds.",
+    "The property-neutral reproduction covers persistent low, recovered low, and errored confirmation sequences."
+  ],
+  "standardsVersion": {
+    "from": "1.1.0",
+    "to": "1.2.0",
+    "bumpReason": "MINOR: materially strengthens the analytics data-watchdog alerting requirement."
+  },
+  "kitVersion": {
+    "from": "kit-v2.0.0-r1",
+    "to": "kit-v2.0.1",
+    "releaseDigest": "PENDING UNTIL RELEASE"
+  },
+  "affectedChecks": ["analytics.data-watchdog", "ops.alert-routing"],
+  "migration": "Backward-compatible code-only safeguard with no schema, secret, or environment changes. Existing pinned sites remain unchanged unless their owner elects an explicit upgrade; rollback is a repin to kit-v2.0.0-r1.",
+  "verification": [
+    "API unit tests cover persistent low, recovered low, and errored confirmation cases.",
+    "The complete kit release suite must pass from a clean checkout before publication.",
+    "The kit-v2.0.0-r1 annotated tag object, peeled commit, tree, and archived source digest are recorded in the new release metadata and must remain unchanged."
+  ],
+  "approvals": [
+    {
+      "role": "standards-owner",
+      "status": "APPROVED",
+      "reviewer": "Highland property-site task owner",
+      "reviewedAt": "2026-09-01"
+    },
+    {
+      "role": "technical-reviewer",
+      "status": "APPROVED",
+      "reviewer": "Replit Agent implementation review",
+      "reviewedAt": "2026-09-01"
+    },
+    {
+      "role": "security-privacy-reviewer",
+      "status": "APPROVED",
+      "reviewer": "Replit Agent security/privacy review",
+      "reviewedAt": "2026-09-01",
+      "notes": "The fingerprint hashes only numeric property ID and service-account email, is truncated, and never includes the private key or token."
+    }
+  ]
+}

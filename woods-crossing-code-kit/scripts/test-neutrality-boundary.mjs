@@ -1,14 +1,12 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { propertyBearingRoots } from "./validate-neutrality.mjs";
 
-const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const releaseMetadata = await readFile(resolve(root, "release.json"), "utf8");
+const publicationProvenanceFixture = JSON.stringify({
+  repository: "https://example.invalid/rentatexhibit-website",
+});
 
 assert.match(
-  releaseMetadata,
+  publicationProvenanceFixture,
   /rentatexhibit-website/i,
   "fixture must retain publication provenance that resembles a source-property literal",
 );

@@ -1,5 +1,5 @@
 {
-  "manifestVersion": "1.1.0",
+  "manifestVersion": "1.2.0",
   "standard": "Highland property-site production standard",
   "governance": {
     "authority": "This released manifest is the normative capability baseline. Live property behavior is evidence for a change proposal, never implicit authority.",
@@ -27,6 +27,7 @@
     { "id": "csp.enforced", "category": "CSP", "description": "Hash-based CSP served (Report-Only first, enforced via env flag); GTM-injected inline scripts have explicit hashes; Ads/Maps/embed hosts present.", "automation": "linter", "kitGuard": "check:csp" },
     { "id": "analytics.deferred", "category": "analytics", "description": "GTM/gtag load deferred to first real gesture (never scroll) or post-load; page self-loads gtag.js with send_page_view:false; every custom event carries send_to.", "automation": "kit-guard", "kitGuard": "check:gtm" },
     { "id": "analytics.events", "category": "analytics", "description": "Custom events (generate_lead etc.) verified reaching /g/collect; page_views stream-owned (no manual doubles).", "automation": "kit-guard", "kitGuard": "check:gtm" },
+    { "id": "analytics.data-watchdog", "category": "analytics", "description": "A visitor-data watchdog confirms every at-or-below-floor GA4 result with a second query before emailing; recovery is healthy, confirmation errors are ambiguous, and logs include both readings plus a non-secret configuration fingerprint.", "automation": "kit-guard", "kitGuard": "GA4 data-check unit tests" },
     { "id": "redirects.one-hop", "category": "redirects", "description": "Apex→www, http→https, and every legacy URL 301 in exactly one hop to the exact target; parity map fully classified (no NEEDS_REVIEW rows).", "automation": "linter", "kitGuard": "check:redirects" },
     { "id": "redirects.trailing-slash", "category": "redirects", "description": "Canonicals consistent with the platform's directory-index 301; zero-redirect (ads) URLs use the trailing-slash form.", "automation": "manual" },
     { "id": "appfolio.feed-health", "category": "AppFolio", "description": "Availability from unit_vacancy via server proxy w/ cache; rented rows dropped; posted-to-website only; snapshot baked with stamp-refresh rule; fail closed to last good snapshot.", "automation": "kit-guard", "kitGuard": "availability route + snapshot guard + check:rented" },

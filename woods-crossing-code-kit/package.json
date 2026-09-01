@@ -1,11 +1,12 @@
 {
   "name": "@highland/property-site-kit",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "build": "pnpm validate:source && pnpm --filter @highland/property-web run build && pnpm --filter @highland/property-api run build",
     "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm --filter @highland/property-api run test",
     "validate": "node scripts/validate-kit.mjs",
     "validate:config": "node scripts/validate-config.mjs",
     "validate:guards": "node scripts/validate-guards.mjs",
@@ -14,7 +15,7 @@
     "validate:source": "node scripts/validate-source.mjs",
     "validate:release": "node scripts/validate-release.mjs",
     "release:prepare": "node scripts/release.mjs",
-    "check:kit-release": "pnpm test:neutrality-boundary && PROPERTY_CONFIG_PATH=config/example-property-config.json pnpm check:prepublish",
+    "check:kit-release": "pnpm test && pnpm test:neutrality-boundary && PROPERTY_CONFIG_PATH=config/example-property-config.json pnpm check:prepublish",
     "smoke": "node scripts/smoke.mjs",
     "smoke:production": "node scripts/smoke-production.mjs",
     "check:acceptance": "node scripts/check-acceptance.mjs && pnpm test:availability-runtime && pnpm test:redirect-map-startup",

@@ -1,13 +1,14 @@
 {
   "name": "@highland/property-api",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "tsx src/runtime.ts",
     "start": "tsx src/runtime.ts",
     "typecheck": "tsc --noEmit",
-    "build": "tsc --noEmit"
+    "build": "tsc --noEmit",
+    "test": "tsx --test src/lib/ga4LowConfirmation.test.ts"
   },
   "dependencies": {
     "@highland/property-config": "workspace:*",

@@ -85,3 +85,4 @@
 - [Release evidence commit binding](release-evidence-commit-binding.md) — post-validation metadata commits must keep tag commands pinned to the earlier exact candidate, never current HEAD.
 - [Launcher validation in clean Replit apps](launcher-validation-replit-runtime.md) — neutrality scans must ignore Replit-generated runtime directories while strictly allowlisting launcher-owned files.
 - [Confirm implausible GA4 zeros](ga4-zero-confirmation.md) — autoscale startup can yield an isolated zero amid healthy counts; require a second low query before alerting.
+- [Kit tests should avoid new runner dependencies](kit-test-dependencies.md) — use Node's test runner through existing tsx when a focused kit test does not need framework-only features.

@@ -29,8 +29,19 @@ const digest = hash.digest("hex");
 const release = JSON.parse(await readFile(resolve(root, "release.json"), "utf8"));
 const baseline = JSON.parse(await readFile(resolve(root, "standards/baseline-guards.json"), "utf8"));
 const errors = [];
-if (release.tag !== "kit-v2.0.0" || release.version !== "2.0.0") errors.push("release tag/version must be kit-v2.0.0/2.0.0");
+if (release.tag !== `kit-v${release.version}` || !/^\d+\.\d+\.\d+$/.test(release.version || "")) {
+  errors.push("release tag/version must be a matching semantic pair (kit-vMAJOR.MINOR.PATCH)");
+}
 if (!release.standardsCompatibility?.baselineGuardsVersion || !release.migration?.note || !release.verification?.evidence) errors.push("standardsCompatibility, migration note, and verification evidence are required");
+if (release.previousRelease?.tag === "kit-v2.0.0-r1") {
+  for (const field of ["tagObject", "peeledCommit", "tree", "archiveSha256"]) {
+    if (!/^[0-9a-f]{40,64}$/.test(release.previousRelease[field] || "")) {
+      errors.push(`previous release provenance must record ${field}`);
+    }
+  }
+} else {
+  errors.push("release metadata must retain kit-v2.0.0-r1 provenance");
+}
 if (release.publication?.status === "withdrawn") {
   const replacement = release.publication.replacement;
   if (!replacement?.tag || replacement.tag === release.tag) errors.push("a withdrawn publication must name a distinct immutable replacement tag");
@@ -42,6 +53,9 @@ if (release.publication?.status === "withdrawn") {
       if (!/^[0-9a-f]{64}$/.test(replacement.validation?.[field] || "")) errors.push(`a validated replacement must record ${field}`);
     }
   }
+}
+if (!["candidate", "released", "withdrawn"].includes(release.publication?.status)) {
+  errors.push("publication status must be candidate, released, or withdrawn");
 }
 if (release.implementationDigest !== digest) errors.push(`implementationDigest mismatch: expected ${digest}`);
 if (release.standardsCompatibility?.baselineGuardsVersion !== baseline.version) errors.push("baseline guard compatibility version mismatch");

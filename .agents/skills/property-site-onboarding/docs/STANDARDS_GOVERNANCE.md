@@ -21,6 +21,11 @@ becomes reusable merely because it shipped.
 6. **Offer:** identify potentially affected pinned sites. Do not modify them. Create an upgrade plan
    only when an owner elects to evaluate adoption.
 
+For analytics data watchdogs, an at-or-below-floor result is not definitive until an immediate
+second query is also at or below the floor. A recovered confirmation is healthy; an errored
+confirmation is ambiguous. Operational logs must retain both readings and a non-secret
+configuration fingerprint without exposing property credentials.
+
 ### Semantic rules
 
 - Standards **MAJOR**: removes, reverses, or incompatibly changes a requirement or gate.

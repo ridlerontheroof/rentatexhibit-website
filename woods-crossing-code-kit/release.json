@@ -1,73 +1,41 @@
 {
   "kit": "@highland/property-site-kit",
-  "version": "2.0.0",
-  "tag": "kit-v2.0.0",
-  "released": "2026-08-18",
+  "version": "2.0.1",
+  "tag": "kit-v2.0.1",
+  "released": null,
   "configVersion": "1",
   "standardsCompatibility": {
-    "baselineGuardsVersion": "2.0.0",
+    "manifestVersion": "1.2.0",
+    "baselineGuardsVersion": "2.1.0",
     "propertyConfigSchema": "config/property-config.schema.json",
-    "minimumConfigVersion": "1"
+    "minimumConfigVersion": "1",
+    "changeManifest": "../.agents/skills/property-site-onboarding/standards/changes/STD-2026-2.json"
   },
   "migration": {
-    "from": "kit-v1.x",
-    "note": "Move property facts into property-config.json, add environmentManifestPath, replace source-property defaults, and run check:prepublish before deployment."
+    "from": "kit-v2.0.0-r1",
+    "note": "Backward-compatible watchdog fix. No config, schema, secret, or environment migration is required. Existing sites remain pinned until an owner approves an explicit upgrade."
   },
   "verification": {
-    "requiredCommands": ["pnpm validate:release", "pnpm validate:source", "pnpm check:prepublish", "pnpm build"],
-    "evidence": "The publication record below identifies the verified commit, annotated tag object, implementation digest, clean-checkout release preparation, and clean consumer bootstrap evidence."
+    "requiredCommands": [
+      "pnpm validate:release",
+      "pnpm validate:source",
+      "pnpm test",
+      "pnpm check:kit-release",
+      "pnpm build"
+    ],
+    "evidence": "The required API unit suite covers persistent low, recovered low, and errored confirmation results. Publication requires the complete clean-checkout release suite."
   },
-  "implementationDigest": "27624aee0b6a824b54650c49f0009c984f7e1631213a493eca50c4491e0ed458",
+  "implementationDigest": "92594acf9bdff4e1f73c4dabecd7ad425406ea9a29295640306e6a06cfedaecc",
   "publication": {
-    "status": "withdrawn",
-    "publishedAt": "2026-08-31T19:20:40Z",
-    "repository": "https://github.com/ridlerontheroof/rentatexhibit-website",
-    "commit": "3c0fba372c02d3475379716b2c8874aef7266c4f",
-    "tagObject": "7a0c2f35641a25fb78d5bf6de8d1f60d79ab391b",
-    "withdrawnAt": "2026-08-31",
-    "withdrawalReason": "A release-owner reproduction found that pnpm release:prepare failed because publication provenance in release.json was incorrectly included in the runnable/property-bearing neutrality surface. The tag object and evidence hashes are retained below for auditability, but this record must not be treated as a passing release.",
-    "replacement": {
-      "status": "candidate-validated",
-      "tag": "kit-v2.0.0-r1",
-      "requirement": "Publish only by creating this new annotated tag at the validated candidate commit; do not move or overwrite kit-v2.0.0.",
-      "candidateCommit": "7706c203a0e5365f0d85373e135e27119ced6730",
-      "publishedAt": "2026-08-31T21:07:48Z",
-      "tagObject": "c9c3a8ded77e93f01ce8c68aa747ea2b9c998bd2",
-      "remoteVerification": {
-        "verifiedAt": "2026-08-31T21:09:02Z",
-        "tagObject": "c9c3a8ded77e93f01ce8c68aa747ea2b9c998bd2",
-        "peeledCommit": "7706c203a0e5365f0d85373e135e27119ced6730",
-        "originalTagObject": "7a0c2f35641a25fb78d5bf6de8d1f60d79ab391b",
-        "originalPeeledCommit": "3c0fba372c02d3475379716b2c8874aef7266c4f"
-      },
-      "validation": {
-        "commands": ["corepack pnpm install --frozen-lockfile", "pnpm release:prepare"],
-        "result": "passed from a detached clean checkout with a clean final status",
-        "installLogSha256": "5f9a82dcf365a24226699afa19abf59a1913e9ba1fb2e64ae4c53b19474023eb",
-        "releaseLogSha256": "700761df4e82c7b443897f5ea2356c578a9b8b208fb3b1f31e445aa00548ffb7"
-      },
-      "consumerBootstrap": {
-        "commands": ["git clone --branch kit-v2.0.0-r1 --single-branch", "corepack pnpm install --frozen-lockfile", "pnpm bootstrap:config", "pnpm validate:config", "pnpm validate", "pnpm typecheck"],
-        "result": "passed from a fresh GitHub clone with a clean final status",
-        "cloneLogSha256": "e2e4c8e0bcd1fe9c2f83e437bb4c478ac1fbab24eb8d7ecf9adec2cece7f952b",
-        "validationLogSha256": "0569eab7fb889bbbb324cdcbe06c08c6340e6fa5ea87b4e0da372687e9f2e693"
-      }
-    },
-    "invalidatedValidation": {
-      "releasePreparation": {
-        "commands": ["corepack pnpm install --frozen-lockfile", "pnpm release:prepare"],
-        "originalClaim": "passed from a clean checkout with a clean final status",
-        "result": "invalidated by a reproduced neutrality-validation failure",
-        "installLogSha256": "a94a3cd466a3d411118aa10e6946ec7dca319e9bd46f5b0f49b8646cffe32f2f",
-        "releaseLogSha256": "0bb705f08df1c11dc5ef5c0f6c6086e385dc7ae6a763eb72d8222a2157bc482f"
-      },
-      "consumerBootstrap": {
-        "commands": ["git clone --branch kit-v2.0.0 --single-branch", "corepack pnpm install --frozen-lockfile", "pnpm bootstrap:config", "pnpm validate:config", "pnpm validate", "pnpm typecheck"],
-        "result": "passed from a fresh GitHub clone with a clean final status",
-        "cloneLogSha256": "76c2c2475ec98adc7cc239f58ffc623892afda93909b8b07c32f849f4e6966b0",
-        "validationLogSha256": "d1d905645f97fc9c4fcd37159f088a3664f94a8905c5de3a5c5f55af20ad4621"
-      }
-    }
+    "status": "candidate",
+    "requirement": "Run pnpm release:prepare from a clean committed checkout, record the validated commit and evidence hashes, then create a new annotated kit-v2.0.1 tag. Never move or overwrite an existing tag."
+  },
+  "previousRelease": {
+    "tag": "kit-v2.0.0-r1",
+    "tagObject": "c9c3a8ded77e93f01ce8c68aa747ea2b9c998bd2",
+    "peeledCommit": "7706c203a0e5365f0d85373e135e27119ced6730",
+    "tree": "6466128db8673cf06dfc90bf9e3de958e6fe26ac",
+    "archiveSha256": "259039735152a3fca3638be206409048a58332de25145986d2a323eabac1d8fe"
   },
   "upgradePolicy": "Projects pin an exact kit tag. Upgrades are explicit and never automatic.",
   "artifacts": ["@highland/property-api", "@highland/property-web"],

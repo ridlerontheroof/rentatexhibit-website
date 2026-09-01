@@ -20,9 +20,10 @@ const tag =
 if (!tag) throw new Error("Release metadata must identify the annotated tag for this candidate.");
 const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
 const recordedCandidate =
+  release.publication?.status === "withdrawn" &&
   release.publication?.replacement?.status === "candidate-validated"
     ? release.publication.replacement.candidateCommit
-    : null;
+    : release.publication?.candidateCommit ?? null;
 if (recordedCandidate) {
   execFileSync("git", ["cat-file", "-e", `${recordedCandidate}^{commit}`], { cwd: root });
   execFileSync(

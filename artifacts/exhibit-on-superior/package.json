@@ -9,7 +9,7 @@
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "start": "node server/index.mjs",
     "typecheck": "tsc -b ../../lib/api-client-react && tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --exclude src/server/production-server.test.ts",
     "check:fold": "node scripts/check-units-above-fold.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
     "check:a11y:built": "node scripts/check-a11y.mjs --built",

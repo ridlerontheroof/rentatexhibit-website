@@ -1,8 +1,9 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "contracts": [
     { "id": "config.valid", "command": "validate:config", "required": true },
     { "id": "property.neutral", "command": "validate:neutral", "required": true },
+    { "id": "analytics.data-watchdog", "command": "test", "required": true },
     { "id": "head.per-url", "command": "check:hydrated-seo", "required": true },
     { "id": "index.real-404", "command": "check:server:built", "required": true },
     { "id": "jsonld.valid", "command": "check:schema", "required": true },
