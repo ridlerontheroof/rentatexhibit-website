@@ -72,6 +72,10 @@ const users =
     Promise.resolve({ activeUsers: n });
 const errored = (): Promise<Ga4QueryResult> =>
   Promise.resolve({ activeUsers: null, error: "token exchange failed" });
+const sequence = (...results: Ga4QueryResult[]) => {
+  let index = 0;
+  return vi.fn(async () => results[Math.min(index++, results.length - 1)]);
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -154,6 +158,38 @@ describe("checkGa4DataOnce", () => {
 
     await checkGa4DataOnce(log, DAY2, users(0), ENV_OK);
     expect(sendAlert).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not alert when an isolated zero recovers on the confirmation query", async () => {
+    const querier = sequence({ activeUsers: 0 }, { activeUsers: 42 });
+    await checkGa4DataOnce(log, DAY1, querier, ENV_OK);
+    expect(querier).toHaveBeenCalledTimes(2);
+    expect(sendAlert).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initialActiveUsers: 0,
+        confirmationActiveUsers: 42,
+        configFingerprint: expect.stringMatching(/^[a-f0-9]{12}$/),
+      }),
+      expect.stringContaining("recovered"),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.objectContaining({ activeUsers: 42 }),
+      expect.stringContaining("passed"),
+    );
+  });
+
+  it("treats an errored confirmation as ambiguous instead of emailing a false zero", async () => {
+    const querier = sequence(
+      { activeUsers: 0 },
+      { activeUsers: null, error: "temporary report failure" },
+    );
+    await checkGa4DataOnce(log, DAY1, querier, ENV_OK);
+    expect(sendAlert).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ error: "temporary report failure" }),
+      expect.stringContaining("not alert-worthy yet"),
+    );
   });
 
   it("treats counts at the floor as failures and above it as healthy", async () => {

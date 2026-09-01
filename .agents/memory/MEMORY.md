@@ -84,3 +84,4 @@
 - [Host redirect testing](host-redirect-testing.md) — Node fetch rewrites Host; use native HTTP/curl for direct-host coverage or X-Forwarded-Host for proxy-path tests.
 - [Release evidence commit binding](release-evidence-commit-binding.md) — post-validation metadata commits must keep tag commands pinned to the earlier exact candidate, never current HEAD.
 - [Launcher validation in clean Replit apps](launcher-validation-replit-runtime.md) — neutrality scans must ignore Replit-generated runtime directories while strictly allowlisting launcher-owned files.
+- [Confirm implausible GA4 zeros](ga4-zero-confirmation.md) — autoscale startup can yield an isolated zero amid healthy counts; require a second low query before alerting.

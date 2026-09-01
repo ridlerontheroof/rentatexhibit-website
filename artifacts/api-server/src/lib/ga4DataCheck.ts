@@ -1,4 +1,4 @@
-import { createSign } from "node:crypto";
+import { createHash, createSign } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import type { Logger } from "pino";
@@ -99,6 +99,13 @@ export interface Ga4Config {
   clientEmail: string;
   privateKey: string;
   minActiveUsers: number;
+}
+
+function configFingerprint(config: Ga4Config): string {
+  return createHash("sha256")
+    .update(`${config.propertyId}\0${config.clientEmail}`)
+    .digest("hex")
+    .slice(0, 12);
 }
 
 /**
@@ -339,6 +346,22 @@ export async function checkGa4DataOnce(
     return;
   }
   result = await querier(config, now);
+  if (result.activeUsers !== null && result.activeUsers <= config.minActiveUsers) {
+    const initialActiveUsers = result.activeUsers;
+    const confirmation = await querier(config, now);
+    log.warn(
+      {
+        initialActiveUsers,
+        confirmationActiveUsers: confirmation.activeUsers,
+        confirmationError: confirmation.error,
+        configFingerprint: configFingerprint(config),
+      },
+      confirmation.activeUsers !== null && confirmation.activeUsers > config.minActiveUsers
+        ? "GA4 visitor-data initial low reading recovered on confirmation"
+        : "GA4 visitor-data low reading confirmed by a second query",
+    );
+    result = confirmation;
+  }
   return classify(log, now, result, config);
 }
 
@@ -348,6 +371,7 @@ async function classify(
   result: Ga4QueryResult,
   config?: Ga4Config,
 ): Promise<void> {
+  const fingerprint = config ? configFingerprint(config) : undefined;
   const errored = result.activeUsers === null;
   if (errored) {
     consecutiveErroredRuns += 1;
@@ -388,13 +412,17 @@ async function classify(
   if (!failureSummary) {
     if (errored) {
       log.warn(
-        { error: result.error, consecutiveErroredRuns },
+        { error: result.error, consecutiveErroredRuns, configFingerprint: fingerprint },
         "GA4 visitor-data check errored (ambiguous — not alert-worthy yet)",
       );
     } else {
       // info (not debug): deployment logs must show each run's outcome.
       log.info(
-        { activeUsers: result.activeUsers, window: `${WINDOW_START}..${WINDOW_END}` },
+        {
+          activeUsers: result.activeUsers,
+          window: `${WINDOW_START}..${WINDOW_END}`,
+          configFingerprint: fingerprint,
+        },
         "GA4 visitor-data check passed",
       );
     }
@@ -402,7 +430,11 @@ async function classify(
   }
 
   log.error(
-    { activeUsers: result.activeUsers, error: result.error },
+    {
+      activeUsers: result.activeUsers,
+      error: result.error,
+      configFingerprint: fingerprint,
+    },
     "GA4 visitor-data check FAILED — real visitors are not showing up in Google Analytics",
   );
 
