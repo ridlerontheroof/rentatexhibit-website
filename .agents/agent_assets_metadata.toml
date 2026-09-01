@@ -231,3 +231,17 @@ mtime_ms = 1788278272417
 storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/97744f0d-0ded-4190-9e82-ddab1d2aa84e/d8305c6f-784c-4a2c-867d-28090ba64305"
 storage_version_token = "1788278277331390"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "u6_cHZua0W_AlWF7hFwzj"
+uri = "file://deliverables/property-site-onboarding-skill.zip"
+type = "unspecified"
+title = "Highland Property-Site Onboarding Agent Skill"
+description = "Workspace-level Replit Agent skill package containing the intake process, human gates, schemas, standards, templates, and validation tools."
+logical_id = "303d32bb-e379-47c1-aacc-788e958b952b"
+content_hash = "sha256:74900ed91c079b0f9853dea4f467e2984a6c2519f5d734820deeee4e5a9515bc"
+size = 62314
+mtime_ms = 1788279151439
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/303d32bb-e379-47c1-aacc-788e958b952b/2530aa6a-9508-4b73-bbd4-e2b07f756bfc"
+storage_version_token = "1788279155782057"
+content_type = "application/octet-stream"
