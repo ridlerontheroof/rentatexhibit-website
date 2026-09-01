@@ -31,11 +31,13 @@ An organization administrator must:
 
 1. Create a new, clean Replit App in the Highland organization.
 2. Place only this launcher's allowlisted files at the app root.
-3. Run the validation commands above in that app.
-4. Open the app's three-dot action menu.
-5. Select **Pin to Agent input box**.
-6. Name it **Highland Property Website — New Property**.
-7. Confirm it is available to authorized organization members.
+3. Delete the uploaded transport archive (often retained as `zipFile.zip`); it must not become
+   part of the template. Keep Replit's generated `.replit` configuration file.
+4. Run the validation commands above in that app.
+5. Open the app's three-dot action menu.
+6. Select **Pin to Agent input box**.
+7. Name it **Highland Property Website — New Property**.
+8. Confirm it is available to authorized organization members.
 
 ## Clean-launch drill
 

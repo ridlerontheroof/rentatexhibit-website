@@ -1,0 +1,131 @@
+workspace$ Highland Property Website — New Property
+bash: Highland: command not found
+~/workspace$ npm test
+Install Replit's Node tools [y/n]  y
+
+> @highland/property-site-replit-starter@2.0.0 test
+> node --test scripts/validate-launcher.test.mjs
+
+✖ launcher stays neutral and pinned to the reviewed factory release (516.013236ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unexpected launcher file: .replit',
+  +   'unexpected launcher file: zipFile.zip'
+  + ]
+  - []
+      at TestContext.<anonymous> (file:///home/runner/workspace/scripts/validate-launcher.test.mjs:11:10)
+      at async Test.run (node:internal/test_runner/test:797:9)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:526:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'unexpected launcher file: .replit', 'unexpected launcher file: zipFile.zip' ],
+    expected: [],
+    operator: 'deepStrictEqual'
+  }
+
+✔ standalone validation does not require the factory repository as a sibling (3.435918ms)
+✖ Replit-generated Node tooling directories do not break validation (199.85148ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unexpected launcher file: .replit',
+  +   'unexpected launcher file: zipFile.zip'
+  + ]
+  - []
+      at TestContext.<anonymous> (file:///home/runner/workspace/scripts/validate-launcher.test.mjs:26:12)
+      at async Test.run (node:internal/test_runner/test:797:9)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:526:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'unexpected launcher file: .replit', 'unexpected launcher file: zipFile.zip' ],
+    expected: [],
+    operator: 'deepStrictEqual'
+  }
+
+ℹ tests 3
+ℹ suites 0
+ℹ pass 1
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 787.822802
+
+✖ failing tests:
+
+test at scripts/validate-launcher.test.mjs:9:1
+✖ launcher stays neutral and pinned to the reviewed factory release (516.013236ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unexpected launcher file: .replit',
+  +   'unexpected launcher file: zipFile.zip'
+  + ]
+  - []
+      at TestContext.<anonymous> (file:///home/runner/workspace/scripts/validate-launcher.test.mjs:11:10)
+      at async Test.run (node:internal/test_runner/test:797:9)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:526:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'unexpected launcher file: .replit', 'unexpected launcher file: zipFile.zip' ],
+    expected: [],
+    operator: 'deepStrictEqual'
+  }
+
+test at scripts/validate-launcher.test.mjs:20:1
+✖ Replit-generated Node tooling directories do not break validation (199.85148ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unexpected launcher file: .replit',
+  +   'unexpected launcher file: zipFile.zip'
+  + ]
+  - []
+      at TestContext.<anonymous> (file:///home/runner/workspace/scripts/validate-launcher.test.mjs:26:12)
+      at async Test.run (node:internal/test_runner/test:797:9)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:526:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'unexpected launcher file: .replit', 'unexpected launcher file: zipFile.zip' ],
+    expected: [],
+    operator: 'deepStrictEqual'
+  }
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+~/workspace$ npm install -g npm@12.0.2
+npm error code EBADENGINE
+npm error engine Unsupported engine
+npm error engine Not compatible with your version of node/npm: npm@12.0.2
+npm error notsup Not compatible with your version of node/npm: npm@12.0.2
+npm error notsup Required: {"node":"^22.22.2 || ^24.15.0 || >=26.0.0"}
+npm error notsup Actual:   {"npm":"10.8.2","node":"v20.20.0"}
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-09-01T15_01_33_982Z-debug-0.log
+~/workspace$ npm run validate
+
+> @highland/property-site-replit-starter@2.0.0 validate
+> node scripts/validate-launcher.mjs
+
+unexpected launcher file: .replit
+unexpected launcher file: zipFile.zip
+~/workspace$ npm start
+
+> @highland/property-site-replit-starter@2.0.0 start
+> node scripts/first-run.mjs
+
+Highland property-site launcher — pinned to kit-v2.0.0-r1
+
+Upload both required inputs in chat:
+  1. Claude-generated website ZIP
+  2. Property offering memorandum (OM)
+
+Then ask Agent to run the property-site-onboarding skill for inventory only.
+Do not add facts, credentials, or Account Secret links to this launcher.
+~/workspace$ 

@@ -17,14 +17,17 @@ test("standalone validation does not require the factory repository as a sibling
   assert.match(source, /raw\.githubusercontent\.com/);
 });
 
-test("Replit-generated Node tooling directories do not break validation", async () => {
+test("Replit-generated configuration and Node tooling do not break validation", async () => {
   const generatedDirectory = resolve(root, ".config", "replit-node-tools");
+  const generatedReplitFile = resolve(root, ".replit");
   await mkdir(generatedDirectory, { recursive: true });
   await writeFile(resolve(generatedDirectory, "state"), "generated runtime state");
+  await writeFile(generatedReplitFile, 'entrypoint = "scripts/first-run.mjs"\n');
   try {
     const result = await validateLauncher();
     assert.deepEqual(result.errors, []);
   } finally {
     await rm(resolve(root, ".config"), { recursive: true, force: true });
+    await rm(generatedReplitFile, { force: true });
   }
 });

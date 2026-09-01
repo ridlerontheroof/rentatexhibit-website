@@ -16,6 +16,7 @@ const ignoredRuntimeDirectories = new Set([
   "node_modules",
 ]);
 const allowedFiles = new Set([
+  ".replit",
   "README.md",
   "TEMPLATE_REGISTRATION.md",
   "custom_instruction/instructions.md",
