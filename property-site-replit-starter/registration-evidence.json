@@ -17,7 +17,7 @@
       "npm run validate",
       "npm start"
     ],
-    "result": "Source launcher and an isolated temporary copy both passed; first-run output requested the Claude ZIP and OM and required inventory-only onboarding."
+    "result": "Source launcher and an isolated temporary copy with Replit-generated runtime directories both passed; first-run output requested the Claude ZIP and OM and required inventory-only onboarding."
   },
   "cleanLaunchDrill": {
     "status": "awaiting-registered-template",

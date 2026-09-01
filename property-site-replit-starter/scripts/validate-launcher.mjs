@@ -7,6 +7,14 @@ import { promisify } from "node:util";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const execFileAsync = promisify(execFile);
+const ignoredRuntimeDirectories = new Set([
+  ".cache",
+  ".config",
+  ".git",
+  ".local",
+  ".npm",
+  "node_modules",
+]);
 const allowedFiles = new Set([
   "README.md",
   "TEMPLATE_REGISTRATION.md",
@@ -36,13 +44,20 @@ async function fetchPinnedFactoryRelease(lock) {
   return response.json();
 }
 
-async function listFiles(directory) {
+async function listFiles(directory, relativeDirectory = "") {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
     const path = join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...await listFiles(path));
-    else files.push(path);
+    const rel = join(relativeDirectory, entry.name).replaceAll("\\", "/");
+    if (entry.isDirectory()) {
+      if (!relativeDirectory && ignoredRuntimeDirectories.has(entry.name)) continue;
+      files.push(...await listFiles(path, rel));
+    } else if (entry.isFile()) {
+      files.push(path);
+    } else {
+      files.push({ path, rel, unsupported: true });
+    }
   }
   return files;
 }
@@ -50,7 +65,12 @@ async function listFiles(directory) {
 export async function validateLauncher({ factoryRelease } = {}) {
   const errors = [];
   const files = await listFiles(root);
-  for (const path of files) {
+  for (const file of files) {
+    if (file.unsupported) {
+      errors.push(`unsupported launcher filesystem entry: ${file.rel}`);
+      continue;
+    }
+    const path = file;
     const rel = relative(root, path).replaceAll("\\", "/");
     if (!allowedFiles.has(rel)) errors.push(`unexpected launcher file: ${rel}`);
     if (forbiddenNames.test(rel)) errors.push(`forbidden fact/secret file: ${rel}`);

@@ -6,138 +6,161 @@ id = "e__h18h7c3vby6osg_GkY"
 uri = "file://artifacts/exhibit-on-superior/public/images/image-010-full-floor-amenity-deck-overlooking-the-city-and.jpg"
 type = "image"
 title = "Current shared-link thumbnail (og:image)"
+logical_id = "be9a062a-25f4-40c1-b1bf-e627b0e3e623"
 
 [[outputs]]
 id = "Cruo-8h-_9PglWNyOGo0h"
 uri = "file://attached_assets/og-candidates.jpg"
 type = "image"
 title = "Share-card candidates (cropped to 1200×630)"
+logical_id = "39b6a1ae-6bf9-4fba-b7d5-e5ab40bdb95e"
 
 [[outputs]]
 id = "JkErfgPLpvC3KB6w0kvfk"
 uri = "file://attached_assets/og-card-final.png"
 type = "image"
 title = "New shared-link thumbnail (1200×630)"
+logical_id = "3382a96c-3a25-4ffe-99a6-65c015e930c3"
 
 [[outputs]]
 id = "giubuz7DK5RMHWeHIS58d"
 uri = "file://attached_assets/og-card-final-v2.png"
 type = "image"
 title = "Updated shared-link thumbnail"
+logical_id = "be4649f9-c35d-47f0-8400-3f87c3f17210"
 
 [[outputs]]
 id = "Wt3qbnI_ghRWptPcN1Toa"
 uri = "file://attached_assets/og-cards-all.jpg"
 type = "image"
 title = "Per-page share thumbnails (12 pages)"
+logical_id = "501cd85f-b7e8-4db6-92e6-858469126c2e"
 
 [[outputs]]
 id = "ttu8CaRQteLo5wEr5LTNq"
 uri = "file://artifacts/exhibit-on-superior/public/images/og/home.jpg"
 type = "image"
 title = "Exhibit on Superior — Share Thumbnail (logo + tagline)"
+logical_id = "f1d08bed-cce6-4d0e-8b06-c3aa4c21c23d"
 
 [[outputs]]
 id = "7DZvmsbXOoZw9AprpLTeh"
 uri = "file://attached_assets/downloads/exhibit-virtual-tour.mp4"
 type = "video"
 title = "Exhibit on Superior — Virtual Tour Video"
+logical_id = "7274ec5e-3702-43ac-92e7-a433153d92c1"
 
 [[outputs]]
 id = "nfSlTyMWQ7y1Vj1R-OkP0"
 uri = "file://realync-backup/realync_videos_manifest.csv"
 type = "table"
 title = "Realync video backup — 73 direct download links (manifest)"
+logical_id = "4a847207-756f-4278-afa1-1e2095e635e5"
 
 [[outputs]]
 id = "qJ-BxuuC3ooGhS8TJ-NRp"
 uri = "file://realync-backup/download_realync_videos.sh"
 type = "unspecified"
 title = "Fixed download script — HTTP/1.1 + auto-resume"
+logical_id = "bcb3ec4e-235c-4a2d-9107-409cb546e842"
 
 [[outputs]]
 id = "wnR8EGqpSwnfu5Azh1hRD"
 uri = "file://artifacts/exhibit-on-superior/docs/directory-listings/Exhibit-On-Superior-Fact-Sheet.pdf"
 type = "pdf"
 title = "Canonical Property Fact Sheet (PDF)"
+logical_id = "c12869fe-61fd-41e3-96db-737da4fd31a7"
 
 [[outputs]]
 id = "9_HIX5A-mch523nHZiwec"
 uri = "file://artifacts/exhibit-on-superior/docs/directory-listings/fact-sheet.txt"
 type = "text"
 title = "Fact Sheet — Copy-Paste Text Version"
+logical_id = "c703fdcf-b7a1-4479-b817-6d3720e0dd68"
 
 [[outputs]]
 id = "4xnWGMLI6pTkBskCDrhqB"
 uri = "file://artifacts/exhibit-on-superior/docs/leasing-questionnaire/Exhibit-Leasing-Facts-Questionnaire.pdf"
 type = "pdf"
 title = "Leasing Facts Questionnaire (print/PDF)"
+logical_id = "dae1fdc6-91a7-42b6-9c55-151e2da06b11"
 
 [[outputs]]
 id = "pu5GYkmiax-ckFYiylUNU"
 uri = "file://artifacts/exhibit-on-superior/docs/leasing-questionnaire/leasing-questionnaire.md"
 type = "text"
 title = "Leasing Facts Questionnaire (editable)"
+logical_id = "2623f136-2ebc-4f93-b1d7-2a7b261224a9"
 
 [[outputs]]
 id = "k45vhROaVH6RAMtjjvVU8"
 uri = "file://artifacts/exhibit-on-superior/docs/floor-plan-map/exhibit-floor-plan-map.md"
 type = "text"
 title = "Floor Plan Logic & Unit Map (for ChatGPT)"
+logical_id = "bd4502e0-3e98-4dca-a810-28431c0b4f83"
 
 [[outputs]]
 id = "QnyDhYO3bi1uEYzogq1DU"
 uri = "file://artifacts/api-server/email-previews/shots/confirmation-contact.png"
 type = "image"
 title = "Contact confirmation — funnel to Available Units"
+logical_id = "38031f40-c72f-4bc3-bbce-68e60d6382be"
 
 [[outputs]]
 id = "IkhkG_AE_2yE1XOYx3EdH"
 uri = "file://artifacts/api-server/email-previews/shots/confirmation-tour.png"
 type = "image"
 title = "Tour email — unit booking is now the confirmation step"
+logical_id = "25fca633-1c06-4526-a12a-bbaf95877a66"
 
 [[outputs]]
 id = "9mevzBGc2ccmP551xuU2_"
 uri = "file://artifacts/api-server/email-previews/shots/lead-notification-tour.png"
 type = "image"
 title = "Leasing team lead notification (tour)"
+logical_id = "4e5a9046-ffb4-42f7-8179-b3cc94f76390"
 
 [[outputs]]
 id = "VGLHO_xvHx1OI6s_DVuJ5"
 uri = "file://artifacts/api-server/email-previews/shots/confirmation-tour-unit.png"
 type = "image"
 title = "Tour email — 'Request a Showing' variant (unit named)"
+logical_id = "ff0cad40-6f2f-4a93-8a7a-a5bc451fe20f"
 
 [[outputs]]
 id = "cUsYNqaI0bRy0BFnx7302"
 uri = "file://highland-facelift-kit/preview/side-by-side.png"
 type = "image"
 title = "Highland listings — before vs. after facelift CSS"
+logical_id = "fe7edafc-a8d8-498f-bbee-e61c63b463eb"
 
 [[outputs]]
 id = "GWaUfUelZ32c4UA33LiDM"
 uri = "file://attached_assets/apple-business/apple-cover-pool-3200x2180.jpg"
 type = "image"
 title = "Apple Business cover — rooftop pool (3200×2180), corrected"
+logical_id = "4362da17-3a15-4b36-a059-75c30339fa7a"
 
 [[outputs]]
 id = "dVCgX7EyaFz4Z4g20etOB"
 uri = "file://attached_assets/apple-business/apple-cover-livingroom-3200x2180.jpg"
 type = "image"
 title = "Apple Business cover — living room skyline (3200×2180)"
+logical_id = "59a5b2e5-eea4-403a-b2ad-04c31d3c0ea2"
 
 [[outputs]]
 id = "P1Gn7kMMC7QUMYzmvjeGl"
 uri = "file://attached_assets/apple-business/apple-business-photos.zip"
 type = "unspecified"
 title = "Apple Business Connect photos — 28 photos, all within 4864px max"
+logical_id = "362c5d20-6796-48f2-ac3a-7d8dd437a130"
 
 [[outputs]]
 id = "Ow1mkhrKCrYsEd_l_lYTK"
 uri = "file://exports/exhibit-on-superior-knowledge-file.md"
 type = "text"
 title = "Exhibit On Superior — Custom GPT Knowledge File"
+logical_id = "0c9cebac-f434-474a-ac07-0bdc95c32dff"
 
 [[outputs]]
 id = "xMfRZq4E156et0GdjTCBq"
@@ -145,6 +168,7 @@ uri = "file://screenshots/sightmap-desktop-collapsed.jpg"
 type = "image"
 title = "Desktop — collapsed (poster + button)"
 description = "Map section leads under the hero; full residence list below."
+logical_id = "c84e3140-f249-4874-a556-a4e9f14766bf"
 
 [[outputs]]
 id = "epb-wBGAxpV7aN_zQQJ9V"
@@ -152,6 +176,7 @@ uri = "file://screenshots/sightmap-desktop-expanded.jpg"
 type = "image"
 title = "Desktop — map open + selected-unit CTA bar"
 description = "Live Engrain map with Exhibit's own Details / Tour / Apply buttons for the selected apartment."
+logical_id = "ac3e0ac8-f18c-4c2f-986b-b45b84dd067e"
 
 [[outputs]]
 id = "3GM8LTLbACsmxIuYBYU7n"
@@ -159,6 +184,7 @@ uri = "file://screenshots/sightmap-mobile-collapsed.jpg"
 type = "image"
 title = "Mobile — collapsed"
 description = "Poster with availability caption; full list below."
+logical_id = "043027f2-b575-4141-813c-1985b78674e4"
 
 [[outputs]]
 id = "6bial1l-wuByP4lcOgbCh"
@@ -166,6 +192,7 @@ uri = "file://screenshots/sightmap-mobile-expanded.jpg"
 type = "image"
 title = "Mobile — map open (fixed)"
 description = "Portrait map on mobile: floor selector, plan view, and selected-unit CTA bar all visible."
+logical_id = "860b8d39-0a50-4e3c-89c3-fea159241966"
 
 [[outputs]]
 id = "J9uMhRxYbcMuoKld8AxT7"
@@ -173,6 +200,7 @@ uri = "file://woods-crossing-handoff.zip"
 type = "unspecified"
 title = "Woods Crossing handoff package (with AppFolio playbook)"
 description = "Now includes docs/APPFOLIO_INTEGRATION_PLAYBOOK.md — every lesson from wiring leads, tours, availability, photos, attribution, bot guarding, and monitoring directly into AppFolio."
+logical_id = "75343067-fef3-4baa-8647-e6bb83c3a4d0"
 
 [[outputs]]
 id = "XAuDgYqwhfmCBmdve-jr-"
@@ -180,6 +208,7 @@ uri = "file://woods-crossing-appfolio-addon.zip"
 type = "unspecified"
 title = "Woods Crossing add-on: AppFolio + UTM + operations learnings"
 description = "Standalone add-on with three playbooks — AppFolio integrations, UTM attribution & analytics, and operations/platform learnings — plus a README with the property-specific setup steps."
+logical_id = "cf43bf29-924d-40be-858c-683ce2527529"
 
 [[outputs]]
 id = "yGN5IKMqlbIcVIXQAO2ge"
@@ -187,10 +216,18 @@ uri = "file://woods-crossing-code-kit.zip"
 type = "unspecified"
 title = "Woods Crossing Code Export Kit"
 description = "68-file production code kit (256 KB zip). Includes: AppFolio client + availability feed, lead/tour routing, email system, prerender pipeline, production server, image/OG scripts, 12 guard scripts, and config templates. Every file annotated as portable / needs-Woods-config / pattern-only. Exhibit content excluded; no secret values."
+logical_id = "276f33a6-987f-49ae-b479-9271ddaaeb7c"
 
 [[outputs]]
 id = "Ft960lFQcrmpxiU705BHr"
 uri = "file://deliverables/highland-property-template-launcher.zip"
 type = "unspecified"
-title = "Highland Property Template Launcher"
-description = "Validated, secret-free standalone launcher payload pinned to kit-v2.0.0-r1, with administrator registration instructions and evidence record."
+title = "Highland Property Template Launcher — Corrected"
+description = "Replacement standalone launcher package. Validation now handles Replit-generated Node tooling directories and passes three tests plus remote release verification."
+logical_id = "97744f0d-0ded-4190-9e82-ddab1d2aa84e"
+content_hash = "sha256:2877e1a7302e2d435589502ef06e440a66a9184cd164fa485de8e82e9a036560"
+size = 9911
+mtime_ms = 1788274453880
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/97744f0d-0ded-4190-9e82-ddab1d2aa84e/65a888db-715b-4914-b256-7a962a83fe7d"
+storage_version_token = "1788274457975748"
+content_type = "application/octet-stream"

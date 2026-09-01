@@ -1,0 +1,80 @@
+workspace$ npm test
+Install Replit's Node tools [y/n]  y
+
+> @highland/property-site-replit-starter@2.0.0 test
+> node --test scripts/validate-launcher.test.mjs
+
+✖ launcher stays neutral and pinned to the reviewed factory release (95.512259ms)
+  Error: EISDIR: illegal operation on a directory, read
+      at async readFileHandle (node:internal/fs/promises:548:24)
+      at async validateLauncher (file:///home/runner/workspace/scripts/validate-launcher.mjs:57:18)
+      at async TestContext.<anonymous> (file:///home/runner/workspace/scripts/validate-launcher.test.mjs:6:18)
+      at async Test.run (node:internal/test_runner/test:797:9)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:526:7) {
+    errno: -21,
+    code: 'EISDIR',
+    syscall: 'read'
+  }
+
+✔ standalone validation does not require the factory repository as a sibling (2.32294ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 153.458869
+
+✖ failing tests:
+
+test at scripts/validate-launcher.test.mjs:5:1
+✖ launcher stays neutral and pinned to the reviewed factory release (95.512259ms)
+  Error: EISDIR: illegal operation on a directory, read
+      at async readFileHandle (node:internal/fs/promises:548:24)
+      at async validateLauncher (file:///home/runner/workspace/scripts/validate-launcher.mjs:57:18)
+      at async TestContext.<anonymous> (file:///home/runner/workspace/scripts/validate-launcher.test.mjs:6:18)
+      at async Test.run (node:internal/test_runner/test:797:9)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:526:7) {
+    errno: -21,
+    code: 'EISDIR',
+    syscall: 'read'
+  }
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+~/workspace$ npm run validate
+
+> @highland/property-site-replit-starter@2.0.0 validate
+> node scripts/validate-launcher.mjs
+
+node:internal/fs/promises:548
+    const bytesRead = (await PromisePrototypeThen(
+                       ^
+
+Error: EISDIR: illegal operation on a directory, read
+    at async readFileHandle (node:internal/fs/promises:548:24)
+    at async validateLauncher (file:///home/runner/workspace/scripts/validate-launcher.mjs:57:18)
+    at async file:///home/runner/workspace/scripts/validate-launcher.mjs:127:18 {
+  errno: -21,
+  code: 'EISDIR',
+  syscall: 'read'
+}
+
+Node.js v20.20.0
+~/workspace$ npm start
+
+> @highland/property-site-replit-starter@2.0.0 start
+> node scripts/first-run.mjs
+
+Highland property-site launcher — pinned to kit-v2.0.0-r1
+
+Upload both required inputs in chat:
+  1. Claude-generated website ZIP
+  2. Property offering memorandum (OM)
+
+Then ask Agent to run the property-site-onboarding skill for inventory only.
+Do not add facts, credentials, or Account Secret links to this launcher.
+~/workspace$ 
