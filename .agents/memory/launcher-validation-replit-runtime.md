@@ -13,4 +13,6 @@ Filesystem entries may also be non-regular files. Recursively reading every entr
 **How to apply:** Traverse regular files only, reject unsupported launcher filesystem entries, and
 exclude only narrowly named top-level runtime directories. Always test in an isolated copy that
 simulates Replit's generated directories. Allow and scan Replit's generated `.replit` file, but
-reject uploaded transport archives such as `zipFile.zip`; remove those before pinning.
+reject uploaded transport archives such as `zipFile.zip`; remove those before pinning. Bundle
+required project skills under `.agents/skills/` in the pinned template; workspace-level upload alone
+may not make a required skill discoverable, while the project-local bundled path is deterministic.

@@ -1,7 +1,8 @@
 {
   "templateName": "Highland Property Website — New Property",
   "registrationMethod": "Replit organization app menu: Pin to Agent input box",
-  "registrationStatus": "awaiting-organization-admin",
+  "registrationStatus": "registered-and-user-verified",
+  "userVerifiedAt": "2026-09-01",
   "requiredRole": "system_admins",
   "launcherPin": {
     "tag": "kit-v2.0.0-r1",
@@ -21,7 +22,7 @@
     "result": "The self-contained launcher passed four tests, including remote kit verification, Replit-generated runtime layout, and required skill discovery path; first-run output requested the Claude ZIP and OM and required inventory-only onboarding."
   },
   "cleanLaunchDrill": {
-    "status": "awaiting-registered-template",
+    "status": "passed",
     "preRegistrationStandaloneCopyPassed": true,
     "propertyFactsFound": false,
     "credentialValuesFound": false,
@@ -29,8 +30,8 @@
     "accountSecretLinksFound": false,
     "requestedClaudeZipAndOm": true,
     "inventoryOnlyHandoffConfirmed": true,
-    "registeredTemplateForkConfirmed": null,
-    "bundledSkillDiscoveredByAgent": null
+    "registeredTemplateForkConfirmed": true,
+    "bundledSkillDiscoveredByAgent": true
   },
-  "notes": "No secret values may be recorded in this file."
+  "notes": "User confirmed the repinned self-contained template worked in a fresh project. No secret values are recorded in this file."
 }
