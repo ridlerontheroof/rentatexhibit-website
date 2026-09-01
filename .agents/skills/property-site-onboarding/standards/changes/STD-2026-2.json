@@ -1,6 +1,6 @@
 {
   "changeId": "STD-2026-2",
-  "status": "IMPLEMENTED",
+  "status": "RELEASED",
   "summary": "Require a second GA4 Data API query before a low visitor reading can trigger an email alert.",
   "evidence": [
     "A newly started autoscale process returned one isolated zero between healthy readings in the hundreds.",
@@ -14,13 +14,15 @@
   "kitVersion": {
     "from": "kit-v2.0.0-r1",
     "to": "kit-v2.0.1",
-    "releaseDigest": "PENDING UNTIL RELEASE"
+    "releaseDigest": "b9ba85021142059d114a26b4cf3cace2597bec196917b71d72ecd389274a76d3"
   },
   "affectedChecks": ["analytics.data-watchdog", "ops.alert-routing"],
   "migration": "Backward-compatible code-only safeguard with no schema, secret, or environment changes. Existing pinned sites remain unchanged unless their owner elects an explicit upgrade; rollback is a repin to kit-v2.0.0-r1.",
   "verification": [
     "API unit tests cover persistent low, recovered low, and errored confirmation cases.",
-    "The complete kit release suite must pass from a clean checkout before publication.",
+    "The complete kit release suite passed from clean merged candidate 51e37de78683793c1e8b15fd9c020d6b61252f20 with release-log SHA-256 ce1ee17ab9a3a95f9d34ab21ceb04140f075e47eb0bd5a5fefe56b9e57918488.",
+    "Annotated tag kit-v2.0.1 is remotely verified as tag object 4d8801ad5647a1ff80fb4ac68a08fc655a53cc64, peeled commit 51e37de78683793c1e8b15fd9c020d6b61252f20, tree 3a2cb1f436a276ffb38e0e6df2a671277fc52309, and archived kit SHA-256 b9ba85021142059d114a26b4cf3cace2597bec196917b71d72ecd389274a76d3.",
+    "A fresh GitHub consumer clone installed and passed bootstrap, config, kit, and typecheck validation with a clean final status; evidence SHA-256 values are recorded in release.json.",
     "The kit-v2.0.0-r1 annotated tag object, peeled commit, tree, and archived source digest are recorded in the new release metadata and must remain unchanged."
   ],
   "approvals": [

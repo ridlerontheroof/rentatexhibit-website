@@ -2,7 +2,7 @@
   "kit": "@highland/property-site-kit",
   "version": "2.0.1",
   "tag": "kit-v2.0.1",
-  "released": null,
+  "released": "2026-09-01",
   "configVersion": "1",
   "standardsCompatibility": {
     "manifestVersion": "1.2.0",
@@ -27,8 +27,33 @@
   },
   "implementationDigest": "92594acf9bdff4e1f73c4dabecd7ad425406ea9a29295640306e6a06cfedaecc",
   "publication": {
-    "status": "candidate",
-    "requirement": "Run pnpm release:prepare from a clean committed checkout, record the validated commit and evidence hashes, then create a new annotated kit-v2.0.1 tag. Never move or overwrite an existing tag."
+    "status": "released",
+    "publishedAt": "2026-09-01T19:48:26Z",
+    "repository": "https://github.com/ridlerontheroof/rentatexhibit-website",
+    "candidateCommit": "51e37de78683793c1e8b15fd9c020d6b61252f20",
+    "tagObject": "4d8801ad5647a1ff80fb4ac68a08fc655a53cc64",
+    "peeledCommit": "51e37de78683793c1e8b15fd9c020d6b61252f20",
+    "tree": "3a2cb1f436a276ffb38e0e6df2a671277fc52309",
+    "archiveSha256": "b9ba85021142059d114a26b4cf3cace2597bec196917b71d72ecd389274a76d3",
+    "releasePreparation": {
+      "commands": ["pnpm release:prepare"],
+      "result": "passed from the clean merged checkout with a clean final status",
+      "releaseLogSha256": "ce1ee17ab9a3a95f9d34ab21ceb04140f075e47eb0bd5a5fefe56b9e57918488"
+    },
+    "consumerBootstrap": {
+      "commands": [
+        "git clone --branch kit-v2.0.1 --single-branch",
+        "corepack pnpm install --frozen-lockfile",
+        "pnpm bootstrap:config ./property-config.json",
+        "pnpm validate:config ./property-config.json",
+        "pnpm validate",
+        "pnpm typecheck"
+      ],
+      "result": "passed from a fresh GitHub clone with a clean final status",
+      "cloneLogSha256": "7b1bf2f3733c8bdce498021fc4f6aa951d4c6ebd90283fc47be3170f16eab1c6",
+      "installLogSha256": "c7469bb7a7b68c497092cc5fb1183acb1b93eca7e5c59ecc46170aa5a80a97a5",
+      "validationLogSha256": "ec8c5b430943805aad51f6d73e5ead8a1b8b3acccb063955f5d3fccd27b40317"
+    }
   },
   "previousRelease": {
     "tag": "kit-v2.0.0-r1",
