@@ -1,0 +1,24 @@
+{
+  "changeId": "STD-2026-1",
+  "status": "PROPOSED",
+  "summary": "Replace with the property-neutral behavior being proposed.",
+  "evidence": ["Record source issue, reproduction, and evidence path; do not include secret values."],
+  "standardsVersion": {
+    "from": "1.1.0",
+    "to": "1.2.0",
+    "bumpReason": "State why this is MAJOR, MINOR, or PATCH under the governance rules."
+  },
+  "kitVersion": {
+    "from": "kit-v2.0.0",
+    "to": "kit-v2.1.0",
+    "releaseDigest": "PENDING UNTIL RELEASE"
+  },
+  "affectedChecks": [],
+  "migration": "Describe compatibility, property impact, rollback, and environment changes.",
+  "verification": ["List the new/changed guard and full-suite evidence path."],
+  "approvals": [
+    { "role": "standards-owner", "status": "PENDING", "reviewer": "UNASSIGNED", "reviewedAt": "PENDING" },
+    { "role": "technical-reviewer", "status": "PENDING", "reviewer": "UNASSIGNED", "reviewedAt": "PENDING" },
+    { "role": "security-privacy-reviewer", "status": "PENDING", "reviewer": "UNASSIGNED", "reviewedAt": "PENDING", "notes": "Mark NOT_APPLICABLE only with a recorded rationale." }
+  ]
+}

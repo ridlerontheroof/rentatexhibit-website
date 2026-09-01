@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "standards-change-manifest.schema.json",
+  "title": "Highland standards change manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["changeId", "status", "summary", "evidence", "standardsVersion", "kitVersion", "affectedChecks", "migration", "verification", "approvals"],
+  "properties": {
+    "changeId": { "type": "string", "pattern": "^STD-[0-9]{4}-[0-9]+$" },
+    "status": { "type": "string", "enum": ["PROPOSED", "APPROVED", "IMPLEMENTED", "RELEASED", "REJECTED"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "standardsVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "bumpReason"],
+      "properties": { "from": { "type": "string" }, "to": { "type": "string" }, "bumpReason": { "type": "string" } }
+    },
+    "kitVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "releaseDigest"],
+      "properties": { "from": { "type": "string" }, "to": { "type": "string" }, "releaseDigest": { "type": "string" } }
+    },
+    "affectedChecks": { "type": "array", "items": { "type": "string" } },
+    "migration": { "type": "string" },
+    "verification": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "status", "reviewer", "reviewedAt"],
+        "properties": {
+          "role": { "type": "string", "enum": ["standards-owner", "technical-reviewer", "security-privacy-reviewer"] },
+          "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED", "NOT_APPLICABLE"] },
+          "reviewer": { "type": "string" },
+          "reviewedAt": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -222,14 +222,14 @@ logical_id = "276f33a6-987f-49ae-b479-9271ddaaeb7c"
 id = "Ft960lFQcrmpxiU705BHr"
 uri = "file://deliverables/highland-property-template-launcher.zip"
 type = "unspecified"
-title = "Highland Property Template Launcher — Replit-ready"
-description = "Validated replacement that accepts Replit-generated .replit configuration and runtime directories while rejecting leftover upload archives."
+title = "Highland Property Template Launcher — Self-contained"
+description = "Corrected custom-template payload with the property-site-onboarding Agent skill bundled at .agents/skills/property-site-onboarding for automatic project discovery."
 logical_id = "97744f0d-0ded-4190-9e82-ddab1d2aa84e"
-content_hash = "sha256:b606c1633cb98639df0d7fb755820ea355bf221683cc374062dd19611d1657b8"
-size = 10060
-mtime_ms = 1788278272417
-storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/97744f0d-0ded-4190-9e82-ddab1d2aa84e/d8305c6f-784c-4a2c-867d-28090ba64305"
-storage_version_token = "1788278277331390"
+content_hash = "sha256:8584c6c18b4f2751459f54d9016b1465f8365c06c1b78d5e8fe65e04f65e4086"
+size = 76614
+mtime_ms = 1788279757680
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/97744f0d-0ded-4190-9e82-ddab1d2aa84e/58a1b4d2-8db6-4150-8d39-03ebfb7cf559"
+storage_version_token = "1788279762233158"
 content_type = "application/octet-stream"
 
 [[outputs]]

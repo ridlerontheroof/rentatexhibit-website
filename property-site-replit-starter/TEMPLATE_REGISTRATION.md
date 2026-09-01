@@ -30,7 +30,8 @@ Replit does not currently provide an Admin API endpoint for custom-template regi
 An organization administrator must:
 
 1. Create a new, clean Replit App in the Highland organization.
-2. Place only this launcher's allowlisted files at the app root.
+2. Place only this launcher's allowlisted files at the app root, including
+   `.agents/skills/property-site-onboarding/`.
 3. Delete the uploaded transport archive (often retained as `zipFile.zip`); it must not become
    part of the template. Keep Replit's generated `.replit` configuration file.
 4. Run the validation commands above in that app.
@@ -48,8 +49,10 @@ An organization administrator must:
    link exists.
 5. Run `npm start`; confirm it requests the ZIP and OM and directs Agent to inventory-only
    onboarding.
-6. Do not upload real credentials or publish the disposable app.
-7. Record the result in `registration-evidence.json` in the source launcher project.
+6. Start a new Agent conversation and confirm `property-site-onboarding` appears in the project's
+   **Use a skill** picker.
+7. Do not upload real credentials or publish the disposable app.
+8. Record the result in `registration-evidence.json` in the source launcher project.
 
 ## Refresh policy
 

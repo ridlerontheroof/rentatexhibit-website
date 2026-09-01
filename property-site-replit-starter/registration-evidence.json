@@ -12,12 +12,13 @@
     "status": "passed",
     "verifiedAt": "2026-08-31",
     "launcherFingerprint": "fe2e7966a366",
+    "bundledOnboardingSkill": ".agents/skills/property-site-onboarding/SKILL.md",
     "commands": [
       "npm test",
       "npm run validate",
       "npm start"
     ],
-    "result": "Source launcher and an isolated temporary copy with Replit-generated runtime directories both passed; first-run output requested the Claude ZIP and OM and required inventory-only onboarding."
+    "result": "The self-contained launcher passed four tests, including remote kit verification, Replit-generated runtime layout, and required skill discovery path; first-run output requested the Claude ZIP and OM and required inventory-only onboarding."
   },
   "cleanLaunchDrill": {
     "status": "awaiting-registered-template",
@@ -28,7 +29,8 @@
     "accountSecretLinksFound": false,
     "requestedClaudeZipAndOm": true,
     "inventoryOnlyHandoffConfirmed": true,
-    "registeredTemplateForkConfirmed": null
+    "registeredTemplateForkConfirmed": null,
+    "bundledSkillDiscoveredByAgent": null
   },
   "notes": "No secret values may be recorded in this file."
 }

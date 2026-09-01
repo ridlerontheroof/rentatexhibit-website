@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "environment-manifest.schema.json",
+  "title": "Highland property-site environment manifest",
+  "description": "Names, placement, ownership, approvals, and status only. Secret values are forbidden.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifestVersion", "propertySlug", "kitVersion", "reviewStatus", "entries"],
+  "properties": {
+    "manifestVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "propertySlug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "kitVersion": { "type": "string", "pattern": "^kit-v[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "reviewStatus": { "type": "string", "enum": ["DRAFT", "APPROVED"] },
+    "reviewedBy": { "type": "string" },
+    "reviewedAt": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "classification", "artifact", "environment", "required", "owner", "approval", "status"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+          "classification": { "type": "string", "enum": ["account-secret-link", "property-secret", "non-secret"] },
+          "artifact": { "type": "string", "minLength": 1 },
+          "environment": { "type": "string", "enum": ["development", "production"] },
+          "required": { "type": "boolean" },
+          "owner": { "type": "string", "minLength": 1 },
+          "accountSecretName": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+          "scopeVerified": { "type": "boolean" },
+          "approval": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+          "approvedBy": { "type": "string" },
+          "approvedAt": { "type": "string" },
+          "status": { "type": "string", "enum": ["NOT_CONFIGURED", "LINKED", "CONFIGURED", "NOT_APPLICABLE"] },
+          "notes": { "type": "string" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "classification": { "const": "account-secret-link" } } },
+            "then": {
+              "required": ["accountSecretName", "scopeVerified"],
+              "properties": { "status": { "enum": ["NOT_CONFIGURED", "LINKED", "NOT_APPLICABLE"] } }
+            }
+          },
+          {
+            "if": { "properties": { "classification": { "const": "property-secret" } } },
+            "then": {
+              "properties": { "status": { "enum": ["NOT_CONFIGURED", "CONFIGURED", "NOT_APPLICABLE"] } },
+              "not": { "required": ["accountSecretName"] }
+            }
+          },
+          {
+            "if": { "properties": { "classification": { "const": "non-secret" } } },
+            "then": {
+              "properties": { "status": { "enum": ["NOT_CONFIGURED", "CONFIGURED", "NOT_APPLICABLE"] } },
+              "not": { "required": ["accountSecretName"] }
+            }
+          },
+          {
+            "if": { "properties": { "approval": { "const": "APPROVED" } } },
+            "then": { "required": ["approvedBy", "approvedAt"] }
+          }
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "reviewStatus": { "const": "APPROVED" } } },
+      "then": { "required": ["reviewedBy", "reviewedAt"] }
+    }
+  ]
+}

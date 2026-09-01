@@ -1,0 +1,75 @@
+{
+  "configVersion": "1",
+  "kitVersion": "kit-v2.0.0",
+  "environmentManifestPath": "example-environment-manifest.json",
+  "property": {
+    "name": "Woods Crossing Apartments",
+    "shortName": "Woods Crossing",
+    "slug": "woods-crossing"
+  },
+  "identity": {
+    "canonicalOrigin": "https://www.woodscrossingslc.com",
+    "domains": ["woodscrossingslc.com", "www.woodscrossingslc.com"],
+    "legacyOrigins": ["https://www.woodscrossingslc.com"]
+  },
+  "nap": {
+    "streetAddress": "TBD — confirm with owner (uncertainty register #NAP-1)",
+    "locality": "North Salt Lake",
+    "region": "UT",
+    "postalCode": "84054",
+    "country": "US",
+    "phone": "TBD",
+    "timezone": "America/Denver",
+    "geo": { "latitude": 40.848, "longitude": -111.906 }
+  },
+  "brand": {
+    "designDirection": "PENDING GATE G3 — owner has not picked a direction",
+    "tokens": {
+      "colors": { "primary": "#2f4a34", "accent": "#c8a05a" },
+      "fonts": { "display": "Fraunces", "body": "Inter" }
+    },
+    "reuseRightsConfirmed": false
+  },
+  "leasing": { "facts": {} },
+  "appfolio": {
+    "database": "highlandrealestatepartners",
+    "propertyName": "PENDING GATE G7 — verify via unit_directory",
+    "tourUnitName": "Tour",
+    "leadSourceDefault": "Website (WoodsCrossing)"
+  },
+  "seo": {
+    "defaultTitleSuffix": " | Woods Crossing Apartments",
+    "ogSiteName": "Woods Crossing",
+    "localBusinessType": "ApartmentComplex"
+  },
+  "redirects": { "parityMapPath": "onboarding/parity/parity-map.csv" },
+  "analytics": {
+    "utmStorageKey": "woodscrossing_utm_params",
+    "gtmId": "GTM-XXXXXXX",
+    "ga4MeasurementId": "G-XXXXXXXXXX"
+  },
+  "email": {
+    "leasingInbox": "leasing@example.com",
+    "alertInbox": "alerts@example.com",
+    "senderAddress": "leasingwoodscrossing@example.com",
+    "senderName": "Woods Crossing Leasing"
+  },
+  "secrets": {
+    "required": [
+      "APPFOLIO_CLIENT_ID",
+      "APPFOLIO_CLIENT_SECRET",
+      "GMAIL_APP_PASSWORD",
+      "GMAIL_SMTP_USER",
+      "INDEXNOW_KEY",
+      "VITE_UTM_STORAGE_KEY",
+      "VITE_GA4_MEASUREMENT_ID",
+      "SESSION_SECRET"
+    ],
+    "optional": ["GA4_PROPERTY_ID", "GA4_SERVICE_ACCOUNT_JSON", "GOOGLE_MAPS_BROWSER_API_KEY"]
+  },
+  "legacySite": {
+    "startUrl": "https://www.woodscrossingslc.com/",
+    "crawlMode": "offline",
+    "notes": "Scraped 2026-08-06 into the handoff bundle."
+  }
+}

@@ -17,6 +17,14 @@ test("standalone validation does not require the factory repository as a sibling
   assert.match(source, /raw\.githubusercontent\.com/);
 });
 
+test("required onboarding skill is bundled at Replit's project discovery path", async () => {
+  const skill = await readFile(
+    resolve(root, ".agents", "skills", "property-site-onboarding", "SKILL.md"),
+    "utf8",
+  );
+  assert.match(skill, /^---\nname: property-site-onboarding\n/m);
+});
+
 test("Replit-generated configuration and Node tooling do not break validation", async () => {
   const generatedDirectory = resolve(root, ".config", "replit-node-tools");
   const generatedReplitFile = resolve(root, ".replit");

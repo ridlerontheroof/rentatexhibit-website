@@ -27,6 +27,8 @@ const allowedFiles = new Set([
   "scripts/validate-launcher.mjs",
   "scripts/validate-launcher.test.mjs",
 ]);
+const allowedSkillPrefix = ".agents/skills/property-site-onboarding/";
+const requiredSkillFile = `${allowedSkillPrefix}SKILL.md`;
 const forbiddenNames = /(^|\/)(\.env($|\.)|property-config\.json$|environment-manifest\.json$|secrets?($|\.))/i;
 const credentialAssignment = /\b(?:API_KEY|SECRET|TOKEN|PASSWORD|DATABASE_URL)\s*=\s*\S+/i;
 const accountSecretLink = /\baccount-secret-link\b/i;
@@ -73,14 +75,21 @@ export async function validateLauncher({ factoryRelease } = {}) {
     }
     const path = file;
     const rel = relative(root, path).replaceAll("\\", "/");
-    if (!allowedFiles.has(rel)) errors.push(`unexpected launcher file: ${rel}`);
+    if (!allowedFiles.has(rel) && !rel.startsWith(allowedSkillPrefix)) {
+      errors.push(`unexpected launcher file: ${rel}`);
+    }
     if (forbiddenNames.test(rel)) errors.push(`forbidden fact/secret file: ${rel}`);
     const text = await readFile(path, "utf8");
     if (credentialAssignment.test(text)) errors.push(`possible credential assignment in ${rel}`);
-    if (rel !== "custom_instruction/instructions.md" && rel !== "README.md" &&
+    if (!rel.startsWith(allowedSkillPrefix) &&
+        rel !== "custom_instruction/instructions.md" && rel !== "README.md" &&
         rel !== "scripts/validate-launcher.mjs" && accountSecretLink.test(text)) {
       errors.push(`Account Secret link declaration outside instructions in ${rel}`);
     }
+  }
+  if (!files.some((file) => !file.unsupported &&
+      relative(root, file).replaceAll("\\", "/") === requiredSkillFile)) {
+    errors.push(`required onboarding skill is missing: ${requiredSkillFile}`);
   }
 
   const lock = JSON.parse(await readFile(join(root, "launcher-release.json"), "utf8"));

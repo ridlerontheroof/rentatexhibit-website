@@ -12,6 +12,10 @@ The launcher is intentionally not a site:
 - it starts intake by requesting the Claude website ZIP and offering memorandum; and
 - it sends all onboarding and upgrades through the `property-site-onboarding` skill.
 
+The launcher bundles that process-only skill under `.agents/skills/` so every generated project can
+discover it. The skill contains gates, schemas, report templates, standards metadata, and intake
+tools—not the deployable property-site kit.
+
 Run `npm test` before pinning or repinning the custom template. The test verifies the remote
 annotated tag still resolves to the recorded commit, checks release metadata fetched from that
 exact pinned tag, and enforces the launcher's code-free, secret-free boundary without requiring
