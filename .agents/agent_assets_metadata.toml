@@ -245,3 +245,31 @@ mtime_ms = 1788279151439
 storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/303d32bb-e379-47c1-aacc-788e958b952b/2530aa6a-9508-4b73-bbd4-e2b07f756bfc"
 storage_version_token = "1788279155782057"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "uxakE8LFTCLAkugnu2h0Q"
+uri = "file://exports/exhibit-current-faqs-2026-09-04.csv"
+type = "table"
+title = "Exhibit Current FAQs — CSV"
+description = "Spreadsheet-ready export of all 34 FAQs currently shown on the Exhibit FAQ page, grouped across 8 topics with full-answer links."
+logical_id = "06e2aa4a-cb18-4211-83d8-a42ed35c5902"
+content_hash = "sha256:9e2684318ef11313829be2371ec73c9528a910e6b641ddb821d57900ec64ccda"
+size = 8582
+mtime_ms = 1788560875429
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/06e2aa4a-cb18-4211-83d8-a42ed35c5902/f9a9e327-7649-44dc-94d7-fc7dea2a1c0c"
+storage_version_token = "1788560910334818"
+content_type = "text/csv"
+
+[[outputs]]
+id = "L-Tik5Uv5z-vWJQedXicy"
+uri = "file://exports/exhibit-current-faqs-2026-09-04.json"
+type = "unspecified"
+title = "Exhibit Current FAQs — JSON"
+description = "Structured export of the current FAQ topics, questions, answers, Knowledge Center slugs, and full-answer URLs."
+logical_id = "ec3d128a-380e-43d3-942c-34598e8013fb"
+content_hash = "sha256:f3b4071b8bcc9703cd6f3a880b589028b6dd3bc796ad3dc6b9db4dae10100ba6"
+size = 13047
+mtime_ms = 1788560875429
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/ec3d128a-380e-43d3-942c-34598e8013fb/75add6f5-6f9c-482a-8785-186dc754a9c2"
+storage_version_token = "1788560911115818"
+content_type = "application/octet-stream"

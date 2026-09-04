@@ -1564,6 +1564,22 @@ from = "/available-units/1001/"
 to = "/available-units/1001/index.html"
 
 [[services.production.rewrites]]
+from = "/available-units/1007"
+to = "/available-units/1007/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/1007/"
+to = "/available-units/1007/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/1207"
+to = "/available-units/1207/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/1207/"
+to = "/available-units/1207/index.html"
+
+[[services.production.rewrites]]
 from = "/available-units/1301"
 to = "/available-units/1301/index.html"
 
@@ -1596,6 +1612,14 @@ from = "/available-units/2010/"
 to = "/available-units/2010/index.html"
 
 [[services.production.rewrites]]
+from = "/available-units/2204"
+to = "/available-units/2204/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/2204/"
+to = "/available-units/2204/index.html"
+
+[[services.production.rewrites]]
 from = "/available-units/2407"
 to = "/available-units/2407/index.html"
 
@@ -1610,6 +1634,14 @@ to = "/available-units/2801/index.html"
 [[services.production.rewrites]]
 from = "/available-units/2801/"
 to = "/available-units/2801/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/2808"
+to = "/available-units/2808/index.html"
+
+[[services.production.rewrites]]
+from = "/available-units/2808/"
+to = "/available-units/2808/index.html"
 
 # Unknown /knowledge/<slug> URLs: serve the noindex not-found stub instead of
 # homepage HTML (per-slug rewrites above win for real articles).
