@@ -11,11 +11,13 @@
 //      scripts/write-build-id.mjs) on the production site.
 //   2. When the build id changes — i.e. a new publish has gone live — it
 //      waits for the deployment to settle (the id must be stable across two
-//      consecutive polls), then runs `pnpm run check:postpublish`.
-//   3. On success it keeps watching for the next publish. On FAILURE it
-//      prints a loud banner and EXITS NON-ZERO so the `postpublish` workflow
-//      shows as failed — the clearest signal in the workspace that the live
-//      site needs attention. Restart the workflow after fixing.
+//      consecutive polls), runs `pnpm run check:postpublish`, then syncs local
+//      main to the one-way GitHub mirror used by Codex.
+//   3. On success it keeps watching for the next publish. On either check or
+//      mirror-sync FAILURE it prints a loud banner and EXITS NON-ZERO so the
+//      `postpublish` workflow shows as failed — the clearest signal in the
+//      workspace that the live site or mirror needs attention. Restart the
+//      workflow after fixing.
 //
 // Until the first stamped publish goes live, build-id.json 404s (the SPA
 // fallback serves HTML instead). The watcher treats "no stamp yet" as the
@@ -51,6 +53,7 @@ const BASE = (
 ).replace(/\/$/, '');
 
 const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const mirrorSyncScript = path.resolve(pkgDir, '../../scripts/sync-github-mirror.sh');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const ts = () => new Date().toISOString().slice(11, 19);
 const log = (msg) => console.log(`[${ts()}] ${msg}`);
@@ -84,6 +87,24 @@ function runChecks() {
     child.on('close', (code) => resolve(code ?? 1));
     child.on('error', (err) => {
       console.error(`could not spawn pnpm: ${err.message}`);
+      resolve(1);
+    });
+  });
+}
+
+/** Sync local main to the one-way GitHub mirror. Unlike IndexNow, this is a
+ * required post-publish step: any failure must fail the watcher visibly. */
+function runMirrorSync() {
+  return new Promise((resolve) => {
+    log('Syncing local main to the Codex GitHub mirror…');
+    const child = spawn('bash', [mirrorSyncScript], {
+      cwd: pkgDir,
+      stdio: 'inherit',
+      env: process.env,
+    });
+    child.on('close', (code) => resolve(code ?? 1));
+    child.on('error', (err) => {
+      console.error(`could not start GitHub mirror sync: ${err.message}`);
       resolve(1);
     });
   });
@@ -140,13 +161,34 @@ async function checkAndReport(reason) {
   return false;
 }
 
+async function syncMirrorAndReport() {
+  const code = await runMirrorSync();
+  if (code === 0) {
+    log('CODEX MIRROR SYNC PASSED — GitHub mirror is current.');
+    return true;
+  }
+  console.error(
+    [
+      '',
+      '!'.repeat(72),
+      '!!  CODEX MIRROR SYNC FAILED',
+      '!!  The published site was checked, but GitHub may not have the current code.',
+      '!!  See the git error above, fix it, then restart the postpublish workflow.',
+      '!'.repeat(72),
+      '',
+    ].join('\n'),
+  );
+  return false;
+}
+
 async function main() {
   log(`Post-publish watcher started — polling ${BASE}/build-id.json every ${INTERVAL_MS / 1000}s.`);
 
   if (RUN_NOW) {
     const passed = await checkAndReport('requested on startup');
     await runIndexNowSubmission();
-    if (!passed) process.exit(1);
+    const mirrorSynced = await syncMirrorAndReport();
+    if (!passed || !mirrorSynced) process.exit(1);
     if (ONCE) return;
   }
 
@@ -179,7 +221,8 @@ async function main() {
     // Ping IndexNow even when a check failed — the new content is live either
     // way, and the submitter never fails the watcher.
     await runIndexNowSubmission();
-    if (!passed) process.exit(1);
+    const mirrorSynced = await syncMirrorAndReport();
+    if (!passed || !mirrorSynced) process.exit(1);
     log(`Watching for the next publish (current build: ${baseline})…`);
   }
 }
