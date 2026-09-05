@@ -58,6 +58,7 @@ export const KNOWLEDGE_QUESTIONS: Record<string, string> = {
   "schedule-a-tour": "How do I schedule a tour of Exhibit On Superior?",
   "virtual-tours": "Does Exhibit On Superior offer virtual tours?",
   "how-is-electricity-billed": "How is electricity billed at Exhibit On Superior?",
+  "internet-options": "What internet options are available at Exhibit On Superior?",
   "what-utility-fee-covers": "What does the Utility & Service fee cover?",
   "utility-fee-by-floor-plan": "How much is the utility fee by floor plan?",
   "what-neighborhood": "What neighborhood is Exhibit On Superior in?",

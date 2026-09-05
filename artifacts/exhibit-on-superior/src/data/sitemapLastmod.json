@@ -72,8 +72,8 @@
     "lastmod": "2026-08-11"
   },
   "/fees": {
-    "hash": "3be4933a1c0410e0d72a3f8af2536c9e77169a172b99cdbe94e0c095c8f70326",
-    "lastmod": "2026-08-17"
+    "hash": "9adc0787484f9af1f55431c1bdd6ce86199cd7e5b25a881299ee0e13e1473df5",
+    "lastmod": "2026-09-05"
   },
   "/parking-transportation": {
     "hash": "d049d2950b1fa3401af31b31d46bdee3bc7496a03bc09a142cf5f38f6efd5da9",
@@ -88,8 +88,8 @@
     "lastmod": "2026-08-11"
   },
   "/knowledge": {
-    "hash": "59e33ddd12c5d2354b2aee192dca121beb000577c9bc8b6b014b060d86b3753a",
-    "lastmod": "2026-08-17"
+    "hash": "7628166930988c3f374509a30590255769f78b67ab8ff236495524865197feca",
+    "lastmod": "2026-09-05"
   },
   "/blog": {
     "hash": "5925e0dcbf5bcd7f571cc77f592e0777d6192b1901759e5d939efcce8d5b9f0f",
@@ -204,8 +204,8 @@
     "lastmod": "2026-08-22"
   },
   "/knowledge/total-move-in-cost": {
-    "hash": "dc58374866a7b78b84c668063517068867a4349565103bb150d66a4eace0b24b",
-    "lastmod": "2026-08-22"
+    "hash": "6e10b273ac60da878b7afdfa63d2224432a00a4a4995796a7ac144cc5d9389ff",
+    "lastmod": "2026-09-05"
   },
   "/knowledge/what-apartment-sizes": {
     "hash": "9e370ccdd525c6b65c443dfd564a9ac0767185c4fd9efe0841a19b4241696d28",
@@ -236,8 +236,8 @@
     "lastmod": "2026-08-22"
   },
   "/knowledge/apartment-finishes": {
-    "hash": "70b8598fed179e370c38d6739bb22e160b767705a97c65a31b06c5f7f1791b9a",
-    "lastmod": "2026-08-22"
+    "hash": "7f59bfd2a63f54ef825b95e5a593c388643a9d008ecf68116ec28a58a8031666",
+    "lastmod": "2026-09-05"
   },
   "/knowledge/views-and-windows": {
     "hash": "9ae8a5fd812fd806163af06ff21b5b1e6ce46b2b79b41278427ac28c9a70639d",
@@ -264,8 +264,8 @@
     "lastmod": "2026-08-22"
   },
   "/knowledge/work-from-home-spaces": {
-    "hash": "d624f0fcf1a9a78c9cf52f61dc64b9ce1c7e3c3a361ab7d0f097d1b17f6d423d",
-    "lastmod": "2026-08-22"
+    "hash": "34990572e6d5f203ec6b180f0773b45e2e34f29b781e74048c2e6c08ba042dc9",
+    "lastmod": "2026-09-05"
   },
   "/knowledge/party-room-reservation": {
     "hash": "16116b7f658613c2bd43143f2f12553471b046bf8068e6391dcce92839b16509",
@@ -380,12 +380,16 @@
     "lastmod": "2026-08-22"
   },
   "/knowledge/how-is-electricity-billed": {
-    "hash": "23a73c398560afcb724e0e8b352b588c1a935990fd1c6c8cc4720c678be09d45",
-    "lastmod": "2026-08-22"
+    "hash": "a8efcc8193236366503426e619ed0daa2d30beb32e9191071dc4d2f6f0cad10e",
+    "lastmod": "2026-09-05"
+  },
+  "/knowledge/internet-options": {
+    "hash": "e7b467fbfb01dfdda68a93f62e0ce446cb280adcd687c2eed64f53c9b8eececa",
+    "lastmod": "2026-09-05"
   },
   "/knowledge/what-utility-fee-covers": {
-    "hash": "b3254a39d5e6ee8babd97e29b1fcc259cfe08c890f4193f10c32eb976db1df8b",
-    "lastmod": "2026-08-22"
+    "hash": "15443328df9d158ceb87a55bbf12bfb3bb9cc86900a6bd1267347e47c6bc39b8",
+    "lastmod": "2026-09-05"
   },
   "/knowledge/utility-fee-by-floor-plan": {
     "hash": "15db1a1f03061374480675dcd2456222ee14458ac6b70f65befcaf952904a4c4",

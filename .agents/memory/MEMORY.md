@@ -60,7 +60,6 @@
 - [Source-literal fact scans](source-literal-scans.md) — guard tests scanning .ts source must decode \uXXXX escapes first, and exclude phone numbers/Tailwind shades from 3-digit fact regexes.
 - [ApartmentComplex schema typing](apartment-complex-schema-types.md) — property entity is dual-typed +LocalBusiness (priceRange) and floorSize rides a summary FloorPlan; type finders must handle @type arrays.
 - [Visit-scoped lead-source attribution](lead-source-attribution.md) — UTM → AppFolio source label must be exactly `Website (Token)`, alnum/hyphens only in parens; server sanitizer is the trust boundary.
-- [Zentro internet content hidden](zentro-hidden-content.md) — all Zentro/2-Gig claims parked behind HIDDEN PENDING ZENTRO INSTALL markers; knowledge-slug parser strips block comments; restore steps in the parked article header.
 - [GTM-injected inline scripts vs hashed CSP](gtm-injected-inline-csp.md) — runtime GTM Custom HTML tags need explicit hashes in server CSP; check:csp failure names the missing hash/host.
 - [SSR-reserved inert control rows](ssr-reserved-inert-controls.md) — client-only UI rows must render an inert aria-hidden twin in prerender or desktop CLS explodes; aria-hidden keeps md twins clean.
 - [Post-hydration inserts need inert SSR placeholders](post-hydration-insert-cls.md) — controls that mount only after hydration above visible content blow desktop CLS; reserve space with an inert aria-hidden twin.

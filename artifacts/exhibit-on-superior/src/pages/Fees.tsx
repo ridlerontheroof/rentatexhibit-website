@@ -138,14 +138,10 @@ export function Fees() {
                     </tbody>
                   </table>
                 </div>
-                {/* HIDDEN PENDING ZENTRO INSTALL — restore once the bulk-internet
-                    service is live:
-                    Electricity is billed to the resident directly by ComEd. Internet: Exhibit is
-                    implementing bulk internet through a partnership with Zentro, with symmetrical
-                    speeds up to 2 Gig. */}
                 <p className="mt-4 text-sm text-muted-foreground">
-                  Electricity is billed to the resident directly by ComEd. Every apartment is
-                  wired for 1GB internet.
+                  Electricity is billed to the resident directly by ComEd. Internet: Exhibit is
+                  implementing bulk internet through a partnership with Zentro, with symmetrical
+                  speeds up to 2 Gig.
                 </p>
               </div>
               <div className="bg-white border border-border p-8">
