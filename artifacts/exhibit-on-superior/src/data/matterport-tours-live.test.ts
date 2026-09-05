@@ -37,8 +37,16 @@ async function fetchStatus(url: string): Promise<number | null> {
   } catch {
     return null; // offline / DNS blocked
   }
-  if (res.status >= 500 || res.status === 429) {
-    return null; // transient Matterport-side error: don't fail the build
+  if (
+    res.status >= 500 ||
+    res.status === 429 ||
+    res.status === 401 ||
+    res.status === 403
+  ) {
+    // Matterport can deny automated requests to the public /show/ shell even
+    // while the space remains published. The player-model, name, and poster
+    // checks below are the authoritative dead-space checks.
+    return null;
   }
   return res.status;
 }
