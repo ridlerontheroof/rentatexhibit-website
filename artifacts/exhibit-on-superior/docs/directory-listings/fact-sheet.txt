@@ -1,5 +1,5 @@
 EXHIBIT ON SUPERIOR — CANONICAL PROPERTY FACT SHEET
-Generated 2026-07-30 from the website's structured-data source of truth.
+Generated 2026-09-05 from the website's structured-data source of truth.
 Use these EXACT values on every directory listing. If a platform shows anything
 different, correct it to match this sheet.
 
@@ -76,10 +76,32 @@ AMENITIES (copy-paste list)
 - In-home washer/dryer
 - Quartz countertops
 - Stainless-steel appliances
-- Wired for 1GB internet
 - Walk Score 99 (Walker's Paradise, per Walk Score)
 - Transit Score 100 (Rider's Paradise, per Walk Score)
 - Bike Score 86 (Very Bikeable, per Walk Score)
+
+RESIDENT INTERNET — ZENTRO
+UPCOMING — effective September 15, 2026. Do not describe this program as active before that date.
+
+NEW LEASE PRICING
+- Studio: $75/month
+- Junior Convertible: $75/month
+- Convertible: $75/month
+- 1 Bedroom / 1 Bath: $85/month
+- 2 Bedroom / 1 Bath: $95/month
+- 2 Bedroom / 2 Bath: $95/month
+- 2 Bedroom + Den: $95/month
+- 3 Bedroom / 3 Bath: $95/month
+
+EXISTING LEASE PRICING
+- Standard price: $75/month
+- Price match: The monthly charge may be reduced to the resident's documented existing service cost, with a $45/month minimum.
+- Price-match minimum: $45/month
+
+SERVICE AND SETUP
+- Speed: 2 Gig symmetrical download and upload
+- Internet is delivered through a hot jack in the apartment, meaning the wired connection reaches the unit.
+- Residents bring their own router for Wi-Fi (BYOR: bring your own router).
 
 ================================================================
 PER-PLATFORM CHECKLIST

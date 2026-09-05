@@ -140,6 +140,35 @@ Residents at Exhibit On Superior pay rent, submit maintenance requests, and view
 | 2 Bedroom + Den | 983 sq ft | $165 |
 | 3 Bedroom / 3 Bath | 1,455–1,528 sq ft | $195 |
 
+## Resident Internet — Zentro
+
+> **UPCOMING — effective September 15, 2026. Do not describe this program as active before that date.**
+
+### New leases
+
+| Floor plan | Monthly price |
+|---|---|
+| Studio | $75/month |
+| Junior Convertible | $75/month |
+| Convertible | $75/month |
+| 1 Bedroom / 1 Bath | $85/month |
+| 2 Bedroom / 1 Bath | $95/month |
+| 2 Bedroom / 2 Bath | $95/month |
+| 2 Bedroom + Den | $95/month |
+| 3 Bedroom / 3 Bath | $95/month |
+
+### Existing leases
+
+- Standard monthly price: **$75/month**
+- Price match: The monthly charge may be reduced to the resident's documented existing service cost, with a $45/month minimum.
+- The **$45/month price-match minimum** is not the standard price.
+
+### What staff should explain
+
+- Speed: **2 Gig symmetrical download and upload**.
+- Internet is delivered through a hot jack in the apartment, meaning the wired connection reaches the unit.
+- Residents bring their own router for Wi-Fi (BYOR: bring your own router).
+
 ## Application Snapshot
 
 - Standard minimum credit score: **700**
@@ -521,7 +550,7 @@ Yes. The fitness center at Exhibit On Superior includes two private training roo
 
 **Does Exhibit On Superior have work-from-home spaces?**
 
-Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7, and every apartment is wired for 1GB internet.
+Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7, and the wired internet connection reaches every unit; see the Resident Internet section for the Zentro program effective September 15, 2026.
 
 [Open article](https://www.rentatexhibit.com/knowledge/work-from-home-spaces) · Reviewed 2026-07-26
 

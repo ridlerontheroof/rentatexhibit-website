@@ -41,6 +41,12 @@ import { buildJsonLd } from '../src/data/seo';
 import { plans, SQFT_MIN, SQFT_MAX, CATEGORIES } from '../src/data/floorPlans';
 // @ts-ignore
 import { bedroomRangePhrases } from '../src/data/factSheetPhrases';
+// @ts-ignore
+import {
+  RESIDENT_INTERNET_FACTS,
+  formatInternetMonthlyPrice,
+  internetEffectiveNotice,
+} from '../src/data/internetFacts';
 
 const graph = (buildJsonLd('/') as any)['@graph'] as any[];
 const complex = graph.find((n) => ([] as string[]).concat(n['@type'] ?? []).includes('ApartmentComplex'));
@@ -71,7 +77,14 @@ const beds = new Set(plans.map((p: any) => p.category));
 const bedroomRange = CATEGORIES.filter((c: any) => beds.has(c.id))
   .map((c: any) => c.label)
   .join(', ');
-const amenities: string[] = complex.amenityFeature.map((a: any) => a.name);
+const amenities: string[] = complex.amenityFeature
+  .map((a: any) => a.name)
+  // The public site keeps its pre-launch wording until the separate go-live
+  // task. Internal fact sheets use the confirmed program below instead of
+  // repeating the legacy 1GB line beside the approved 2 Gig service.
+  .filter((name: string) => name !== 'Wired for 1GB internet');
+const generatedToday = new Date().toISOString().slice(0, 10);
+const internetNotice = internetEffectiveNotice(generatedToday);
 
 // Directory-listing phrasing (summary + every checklist range phrase like
 // "Studio–3 Bedroom", "studio–3 BR", "studios THROUGH THREE bedrooms") is
@@ -119,6 +132,7 @@ const coreFacts = {
   description: complex.description as string,
   socialProfiles: complex.sameAs as string[],
   amenities,
+  residentInternet: RESIDENT_INTERNET_FACTS,
 };
 
 const factsHash = createHash('sha256').update(JSON.stringify(coreFacts)).digest('hex');
@@ -126,7 +140,7 @@ const factsHash = createHash('sha256').update(JSON.stringify(coreFacts)).digest(
 // Only bump the generated date when the facts actually changed, so a rebuild
 // with unchanged facts produces byte-identical output (no spurious diffs).
 const factsJsonPath = join(outDir, 'facts.json');
-let generated = new Date().toISOString().slice(0, 10);
+let generated = generatedToday;
 if (existsSync(factsJsonPath)) {
   try {
     const prev = JSON.parse(readFileSync(factsJsonPath, 'utf8'));
@@ -193,6 +207,22 @@ ${facts.description}
 AMENITIES (copy-paste list)
 ${facts.amenities.map((a) => `- ${a}`).join('\n')}
 
+RESIDENT INTERNET — ZENTRO
+${internetNotice}
+
+NEW LEASE PRICING
+${facts.residentInternet.newLeasePricing.map((tier) => `- ${tier.floorPlan}: ${formatInternetMonthlyPrice(tier.monthlyPrice)}`).join('\n')}
+
+EXISTING LEASE PRICING
+- Standard price: ${formatInternetMonthlyPrice(facts.residentInternet.existingLease.standardMonthlyPrice)}
+- Price match: ${facts.residentInternet.existingLease.priceMatchPolicy}
+- Price-match minimum: ${formatInternetMonthlyPrice(facts.residentInternet.existingLease.priceMatchMinimumMonthlyPrice)}
+
+SERVICE AND SETUP
+- Speed: ${facts.residentInternet.service.speed}
+- ${facts.residentInternet.service.delivery}
+- ${facts.residentInternet.service.wifi}
+
 ================================================================
 PER-PLATFORM CHECKLIST
 Verify every field above on each platform. Known defects are flagged.
@@ -258,11 +288,19 @@ const platformRows = [
   )
   .join('');
 
+const internetRows = facts.residentInternet.newLeasePricing
+  .map(
+    (tier) =>
+      `<tr><td>${esc(tier.floorPlan)}</td><td><strong>${esc(formatInternetMonthlyPrice(tier.monthlyPrice))}</strong></td></tr>`,
+  )
+  .join('');
+
 const html = `<!doctype html><html><head><meta charset="utf-8"><style>
   @page { size: Letter; margin: 0; }
   * { box-sizing: border-box; margin: 0; }
   body { font-family: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif; color: #333; font-size: 10.5px; }
-  .page { width: 8.5in; height: 10.9in; padding: 0.35in 0.55in; overflow: hidden; }
+  .page { width: 8.5in; min-height: 10.9in; padding: 0.35in 0.55in; break-after: page; }
+  .page:last-child { break-after: auto; }
   header { border-bottom: 3px solid #b39a5f; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-end; }
   h1 { font-size: 24px; letter-spacing: 1px; text-transform: uppercase; color: #1c1c1c; }
   h1 span { color: #b39a5f; }
@@ -283,6 +321,10 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
   td:first-child { font-weight: 700; white-space: nowrap; width: 1.7in; }
   tr.defect td { background: #fdf3f2; }
   .flag { background: #c0392b; color: #fff; font-size: 8px; font-weight: 700; padding: 1px 5px; letter-spacing: 1px; border-radius: 2px; }
+  .internet { break-inside: avoid; }
+  .internet table { font-size: 9px; margin-top: 4px; }
+  .internet td { padding: 3px 6px; }
+  .internet-note { background:#faf7ef; border-left:4px solid #b39a5f; padding:6px 8px; font-weight:700; margin-bottom:5px; }
   footer { margin-top: 8px; font-size: 8.5px; color: #999; border-top: 1px solid #eee; padding-top: 6px; }
 </style></head><body><div class="page">
 <header>
@@ -315,6 +357,18 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
 <div style="font-size:10px; color:#444;">${esc(facts.description)}</div>
 <h2>Amenities</h2>
 <ul class="amenities">${facts.amenities.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
+</div><div class="page">
+<header>
+  <div><h1>Exhibit <span>on</span> Superior</h1><div class="sub">Resident internet &amp; directory checklist</div></div>
+  <div class="sub">Generated ${facts.generated}<br>Source: ${esc(facts.website)}</div>
+</header>
+<section class="internet">
+<h2>Resident Internet — Zentro</h2>
+<div class="internet-note">${esc(internetNotice)}</div>
+<table><thead><tr><td>New lease floor plan</td><td>Monthly price</td></tr></thead><tbody>${internetRows}</tbody></table>
+<div><strong>Existing leases:</strong> ${esc(formatInternetMonthlyPrice(facts.residentInternet.existingLease.standardMonthlyPrice))} standard. ${esc(facts.residentInternet.existingLease.priceMatchPolicy)} Price-match minimum: <strong>${esc(formatInternetMonthlyPrice(facts.residentInternet.existingLease.priceMatchMinimumMonthlyPrice))}</strong>.</div>
+<div><strong>Service:</strong> ${esc(facts.residentInternet.service.speed)}. ${esc(facts.residentInternet.service.delivery)} ${esc(facts.residentInternet.service.wifi)}</div>
+</section>
 <h2>Per-Platform Checklist</h2>
 <table>${platformRows}</table>
 <footer>All values generated directly from the website's structured-data model (schema.org ApartmentComplex) and floor-plan dataset, so this sheet can never disagree with ${esc(facts.website)}. Regenerate with: pnpm --filter @workspace/exhibit-on-superior exec tsx scripts/generate-fact-sheet.ts</footer>

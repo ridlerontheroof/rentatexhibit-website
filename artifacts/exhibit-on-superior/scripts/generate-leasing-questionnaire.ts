@@ -52,6 +52,11 @@ import {
   WALK_SCORE_SOURCE_URL,
   WALK_SCORES_CHECKED,
 } from '../src/data/walkScores';
+import {
+  RESIDENT_INTERNET_FACTS,
+  formatInternetMonthlyPrice,
+  internetEffectiveNotice,
+} from '../src/data/internetFacts';
 
 const GENERATED = new Date().toISOString().slice(0, 10);
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -80,6 +85,12 @@ const address = `${propertyConfig.nap.streetAddress}, ${propertyConfig.nap.local
 const knowledgeCount = KNOWLEDGE_ARTICLES.length;
 const faqCount = FAQ_HUB_TOPICS.reduce((sum, topic) => sum + topic.faqs.length, 0);
 const changeableCount = KNOWLEDGE_ARTICLES.filter((article) => article.changeableFacts).length;
+const internetNotice = internetEffectiveNotice(GENERATED);
+const playbookText = (value: string): string =>
+  value.replace(
+    /every apartment is wired for 1GB internet/gi,
+    `the wired internet connection reaches every unit; see the Resident Internet section for the Zentro program effective ${RESIDENT_INTERNET_FACTS.effectiveDateDisplay}`,
+  );
 
 const quickSlugs = [
   'how-much-is-rent',
@@ -149,7 +160,7 @@ ${quickAnswers
   .map(
     (article) => `### ${article.question}
 
-${article.answer}
+${playbookText(article.answer)}
 
 ${article.changeableFacts ? '**Verify live before quoting.** ' : ''}[Full answer](${SITE_URL}/knowledge/${article.slug}) · Reviewed ${knowledgeUpdated(article)}
 `,
@@ -167,6 +178,28 @@ ${FEE_SUMMARY.map((fee) => `| ${fee.item} | ${fee.amount} | ${fee.frequency} | $
 | Floor plan | Size | Monthly fee |
 |---|---|---|
 ${UTILITY_BUNDLE.map((tier) => `| ${tier.type} | ${tier.size} | ${tier.fee} |`).join('\n')}
+
+## Resident Internet — Zentro
+
+> **${internetNotice}**
+
+### New leases
+
+| Floor plan | Monthly price |
+|---|---|
+${RESIDENT_INTERNET_FACTS.newLeasePricing.map((tier) => `| ${tier.floorPlan} | ${formatInternetMonthlyPrice(tier.monthlyPrice)} |`).join('\n')}
+
+### Existing leases
+
+- Standard monthly price: **${formatInternetMonthlyPrice(RESIDENT_INTERNET_FACTS.existingLease.standardMonthlyPrice)}**
+- Price match: ${RESIDENT_INTERNET_FACTS.existingLease.priceMatchPolicy}
+- The **${formatInternetMonthlyPrice(RESIDENT_INTERNET_FACTS.existingLease.priceMatchMinimumMonthlyPrice)} price-match minimum** is not the standard price.
+
+### What staff should explain
+
+- Speed: **${RESIDENT_INTERNET_FACTS.service.speed}**.
+- ${RESIDENT_INTERNET_FACTS.service.delivery}
+- ${RESIDENT_INTERNET_FACTS.service.wifi}
 
 ## Application Snapshot
 
@@ -191,7 +224,7 @@ ${topic.faqs
   .map(
     (faq) => `**Q: ${faq.q}**
 
-A: ${faq.a}${faq.knowledgeSlug ? `\n\n[Full answer](${SITE_URL}/knowledge/${faq.knowledgeSlug})` : ''}
+A: ${playbookText(faq.a)}${faq.knowledgeSlug ? `\n\n[Full answer](${SITE_URL}/knowledge/${faq.knowledgeSlug})` : ''}
 `,
   )
   .join('\n')}`,
@@ -211,7 +244,7 @@ ${articles
   .map(
     (article) => `**${article.question}**${article.changeableFacts ? ' — VERIFY LIVE' : ''}
 
-${article.answer}
+${playbookText(article.answer)}
 
 [Open article](${SITE_URL}/knowledge/${article.slug}) · Reviewed ${knowledgeUpdated(article)}
 `,
@@ -269,7 +302,7 @@ const quickHtml = quickAnswers
   .map(
     (article) => `<article class="qa priority">
       <h3>${esc(article.question)}${article.changeableFacts ? '<span class="badge verify">Verify live</span>' : ''}</h3>
-      <p>${esc(article.answer)}</p>
+      <p>${esc(playbookText(article.answer))}</p>
       <div class="source">${link('Full answer', `/knowledge/${article.slug}`)} · Reviewed ${esc(knowledgeUpdated(article))}</div>
     </article>`,
   )
@@ -282,7 +315,7 @@ const faqHtml = FAQ_HUB_TOPICS.map(
       .map(
         (faq) => `<article class="qa">
           <h3>${esc(faq.q)}</h3>
-          <p>${esc(faq.a)}</p>
+          <p>${esc(playbookText(faq.a))}</p>
           ${faq.knowledgeSlug ? `<div class="source">${link('Full answer', `/knowledge/${faq.knowledgeSlug}`)}</div>` : ''}
         </article>`,
       )
@@ -298,7 +331,7 @@ const knowledgeHtml = KNOWLEDGE_CATEGORIES.map((category) => {
       .map(
         (article) => `<article class="qa">
           <h3>${esc(article.question)}${article.changeableFacts ? '<span class="badge verify">Verify live</span>' : ''}</h3>
-          <p>${esc(article.answer)}</p>
+          <p>${esc(playbookText(article.answer))}</p>
           <div class="source">${link('Open article', `/knowledge/${article.slug}`)} · Reviewed ${esc(knowledgeUpdated(article))}</div>
         </article>`,
       )
@@ -311,6 +344,9 @@ const feeRows = FEE_SUMMARY.map(
 ).join('');
 const utilityRows = UTILITY_BUNDLE.map(
   (tier) => `<tr><td>${esc(tier.type)}</td><td>${esc(tier.size)}</td><td><strong>${esc(tier.fee)}</strong></td></tr>`,
+).join('');
+const internetRows = RESIDENT_INTERNET_FACTS.newLeasePricing.map(
+  (tier) => `<tr><td>${esc(tier.floorPlan)}</td><td><strong>${esc(formatInternetMonthlyPrice(tier.monthlyPrice))}</strong></td></tr>`,
 ).join('');
 
 const html = `<!doctype html>
@@ -368,6 +404,20 @@ footer { margin-top:16px; border-top:1px solid #ddd; padding-top:5px; color:#888
 <table><thead><tr><th>Item</th><th>Amount</th><th>Frequency</th><th>Notes</th></tr></thead><tbody>${feeRows}</tbody></table>
 <h2>Utility Fee by Floor Plan</h2>
 <table><thead><tr><th>Floor plan</th><th>Size</th><th>Monthly</th></tr></thead><tbody>${utilityRows}</tbody></table>
+<section class="internet">
+<h2>Resident Internet — Zentro</h2>
+<div class="alert danger"><strong>${esc(internetNotice)}</strong></div>
+<h3>New leases</h3>
+<table><thead><tr><th>Floor plan</th><th>Monthly price</th></tr></thead><tbody>${internetRows}</tbody></table>
+<h3>Existing leases</h3>
+<ul>
+  <li>Standard monthly price: <strong>${esc(formatInternetMonthlyPrice(RESIDENT_INTERNET_FACTS.existingLease.standardMonthlyPrice))}</strong></li>
+  <li>${esc(RESIDENT_INTERNET_FACTS.existingLease.priceMatchPolicy)}</li>
+  <li>The <strong>${esc(formatInternetMonthlyPrice(RESIDENT_INTERNET_FACTS.existingLease.priceMatchMinimumMonthlyPrice))} price-match minimum</strong> is not the standard price.</li>
+</ul>
+<h3>What staff should explain</h3>
+<p><strong>Speed:</strong> ${esc(RESIDENT_INTERNET_FACTS.service.speed)}. ${esc(RESIDENT_INTERNET_FACTS.service.delivery)} ${esc(RESIDENT_INTERNET_FACTS.service.wifi)}</p>
+</section>
 <h2>Application Snapshot</h2>
 <ul><li>Credit: ${CREDIT_SCORE_MIN}; ${CREDIT_SCORE_COSIGNER_MIN}+ with qualified co-signer</li><li>Typical review: ${esc(APPROVAL_WINDOW_DISPLAY)}</li><li>Liability-to-landlord coverage: ${esc(RENTERS_INSURANCE_LLI_DISPLAY)}</li><li>${link('Secure application', propertyConfig.leasing.applyUrl)} · ${link('Resident portal', propertyConfig.leasing.residentPortalUrl)}</li></ul>
 <h2>Location Snapshot</h2>
