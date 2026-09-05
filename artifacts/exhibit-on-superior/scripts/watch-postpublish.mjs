@@ -9,10 +9,10 @@
 //
 //   1. Polls <base>/build-id.json (stamped into every build by
 //      scripts/write-build-id.mjs) on the production site.
-//   2. When the build id changes — i.e. a new publish has gone live — it
-//      waits for the deployment to settle (the id must be stable across two
-//      consecutive polls), runs `pnpm run check:postpublish`, then syncs local
-//      main to the one-way GitHub mirror used by Codex.
+//   2. It compares the live id with the last successfully processed id stored
+//      under the workspace's gitignored .cache directory. An unprocessed id
+//      (including one already live when this workflow starts) is settled
+//      across two polls, checked, submitted to IndexNow, and mirror-synced.
 //   3. On success it keeps watching for the next publish. On either check or
 //      mirror-sync FAILURE it prints a loud banner and EXITS NON-ZERO so the
 //      `postpublish` workflow shows as failed — the clearest signal in the
@@ -38,8 +38,9 @@
 //   --interval      : poll interval in seconds (default 60)
 
 import { spawn } from 'node:child_process';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const args = process.argv.slice(2);
 const RUN_NOW = args.includes('--now') || args.includes('--once');
@@ -54,6 +55,11 @@ const BASE = (
 
 const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const mirrorSyncScript = path.resolve(pkgDir, '../../scripts/sync-github-mirror.sh');
+export const DEFAULT_STATE_FILE = path.resolve(
+  pkgDir,
+  '../../.cache/postpublish/last-successful-build-id',
+);
+const STATE_FILE = process.env.POSTPUBLISH_STATE_FILE || DEFAULT_STATE_FILE;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const ts = () => new Date().toISOString().slice(11, 19);
 const log = (msg) => console.log(`[${ts()}] ${msg}`);
@@ -72,6 +78,27 @@ async function liveBuildId() {
   } catch {
     return null; // network blip — treat as unknown, retry next poll
   }
+}
+
+export function shouldProcessBuild(liveBuild, lastProcessedBuild) {
+  return liveBuild !== null && liveBuild !== lastProcessedBuild;
+}
+
+export async function readLastProcessedBuild(stateFile = STATE_FILE) {
+  try {
+    const buildId = (await readFile(stateFile, 'utf8')).trim();
+    return buildId || null;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null;
+    throw error;
+  }
+}
+
+export async function writeLastProcessedBuild(buildId, stateFile = STATE_FILE) {
+  await mkdir(path.dirname(stateFile), { recursive: true });
+  const temporary = `${stateFile}.${process.pid}.tmp`;
+  await writeFile(temporary, `${buildId}\n`, 'utf8');
+  await rename(temporary, stateFile);
 }
 
 /** Run `pnpm run check:postpublish`, streaming output. Resolves exit code.
@@ -181,53 +208,84 @@ async function syncMirrorAndReport() {
   return false;
 }
 
+async function settleBuild(candidate) {
+  log(`Live build id detected: ${candidate}. Confirming it settled…`);
+  let settled = candidate;
+  for (;;) {
+    await sleep(Math.min(INTERVAL_MS, 30_000));
+    const again = await liveBuildId();
+    if (again === settled) return settled;
+    if (again !== null) settled = again;
+    log(`Live build id still changing (${again ?? 'unreadable'}) — waiting…`);
+  }
+}
+
+async function processBuild(buildId, reason) {
+  const passed = await checkAndReport(reason);
+  // Ping IndexNow even when a check failed — the new content is live either
+  // way, and the submitter never fails the watcher.
+  await runIndexNowSubmission();
+  const mirrorSynced = await syncMirrorAndReport();
+  if (!passed || !mirrorSynced) return false;
+  await writeLastProcessedBuild(buildId);
+  log(`Recorded build ${buildId} as successfully processed.`);
+  return true;
+}
+
 async function main() {
   log(`Post-publish watcher started — polling ${BASE}/build-id.json every ${INTERVAL_MS / 1000}s.`);
 
   if (RUN_NOW) {
+    const startupBuild = await liveBuildId();
     const passed = await checkAndReport('requested on startup');
     await runIndexNowSubmission();
     const mirrorSynced = await syncMirrorAndReport();
     if (!passed || !mirrorSynced) process.exit(1);
+    if (startupBuild !== null) {
+      await writeLastProcessedBuild(startupBuild);
+      log(`Recorded build ${startupBuild} as successfully processed.`);
+    }
     if (ONCE) return;
   }
 
-  let baseline = await liveBuildId();
+  let baseline = await readLastProcessedBuild();
+  let current = await liveBuildId();
   log(
     baseline
-      ? `Baseline live build id: ${baseline}. Watching for the next publish…`
-      : 'Live site serves no build-id.json yet (pre-stamp publish). Checks will run as soon as a stamped publish goes live.',
+      ? `Last successfully processed build id: ${baseline}.`
+      : 'No successfully processed build is recorded yet.',
   );
 
   for (;;) {
-    await sleep(INTERVAL_MS);
-    const current = await liveBuildId();
-    if (current === null || current === baseline) continue;
-
-    // New id seen — wait until it is stable across one more poll so we do not
-    // test mid-rollout (autoscale can briefly serve both builds).
-    log(`New live build id detected: ${current} (was ${baseline ?? 'none'}). Confirming it settled…`);
-    let settled = current;
-    for (;;) {
-      await sleep(Math.min(INTERVAL_MS, 30_000));
-      const again = await liveBuildId();
-      if (again === settled) break;
-      if (again !== null) settled = again;
-      log(`Live build id still changing (${again ?? 'unreadable'}) — waiting…`);
+    if (!shouldProcessBuild(current, baseline)) {
+      if (current === null && baseline === null) {
+        log('Live site serves no build-id.json yet (pre-stamp publish). Checks will run as soon as a stamped publish goes live.');
+      } else {
+        log(`Build ${baseline} was already processed. Watching for the next publish…`);
+      }
+      await sleep(INTERVAL_MS);
+      current = await liveBuildId();
+      continue;
     }
 
+    // Unprocessed id seen — wait until it is stable across one more poll so we do not
+    // test mid-rollout (autoscale can briefly serve both builds).
+    const settled = await settleBuild(current);
+    const processed = await processBuild(
+      settled,
+      `${baseline === null ? 'unprocessed publish found at startup' : 'new publish went live'}: build ${settled}`,
+    );
+    if (!processed) process.exit(1);
     baseline = settled;
-    const passed = await checkAndReport(`new publish went live: build ${settled}`);
-    // Ping IndexNow even when a check failed — the new content is live either
-    // way, and the submitter never fails the watcher.
-    await runIndexNowSubmission();
-    const mirrorSynced = await syncMirrorAndReport();
-    if (!passed || !mirrorSynced) process.exit(1);
     log(`Watching for the next publish (current build: ${baseline})…`);
+    await sleep(INTERVAL_MS);
+    current = await liveBuildId();
   }
 }
 
-main().catch((err) => {
-  console.error(`Post-publish watcher errored: ${err.message}`);
-  process.exit(1);
-});
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((err) => {
+    console.error(`Post-publish watcher errored: ${err.message}`);
+    process.exit(1);
+  });
+}
