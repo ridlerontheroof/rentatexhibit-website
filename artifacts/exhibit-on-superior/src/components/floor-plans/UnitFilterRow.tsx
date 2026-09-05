@@ -1,4 +1,5 @@
-import { ChevronDown, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Check, ChevronDown, Link, X } from 'lucide-react';
 import {
   bathsOptions,
   bedsOptions,
@@ -93,6 +94,8 @@ export function UnitFilterRow({
    */
   inert?: boolean;
 }) {
+  const [copied, setCopied] = useState(false);
+  const copiedResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const twinTabIndex = inert ? -1 : undefined;
   const beds = bedsOptions(units);
   const baths = bathsOptions(units);
@@ -111,6 +114,27 @@ export function UnitFilterRow({
   const parseBound = (raw: string): number | null => {
     const n = Number(raw);
     return raw.trim() !== '' && Number.isFinite(n) && n > 0 ? Math.round(n) : null;
+  };
+
+  useEffect(
+    () => () => {
+      if (copiedResetTimer.current) clearTimeout(copiedResetTimer.current);
+    },
+    [],
+  );
+
+  const copyFilteredViewLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      if (copiedResetTimer.current) clearTimeout(copiedResetTimer.current);
+      copiedResetTimer.current = setTimeout(() => {
+        setCopied(false);
+        copiedResetTimer.current = null;
+      }, 2000);
+    } catch {
+      setCopied(false);
+    }
   };
 
   return (
@@ -246,7 +270,22 @@ export function UnitFilterRow({
           <button
             type="button"
             tabIndex={twinTabIndex}
+            onClick={copyFilteredViewLink}
+            data-testid="button-copy-filtered-view-link"
+            className="inline-flex min-h-9 items-center gap-1 text-xs uppercase tracking-wide text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            {copied ? (
+              <Check className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <Link className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+            {copied ? 'Copied' : 'Copy link to this view'}
+          </button>
+          <button
+            type="button"
+            tabIndex={twinTabIndex}
             onClick={onClear}
+            data-testid="button-clear-unit-filters"
             className="inline-flex min-h-9 items-center gap-1 text-xs uppercase tracking-wide text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" /> Clear filters
