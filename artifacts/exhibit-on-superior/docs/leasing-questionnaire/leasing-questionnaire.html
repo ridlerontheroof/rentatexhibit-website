@@ -1,223 +1,593 @@
-<!doctype html><html><head><meta charset="utf-8"><style>
-  @page { size: Letter; margin: 0.55in 0.6in; }
-  * { box-sizing: border-box; margin: 0; }
-  body { font-family: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif; color: #333; font-size: 11px; }
-  header { border-bottom: 3px solid #b39a5f; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
-  h1 { font-size: 22px; letter-spacing: 1px; text-transform: uppercase; color: #1c1c1c; }
-  h1 span { color: #b39a5f; }
-  .sub { font-size: 10px; color: #777; }
-  .howto { background: #faf7f0; border: 1px solid #e3d9c2; border-left: 4px solid #b39a5f; padding: 8px 12px; margin-bottom: 12px; font-size: 10px; line-height: 1.5; }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: #b39a5f; margin: 16px 0 6px; border-bottom: 1px solid #e3d9c2; padding-bottom: 3px; break-after: avoid; }
-  .verified { font-size: 9.5px; color: #4a7a4a; background: #f2f8f2; border: 1px solid #cfe3cf; padding: 5px 8px; margin-bottom: 6px; }
-  .item { padding: 7px 0 9px; border-bottom: 1px solid #eee; break-inside: avoid; }
-  .q { font-size: 11.5px; font-weight: 700; color: #1c1c1c; }
-  .num { display: inline-block; min-width: 16px; color: #b39a5f; }
-  .meta { font-size: 9px; color: #999; margin: 2px 0 8px 16px; }
-  .answer { display: flex; align-items: flex-end; gap: 8px; margin-left: 16px; }
-  .alabel { font-size: 8.5px; text-transform: uppercase; letter-spacing: 1px; color: #b39a5f; }
-  .line { flex: 1; border-bottom: 1px solid #999; height: 16px; }
-  footer { margin-top: 14px; font-size: 8.5px; color: #999; border-top: 1px solid #eee; padding-top: 6px; }
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Exhibit Phone Team Property Playbook</title>
+<style>
+@page { size: Letter; margin: .52in .55in .55in; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #272727; font: 10.2px/1.42 Arial, sans-serif; }
+a { color: #7b642c; text-decoration: underline; }
+header { border-bottom: 4px solid #b39a5f; margin-bottom: 14px; padding-bottom: 10px; display:flex; justify-content:space-between; align-items:flex-end; }
+h1 { margin:0; font-size:22px; line-height:1; text-transform:uppercase; letter-spacing:1.3px; }
+h1 em { color:#b39a5f; font-family:Georgia,serif; font-weight:normal; text-transform:none; }
+.meta { color:#777; text-align:right; font-size:9px; }
+.alert { background:#faf7ef; border:1px solid #ded2b7; border-left:5px solid #b39a5f; padding:9px 11px; margin:9px 0; }
+.danger { border-left-color:#9e3939; background:#fff5f3; }
+.quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin:10px 0 14px; }
+.card { border:1px solid #ded8cb; padding:8px 9px; break-inside:avoid; }
+.card strong { display:block; color:#8c743a; text-transform:uppercase; font-size:8px; letter-spacing:.8px; margin-bottom:2px; }
+h2 { margin:17px 0 6px; padding-bottom:3px; border-bottom:1px solid #cdbb91; color:#8c743a; font-size:14px; text-transform:uppercase; letter-spacing:1.2px; break-after:avoid; }
+h3 { margin:0 0 3px; font-size:10.7px; line-height:1.3; }
+p { margin:0 0 4px; }
+ul { margin:5px 0 10px 18px; padding:0; }
+li { margin:2px 0; }
+.qa { padding:6px 0 7px; border-bottom:1px solid #ece8df; break-inside:avoid; }
+.priority { border:1px solid #dfd5bd; border-left:4px solid #b39a5f; padding:8px 9px; margin:5px 0; }
+.source { color:#777; font-size:8.5px; }
+.badge { display:inline-block; margin-left:6px; padding:1px 5px; border-radius:8px; font-size:7px; letter-spacing:.5px; text-transform:uppercase; vertical-align:1px; }
+.verify { color:#8e301f; background:#fae7df; border:1px solid #e7b9aa; }
+table { width:100%; border-collapse:collapse; margin:6px 0 12px; break-inside:auto; }
+th { background:#272727; color:white; text-align:left; }
+th,td { border:1px solid #ddd7ca; padding:4px 5px; vertical-align:top; }
+tr { break-inside:avoid; }
+.page-break { break-before:page; }
+.form td { height:27px; }
+.form td:first-child { width:31%; font-weight:bold; color:#78632f; }
+footer { margin-top:16px; border-top:1px solid #ddd; padding-top:5px; color:#888; font-size:8px; }
 </style></head><body>
-<header>
-  <div><h1>Exhibit <span>on</span> Superior</h1><div class="sub">Leasing Facts Questionnaire — 33 questions the website defers to you</div></div>
-  <div class="sub">Generated 2026-07-24<br>rentatexhibit.com</div>
-</header>
-<div class="howto"><strong>How to fill this in:</strong> write each answer exactly as it should appear publicly on the website. If a figure varies by unit or season, give the current range and note “varies.” <strong>Leave blank</strong> anything intentionally case-by-case or that should stay unpublished — the site will keep directing those questions to the leasing office.</div>
-
-<section>
-  <h2>Fees &amp; Costs</h2>
-  <div class="verified">✓ Already verified from listings (no answer needed): application fee $60–$75 per unit; water, sewer, trash &amp; gas covered by the monthly utility bundle.</div>
-  
-  <div class="item">
-    <div class="q"><span class="num">1</span> Administrative fee amount (if any)</div>
-    <div class="meta">Visitors currently see: “What fees are required in addition to rent?” &nbsp;•&nbsp; Fees &amp; Leasing Costs page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">2</span> Security deposit and/or move-in fee amount</div>
-    <div class="meta">Visitors currently see: “What fees are required in addition to rent?” &nbsp;•&nbsp; Fees &amp; Leasing Costs page — "Everything Else" section</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">3</span> How electricity is billed (direct with ComEd? third-party?)</div>
-    <div class="meta">Visitors currently see: “Are utilities included?” &nbsp;•&nbsp; Fees &amp; Leasing Costs page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">4</span> Internet options: available providers, any building package or required provider, typical cost</div>
-    <div class="meta">Visitors currently see: “Are utilities included?” &nbsp;•&nbsp; Fees &amp; Leasing Costs page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">5</span> On-site storage: available? monthly cost? waitlist?</div>
-    <div class="meta">Visitors currently see: “Is storage or accessibility information available?” &nbsp;•&nbsp; Apartment Guide + Fees pages</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">6</span> Current specials policy — do you want specials published on the site, and if so, the current offer</div>
-    <div class="meta">Visitors currently see: “Does Exhibit offer move-in specials?” &nbsp;•&nbsp; Fees &amp; Leasing Costs page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">7</span> Any other mandatory charges (amenity fee, technology fee, trash/valet fee, etc.)</div>
-    <div class="meta">Visitors currently see: “What fees are required in addition to rent?” &nbsp;•&nbsp; Fees &amp; Leasing Costs page</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-</section>
-<section>
-  <h2>Parking &amp; Transportation</h2>
-  
-  
-  <div class="item">
-    <div class="q"><span class="num">1</span> Garage on site? Attached or nearby? Number of spaces / waitlist status</div>
-    <div class="meta">Visitors currently see: “Does Exhibit On Superior have on-site parking?” &nbsp;•&nbsp; Parking &amp; Transportation page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">2</span> Monthly parking rate (and reserved vs unreserved pricing if applicable)</div>
-    <div class="meta">Visitors currently see: “How much is parking?” &nbsp;•&nbsp; Fees page FAQ + Parking &amp; Transportation page</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">3</span> EV charging: available? how many chargers? cost?</div>
-    <div class="meta">Visitors currently see: “(site copy defers all parking details)” &nbsp;•&nbsp; Parking &amp; Transportation page</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">4</span> Guest parking options</div>
-    <div class="meta">Visitors currently see: “(site copy defers all parking details)” &nbsp;•&nbsp; Parking &amp; Transportation page</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">5</span> Bike storage: bike room? cost? capacity?</div>
-    <div class="meta">Visitors currently see: “(site copy defers all parking details)” &nbsp;•&nbsp; Parking &amp; Transportation page</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-</section>
-<section>
-  <h2>Pets</h2>
-  <div class="verified">✓ Already verified (no answer needed): cats &amp; dogs welcome; max 2 pets; registration with management and Dog Rider acknowledgement required.</div>
-  
-  <div class="item">
-    <div class="q"><span class="num">1</span> One-time pet fee amount</div>
-    <div class="meta">Visitors currently see: “What are the pet fees?” &nbsp;•&nbsp; Pet Friendly page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">2</span> Pet deposit amount (if separate from the fee)</div>
-    <div class="meta">Visitors currently see: “What are the pet fees?” &nbsp;•&nbsp; Pet Friendly page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">3</span> Monthly pet rent per pet</div>
-    <div class="meta">Visitors currently see: “What are the pet fees?” &nbsp;•&nbsp; Pet Friendly page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">4</span> Restricted breeds list (or "no breed restrictions")</div>
-    <div class="meta">Visitors currently see: “Should renters confirm current pet rules?” &nbsp;•&nbsp; Pet Friendly page — policy list</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">5</span> Weight limit (or "no weight limit")</div>
-    <div class="meta">Visitors currently see: “Should renters confirm current pet rules?” &nbsp;•&nbsp; Pet Friendly page — policy list</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-</section>
-<section>
-  <h2>Application &amp; Qualification</h2>
-  
-  
-  <div class="item">
-    <div class="q"><span class="num">1</span> Income requirement (e.g. monthly income ≥ 3× rent) and acceptable proof</div>
-    <div class="meta">Visitors currently see: “What income is required to qualify?” &nbsp;•&nbsp; Application Guide — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">2</span> Credit screening: minimum score or criteria, and what causes denial</div>
-    <div class="meta">Visitors currently see: “What income is required to qualify?” &nbsp;•&nbsp; Application Guide — Qualification &amp; Screening</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">3</span> Guarantor/co-signer policy (accepted? income multiple? services like TheGuarantors?)</div>
-    <div class="meta">Visitors currently see: “Are guarantors accepted?” &nbsp;•&nbsp; Application Guide — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">4</span> International applicants: process without US credit history / SSN</div>
-    <div class="meta">Visitors currently see: “(not yet answered on site)” &nbsp;•&nbsp; Application Guide</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">5</span> Typical approval timeline (e.g. 2–3 business days)</div>
-    <div class="meta">Visitors currently see: “How long does approval take?” &nbsp;•&nbsp; Application Guide — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">6</span> Offered lease terms (e.g. 6–18 months) and any short-term premium</div>
-    <div class="meta">Visitors currently see: “What lease terms are available?” &nbsp;•&nbsp; Application Guide — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">7</span> Exact documents required with an application</div>
-    <div class="meta">Visitors currently see: “What should I have ready to apply?” &nbsp;•&nbsp; Application Guide — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">8</span> Occupancy limits per apartment size</div>
-    <div class="meta">Visitors currently see: “(not yet answered on site)” &nbsp;•&nbsp; Application Guide</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">9</span> Renters insurance: required? minimum liability? must the property be listed as interested party?</div>
-    <div class="meta">Visitors currently see: “(not yet answered on site)” &nbsp;•&nbsp; Application Guide / Fees page</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-</section>
-<section>
-  <h2>Apartments</h2>
-  
-  
-  <div class="item">
-    <div class="q"><span class="num">1</span> Furnished options (or partner like Landing/Blueground), or confirm "unfurnished only"</div>
-    <div class="meta">Visitors currently see: “Are furnished apartments available?” &nbsp;•&nbsp; Apartment Guide — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">2</span> Which floor plans / stacks include private balconies</div>
-    <div class="meta">Visitors currently see: “Which units have balconies?” &nbsp;•&nbsp; Apartment Guide — FAQ + features list</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">3</span> Accessible/ADA unit details: which plans, roll-in showers, etc.</div>
-    <div class="meta">Visitors currently see: “Is storage or accessibility information available?” &nbsp;•&nbsp; Apartment Guide — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-</section>
-<section>
-  <h2>Amenities &amp; Services</h2>
-  
-  
-  <div class="item">
-    <div class="q"><span class="num">1</span> Front desk / concierge: 24-hour? staffed hours?</div>
-    <div class="meta">Visitors currently see: “Is there a 24-hour concierge?” &nbsp;•&nbsp; Amenities page — FAQ</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">2</span> Amenity floor hours (fitness center, pool, lounges)</div>
-    <div class="meta">Visitors currently see: “(site copy defers hours)” &nbsp;•&nbsp; Amenities page — Access &amp; Hours</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">3</span> Reservation rules for private dining room, party suite, training rooms — and guest rules</div>
-    <div class="meta">Visitors currently see: “(site copy defers reservations)” &nbsp;•&nbsp; Amenities page — Access &amp; Hours</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-  <div class="item">
-    <div class="q"><span class="num">4</span> Seasonal restrictions (outdoor pool deck, hot tub, grilling stations season/hours)</div>
-    <div class="meta">Visitors currently see: “(not yet answered on site)” &nbsp;•&nbsp; Amenities page</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>
-</section>
-<footer>Compiled 2026-07-24 from every “confirm with the leasing team” answer on rentatexhibit.com. Once returned, the website team publishes the confirmed answers on the Fees, Parking, Pet Policy, Application, Apartment Guide, and Amenities pages.</footer>
+<header><div><h1>Exhibit <em>on</em> Superior</h1><div>Phone Team Property Playbook</div></div><div class="meta">Generated 2026-09-05<br>70 Knowledge answers · 34 FAQs</div></header>
+<div class="alert"><strong>Internal call-team reference.</strong> Start with the short answer. Verify live facts before promising them, and never guess.</div>
+<div class="quick-grid">
+  <div class="card"><strong>Property</strong>165 W Superior St, Chicago, IL 60654<br>312-450-0635 · exhibit@highlandptrs.com</div>
+  <div class="card"><strong>Online</strong><a href="https://www.rentatexhibit.com">Website</a> · <a href="https://www.rentatexhibit.com/available-units">Live units</a> · <a href="https://www.rentatexhibit.com/schedule-a-tour">Tours</a></div>
+  <div class="card"><strong>Building</strong>298 residences · 448–1,528 sq ft</div>
+  <div class="card"><strong>Office hours</strong>Monday – Friday: 9:00 AM – 6:00 PM<br>Saturday: 10:00 AM – 5:00 PM<br>Sunday: Closed</div>
+</div>
+<h2>Answer Safely</h2>
+<ul>
+  <li><strong>LIVE:</strong> Open Available Units for rents, specials, availability, move-in dates, and unit-specific facts.</li>
+  <li><strong>VERIFY:</strong> Confirm parking/storage availability, lease terms, edge-case qualifications, accommodations, and seasonal access.</li>
+  <li><strong>ESCALATE:</strong> Send legal, fair-housing, accommodations, denials, payments, and unresolved resident issues to the on-site team.</li>
+  <li><strong>PRIVACY:</strong> Never collect SSNs, payment-card details, passwords, or application documents by ordinary phone or email.</li>
+</ul>
+<h2>Most-Asked Questions — Call Script</h2><article class="qa priority">
+      <h3>How much is rent at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+      <p>Rent at Exhibit On Superior depends on the floor plan, floor, and move-in date, so there is no single number. Live pricing for every currently available apartment — studio through three-bedroom — is published on the Available Units page and synced automatically from the leasing system, with photos and move-in dates. For help matching a home to your budget, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-much-is-rent">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>What fees does Exhibit On Superior charge in addition to rent?<span class="badge verify">Verify live</span></h3>
+      <p>Beyond monthly rent, Exhibit On Superior charges a $60 application fee per applicant, a $500 non-refundable administration fee per apartment, and a monthly Utility &amp; Service Amenity fee of $95–$195 depending on floor plan. There is no security deposit. Electricity is billed directly by ComEd. Garage parking is $335 per month and on-site storage is $25 per month, both optional and subject to availability.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-fees-in-addition-to-rent">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>How do I schedule a tour of Exhibit On Superior?</h3>
+      <p>To schedule a tour of Exhibit On Superior, use the tour request form on the Schedule a Tour page with your preferred move-in date and floor plan — you can even request a specific available apartment. You can also email exhibit@highlandptrs.com or call 312-450-0635. Prefer to look first? The Virtual Tour page has video and Matterport previews.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/schedule-a-tour">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>How do I apply for an apartment at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+      <p>To apply for an apartment at Exhibit On Superior, open any available residence on the Available Units page and use its Apply Now button. Each unit links to its own secure online application through the AppFolio leasing system. The application fee is $60 per applicant, and approval typically takes one to three business days.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-do-i-apply">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>What credit score do you need to rent at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+      <p>Exhibit On Superior requires a minimum credit score of 700 to qualify without a co-signer, or 600+ with a qualified co-signer. Qualified co-signers are accepted. For questions about screening, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/credit-score-required">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>What lease terms does Exhibit On Superior offer?<span class="badge verify">Verify live</span></h3>
+      <p>Exhibit On Superior offers lease terms of 12 months or longer. Short-term leases are available based on availability. Because short-term terms and any related pricing vary, see a leasing consultant for current details, or contact the team at exhibit@highlandptrs.com or 312-450-0635.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/lease-terms">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>What amenities does Exhibit On Superior offer?</h3>
+      <p>Exhibit On Superior has a full-floor amenity deck with a 75-foot lap pool, outdoor hot tub, sauna, and a fitness center with two private training rooms, cardio equipment, spin bikes, free weights, and a boxing simulator. It also includes four grilling stations, four fire pits, a doggie spa, a gated outdoor dog walk, work and meeting rooms, a tech lounge, a music studio, a game area, and a private park with a sculpture. Indoor amenities are open 24/7.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/full-amenity-list">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>What are the pet fees at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+      <p>Exhibit On Superior charges a one-time, non-refundable pet fee: $650 for one dog or $750 for two dogs (two-dog maximum), and $325 for cats (two-cat maximum). There is no refundable pet deposit and no monthly pet rent. Breed restrictions apply for dogs; see a leasing consultant for details.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-are-pet-fees">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>How much does parking cost at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+      <p>Garage parking at Exhibit On Superior costs $335 per month for an unreserved space in the attached indoor multi-level garage, subject to availability. There is no guest parking; visitors can use SpotHero or street parking nearby. For current garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-much-does-parking-cost">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>Is there a 24-hour front desk at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+      <p>Yes. The front desk at Exhibit On Superior is staffed 24 hours a day. Indoor amenities are also open 24/7, while outdoor amenities close during quiet hours, 10pm to 6am. The separate leasing office keeps set weekday and weekend hours for tours and applications.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/front-desk-hours">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>What are the leasing office hours at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+      <p>The leasing office at Exhibit On Superior is open Monday through Friday 9am–6pm and Saturday 10am–5pm; it is closed on Sunday. You can tour, apply, or ask questions during these hours, or reach the team any time at exhibit@highlandptrs.com or 312-450-0635. The building front desk is staffed 24 hours a day.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/leasing-office-hours">Full answer</a> · Reviewed 2026-07-26</div>
+    </article><article class="qa priority">
+      <h3>How do Exhibit On Superior residents pay rent and get repairs?</h3>
+      <p>Residents at Exhibit On Superior pay rent, submit maintenance requests, and view community updates through the online resident portal, accessed from the Residents page. For urgent maintenance issues, call the maintenance line at 312-883-5503. General questions go to the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+      <div class="source"><a href="https://www.rentatexhibit.com/knowledge/resident-portal">Full answer</a> · Reviewed 2026-07-26</div>
+    </article>
+<h2>Fees at a Glance</h2>
+<table><thead><tr><th>Item</th><th>Amount</th><th>Frequency</th><th>Notes</th></tr></thead><tbody><tr><td>Application fee</td><td><strong>$60 per applicant</strong></td><td>One-time</td><td>Shown on each unit’s secure online application before you pay</td></tr><tr><td>Administration fee</td><td><strong>$500 per apartment</strong></td><td>One-time</td><td>Non-refundable; refunded only if the application is denied</td></tr><tr><td>Security deposit</td><td><strong>$0</strong></td><td>—</td><td>Exhibit does not currently collect a security deposit</td></tr><tr><td>Utility &amp; Service Amenity fee</td><td><strong>$95–$195 by floor plan</strong></td><td>Monthly</td><td>Water, sewer, trash, heat, A/C, and cooking/dryer gas — see tiers below</td></tr><tr><td>Garage parking</td><td><strong>$335 per space</strong></td><td>Monthly</td><td>Unreserved, subject to availability</td></tr><tr><td>On-site storage</td><td><strong>$25</strong></td><td>Monthly</td><td>Storage locker rental</td></tr><tr><td>Pet fee — dogs</td><td><strong>$650 for one, $750 for two</strong></td><td>One-time</td><td>Two-dog maximum; no pet deposit or monthly pet rent</td></tr><tr><td>Pet fee — cats</td><td><strong>$325</strong></td><td>One-time</td><td>Two-cat maximum; no pet deposit or monthly pet rent</td></tr></tbody></table>
+<h2>Utility Fee by Floor Plan</h2>
+<table><thead><tr><th>Floor plan</th><th>Size</th><th>Monthly</th></tr></thead><tbody><tr><td>Studio</td><td>448–484 sq ft</td><td><strong>$95</strong></td></tr><tr><td>Jr. Convertible</td><td>450–478 sq ft</td><td><strong>$95</strong></td></tr><tr><td>Convertible</td><td>554 sq ft</td><td><strong>$105</strong></td></tr><tr><td>1 Bedroom</td><td>619–768 sq ft</td><td><strong>$115</strong></td></tr><tr><td>2 Bedroom / 1 Bath</td><td>767–821 sq ft</td><td><strong>$125</strong></td></tr><tr><td>2 Bedroom / 2 Bath</td><td>899–1,135 sq ft</td><td><strong>$150</strong></td></tr><tr><td>2 Bedroom + Den</td><td>983 sq ft</td><td><strong>$165</strong></td></tr><tr><td>3 Bedroom / 3 Bath</td><td>1,455–1,528 sq ft</td><td><strong>$195</strong></td></tr></tbody></table>
+<h2>Application Snapshot</h2>
+<ul><li>Credit: 700; 600+ with qualified co-signer</li><li>Typical review: 1–3 business days</li><li>Liability-to-landlord coverage: $300,000</li><li><a href="https://highlandrealestatepartners.appfolio.com/listings/rental_applications/new">Secure application</a> · <a href="https://highlandrealestatepartners.appfolio.com/connect/">Resident portal</a></li></ul>
+<h2>Location Snapshot</h2>
+<ul><li>Walk Score: <strong>99/100 — Walker's Paradise</strong></li><li>Transit Score: <strong>100/100 — Rider's Paradise</strong></li><li>Bike Score: <strong>86/100 — Very Bikeable</strong></li></ul>
+<p class="source">Checked October 2026 · <a href="https://www.walkscore.com/score/165-w-superior-st-chicago-il-60654">Walk Score source</a></p>
+<div class="page-break"></div>
+<h1>Current Website FAQs</h1><p>34 answers currently displayed on the FAQ hub.</p><section class="topic">
+    <h2>Location &amp; Contact</h2>
+    <article class="qa">
+          <h3>Where is Exhibit On Superior located?</h3>
+          <p>Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654 in the River North area.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/building-address">Full answer</a></div>
+        </article><article class="qa">
+          <h3>What is the phone number for Exhibit On Superior?</h3>
+          <p>The phone number is 312-450-0635.</p>
+          
+        </article><article class="qa">
+          <h3>What is the email for Exhibit On Superior?</h3>
+          <p>The contact email is exhibit@highlandptrs.com.</p>
+          
+        </article><article class="qa">
+          <h3>Who manages Exhibit On Superior?</h3>
+          <p>The community is professionally managed on site; contact the leasing office at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/who-manages-exhibit">Full answer</a></div>
+        </article>
+  </section><section class="topic">
+    <h2>Apartments &amp; Floor Plans</h2>
+    <article class="qa">
+          <h3>What apartment sizes are available?</h3>
+          <p>The community offers studio, convertible, one, two, and three-bedroom apartment homes from about 448 to 1,528 square feet across floors 2–34.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-apartment-sizes">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Do apartments have in-unit laundry?</h3>
+          <p>Yes. In-home washer/dryers are a standard apartment feature.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/in-unit-laundry">Full answer</a></div>
+        </article><article class="qa">
+          <h3>What finishes do apartments have?</h3>
+          <p>Homes feature driftwood plank floors, quartz countertops, tiled backsplashes, stainless-steel appliances, floor-to-ceiling windows, and private balconies in nearly every home.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/apartment-finishes">Full answer</a></div>
+        </article><article class="qa">
+          <h3>What is the largest apartment?</h3>
+          <p>A three-bedroom, three-bath residence of 1,528 square feet on the penthouse-level floors 30–34.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/largest-apartment">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Are furnished apartments available?</h3>
+          <p>No. Apartments are offered unfurnished only.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/are-apartments-furnished">Full answer</a></div>
+        </article>
+  </section><section class="topic">
+    <h2>Pricing &amp; Fees</h2>
+    <article class="qa">
+          <h3>How do I check current pricing and availability?</h3>
+          <p>The Available Units page lists every available residence with live rent, photos, and move-in dates synced from the leasing system.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-much-is-rent">Full answer</a></div>
+        </article><article class="qa">
+          <h3>What fees are required in addition to rent?</h3>
+          <p>Each unit’s listing shows its application fee. There is also a $500 non-refundable administration fee per apartment and a monthly Utility &amp; Service Amenity fee of $95–$195 by floor plan. There is no security deposit.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-fees-in-addition-to-rent">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Are utilities included?</h3>
+          <p>The monthly Utility &amp; Service Amenity fee covers water, sewer, trash, heat, A/C, and natural gas for cooking and the dryer; electricity is billed directly by ComEd.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-utility-fee-covers">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Does Exhibit offer move-in specials?</h3>
+          <p>Exhibit is not offering move-in concessions at this time — ask the leasing team about future offers.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/move-in-specials">Full answer</a></div>
+        </article><article class="qa">
+          <h3>How much is parking?</h3>
+          <p>Garage parking in the attached indoor garage is $335 per month per unreserved space, subject to availability.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-much-does-parking-cost">Full answer</a></div>
+        </article>
+  </section><section class="topic">
+    <h2>Amenities</h2>
+    <article class="qa">
+          <h3>What amenities does Exhibit On Superior offer?</h3>
+          <p>Amenities include a full-floor amenity deck, fitness center, 75-foot lap pool, outdoor hot tub, sauna, lounges, work and meeting rooms, music studio, dog spa, grilling stations, fire pits, and outdoor areas.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/full-amenity-list">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have a pool?</h3>
+          <p>Yes — a 75-foot lap pool on the amenity floor, plus an outdoor hot tub and sauna.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/is-there-a-pool">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Is there space to work from home?</h3>
+          <p>Yes. Private work and meeting rooms, a tech lounge with charging stations and kitchen, a library nook, and reading alcoves.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/work-from-home-spaces">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Does Exhibit have on-site retail?</h3>
+          <p>Yes. On-site retail and wellness options include fitness, food, and spa services.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/on-site-retail">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Is there a 24-hour concierge?</h3>
+          <p>Yes. The front desk is staffed 24 hours a day, and indoor amenities are open 24/7.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/front-desk-hours">Full answer</a></div>
+        </article>
+  </section><section class="topic">
+    <h2>Pets</h2>
+    <article class="qa">
+          <h3>Is Exhibit On Superior pet-friendly?</h3>
+          <p>Yes. Cats and dogs are welcome, with a maximum of 2 pets per apartment.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-many-pets">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Are there pet amenities?</h3>
+          <p>Yes — a doggie spa and lounge inside the building and a gated outdoor dog walk.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/pet-amenities">Full answer</a></div>
+        </article><article class="qa">
+          <h3>What are the pet fees and breed rules?</h3>
+          <p>One-time non-refundable pet fee: $650 for one dog or $750 for two, $325 for cats. No pet deposit, no monthly pet rent, no weight limits. Breed restrictions apply — see a leasing consultant for details.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-are-pet-fees">Full answer</a></div>
+        </article>
+  </section><section class="topic">
+    <h2>Neighborhood &amp; Getting Around</h2>
+    <article class="qa">
+          <h3>What neighborhood is Exhibit On Superior in?</h3>
+          <p>Exhibit On Superior is in River North in Chicago.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-neighborhood">Full answer</a></div>
+        </article><article class="qa">
+          <h3>How close is the CTA?</h3>
+          <p>The Chicago Brown/Purple Line station (Chicago &amp; Franklin) is about two blocks away; the Chicago Red Line station (Chicago &amp; State) is roughly 0.3 miles.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/cta-proximity">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Is Exhibit close to a grocery store?</h3>
+          <p>Yes. Whole Foods (3 W Chicago Ave), Jewel-Osco (550 N State St), and Trader Joe’s (44 E Ontario St) are all within about half a mile.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/neighborhood-groceries">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Is Exhibit walkable to the Loop?</h3>
+          <p>Yes — the Loop is roughly a mile south, about a 20-minute walk or one Brown Line stop.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/walk-to-the-loop">Full answer</a></div>
+        </article><article class="qa">
+          <h3>What is nearby?</h3>
+          <p>Cafes, restaurants, shops, parks, the Chicago River, West Loop, Old Town, and Fulton Market.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/whats-near-superior-and-wells">Full answer</a></div>
+        </article>
+  </section><section class="topic">
+    <h2>Touring &amp; Applying</h2>
+    <article class="qa">
+          <h3>How do I schedule a tour?</h3>
+          <p>Choose the residence you’re interested in on the Available Units page and use its Schedule a Tour button, email exhibit@highlandptrs.com, or call 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/schedule-a-tour">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Can I tour virtually?</h3>
+          <p>Yes. The Virtual Tour page includes video and Matterport tour embeds for apartment and amenity previews.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/virtual-tours">Full answer</a></div>
+        </article><article class="qa">
+          <h3>How do I apply?</h3>
+          <p>Open any available residence on the Available Units page and use its Apply Now button — each unit links directly to its own secure online application.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-do-i-apply">Full answer</a></div>
+        </article><article class="qa">
+          <h3>What credit score is required and are guarantors accepted?</h3>
+          <p>A minimum credit score of 700 is required, or 600+ with a qualified co-signer. Qualified co-signers are accepted.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/credit-score-required">Full answer</a></div>
+        </article><article class="qa">
+          <h3>What lease terms are available?</h3>
+          <p>12+ month lease terms are available; short-term leases are offered based on availability. Approval typically takes 1–3 business days.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/lease-terms">Full answer</a></div>
+        </article>
+  </section><section class="topic">
+    <h2>Residents</h2>
+    <article class="qa">
+          <h3>Who should residents contact?</h3>
+          <p>Residents can contact Exhibit On Superior at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/who-manages-exhibit">Full answer</a></div>
+        </article><article class="qa">
+          <h3>Where should residents log in?</h3>
+          <p>Current residents use the resident portal linked from the Residents page for payments and maintenance requests.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/resident-portal">Full answer</a></div>
+        </article>
+  </section>
+<div class="page-break"></div>
+<h1>Complete Knowledge Center</h1>
+<div class="alert">70 published answers. <strong>26 are marked Verify Live.</strong> Default review date: 2026-07-26; freshness guard: 120 days.</div>
+<section class="topic knowledge">
+    <h2>Pricing &amp; Fees</h2>
+    <article class="qa">
+          <h3>How much is rent at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Rent at Exhibit On Superior depends on the floor plan, floor, and move-in date, so there is no single number. Live pricing for every currently available apartment — studio through three-bedroom — is published on the Available Units page and synced automatically from the leasing system, with photos and move-in dates. For help matching a home to your budget, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-much-is-rent">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What fees does Exhibit On Superior charge in addition to rent?<span class="badge verify">Verify live</span></h3>
+          <p>Beyond monthly rent, Exhibit On Superior charges a $60 application fee per applicant, a $500 non-refundable administration fee per apartment, and a monthly Utility &amp; Service Amenity fee of $95–$195 depending on floor plan. There is no security deposit. Electricity is billed directly by ComEd. Garage parking is $335 per month and on-site storage is $25 per month, both optional and subject to availability.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-fees-in-addition-to-rent">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Is there a security deposit at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>No. Exhibit On Superior does not currently collect a security deposit. In place of a deposit there is a $500 non-refundable administration fee per apartment, which is fully refunded if your application is denied but retained if you choose to cancel. For the current policy, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/is-there-a-security-deposit">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How much is the application fee at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>The application fee at Exhibit On Superior is $60 per applicant. Each available residence links to its own secure online application, and the fee is shown on the listing. To apply, open any home on the Available Units page and use its Apply Now button, or contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/application-fee">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What is the administration fee at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Exhibit On Superior charges a $500 non-refundable administration fee per apartment. The fee is fully refunded if your application is denied, but it is retained if you choose to cancel. It is separate from the $60 per-applicant application fee. For details, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/administration-fee">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior offer move-in specials?<span class="badge verify">Verify live</span></h3>
+          <p>Exhibit On Superior is not offering move-in concessions at this time. Current pricing for every available apartment appears on the Available Units page, synced live from the leasing system. To ask about future offers, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/move-in-specials">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How much does storage cost at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>On-site storage at Exhibit On Superior costs $25 per month, subject to availability. Storage is optional and billed in addition to rent, parking, and the monthly Utility &amp; Service Amenity fee. For current storage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-much-is-storage">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What are the total move-in costs at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>To move in to Exhibit On Superior, budget for a $60 application fee per applicant, a $500 non-refundable administration fee per apartment, your first month of rent, and the monthly Utility &amp; Service Amenity fee of $95–$195 by floor plan. There is no security deposit. Garage parking ($335/month) and storage ($25/month) are optional. For an itemized quote, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/total-move-in-cost">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section><section class="topic knowledge">
+    <h2>Apartments &amp; Floor Plans</h2>
+    <article class="qa">
+          <h3>What apartment sizes does Exhibit On Superior offer?</h3>
+          <p>Exhibit On Superior offers studio, convertible, one-, two-, and three-bedroom apartments ranging from about 448 to 1,528 square feet across floors 2 through 34. Homes feature floor-to-ceiling windows, in-home washer/dryers, and, on most plans, private balconies. Live availability and pricing for each size are on the Available Units page.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-apartment-sizes">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have studio apartments?</h3>
+          <p>Yes. Exhibit On Superior offers studio apartments alongside convertible, one-, two-, and three-bedroom homes. Studios are among the smaller plans, near 484 square feet. Live pricing and availability for studios and every other floor plan are published on the Available Units page.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/do-studios-exist">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What is a convertible apartment at Exhibit On Superior?</h3>
+          <p>A convertible at Exhibit On Superior is an open floor plan larger than a studio but without a separate bedroom, with space that can be arranged as a sleeping area. Junior convertibles run about 450–478 square feet and convertibles about 554 square feet. They sit between studios and one-bedrooms in size and price. See live availability on the Available Units page.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-is-a-convertible">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What is the largest apartment at Exhibit On Superior?</h3>
+          <p>The largest apartment at Exhibit On Superior is a three-bedroom, three-bath residence of 1,528 square feet, offered on the penthouse-level floors 30 through 34. Like all homes, it features floor-to-ceiling windows and an in-home washer/dryer. Check live availability for three-bedroom homes on the Available Units page.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/largest-apartment">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Which apartments at Exhibit On Superior have balconies?</h3>
+          <p>Nearly every apartment at Exhibit On Superior has a private balcony. The only homes without balconies are the 02 Convertible and 03 Convertible plans — units ending in 02 or 03 on floors 6 through 29. All other floor plans include a private balcony. To confirm a specific unit, check its listing on the Available Units page.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/which-units-have-balconies">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Are apartments at Exhibit On Superior furnished?</h3>
+          <p>No. Apartments at Exhibit On Superior are offered unfurnished only. Each home does include an in-home washer/dryer, quartz countertops, stainless-steel appliances, and floor-to-ceiling windows, but no furniture. For questions about a specific home, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/are-apartments-furnished">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Do apartments at Exhibit On Superior have in-unit laundry?</h3>
+          <p>Yes. In-home washer/dryers are a standard feature in every apartment at Exhibit On Superior. The dryer runs on natural gas, which is covered by the monthly Utility &amp; Service Amenity fee. No shared laundry room or coin machines are needed.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/in-unit-laundry">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What finishes do apartments at Exhibit On Superior have?</h3>
+          <p>Apartments at Exhibit On Superior feature driftwood plank floors, quartz countertops, tiled backsplashes, stainless-steel appliances, in-home washer/dryers, and floor-to-ceiling windows. Most homes also include a private balcony, and select homes add closet organizers and double vanities. See interiors on the Photo Gallery and Virtual Tour pages.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/apartment-finishes">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What views do apartments at Exhibit On Superior have?</h3>
+          <p>Apartments at Exhibit On Superior feature floor-to-ceiling windows with panoramic Chicago skyline views. Because the tower rises 34 stories, outlooks vary by floor and by the unit position within the building. Higher floors, including the penthouse-level 30–34, offer the widest views. See examples on the Photo Gallery and Virtual Tour pages.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/views-and-windows">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have ADA-accessible apartments?</h3>
+          <p>Yes. Per the as-built accessibility matrix, 62 apartments at Exhibit On Superior — more than 20% of the homes — carry an ADA designation: 34 Type A accessible/adaptable residences (A) and 28 Type A units with conduit line (AC). Use the ADA-accessible filter on the Available Units page to see the designated floor plans and apartments. Contact leasing to verify a specific apartment’s current configuration and discuss accessibility needs: exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/ada-accessible-apartments">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section><section class="topic knowledge">
+    <h2>Amenities</h2>
+    <article class="qa">
+          <h3>What amenities does Exhibit On Superior offer?</h3>
+          <p>Exhibit On Superior has a full-floor amenity deck with a 75-foot lap pool, outdoor hot tub, sauna, and a fitness center with two private training rooms, cardio equipment, spin bikes, free weights, and a boxing simulator. It also includes four grilling stations, four fire pits, a doggie spa, a gated outdoor dog walk, work and meeting rooms, a tech lounge, a music studio, a game area, and a private park with a sculpture. Indoor amenities are open 24/7.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/full-amenity-list">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have a pool?</h3>
+          <p>Yes. Exhibit On Superior has a 75-foot lap pool on the amenity floor, plus an outdoor hot tub and a sauna with a wet lounge leading to the outdoor deck. The pool and hot tub are seasonal: the pool closes in late September and the hot tub closes at the first snowfall. Residents may bring up to 2 guests to the pool.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/is-there-a-pool">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What are the amenity hours at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Indoor amenities at Exhibit On Superior are open 24/7. Outdoor amenities close during quiet hours, 10pm to 6am. The pool and hot tub are seasonal — the pool closes in late September and the hot tub closes at the first snowfall — while the grilling stations and fire pits are available year-round. The front desk is staffed 24 hours a day.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/amenity-hours">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have a fitness center?</h3>
+          <p>Yes. The fitness center at Exhibit On Superior includes two private training rooms, cardio equipment, spin bikes, free weights, and a boxing simulator. It is part of the full-floor amenity deck and, like other indoor amenities, is open 24/7. On-site fitness retail includes CycleBar and Club Pilates.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/fitness-center">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have work-from-home spaces?</h3>
+          <p>Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7, and every apartment is wired for 1GB internet.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/work-from-home-spaces">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Can I reserve the party room at Exhibit On Superior?</h3>
+          <p>Yes. The Party Room at Exhibit On Superior is reservable through the leasing and management office at $50 per hour. Residents may also bring up to 2 guests to the pool. Full rules are available on request from the office. To book, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/party-room-reservation">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Are there grills and fire pits at Exhibit On Superior?</h3>
+          <p>Yes. Exhibit On Superior has four grilling stations and four fire pits on the outdoor amenity deck, available year-round. Unlike the pool and hot tub, they are not seasonal. As outdoor amenities they observe the quiet hours of 10pm to 6am. The deck overlooks the city and the private park.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/grills-and-fire-pits">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have a private park?</h3>
+          <p>Yes. Exhibit On Superior has a private park featuring a one-of-a-kind sculpture by internationally acclaimed sculptor Pal Svensson. The full-floor amenity deck overlooks both the city and this private park. The building also has a gated outdoor dog walk for residents with pets.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/private-park">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What on-site retail does Exhibit On Superior have?</h3>
+          <p>On-site retail at Exhibit On Superior includes CycleBar, Club Pilates, Goddess and the Baker, LaPerior Foot Spa, and Train Moment. These fitness, coffee, spa, and training options are located within the building, so residents can reach them without leaving home. See the Amenities page for details.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/on-site-retail">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section><section class="topic knowledge">
+    <h2>Pets</h2>
+    <article class="qa">
+          <h3>Does Exhibit On Superior allow dogs?</h3>
+          <p>Yes. Exhibit On Superior allows dogs, up to a maximum of 2 pets per apartment. There is a one-time non-refundable pet fee of $650 for one dog or $750 for two dogs, with no pet deposit, no monthly pet rent, and no weight limits. Breed restrictions apply, so see a leasing consultant for details. Dog owners must acknowledge the Dog Rider before approval.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/does-exhibit-allow-dogs">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior allow cats?</h3>
+          <p>Yes. Exhibit On Superior allows cats, up to a maximum of 2 pets per apartment (a two-cat maximum). There is a one-time non-refundable pet fee of $325 for cats, with no pet deposit and no monthly pet rent. All pets must be registered with management. For details, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/does-exhibit-allow-cats">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What are the pet fees at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Exhibit On Superior charges a one-time, non-refundable pet fee: $650 for one dog or $750 for two dogs (two-dog maximum), and $325 for cats (two-cat maximum). There is no refundable pet deposit and no monthly pet rent. Breed restrictions apply for dogs; see a leasing consultant for details.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-are-pet-fees">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have pet breed or weight restrictions?</h3>
+          <p>Exhibit On Superior has no weight limits for pets. Breed restrictions do apply for dogs, but the specific restricted-breed list is confirmed by the leasing office rather than published. Before applying, please see a leasing consultant for current details, or contact the team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/breed-and-weight-rules">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What pet amenities does Exhibit On Superior have?</h3>
+          <p>Exhibit On Superior has a doggie spa and lounge inside the building and a gated outdoor dog walk. These let residents wash and exercise their dogs on-site. Nearby, Ohio Place Dog Park (about 0.3 miles) and Larrabee Dog Park (about 0.5 miles) offer additional off-leash space in River North.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/pet-amenities">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How many pets can I have at Exhibit On Superior?</h3>
+          <p>Exhibit On Superior allows a maximum of 2 pets per apartment, whether cats, dogs, or a combination. All pets must be registered with management, and dog owners must acknowledge the Dog Rider before their application is approved. For details, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-many-pets">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section><section class="topic knowledge">
+    <h2>Parking &amp; Transportation</h2>
+    <article class="qa">
+          <h3>How much does parking cost at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Garage parking at Exhibit On Superior costs $335 per month for an unreserved space in the attached indoor multi-level garage, subject to availability. There is no guest parking; visitors can use SpotHero or street parking nearby. For current garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-much-does-parking-cost">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have EV charging?<span class="badge verify">Verify live</span></h3>
+          <p>Yes. The attached indoor garage at Exhibit On Superior has three level-2 EV charging stations on the second garage level, each with two reserved EV parking spaces (six spaces total). The stations are operated by EVBOX; for pricing and subscription details visit the EVBOX website. Standard unreserved garage parking is $335 per month.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/is-there-ev-charging">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have guest parking?<span class="badge verify">Verify live</span></h3>
+          <p>The garage does not offer dedicated guest parking. Metered street parking is available on both sides of W Superior St directly in front of the building, providing convenient accessible street-level access. SpotHero lots are also nearby. Residents can rent an unreserved space in the attached indoor garage for $335 per month, subject to availability. For garage availability, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/is-there-guest-parking">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior have bike storage?</h3>
+          <p>Yes. Exhibit On Superior has complimentary bike storage on the ground floor, at no additional charge. It is a convenient option for residents who ride in River North rather than drive. Paid on-site storage for other belongings is also available at $25 per month, subject to availability.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/is-there-bike-storage">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How close is Exhibit On Superior to the CTA?</h3>
+          <p>Exhibit On Superior is about two blocks from the CTA Chicago station on the Brown and Purple Lines (Chicago &amp; Franklin) and roughly 0.3 miles from the Chicago Red Line station (Chicago &amp; State). The #66 Chicago Avenue bus runs one block north, with the #156 LaSalle and #22 Clark routes within a few blocks. Both rail stations are an easy walk from 165 W Superior St.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/cta-proximity">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Can you live at Exhibit On Superior without a car?</h3>
+          <p>Yes. Exhibit On Superior sits in River North with two CTA rail stations, several bus routes, and groceries like Whole Foods, Trader Joe’s, and Jewel-Osco all within about half a mile. Complimentary ground-floor bike storage is available. The Loop is roughly a mile south, making River North one of Chicago’s most practical neighborhoods for car-free living.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/car-free-living">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How do drivers reach the highways from Exhibit On Superior?</h3>
+          <p>From Exhibit On Superior, the Ohio Street feeder to the Kennedy Expressway (I-90/94) is about a mile southwest, and Lake Shore Drive (US-41) is reachable to the east via Ontario and Ohio Streets. The building has an attached indoor garage with unreserved parking at $335 per month. See the Map + Directions page for driving routes.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/highway-access">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Is Exhibit On Superior walkable to the Loop?</h3>
+          <p>Yes. The Loop is roughly a mile south of Exhibit On Superior — about a 20-minute walk, or one short ride on the Brown Line from the Chicago station toward the Loop. The building sits at 165 W Superior St in River North, with two CTA rail stations within about a half mile. Per Walk Score, the address rates a 99/100 Walk Score (“Walker’s Paradise”), a perfect 100/100 Transit Score (“Rider’s Paradise”), and an 86/100 Bike Score (“Very Bikeable”).</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/walk-to-the-loop">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section><section class="topic knowledge">
+    <h2>Leasing &amp; Applications</h2>
+    <article class="qa">
+          <h3>How do I apply for an apartment at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>To apply for an apartment at Exhibit On Superior, open any available residence on the Available Units page and use its Apply Now button. Each unit links to its own secure online application through the AppFolio leasing system. The application fee is $60 per applicant, and approval typically takes one to three business days.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-do-i-apply">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What credit score do you need to rent at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Exhibit On Superior requires a minimum credit score of 700 to qualify without a co-signer, or 600+ with a qualified co-signer. Qualified co-signers are accepted. For questions about screening, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/credit-score-required">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior accept co-signers?<span class="badge verify">Verify live</span></h3>
+          <p>Yes. Exhibit On Superior accepts qualified co-signers. An applicant with a credit score of 600 or above can qualify with a qualified co-signer, versus a 700 minimum without one. For co-signer requirements, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/co-signers-accepted">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How long does apartment approval take at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Application approval at Exhibit On Superior typically takes one to three business days. Applications are submitted through each unit’s secure online form in the AppFolio leasing system. To check the status of an application, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/approval-time">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What lease terms does Exhibit On Superior offer?<span class="badge verify">Verify live</span></h3>
+          <p>Exhibit On Superior offers lease terms of 12 months or longer. Short-term leases are available based on availability. Because short-term terms and any related pricing vary, see a leasing consultant for current details, or contact the team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/lease-terms">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What are the occupancy limits at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Occupancy at Exhibit On Superior follows the Chicago Building Code standard: 2 persons per sleeping room plus 1 additional occupant per apartment. A studio or convertible counts as 1 sleeping room (3 occupants); a one-bedroom allows 4; a two-bedroom allows 5; a three-bedroom allows 7. Every adult on the lease submits their own application at $60 per applicant.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/occupancy-limits">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What documents do I need to apply at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>To apply at Exhibit On Superior, have a state or federal government-issued photo ID ready. Renters insurance with minimum liability-to-landlord (LLI) coverage of $300,000 is required. The application fee is $60 per applicant, and a minimum credit score of 700 (or 600+ with a qualified co-signer) applies.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/documents-needed">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Is renters insurance required at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Yes. Exhibit On Superior requires renters insurance with minimum liability-to-landlord (LLI) coverage of $300,000. Have proof of coverage in place per your lease. For specifics on how the property should be listed, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/renters-insurance-required">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How do I schedule a tour of Exhibit On Superior?</h3>
+          <p>To schedule a tour of Exhibit On Superior, use the tour request form on the Schedule a Tour page with your preferred move-in date and floor plan — you can even request a specific available apartment. You can also email exhibit@highlandptrs.com or call 312-450-0635. Prefer to look first? The Virtual Tour page has video and Matterport previews.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/schedule-a-tour">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Does Exhibit On Superior offer virtual tours?</h3>
+          <p>Yes. Exhibit On Superior offers virtual tours through the Virtual Tour page, which includes video and Matterport tour embeds of apartment homes and amenity spaces. You can preview the building remotely before booking an in-person showing through the Schedule a Tour page or by contacting the leasing team.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/virtual-tours">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section><section class="topic knowledge">
+    <h2>Utilities</h2>
+    <article class="qa">
+          <h3>How is electricity billed at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>At Exhibit On Superior, electricity is billed to the resident directly by ComEd, separate from rent. Water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer are covered by the monthly Utility &amp; Service Amenity fee of $95–$195 by floor plan. You set up your ComEd account in your own name.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-is-electricity-billed">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What does the Utility &amp; Service fee cover?<span class="badge verify">Verify live</span></h3>
+          <p>The monthly Utility &amp; Service Amenity fee at Exhibit On Superior covers water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer. Electricity is billed separately by ComEd. The fee ranges from $95 to $195 depending on floor plan, from studios up to three-bedrooms.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-utility-fee-covers">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How much is the utility fee by floor plan?<span class="badge verify">Verify live</span></h3>
+          <p>The monthly Utility &amp; Service Amenity fee at Exhibit On Superior is $95 for studios and junior convertibles, $105 for convertibles, $115 for one-bedrooms, $125 for two-bedroom/one-bath, $150 for two-bedroom/two-bath, $165 for two-bedroom plus den, and $195 for three-bedroom/three-bath homes. It covers water, sewer, trash, heat, A/C, and natural gas for cooking and the dryer; electricity is billed separately by ComEd.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/utility-fee-by-floor-plan">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section><section class="topic knowledge">
+    <h2>Neighborhood</h2>
+    <article class="qa">
+          <h3>What neighborhood is Exhibit On Superior in?</h3>
+          <p>Exhibit On Superior is in River North, at 165 W Superior St, Chicago, IL 60654. River North is a downtown Chicago neighborhood known for galleries, dining, and nightlife, with quick access to the Chicago River, West Loop, Old Town, and Fulton Market. The Loop is roughly a mile south.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/what-neighborhood">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What grocery stores are near Exhibit On Superior?</h3>
+          <p>Groceries near Exhibit On Superior include Whole Foods Market at 3 W Chicago Ave (about 0.3 miles), Jewel-Osco at 550 N State St (about 0.3 miles), Trader Joe’s at 44 E Ontario St (about 0.4 miles), and Eataly at 43 E Ohio St (about 0.4 miles). All are within roughly a half-mile walk of 165 W Superior St.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/neighborhood-groceries">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Are there dog parks near Exhibit On Superior?</h3>
+          <p>Yes. Ohio Place Dog Park at 360 W Ohio St is about 0.3 miles from Exhibit On Superior, and Larrabee Dog Park at 652 N Larrabee St is about 0.5 miles away. On-site, the building has a gated outdoor dog walk and a doggie spa and lounge for residents with pets.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/neighborhood-dog-parks">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What gyms are near Exhibit On Superior?</h3>
+          <p>Exhibit On Superior has an on-site fitness center with two private training rooms, plus in-building fitness retail including CycleBar and Club Pilates. Nearby gyms include East Bank Club at 500 N Kingsbury St (about 0.5 miles) and Equinox Gold Coast at 900 N Michigan Ave (about 0.6 miles).</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/neighborhood-gyms">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What parks are near Exhibit On Superior?</h3>
+          <p>Parks near Exhibit On Superior include Washington Square Park at 901 N Clark St (about 0.3 miles) and A. Montgomery Ward Park at 630 N Kingsbury St (about 0.5 miles). The building also has its own private park with a sculpture by Pal Svensson. Ohio Place and Larrabee dog parks are within about a half mile.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/neighborhood-parks">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What is near Superior and Wells in River North?</h3>
+          <p>Exhibit On Superior sits near Superior and Wells in River North’s gallery district, surrounded by art galleries, cafes, restaurants, and shops. The CTA Chicago Brown/Purple Line station is about two blocks west at Chicago &amp; Franklin, and Whole Foods at 3 W Chicago Ave is a few blocks northeast. The Loop is roughly a mile south.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/whats-near-superior-and-wells">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What dining and nightlife are near Exhibit On Superior?</h3>
+          <p>Exhibit On Superior is in River North, known for its gallery district, chef-driven restaurants, rooftop cocktails, speakeasies, and live-music venues. Nearby dining hubs include Fulton Market, Old Town, and the West Loop. On-site, Goddess and the Baker serves coffee and food, and Eataly is about 0.4 miles away.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/neighborhood-dining">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section><section class="topic knowledge">
+    <h2>Building &amp; Services</h2>
+    <article class="qa">
+          <h3>How many apartments does Exhibit On Superior have?</h3>
+          <p>Exhibit On Superior has 298 apartments across a 34-story tower at 165 W Superior St in River North. Homes range from studios to three-bedrooms, on floors 2 through 34, from about 448 to 1,528 square feet. The building has a 24-hour staffed front desk and a full floor of amenities.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/how-many-apartments">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Is there a 24-hour front desk at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>Yes. The front desk at Exhibit On Superior is staffed 24 hours a day. Indoor amenities are also open 24/7, while outdoor amenities close during quiet hours, 10pm to 6am. The separate leasing office keeps set weekday and weekend hours for tours and applications.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/front-desk-hours">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How do I contact the management team at Exhibit On Superior?</h3>
+          <p>Exhibit On Superior is professionally managed by an on-site team. Contact the leasing office at exhibit@highlandptrs.com or 312-450-0635, or visit 165 W Superior St, Chicago, IL 60654. For resident maintenance requests, use the resident portal or call the maintenance line at 312-883-5503.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/who-manages-exhibit">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What are the leasing office hours at Exhibit On Superior?<span class="badge verify">Verify live</span></h3>
+          <p>The leasing office at Exhibit On Superior is open Monday through Friday 9am–6pm and Saturday 10am–5pm; it is closed on Sunday. You can tour, apply, or ask questions during these hours, or reach the team any time at exhibit@highlandptrs.com or 312-450-0635. The building front desk is staffed 24 hours a day.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/leasing-office-hours">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>What is the address of Exhibit On Superior?</h3>
+          <p>Exhibit On Superior is located at 165 W Superior St, Chicago, IL 60654, in the River North neighborhood. You can reach the leasing team at exhibit@highlandptrs.com or 312-450-0635. See the Map + Directions page for driving, transit, and parking routes to the building.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/building-address">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>How do Exhibit On Superior residents pay rent and get repairs?</h3>
+          <p>Residents at Exhibit On Superior pay rent, submit maintenance requests, and view community updates through the online resident portal, accessed from the Residents page. For urgent maintenance issues, call the maintenance line at 312-883-5503. General questions go to the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/resident-portal">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Where can I read reviews of Exhibit On Superior?</h3>
+          <p>Reviews of Exhibit On Superior come from current, verifiable sources such as the Google Business Profile, linked from the Reviews page. For questions the reviews don’t answer, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635, or schedule a tour to see the building in person.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/reviews-sources">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Who do I contact about accessibility at Exhibit On Superior?</h3>
+          <p>For accessibility questions at Exhibit On Superior — including ADA-designated apartments, accessible unit features, or reasonable accommodation requests — contact the leasing team at exhibit@highlandptrs.com or 312-450-0635. Per the as-built accessibility matrix, 62 apartments carry an ADA designation (34 Type A “(A)” and 28 Type A with conduit line “(AC)”), browsable with the ADA-accessible filter on the Available Units page. The building has a 24-hour staffed front desk.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/accessibility-contact">Open article</a> · Reviewed 2026-07-26</div>
+        </article><article class="qa">
+          <h3>Is Exhibit On Superior a smoke-free building?</h3>
+          <p>Yes. Exhibit On Superior is a completely smoke-free property. The policy covers all residential units, indoor and outdoor amenity spaces, and common areas throughout the building. For questions about the smoking policy, contact the leasing team at exhibit@highlandptrs.com or 312-450-0635.</p>
+          <div class="source"><a href="https://www.rentatexhibit.com/knowledge/smoking-policy">Open article</a> · Reviewed 2026-07-26</div>
+        </article>
+  </section>
+<div class="page-break"></div>
+<h1>Call Follow-Up / Fact Update Form</h1>
+<p>Use this only when the published answer does not resolve the caller's question.</p>
+<table class="form"><tbody>
+<tr><td>Date and time</td><td></td></tr><tr><td>Agent</td><td></td></tr><tr><td>Caller name</td><td></td></tr><tr><td>Preferred contact method</td><td></td></tr><tr><td>Move-in timing</td><td></td></tr><tr><td>Desired floor plan / unit</td><td></td></tr><tr><td>Question or request</td><td></td></tr><tr><td>Answer provided / source checked</td><td></td></tr><tr><td>Needs on-site follow-up?</td><td></td></tr><tr><td>Assigned to</td><td></td></tr><tr><td>Follow-up due</td><td></td></tr><tr><td>Resolution</td><td></td></tr>
+</tbody></table>
+<h2>New or Changed Property Fact</h2>
+<table class="form"><tbody>
+<tr><td>Question callers are asking</td><td></td></tr><tr><td>Current published answer</td><td></td></tr><tr><td>Confirmed replacement answer</td><td></td></tr><tr><td>Confirmed by</td><td></td></tr><tr><td>Effective date</td><td></td></tr><tr><td>Publish on website?</td><td></td></tr>
+</tbody></table>
+<footer>Compiled 2026-09-05 from the current Exhibit FAQ page, Knowledge Center, property configuration, fee schedule, application facts, and cited third-party score source.</footer>
 </body></html>

@@ -89,8 +89,15 @@ logical_id = "dae1fdc6-91a7-42b6-9c55-151e2da06b11"
 id = "pu5GYkmiax-ckFYiylUNU"
 uri = "file://artifacts/exhibit-on-superior/docs/leasing-questionnaire/leasing-questionnaire.md"
 type = "text"
-title = "Leasing Facts Questionnaire (editable)"
+title = "Editable Exhibit Phone Team Playbook"
+description = "Editable Markdown source containing the same current FAQ, Knowledge Center, fee, application, contact, and call-note content."
 logical_id = "2623f136-2ebc-4f93-b1d7-2a7b261224a9"
+content_hash = "sha256:a859796662f815893ecd1174a5b7907aa57f4bf753a26356e695ceab197e9867"
+size = 53832
+mtime_ms = 1788608102971
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/2623f136-2ebc-4f93-b1d7-2a7b261224a9/4385e2d6-6f11-42c7-8f9d-974e54ef4403"
+storage_version_token = "1788608233810754"
+content_type = "text/markdown"
 
 [[outputs]]
 id = "k45vhROaVH6RAMtjjvVU8"
@@ -273,3 +280,31 @@ mtime_ms = 1788560875429
 storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/ec3d128a-380e-43d3-942c-34598e8013fb/75add6f5-6f9c-482a-8785-186dc754a9c2"
 storage_version_token = "1788560911115818"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "0goC8YxaZeXB8pdj-NC5c"
+uri = "file://artifacts/exhibit-on-superior/docs/leasing-questionnaire/Exhibit-Leasing-Phone-Team-Playbook.pdf"
+type = "pdf"
+title = "Exhibit Phone Team Property Playbook"
+description = "15-page branded call-team reference with safe-answer guidance, current fees and application facts, all 34 website FAQs, all 70 Knowledge Center answers, and follow-up forms."
+logical_id = "0b9f14a8-fa1d-4271-8907-cf5a62dccdf8"
+content_hash = "sha256:bc74cb6233bc39efa3674de4a7520178294b42abee9f5104d90abc7f3f0aed2d"
+size = 351987
+mtime_ms = 1788608117040
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/0b9f14a8-fa1d-4271-8907-cf5a62dccdf8/db208d65-5185-465f-abcf-f589a005f495"
+storage_version_token = "1788608233079905"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "gSvcIpUpgwt-hqfdKCBye"
+uri = "file://artifacts/exhibit-on-superior/docs/leasing-questionnaire/leasing-questionnaire.html"
+type = "text"
+title = "Printable Exhibit Phone Team Playbook"
+description = "Self-contained branded HTML version for browser viewing, printing, or saving as PDF."
+logical_id = "6872aae6-d3e6-4ee3-be86-e68e04f007b3"
+content_hash = "sha256:094e79905e8ec852a4ce2e18c0aa5c6ed9de575afab918bcf43f24178b8df7d1"
+size = 72273
+mtime_ms = 1788608102983
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:be6be6f9-53f8-4a3f-b3cd-fb25fb02a58c/6872aae6-d3e6-4ee3-be86-e68e04f007b3/7e17a79c-eb7e-4e59-9251-3beab54b1783"
+storage_version_token = "1788608234616466"
+content_type = "text/html"

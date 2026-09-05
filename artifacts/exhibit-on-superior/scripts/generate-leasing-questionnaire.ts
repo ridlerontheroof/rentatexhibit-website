@@ -1,381 +1,446 @@
 /**
- * Generates the leasing-team questionnaire: one fill-in document listing every
- * fact the website currently defers with "confirm with the leasing team".
- * When leasing returns answers, the site gets trued up (see project task
- * "Replace 'ask the leasing team' answers with real figures").
+ * Generates the phone-team property playbook and follow-up questionnaire.
  *
- * The item list below is hand-audited from the live deferral spots in:
- *   src/data/seo.ts (FAQ answers), and the Fees, Parking & Transportation,
- *   Application Guide, Apartment Guide, Pet Friendly, and Amenities pages.
- * Each item records the exact visitor-facing question and where it appears,
- * so answers map 1:1 back onto the site.
+ * The playbook pulls directly from the site's canonical FAQ, Knowledge Center,
+ * fee, office-hours, screening, building-fact, and Walk Score data. This keeps
+ * the call-center reference aligned with the published site instead of
+ * maintaining a second hand-typed fact sheet.
  *
  * Outputs (docs/leasing-questionnaire/):
- *   - leasing-questionnaire.md    editable version (email/Google Docs friendly)
- *   - leasing-questionnaire.html  branded print source
- *   - Exhibit-Leasing-Facts-Questionnaire.pdf  (printed via headless Chromium)
- *
- * Run on demand:
- *   pnpm --filter @workspace/exhibit-on-superior exec tsx scripts/generate-leasing-questionnaire.ts
+ *   - leasing-questionnaire.md
+ *   - leasing-questionnaire.html
+ *   - Exhibit-Leasing-Phone-Team-Playbook.pdf
+ *   - Exhibit-Leasing-Facts-Questionnaire.pdf (compatibility filename)
  */
-import { writeFileSync, mkdirSync, existsSync, readFileSync, readdirSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-
-interface Item {
-  /** The question exactly as site visitors see it (or the page copy that defers). */
-  question: string;
-  /** What leasing needs to provide. */
-  need: string;
-  /** Where it appears on the site. */
-  where: string;
-}
-
-interface Topic {
-  title: string;
-  intro?: string;
-  items: Item[];
-}
-
-const TOPICS: Topic[] = [
-  {
-    title: 'Fees & Costs',
-    intro:
-      'Already verified from listings (no answer needed): application fee $60\u2013$75 per unit; water, sewer, trash & gas covered by the monthly utility bundle.',
-    items: [
-      {
-        question: 'What fees are required in addition to rent?',
-        need: 'Administrative fee amount (if any)',
-        where: 'Fees & Leasing Costs page \u2014 FAQ',
-      },
-      {
-        question: 'What fees are required in addition to rent?',
-        need: 'Security deposit and/or move-in fee amount',
-        where: 'Fees & Leasing Costs page \u2014 "Everything Else" section',
-      },
-      {
-        question: 'Are utilities included?',
-        need: 'How electricity is billed (direct with ComEd? third-party?)',
-        where: 'Fees & Leasing Costs page \u2014 FAQ',
-      },
-      {
-        question: 'Are utilities included?',
-        need: 'Internet options: available providers, any building package or required provider, typical cost',
-        where: 'Fees & Leasing Costs page \u2014 FAQ',
-      },
-      {
-        question: 'Is storage or accessibility information available?',
-        need: 'On-site storage: available? monthly cost? waitlist?',
-        where: 'Apartment Guide + Fees pages',
-      },
-      {
-        question: 'Does Exhibit offer move-in specials?',
-        need: 'Current specials policy \u2014 do you want specials published on the site, and if so, the current offer',
-        where: 'Fees & Leasing Costs page \u2014 FAQ',
-      },
-      {
-        question: 'What fees are required in addition to rent?',
-        need: 'Any other mandatory charges (amenity fee, technology fee, trash/valet fee, etc.)',
-        where: 'Fees & Leasing Costs page',
-      },
-    ],
-  },
-  {
-    title: 'Parking & Transportation',
-    items: [
-      {
-        question: 'Does Exhibit On Superior have on-site parking?',
-        need: 'Garage on site? Attached or nearby? Number of spaces / waitlist status',
-        where: 'Parking & Transportation page \u2014 FAQ',
-      },
-      {
-        question: 'How much is parking?',
-        need: 'Monthly parking rate (and reserved vs unreserved pricing if applicable)',
-        where: 'Fees page FAQ + Parking & Transportation page',
-      },
-      {
-        question: '(site copy defers all parking details)',
-        need: 'EV charging: available? how many chargers? cost?',
-        where: 'Parking & Transportation page',
-      },
-      {
-        question: '(site copy defers all parking details)',
-        need: 'Guest parking options',
-        where: 'Parking & Transportation page',
-      },
-      {
-        question: '(site copy defers all parking details)',
-        need: 'Bike storage: bike room? cost? capacity?',
-        where: 'Parking & Transportation page',
-      },
-    ],
-  },
-  {
-    title: 'Pets',
-    intro:
-      'Already verified (no answer needed): cats & dogs welcome; max 2 pets; registration with management and Dog Rider acknowledgement required.',
-    items: [
-      {
-        question: 'What are the pet fees?',
-        need: 'One-time pet fee amount',
-        where: 'Pet Friendly page \u2014 FAQ',
-      },
-      {
-        question: 'What are the pet fees?',
-        need: 'Pet deposit amount (if separate from the fee)',
-        where: 'Pet Friendly page \u2014 FAQ',
-      },
-      {
-        question: 'What are the pet fees?',
-        need: 'Monthly pet rent per pet',
-        where: 'Pet Friendly page \u2014 FAQ',
-      },
-      {
-        question: 'Should renters confirm current pet rules?',
-        need: 'Restricted breeds list (or "no breed restrictions")',
-        where: 'Pet Friendly page \u2014 policy list',
-      },
-      {
-        question: 'Should renters confirm current pet rules?',
-        need: 'Weight limit (or "no weight limit")',
-        where: 'Pet Friendly page \u2014 policy list',
-      },
-    ],
-  },
-  {
-    title: 'Application & Qualification',
-    items: [
-      {
-        question: 'What income is required to qualify?',
-        need: 'Income requirement (e.g. monthly income \u2265 3\u00d7 rent) and acceptable proof',
-        where: 'Application Guide \u2014 FAQ',
-      },
-      {
-        question: 'What income is required to qualify?',
-        need: 'Credit screening: minimum score or criteria, and what causes denial',
-        where: 'Application Guide \u2014 Qualification & Screening',
-      },
-      {
-        question: 'Are guarantors accepted?',
-        need: 'Guarantor/co-signer policy (accepted? income multiple? services like TheGuarantors?)',
-        where: 'Application Guide \u2014 FAQ',
-      },
-      {
-        question: '(not yet answered on site)',
-        need: 'International applicants: process without US credit history / SSN',
-        where: 'Application Guide',
-      },
-      {
-        question: 'How long does approval take?',
-        need: 'Typical approval timeline (e.g. 2\u20133 business days)',
-        where: 'Application Guide \u2014 FAQ',
-      },
-      {
-        question: 'What lease terms are available?',
-        need: 'Offered lease terms (e.g. 6\u201318 months) and any short-term premium',
-        where: 'Application Guide \u2014 FAQ',
-      },
-      {
-        question: 'What should I have ready to apply?',
-        need: 'Exact documents required with an application',
-        where: 'Application Guide \u2014 FAQ',
-      },
-      {
-        question: '(not yet answered on site)',
-        need: 'Occupancy limits per apartment size',
-        where: 'Application Guide',
-      },
-      {
-        question: '(not yet answered on site)',
-        need: "Renters insurance: required? minimum liability? must the property be listed as interested party?",
-        where: 'Application Guide / Fees page',
-      },
-    ],
-  },
-  {
-    title: 'Apartments',
-    items: [
-      {
-        question: 'Are furnished apartments available?',
-        need: 'Furnished options (or partner like Landing/Blueground), or confirm "unfurnished only"',
-        where: 'Apartment Guide \u2014 FAQ',
-      },
-      {
-        question: 'Which units have balconies?',
-        need: 'Which floor plans / stacks include private balconies',
-        where: 'Apartment Guide \u2014 FAQ + features list',
-      },
-      {
-        question: 'Is storage or accessibility information available?',
-        need: 'Accessible/ADA unit details: which plans, roll-in showers, etc.',
-        where: 'Apartment Guide \u2014 FAQ',
-      },
-    ],
-  },
-  {
-    title: 'Amenities & Services',
-    items: [
-      {
-        question: 'Is there a 24-hour concierge?',
-        need: 'Front desk / concierge: 24-hour? staffed hours?',
-        where: 'Amenities page \u2014 FAQ',
-      },
-      {
-        question: '(site copy defers hours)',
-        need: 'Amenity floor hours (fitness center, pool, lounges)',
-        where: 'Amenities page \u2014 Access & Hours',
-      },
-      {
-        question: '(site copy defers reservations)',
-        need: 'Reservation rules for private dining room, party suite, training rooms \u2014 and guest rules',
-        where: 'Amenities page \u2014 Access & Hours',
-      },
-      {
-        question: '(not yet answered on site)',
-        need: 'Seasonal restrictions (outdoor pool deck, hot tub, grilling stations season/hours)',
-        where: 'Amenities page',
-      },
-    ],
-  },
-];
+import { fileURLToPath } from 'node:url';
+import {
+  FAQ_HUB_TOPICS,
+  SITE_URL,
+} from '../src/data/seo';
+import {
+  KNOWLEDGE_ARTICLES,
+  KNOWLEDGE_CATEGORIES,
+  KNOWLEDGE_REVIEWED_DATE,
+  KNOWLEDGE_REVIEW_MAX_AGE_DAYS,
+  knowledgeUpdated,
+} from '../src/data/knowledge';
+import {
+  FEE_SUMMARY,
+  UTILITY_BUNDLE,
+} from '../src/data/fees';
+import {
+  APPROVAL_WINDOW_DISPLAY,
+  CREDIT_SCORE_COSIGNER_MIN,
+  CREDIT_SCORE_MIN,
+  OFFICE_HOURS_LINES,
+  RENTERS_INSURANCE_LLI_DISPLAY,
+  SQFT_RANGE_DISPLAY,
+  UNIT_TOTAL,
+} from '../src/data/propertyFacts';
+import {
+  WALK_SCORES,
+  WALK_SCORE_SOURCE_URL,
+  WALK_SCORES_CHECKED,
+} from '../src/data/walkScores';
 
 const GENERATED = new Date().toISOString().slice(0, 10);
-const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'leasing-questionnaire');
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const outDir = join(root, 'docs', 'leasing-questionnaire');
 mkdirSync(outDir, { recursive: true });
 
-const totalItems = TOPICS.reduce((n, t) => n + t.items.length, 0);
+const propertyConfig = JSON.parse(
+  readFileSync(join(root, 'property-config.json'), 'utf8'),
+) as {
+  nap: {
+    streetAddress: string;
+    locality: string;
+    region: string;
+    postalCode: string;
+    phone: string;
+    email: string;
+  };
+  leasing: { applyUrl: string; residentPortalUrl: string };
+};
 
-/* ---------------- markdown (editable / email-friendly) ---------------- */
-let md = `# Exhibit On Superior — Leasing Facts Questionnaire
+const phoneDisplay = propertyConfig.nap.phone.replace(
+  /^\+1(\d{3})(\d{3})(\d{4})$/,
+  '$1-$2-$3',
+);
+const address = `${propertyConfig.nap.streetAddress}, ${propertyConfig.nap.locality}, ${propertyConfig.nap.region} ${propertyConfig.nap.postalCode}`;
+const knowledgeCount = KNOWLEDGE_ARTICLES.length;
+const faqCount = FAQ_HUB_TOPICS.reduce((sum, topic) => sum + topic.faqs.length, 0);
+const changeableCount = KNOWLEDGE_ARTICLES.filter((article) => article.changeableFacts).length;
 
-Generated ${GENERATED} · ${totalItems} questions
+const quickSlugs = [
+  'how-much-is-rent',
+  'what-fees-in-addition-to-rent',
+  'schedule-a-tour',
+  'how-do-i-apply',
+  'credit-score-required',
+  'lease-terms',
+  'full-amenity-list',
+  'what-are-pet-fees',
+  'how-much-does-parking-cost',
+  'front-desk-hours',
+  'leasing-office-hours',
+  'resident-portal',
+];
+const bySlug = new Map(KNOWLEDGE_ARTICLES.map((article) => [article.slug, article]));
+const quickAnswers = quickSlugs.flatMap((slug) => {
+  const article = bySlug.get(slug);
+  return article ? [article] : [];
+});
 
-The website currently answers these renter questions with "confirm with the
-leasing team." Fill in whatever is stable policy and we will publish the real
-answers on rentatexhibit.com (better for renters, and for Google/AI answer
-engines that reward specific facts).
+const mdLink = (path: string): string =>
+  path.startsWith('http') ? path : `${SITE_URL}${path}`;
 
-**How to fill this in**
-- Write the answer exactly as it should appear publicly.
-- If a figure changes per unit or season, give the current range and note "varies".
-- **Leave blank** anything that is intentionally case-by-case or should stay unpublished — the site will keep pointing those to the leasing team.
+let md = `# Exhibit On Superior — Phone Team Property Playbook
+
+Generated ${GENERATED} · ${faqCount} website FAQs · ${knowledgeCount} Knowledge Center answers
+
+> **Internal call-team reference.** Use the short answer first, then add detail only when
+> the caller needs it. Never guess. Pricing, concessions, available units, move-in dates,
+> parking availability, and tour openings can change; verify those live before promising them.
+
+## First 30 Seconds
+
+| Item | Answer |
+|---|---|
+| Property | Exhibit On Superior |
+| Address | ${address} |
+| Leasing phone | ${phoneDisplay} |
+| Leasing email | ${propertyConfig.nap.email} |
+| Website | ${SITE_URL} |
+| Live homes and pricing | ${SITE_URL}/available-units |
+| Schedule a tour | ${SITE_URL}/schedule-a-tour |
+| Apply | ${propertyConfig.leasing.applyUrl} |
+| Resident portal | ${propertyConfig.leasing.residentPortalUrl} |
+| Building | ${UNIT_TOTAL} residences; ${SQFT_RANGE_DISPLAY} sq ft |
+
+### Leasing office hours
+${OFFICE_HOURS_LINES.map((line) => `- ${line}`).join('\n')}
+
+## Answer Safely
+
+- **LIVE:** Always open the Available Units page for rent, specials, unit availability,
+  move-in dates, and unit-specific square footage. Do not quote an old screenshot.
+- **VERIFY:** Confirm parking/storage availability, lease terms, qualification edge cases,
+  accommodations, and seasonal amenity access before making a promise.
+- **ESCALATE:** Send legal, fair-housing, reasonable-accommodation, application-denial,
+  payment-account, and unresolved resident matters to the on-site team.
+- **EMERGENCY:** Direct immediate threats to life or safety to 911. Do not diagnose or
+  promise maintenance response times.
+- **PRIVACY:** Do not request Social Security numbers, payment-card details, passwords,
+  or application documents over an ordinary phone call or email.
+
+## Most-Asked Questions — Call Script
+
+${quickAnswers
+  .map(
+    (article) => `### ${article.question}
+
+${article.answer}
+
+${article.changeableFacts ? '**Verify live before quoting.** ' : ''}[Full answer](${SITE_URL}/knowledge/${article.slug}) · Reviewed ${knowledgeUpdated(article)}
+`,
+  )
+  .join('\n')}
+
+## Fees at a Glance
+
+| Item | Amount | Frequency | Notes |
+|---|---|---|---|
+${FEE_SUMMARY.map((fee) => `| ${fee.item} | ${fee.amount} | ${fee.frequency} | ${fee.notes} |`).join('\n')}
+
+### Utility & Service Amenity fee by floor plan
+
+| Floor plan | Size | Monthly fee |
+|---|---|---|
+${UTILITY_BUNDLE.map((tier) => `| ${tier.type} | ${tier.size} | ${tier.fee} |`).join('\n')}
+
+## Application Snapshot
+
+- Standard minimum credit score: **${CREDIT_SCORE_MIN}**
+- With a qualified co-signer: **${CREDIT_SCORE_COSIGNER_MIN}+**
+- Typical review window: **${APPROVAL_WINDOW_DISPLAY}**
+- Required liability-to-landlord coverage before move-in: **${RENTERS_INSURANCE_LLI_DISPLAY}**
+- Use the secure online application; never collect sensitive application data by phone.
+
+## Location Snapshot
+
+${WALK_SCORES.map((metric) => `- ${metric.name}: **${metric.score}/100 — ${metric.label}**`).join('\n')}
+
+Scores last checked ${WALK_SCORES_CHECKED}. [Source](${WALK_SCORE_SOURCE_URL})
+
+## Current Website FAQs
+
+${FAQ_HUB_TOPICS.map(
+  (topic) => `### ${topic.title}
+
+${topic.faqs
+  .map(
+    (faq) => `**Q: ${faq.q}**
+
+A: ${faq.a}${faq.knowledgeSlug ? `\n\n[Full answer](${SITE_URL}/knowledge/${faq.knowledgeSlug})` : ''}
+`,
+  )
+  .join('\n')}`,
+).join('\n')}
+
+## Complete Knowledge Center
+
+The short answers below are the current published answer set. ${changeableCount} entries are
+marked **VERIFY LIVE** because their facts may change. The default content review date is
+${KNOWLEDGE_REVIEWED_DATE}; the freshness guard is ${KNOWLEDGE_REVIEW_MAX_AGE_DAYS} days.
+
+${KNOWLEDGE_CATEGORIES.map((category) => {
+  const articles = KNOWLEDGE_ARTICLES.filter((article) => article.category === category);
+  return `### ${category}
+
+${articles
+  .map(
+    (article) => `**${article.question}**${article.changeableFacts ? ' — VERIFY LIVE' : ''}
+
+${article.answer}
+
+[Open article](${SITE_URL}/knowledge/${article.slug}) · Reviewed ${knowledgeUpdated(article)}
+`,
+  )
+  .join('\n')}`;
+}).join('\n')}
+
+## Call Follow-Up / Leasing Questionnaire
+
+Use this section when the published answer does not resolve the caller's question.
+
+| Field | Notes |
+|---|---|
+| Date and time | |
+| Agent | |
+| Caller name | |
+| Preferred contact method | |
+| Move-in timing | |
+| Desired floor plan / unit | |
+| Question or request | |
+| Answer provided / source checked | |
+| Needs on-site follow-up? | Yes / No |
+| Assigned to | |
+| Follow-up due | |
+| Resolution | |
+
+### New or changed property fact
+
+- Question callers are asking:
+- Current published answer:
+- Confirmed replacement answer:
+- Confirmed by:
+- Effective date:
+- Should this be public on the website? Yes / No
+
+---
+Compiled from the current Exhibit FAQ page, Knowledge Center, property configuration,
+fee schedule, office-hours constants, application facts, and Walk Score source. For every
+linked answer, the live page at ${SITE_URL} remains the publishing reference.
 `;
 
-for (const topic of TOPICS) {
-  md += `\n## ${topic.title}\n`;
-  if (topic.intro) md += `\n> ${topic.intro}\n`;
-  let i = 0;
-  for (const item of topic.items) {
-    i += 1;
-    md += `\n**${i}. ${item.need}**\n`;
-    md += `   - Visitors currently see: “${item.question}” _(${item.where})_\n`;
-    md += `   - Answer:\n\n   \`________________________________________________________________\`\n`;
-  }
-}
-md += `\nReturn to: the website team · Questions? exhibit website project\n`;
 writeFileSync(join(outDir, 'leasing-questionnaire.md'), md);
 
-/* ---------------- branded HTML (print source) ---------------- */
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const esc = (value: string): string =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 
-const topicHtml = TOPICS.map((topic) => {
-  const rows = topic.items
-    .map(
-      (item, i) => `
-  <div class="item">
-    <div class="q"><span class="num">${i + 1}</span> ${esc(item.need)}</div>
-    <div class="meta">Visitors currently see: \u201c${esc(item.question)}\u201d &nbsp;\u2022&nbsp; ${esc(item.where)}</div>
-    <div class="answer"><span class="alabel">Answer</span><span class="line"></span></div>
-  </div>`,
-    )
-    .join('');
-  return `
-<section>
-  <h2>${esc(topic.title)}</h2>
-  ${topic.intro ? `<div class="verified">\u2713 ${esc(topic.intro)}</div>` : ''}
-  ${rows}
-</section>`;
+const link = (label: string, href: string): string =>
+  `<a href="${esc(mdLink(href))}">${esc(label)}</a>`;
+
+const quickHtml = quickAnswers
+  .map(
+    (article) => `<article class="qa priority">
+      <h3>${esc(article.question)}${article.changeableFacts ? '<span class="badge verify">Verify live</span>' : ''}</h3>
+      <p>${esc(article.answer)}</p>
+      <div class="source">${link('Full answer', `/knowledge/${article.slug}`)} · Reviewed ${esc(knowledgeUpdated(article))}</div>
+    </article>`,
+  )
+  .join('');
+
+const faqHtml = FAQ_HUB_TOPICS.map(
+  (topic) => `<section class="topic">
+    <h2>${esc(topic.title)}</h2>
+    ${topic.faqs
+      .map(
+        (faq) => `<article class="qa">
+          <h3>${esc(faq.q)}</h3>
+          <p>${esc(faq.a)}</p>
+          ${faq.knowledgeSlug ? `<div class="source">${link('Full answer', `/knowledge/${faq.knowledgeSlug}`)}</div>` : ''}
+        </article>`,
+      )
+      .join('')}
+  </section>`,
+).join('');
+
+const knowledgeHtml = KNOWLEDGE_CATEGORIES.map((category) => {
+  const articles = KNOWLEDGE_ARTICLES.filter((article) => article.category === category);
+  return `<section class="topic knowledge">
+    <h2>${esc(category)}</h2>
+    ${articles
+      .map(
+        (article) => `<article class="qa">
+          <h3>${esc(article.question)}${article.changeableFacts ? '<span class="badge verify">Verify live</span>' : ''}</h3>
+          <p>${esc(article.answer)}</p>
+          <div class="source">${link('Open article', `/knowledge/${article.slug}`)} · Reviewed ${esc(knowledgeUpdated(article))}</div>
+        </article>`,
+      )
+      .join('')}
+  </section>`;
 }).join('');
 
-const html = `<!doctype html><html><head><meta charset="utf-8"><style>
-  @page { size: Letter; margin: 0.55in 0.6in; }
-  * { box-sizing: border-box; margin: 0; }
-  body { font-family: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif; color: #333; font-size: 11px; }
-  header { border-bottom: 3px solid #b39a5f; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
-  h1 { font-size: 22px; letter-spacing: 1px; text-transform: uppercase; color: #1c1c1c; }
-  h1 span { color: #b39a5f; }
-  .sub { font-size: 10px; color: #777; }
-  .howto { background: #faf7f0; border: 1px solid #e3d9c2; border-left: 4px solid #b39a5f; padding: 8px 12px; margin-bottom: 12px; font-size: 10px; line-height: 1.5; }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: #b39a5f; margin: 16px 0 6px; border-bottom: 1px solid #e3d9c2; padding-bottom: 3px; break-after: avoid; }
-  .verified { font-size: 9.5px; color: #4a7a4a; background: #f2f8f2; border: 1px solid #cfe3cf; padding: 5px 8px; margin-bottom: 6px; }
-  .item { padding: 7px 0 9px; border-bottom: 1px solid #eee; break-inside: avoid; }
-  .q { font-size: 11.5px; font-weight: 700; color: #1c1c1c; }
-  .num { display: inline-block; min-width: 16px; color: #b39a5f; }
-  .meta { font-size: 9px; color: #999; margin: 2px 0 8px 16px; }
-  .answer { display: flex; align-items: flex-end; gap: 8px; margin-left: 16px; }
-  .alabel { font-size: 8.5px; text-transform: uppercase; letter-spacing: 1px; color: #b39a5f; }
-  .line { flex: 1; border-bottom: 1px solid #999; height: 16px; }
-  footer { margin-top: 14px; font-size: 8.5px; color: #999; border-top: 1px solid #eee; padding-top: 6px; }
-</style></head><body>
-<header>
-  <div><h1>Exhibit <span>on</span> Superior</h1><div class="sub">Leasing Facts Questionnaire \u2014 ${totalItems} questions the website defers to you</div></div>
-  <div class="sub">Generated ${GENERATED}<br>rentatexhibit.com</div>
-</header>
-<div class="howto"><strong>How to fill this in:</strong> write each answer exactly as it should appear publicly on the website. If a figure varies by unit or season, give the current range and note \u201cvaries.\u201d <strong>Leave blank</strong> anything intentionally case-by-case or that should stay unpublished \u2014 the site will keep directing those questions to the leasing office.</div>
-${topicHtml}
-<footer>Compiled ${GENERATED} from every \u201cconfirm with the leasing team\u201d answer on rentatexhibit.com. Once returned, the website team publishes the confirmed answers on the Fees, Parking, Pet Policy, Application, Apartment Guide, and Amenities pages.</footer>
-</body></html>`;
-writeFileSync(join(outDir, 'leasing-questionnaire.html'), html);
-console.log(`Wrote leasing-questionnaire.md and .html (${totalItems} items) to`, outDir);
+const feeRows = FEE_SUMMARY.map(
+  (fee) => `<tr><td>${esc(fee.item)}</td><td><strong>${esc(fee.amount)}</strong></td><td>${esc(fee.frequency)}</td><td>${esc(fee.notes)}</td></tr>`,
+).join('');
+const utilityRows = UTILITY_BUNDLE.map(
+  (tier) => `<tr><td>${esc(tier.type)}</td><td>${esc(tier.size)}</td><td><strong>${esc(tier.fee)}</strong></td></tr>`,
+).join('');
 
-/* ---------------- PDF via headless Chromium ---------------- */
+const html = `<!doctype html>
+<html><head><meta charset="utf-8"><title>Exhibit Phone Team Property Playbook</title>
+<style>
+@page { size: Letter; margin: .52in .55in .55in; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #272727; font: 10.2px/1.42 Arial, sans-serif; }
+a { color: #7b642c; text-decoration: underline; }
+header { border-bottom: 4px solid #b39a5f; margin-bottom: 14px; padding-bottom: 10px; display:flex; justify-content:space-between; align-items:flex-end; }
+h1 { margin:0; font-size:22px; line-height:1; text-transform:uppercase; letter-spacing:1.3px; }
+h1 em { color:#b39a5f; font-family:Georgia,serif; font-weight:normal; text-transform:none; }
+.meta { color:#777; text-align:right; font-size:9px; }
+.alert { background:#faf7ef; border:1px solid #ded2b7; border-left:5px solid #b39a5f; padding:9px 11px; margin:9px 0; }
+.danger { border-left-color:#9e3939; background:#fff5f3; }
+.quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin:10px 0 14px; }
+.card { border:1px solid #ded8cb; padding:8px 9px; break-inside:avoid; }
+.card strong { display:block; color:#8c743a; text-transform:uppercase; font-size:8px; letter-spacing:.8px; margin-bottom:2px; }
+h2 { margin:17px 0 6px; padding-bottom:3px; border-bottom:1px solid #cdbb91; color:#8c743a; font-size:14px; text-transform:uppercase; letter-spacing:1.2px; break-after:avoid; }
+h3 { margin:0 0 3px; font-size:10.7px; line-height:1.3; }
+p { margin:0 0 4px; }
+ul { margin:5px 0 10px 18px; padding:0; }
+li { margin:2px 0; }
+.qa { padding:6px 0 7px; border-bottom:1px solid #ece8df; break-inside:avoid; }
+.priority { border:1px solid #dfd5bd; border-left:4px solid #b39a5f; padding:8px 9px; margin:5px 0; }
+.source { color:#777; font-size:8.5px; }
+.badge { display:inline-block; margin-left:6px; padding:1px 5px; border-radius:8px; font-size:7px; letter-spacing:.5px; text-transform:uppercase; vertical-align:1px; }
+.verify { color:#8e301f; background:#fae7df; border:1px solid #e7b9aa; }
+table { width:100%; border-collapse:collapse; margin:6px 0 12px; break-inside:auto; }
+th { background:#272727; color:white; text-align:left; }
+th,td { border:1px solid #ddd7ca; padding:4px 5px; vertical-align:top; }
+tr { break-inside:avoid; }
+.page-break { break-before:page; }
+.form td { height:27px; }
+.form td:first-child { width:31%; font-weight:bold; color:#78632f; }
+footer { margin-top:16px; border-top:1px solid #ddd; padding-top:5px; color:#888; font-size:8px; }
+</style></head><body>
+<header><div><h1>Exhibit <em>on</em> Superior</h1><div>Phone Team Property Playbook</div></div><div class="meta">Generated ${GENERATED}<br>${knowledgeCount} Knowledge answers · ${faqCount} FAQs</div></header>
+<div class="alert"><strong>Internal call-team reference.</strong> Start with the short answer. Verify live facts before promising them, and never guess.</div>
+<div class="quick-grid">
+  <div class="card"><strong>Property</strong>${esc(address)}<br>${esc(phoneDisplay)} · ${esc(propertyConfig.nap.email)}</div>
+  <div class="card"><strong>Online</strong>${link('Website', SITE_URL)} · ${link('Live units', '/available-units')} · ${link('Tours', '/schedule-a-tour')}</div>
+  <div class="card"><strong>Building</strong>${UNIT_TOTAL} residences · ${esc(SQFT_RANGE_DISPLAY)} sq ft</div>
+  <div class="card"><strong>Office hours</strong>${OFFICE_HOURS_LINES.map(esc).join('<br>')}</div>
+</div>
+<h2>Answer Safely</h2>
+<ul>
+  <li><strong>LIVE:</strong> Open Available Units for rents, specials, availability, move-in dates, and unit-specific facts.</li>
+  <li><strong>VERIFY:</strong> Confirm parking/storage availability, lease terms, edge-case qualifications, accommodations, and seasonal access.</li>
+  <li><strong>ESCALATE:</strong> Send legal, fair-housing, accommodations, denials, payments, and unresolved resident issues to the on-site team.</li>
+  <li><strong>PRIVACY:</strong> Never collect SSNs, payment-card details, passwords, or application documents by ordinary phone or email.</li>
+</ul>
+<h2>Most-Asked Questions — Call Script</h2>${quickHtml}
+<h2>Fees at a Glance</h2>
+<table><thead><tr><th>Item</th><th>Amount</th><th>Frequency</th><th>Notes</th></tr></thead><tbody>${feeRows}</tbody></table>
+<h2>Utility Fee by Floor Plan</h2>
+<table><thead><tr><th>Floor plan</th><th>Size</th><th>Monthly</th></tr></thead><tbody>${utilityRows}</tbody></table>
+<h2>Application Snapshot</h2>
+<ul><li>Credit: ${CREDIT_SCORE_MIN}; ${CREDIT_SCORE_COSIGNER_MIN}+ with qualified co-signer</li><li>Typical review: ${esc(APPROVAL_WINDOW_DISPLAY)}</li><li>Liability-to-landlord coverage: ${esc(RENTERS_INSURANCE_LLI_DISPLAY)}</li><li>${link('Secure application', propertyConfig.leasing.applyUrl)} · ${link('Resident portal', propertyConfig.leasing.residentPortalUrl)}</li></ul>
+<h2>Location Snapshot</h2>
+<ul>${WALK_SCORES.map((metric) => `<li>${esc(metric.name)}: <strong>${metric.score}/100 — ${esc(metric.label)}</strong></li>`).join('')}</ul>
+<p class="source">Checked ${esc(WALK_SCORES_CHECKED)} · ${link('Walk Score source', WALK_SCORE_SOURCE_URL)}</p>
+<div class="page-break"></div>
+<h1>Current Website FAQs</h1><p>${faqCount} answers currently displayed on the FAQ hub.</p>${faqHtml}
+<div class="page-break"></div>
+<h1>Complete Knowledge Center</h1>
+<div class="alert">${knowledgeCount} published answers. <strong>${changeableCount} are marked Verify Live.</strong> Default review date: ${KNOWLEDGE_REVIEWED_DATE}; freshness guard: ${KNOWLEDGE_REVIEW_MAX_AGE_DAYS} days.</div>
+${knowledgeHtml}
+<div class="page-break"></div>
+<h1>Call Follow-Up / Fact Update Form</h1>
+<p>Use this only when the published answer does not resolve the caller's question.</p>
+<table class="form"><tbody>
+${['Date and time','Agent','Caller name','Preferred contact method','Move-in timing','Desired floor plan / unit','Question or request','Answer provided / source checked','Needs on-site follow-up?','Assigned to','Follow-up due','Resolution'].map((label) => `<tr><td>${esc(label)}</td><td></td></tr>`).join('')}
+</tbody></table>
+<h2>New or Changed Property Fact</h2>
+<table class="form"><tbody>
+${['Question callers are asking','Current published answer','Confirmed replacement answer','Confirmed by','Effective date','Publish on website?'].map((label) => `<tr><td>${esc(label)}</td><td></td></tr>`).join('')}
+</tbody></table>
+<footer>Compiled ${GENERATED} from the current Exhibit FAQ page, Knowledge Center, property configuration, fee schedule, application facts, and cited third-party score source.</footer>
+</body></html>`;
+
+writeFileSync(join(outDir, 'leasing-questionnaire.html'), html);
+
 function findChromium(): string | null {
   const candidates: string[] = [];
   if (process.env.CHROME_BIN) candidates.push(process.env.CHROME_BIN);
-  for (const name of ['chromium', 'chromium-browser', 'google-chrome', 'google-chrome-stable', 'chrome']) {
+  for (const name of ['chromium', 'chromium-browser', 'google-chrome', 'google-chrome-stable']) {
     const which = spawnSync('which', [name], { encoding: 'utf8' });
     if (which.status === 0 && which.stdout.trim()) candidates.push(which.stdout.trim());
   }
-  const home = process.env.HOME ?? '';
-  try {
-    for (const entry of readdirSync(join(home, '.cache', 'ms-playwright'))) {
-      if (entry.startsWith('chromium-')) candidates.push(join(home, '.cache', 'ms-playwright', entry, 'chrome-linux', 'chrome'));
-    }
-  } catch { /* absent */ }
   try {
     for (const entry of readdirSync('/nix/store')) {
       if (!entry.endsWith('-playwright-browsers-chromium')) continue;
       const base = join('/nix/store', entry);
-      try {
-        for (const sub of readdirSync(base)) {
-          if (sub.startsWith('chromium-')) candidates.push(join(base, sub, 'chrome-linux', 'chrome'));
-        }
-      } catch { /* unreadable */ }
+      for (const sub of readdirSync(base)) {
+        if (sub.startsWith('chromium-')) candidates.push(join(base, sub, 'chrome-linux', 'chrome'));
+      }
     }
-  } catch { /* no nix store */ }
-  for (const c of candidates) {
-    if (!existsSync(c)) continue;
-    const v = spawnSync(c, ['--version'], { encoding: 'utf8', timeout: 15_000 });
-    if (v.status === 0) return c;
+  } catch {
+    // No nix store browser.
+  }
+  for (const candidate of candidates) {
+    if (!existsSync(candidate)) continue;
+    const version = spawnSync(candidate, ['--version'], { encoding: 'utf8', timeout: 15_000 });
+    if (version.status === 0) return candidate;
   }
   return null;
 }
 
-const pdfPath = join(outDir, 'Exhibit-Leasing-Facts-Questionnaire.pdf');
 const chrome = findChromium();
-if (!chrome) {
-  console.error('No headless Chromium found; open leasing-questionnaire.html and print to PDF manually.');
-  process.exit(1);
-}
-const res = spawnSync(
+if (!chrome) throw new Error('No headless Chromium found; PDF export cannot continue.');
+const pdfPath = join(outDir, 'Exhibit-Leasing-Phone-Team-Playbook.pdf');
+const result = spawnSync(
   chrome,
-  ['--headless=new', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--no-pdf-header-footer', `--print-to-pdf=${pdfPath}`, join(outDir, 'leasing-questionnaire.html')],
+  [
+    '--headless=new',
+    '--no-sandbox',
+    '--disable-gpu',
+    '--disable-dev-shm-usage',
+    '--no-pdf-header-footer',
+    `--print-to-pdf=${pdfPath}`,
+    join(outDir, 'leasing-questionnaire.html'),
+  ],
   { encoding: 'utf8', timeout: 120_000 },
 );
-const buf = existsSync(pdfPath) ? readFileSync(pdfPath) : Buffer.alloc(0);
-if (res.status !== 0 || buf.length < 1000 || buf.subarray(0, 5).toString() !== '%PDF-') {
-  console.error(`PDF print failed (exit ${res.status}):\n${res.stderr ?? ''}`);
-  process.exit(1);
+const pdf = existsSync(pdfPath) ? readFileSync(pdfPath) : Buffer.alloc(0);
+if (result.status !== 0 || pdf.length < 1_000 || pdf.subarray(0, 5).toString() !== '%PDF-') {
+  throw new Error(`PDF print failed (exit ${result.status}): ${result.stderr ?? ''}`);
 }
-console.log('Printed', pdfPath);
+copyFileSync(pdfPath, join(outDir, 'Exhibit-Leasing-Facts-Questionnaire.pdf'));
+console.log(
+  `Generated phone-team playbook: ${faqCount} FAQs, ${knowledgeCount} Knowledge answers, ${changeableCount} verify-live answers.`,
+);
