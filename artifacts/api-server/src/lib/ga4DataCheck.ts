@@ -582,6 +582,7 @@ export function startGa4DataCheck(log: Logger = defaultLogger): void {
       intervalHours: CHECK_INTERVAL_MS / 3_600_000,
       startupDelaySeconds: STARTUP_DELAY_MS / 1000,
       window: `${WINDOW_START}..${WINDOW_END}`,
+      sightMapEvents: SIGHTMAP_EVENTS,
     },
     "GA4 visitor-data watchdog started",
   );
