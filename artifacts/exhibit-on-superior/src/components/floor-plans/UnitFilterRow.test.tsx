@@ -83,7 +83,7 @@ describe('UnitFilterRow filtered-link copy control', () => {
     expect(copyControl.textContent).toContain('Copy link to this view');
   });
 
-  it('does not claim success when the clipboard write fails', async () => {
+  it('shows an accessible, focused fallback without claiming success when the clipboard write fails', async () => {
     writeText.mockRejectedValue(new Error('Clipboard permission denied'));
     renderRow(activeFilters);
 
@@ -95,5 +95,28 @@ describe('UnitFilterRow filtered-link copy control', () => {
     expect(writeText).toHaveBeenCalledWith(window.location.href);
     expect(copyControl.textContent).toContain('Copy link to this view');
     expect(copyControl.textContent).not.toContain('Copied');
+
+    const error = screen.getByRole('alert');
+    expect(error.textContent).toContain('Couldn’t copy automatically');
+
+    const fallback = screen.getByLabelText('Filtered residence link') as HTMLInputElement;
+    expect(fallback.readOnly).toBe(true);
+    expect(fallback.value).toBe(window.location.href);
+    expect(document.activeElement).toBe(fallback);
+    expect(fallback.selectionStart).toBe(0);
+    expect(fallback.selectionEnd).toBe(fallback.value.length);
+  });
+
+  it('keeps the success confirmation path free of failure feedback', async () => {
+    writeText.mockResolvedValue(undefined);
+    renderRow(activeFilters);
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('button-copy-filtered-view-link'));
+    });
+
+    expect(screen.getByTestId('button-copy-filtered-view-link').textContent).toContain('Copied');
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.queryByLabelText('Filtered residence link')).toBeNull();
   });
 });

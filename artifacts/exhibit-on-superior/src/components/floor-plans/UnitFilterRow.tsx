@@ -95,7 +95,9 @@ export function UnitFilterRow({
   inert?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const copiedResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyFallbackRef = useRef<HTMLInputElement>(null);
   const twinTabIndex = inert ? -1 : undefined;
   const beds = bedsOptions(units);
   const baths = bathsOptions(units);
@@ -123,9 +125,16 @@ export function UnitFilterRow({
     [],
   );
 
+  useEffect(() => {
+    if (!copyFailed) return;
+    copyFallbackRef.current?.focus();
+    copyFallbackRef.current?.select();
+  }, [copyFailed]);
+
   const copyFilteredViewLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+      setCopyFailed(false);
       setCopied(true);
       if (copiedResetTimer.current) clearTimeout(copiedResetTimer.current);
       copiedResetTimer.current = setTimeout(() => {
@@ -134,6 +143,7 @@ export function UnitFilterRow({
       }, 2000);
     } catch {
       setCopied(false);
+      setCopyFailed(true);
     }
   };
 
@@ -256,7 +266,7 @@ export function UnitFilterRow({
       )}
 
       {active && (
-        <span className="inline-flex items-center gap-3">
+        <span className="inline-flex flex-wrap items-center justify-center gap-3">
           {/* Screen-reader live region: filtering re-renders this count and
               role="status" (polite) announces it without moving focus. */}
           <span
@@ -290,6 +300,25 @@ export function UnitFilterRow({
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" /> Clear filters
           </button>
+          {copyFailed && (
+            <span className="flex basis-full flex-wrap items-center justify-center gap-2">
+              <span role="alert" className="text-xs text-destructive">
+                Couldn’t copy automatically. Select the link below and copy it.
+              </span>
+              <label className="sr-only" htmlFor="filtered-view-link-fallback">
+                Filtered residence link
+              </label>
+              <input
+                ref={copyFallbackRef}
+                id="filtered-view-link-fallback"
+                type="url"
+                readOnly
+                value={window.location.href}
+                onFocus={(event) => event.currentTarget.select()}
+                className="h-9 w-full max-w-md rounded-md border border-destructive bg-background px-2 text-xs text-foreground shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              />
+            </span>
+          )}
         </span>
       )}
     </div>
