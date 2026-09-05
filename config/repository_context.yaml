@@ -1,0 +1,42 @@
+version: 1
+
+repository:
+  full_name: ridlerontheroof/rentatexhibit-website
+  default_branch: main
+  setup_branch: agent/highland-seo-aeo-setup
+  deployment_origin: Replit
+
+existing_system:
+  package_manager: pnpm
+  workspace: true
+  node_version: 24
+  typescript_version: "5.9"
+  frontend:
+    framework: React
+    bundler: Vite
+    router: Wouter
+    rendering: build_time_prerendered_SPA
+  backend:
+    framework: Express
+    version: 5
+  database:
+    engine: PostgreSQL
+    orm: Drizzle
+  seo:
+    strategy_file: seo_strategy.md
+    prerender_script: scripts/prerender.mjs
+    llms_txt_present: true
+    sitemap_present: true
+    structured_data_present: true
+  existing_guidance:
+    - replit.md
+    - seo_strategy.md
+    - skills-lock.json
+    - .agents/
+
+preservation_rules:
+  - Do not delete or overwrite .agents/
+  - Do not replace existing SEO systems before audit
+  - Do not change availability feeds during setup
+  - Do not change analytics or forms during setup
+  - Do not deploy from the setup branch

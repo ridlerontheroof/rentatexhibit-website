@@ -1,0 +1,53 @@
+version: 1
+
+primary_clusters:
+  river_north_luxury:
+    primary:
+      - luxury apartments River North Chicago
+      - River North luxury apartments
+      - luxury apartments Chicago
+    intent: transactional
+    target_page_type: homepage_or_primary_location_page
+
+  river_north_apartments:
+    primary:
+      - River North apartments
+      - apartments in River North Chicago
+      - downtown Chicago apartments
+    intent: transactional
+    target_page_type: homepage_or_neighborhood_hub
+
+  floor_plans:
+    primary:
+      - River North studio apartments
+      - River North convertible apartments
+      - River North one bedroom apartments
+      - River North two bedroom apartments
+      - River North three bedroom apartments
+    intent: transactional
+    target_page_type: floor_plan_category
+
+  amenities:
+    primary:
+      - apartments with pool Chicago
+      - apartments with sauna Chicago
+      - apartments with coworking space Chicago
+      - pet friendly apartments River North
+      - apartments with balconies River North
+    intent: feature_transactional
+    target_page_type: amenities_or_filtered_floor_plan
+
+  landmarks:
+    primary:
+      - apartments near Chicago Riverwalk
+      - apartments near Magnificent Mile
+    intent: local_transactional
+    target_page_type: useful_location_guide
+    anti_doorway_rule: Page must contain substantial renter-useful content and materially distinct information.
+
+content_rules:
+  one_primary_intent_per_page: true
+  map_keywords_before_writing: true
+  no_competing_pages_for_same_primary_intent: true
+  no_exact_match_density_target: true
+  use_natural_variants: true

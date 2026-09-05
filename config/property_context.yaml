@@ -1,0 +1,114 @@
+schema_version: 1
+review_status: needs_human_verification
+last_verified_date: null
+
+property:
+  id: exhibit-on-superior
+  name: Exhibit on Superior
+  public_domain: https://www.rentatexhibit.com
+  street_address: 165 W Superior St
+  city: Chicago
+  state: IL
+  postal_code: null
+  neighborhood: River North
+  property_type: luxury_apartment_community
+  stories: 34
+  residences: 298
+
+positioning:
+  approved:
+    - luxury apartments in River North Chicago
+    - downtown Chicago apartment living
+    - studio through three-bedroom residences
+  prohibited_without_evidence:
+    - best apartment building in Chicago
+    - number one luxury apartment building
+    - guaranteed skyline views
+    - rooftop pool
+
+unit_mix:
+  approved_types:
+    - studio
+    - convertible
+    - one-bedroom
+    - two-bedroom
+    - three-bedroom
+
+balconies:
+  general_rule: Most residences may be marketed with balcony language only when the unit or floor-plan record confirms it.
+  confirmed_no_balcony_stacks:
+    - "02 Convertible"
+    - "03 Convertible"
+  required_copy_rule: Never imply that every residence has a balcony.
+
+residence_features:
+  building_wide_confirmed:
+    - central air conditioning
+    - in-unit washer and dryer
+    - quartz countertops
+    - stainless steel appliances
+    - contemporary cabinetry
+    - plank flooring
+  select_residences_only:
+    - private balcony
+    - downtown skyline views
+    - Chicago River views
+
+amenities:
+  confirmed:
+    - outdoor lap pool
+    - hot tub
+    - sauna
+    - fitness spaces
+    - private work rooms
+    - dog spa
+    - outdoor dog run
+  location_notes:
+    fifth_floor:
+      - outdoor lap pool
+      - hot tub
+      - sauna
+      - fitness spaces
+      - private work rooms
+    first_floor:
+      - dog spa
+      - outdoor dog run
+
+location:
+  approved_nearby_entities:
+    - Chicago Riverwalk
+    - Magnificent Mile
+    - River North restaurants
+    - CTA service
+  require_distance_validation: true
+  prohibit_unverified_walk_times: true
+
+fees:
+  status: time_sensitive
+  instruction: Do not hardcode fees from this file until management verifies current amounts and scope.
+  known_historical_examples:
+    utility_and_service_amenity_fee:
+      amount_usd: 95
+      cadence: monthly
+      scope_note: Historical unit-copy value. Verify before website publication.
+    administrative_fee:
+      amount_usd: 500
+      cadence: one_time_per_apartment
+      scope_note: Verify before website publication.
+    application_fee:
+      amount_usd: 60
+      cadence: one_time_per_applicant
+      scope_note: Verify before website publication.
+
+conversion:
+  primary_actions:
+    - view availability
+    - schedule a tour
+    - request information
+  primary_audience:
+    - adults searching for upscale apartments in Chicago
+    - renters comparing River North apartment communities
+
+notes:
+  - Replace null and historical values with verified current facts before public use.
+  - Move floor-plan and unit-level facts into dedicated structured files when available.
