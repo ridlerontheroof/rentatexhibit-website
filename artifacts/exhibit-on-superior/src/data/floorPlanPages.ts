@@ -278,6 +278,7 @@ export function floorPlanSummary(page: FloorPlanPage): string {
   const bathPhrase = `${p.baths}-bath`;
   const line = String(p.unit).padStart(2, '0');
   return (
+    `${floorPlanDescription(page)} ` +
     `The ${p.typeLabel} is a ${CATEGORY_PHRASE[p.category]}${p.den ? ' plus den' : ''}, ` +
     `${bathPhrase} floor plan of ${planSqftLabel(p)} square feet at Exhibit On Superior, ` +
     `offered on ${planFloorPhrase(p)} (residence line ${line}) at 165 W Superior St ` +

@@ -86,3 +86,4 @@
 - [Launcher validation in clean Replit apps](launcher-validation-replit-runtime.md) — neutrality scans must ignore Replit-generated runtime directories while strictly allowlisting launcher-owned files.
 - [Confirm implausible GA4 zeros](ga4-zero-confirmation.md) — autoscale startup can yield an isolated zero amid healthy counts; require a second low query before alerting.
 - [Kit tests should avoid new runner dependencies](kit-test-dependencies.md) — use Node's test runner through existing tsx when a focused kit test does not need framework-only features.
+- [Search snippet verification](search-snippet-verification.md) — exact-phrase Startpage misses can coexist with indexed pages; use canonical/title probes before concluding a page is absent.
