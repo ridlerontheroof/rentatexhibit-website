@@ -99,12 +99,18 @@ describe("readGa4Config", () => {
       propertyId: "123456789",
       clientEmail: "watchdog@project.iam.gserviceaccount.com",
       minActiveUsers: 1,
+      minSightMapSessions: 50,
     });
   });
 
   it("honors GA4_MIN_ACTIVE_USERS", () => {
     const config = readGa4Config({ ...ENV_OK, GA4_MIN_ACTIVE_USERS: "5" });
     expect(config?.minActiveUsers).toBe(5);
+  });
+
+  it("honors the SightMap quiet-traffic floor", () => {
+    const config = readGa4Config({ ...ENV_OK, GA4_MIN_SIGHTMAP_SESSIONS: "75" });
+    expect(config?.minSightMapSessions).toBe(75);
   });
 
   it("throws on a measurement ID instead of a numeric property ID", () => {
@@ -146,6 +152,87 @@ describe("checkGa4DataOnce", () => {
       expect.objectContaining({ activeUsers: 42 }),
       expect.stringContaining("passed"),
     );
+  });
+
+  it("alerts when intended SightMap events disappear during normal traffic", async () => {
+    const result: Ga4QueryResult = {
+      activeUsers: 80,
+      sessions: 120,
+      sightMapEvents: {
+        sightmap_impression: 20,
+        sightmap_unit_selected: 0,
+        sightmap_filter_change: 45,
+        sightmap_apply_click: 0,
+        sightmap_outbound_click: 0,
+      },
+    };
+    const querier = sequence(result, result);
+    await checkGa4DataOnce(log, DAY1, querier, ENV_OK);
+    expect(querier).toHaveBeenCalledTimes(2);
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+    expect(sendAlert.mock.calls[0][0]).toMatchObject({
+      sessions: 120,
+      sightMapEvents: expect.objectContaining({ sightmap_unit_selected: 0 }),
+    });
+    expect(sendAlert.mock.calls[0][0].summary).toMatch(/SightMap analytics disappeared/);
+  });
+
+  it("does not alert on missing map events during quiet traffic", async () => {
+    await checkGa4DataOnce(
+      log,
+      DAY1,
+      async () => ({
+        activeUsers: 20,
+        sessions: 30,
+        sightMapEvents: Object.fromEntries([
+          "sightmap_impression",
+          "sightmap_unit_selected",
+          "sightmap_filter_change",
+          "sightmap_apply_click",
+          "sightmap_outbound_click",
+        ].map((name) => [name, 0])),
+      }),
+      ENV_OK,
+    );
+    expect(sendAlert).not.toHaveBeenCalled();
+  });
+
+  it("alerts on hidden SightMap link tripwires even during quiet traffic", async () => {
+    const result: Ga4QueryResult = {
+      activeUsers: 4,
+      sessions: 5,
+      sightMapEvents: {
+        sightmap_impression: 1,
+        sightmap_unit_selected: 0,
+        sightmap_filter_change: 0,
+        sightmap_apply_click: 1,
+        sightmap_outbound_click: 0,
+      },
+    };
+    await checkGa4DataOnce(log, DAY1, sequence(result, result), ENV_OK);
+    expect(sendAlert).toHaveBeenCalledTimes(1);
+    expect(sendAlert.mock.calls[0][0].summary).toMatch(/tripwire/);
+  });
+
+  it("does not alert when a suspected map failure recovers on confirmation", async () => {
+    const broken: Ga4QueryResult = {
+      activeUsers: 80,
+      sessions: 120,
+      sightMapEvents: { sightmap_impression: 0 },
+    };
+    const healthy: Ga4QueryResult = {
+      activeUsers: 80,
+      sessions: 120,
+      sightMapEvents: {
+        sightmap_impression: 10,
+        sightmap_unit_selected: 4,
+        sightmap_filter_change: 20,
+        sightmap_apply_click: 0,
+        sightmap_outbound_click: 0,
+      },
+    };
+    await checkGa4DataOnce(log, DAY1, sequence(broken, healthy), ENV_OK);
+    expect(sendAlert).not.toHaveBeenCalled();
   });
 
   it("alerts once per day on zero visitors, resuming the next day", async () => {

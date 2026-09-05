@@ -788,10 +788,14 @@ export function renderGa4DataAlert(opts: {
   summary: string;
   activeUsers: number | null;
   window: string;
+  sessions?: number;
+  sightMapEvents?: Record<string, number>;
 }): RenderedEmail {
-  const { summary, activeUsers, window } = opts;
-  const subject =
-    "Website alert: real visitors are NOT showing up in Google Analytics";
+  const { summary, activeUsers, window, sessions, sightMapEvents } = opts;
+  const sightMapProblem = summary.includes("SightMap");
+  const subject = sightMapProblem
+    ? "Website alert: SightMap analytics need attention"
+    : "Website alert: real visitors are NOT showing up in Google Analytics";
 
   const intro = `The automatic GA4 visitor-data check reported a problem: ${summary}`;
   const remedyText =
@@ -802,6 +806,14 @@ export function renderGa4DataAlert(opts: {
     `<p style="${BODY_TEXT}"><strong>Recorded active users (${escapeHtml(window)}):</strong> ${
       activeUsers === null ? "unknown (check could not complete)" : String(activeUsers)
     }</p>` +
+    (sessions === undefined
+      ? ""
+      : `<p style="${BODY_TEXT}"><strong>Sessions:</strong> ${sessions}</p>`) +
+    (sightMapEvents
+      ? `<p style="${BODY_TEXT}"><strong>SightMap events:</strong> ${escapeHtml(
+          Object.entries(sightMapEvents).map(([name, count]) => `${name}=${count}`).join(", "),
+        )}</p>`
+      : "") +
     `<p style="${BODY_TEXT}"><strong>What to do:</strong> ${escapeHtml(
       "open GA4 Realtime while browsing the live site; if your visit does not appear, review consent mode in GTM, the GA4 web data stream, and property data filters. The container-side check passing means the problem is downstream of the tag. This alert is sent at most once per day.",
     )}</p>`;
@@ -810,6 +822,10 @@ export function renderGa4DataAlert(opts: {
     intro,
     "",
     `Recorded active users (${window}): ${activeUsers === null ? "unknown" : activeUsers}`,
+    ...(sessions === undefined ? [] : [`Sessions: ${sessions}`]),
+    ...(sightMapEvents
+      ? [`SightMap events: ${Object.entries(sightMapEvents).map(([name, count]) => `${name}=${count}`).join(", ")}`]
+      : []),
     "",
     remedyText,
     "",

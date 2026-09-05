@@ -68,6 +68,21 @@ const WINDOW_END = "yesterday";
  * tracking is effectively off. Overridable via GA4_MIN_ACTIVE_USERS.
  */
 const DEFAULT_MIN_ACTIVE_USERS = 1;
+/** Do not judge map-event absence during genuinely quiet traffic windows. */
+const DEFAULT_MIN_SIGHTMAP_SESSIONS = 50;
+const REQUIRED_SIGHTMAP_EVENTS = [
+  "sightmap_impression",
+  "sightmap_unit_selected",
+  "sightmap_filter_change",
+] as const;
+const SIGHTMAP_TRIPWIRE_EVENTS = [
+  "sightmap_apply_click",
+  "sightmap_outbound_click",
+] as const;
+const SIGHTMAP_EVENTS = [
+  ...REQUIRED_SIGHTMAP_EVENTS,
+  ...SIGHTMAP_TRIPWIRE_EVENTS,
+] as const;
 
 const OAUTH_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const OAUTH_SCOPE = "https://www.googleapis.com/auth/analytics.readonly";
@@ -99,6 +114,7 @@ export interface Ga4Config {
   clientEmail: string;
   privateKey: string;
   minActiveUsers: number;
+  minSightMapSessions: number;
 }
 
 function configFingerprint(config: Ga4Config): string {
@@ -149,7 +165,26 @@ export function readGa4Config(
     }
     minActiveUsers = n;
   }
-  return { propertyId, clientEmail, privateKey, minActiveUsers };
+  const minSightMapSessions = readNonNegativeEnvNumber(
+    env.GA4_MIN_SIGHTMAP_SESSIONS,
+    "GA4_MIN_SIGHTMAP_SESSIONS",
+    DEFAULT_MIN_SIGHTMAP_SESSIONS,
+  );
+  return { propertyId, clientEmail, privateKey, minActiveUsers, minSightMapSessions };
+}
+
+function readNonNegativeEnvNumber(
+  rawValue: string | undefined,
+  name: string,
+  fallback: number,
+): number {
+  const raw = rawValue?.trim();
+  if (!raw) return fallback;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) {
+    throw new Error(`${name} must be a non-negative number (got ${JSON.stringify(raw)})`);
+  }
+  return value;
 }
 
 // --- Google auth + Data API ---------------------------------------------------
@@ -231,20 +266,24 @@ async function fetchAccessToken(config: Ga4Config, now: number): Promise<string>
 export interface Ga4QueryResult {
   /** Total activeUsers over the trailing window; null on any failure. */
   activeUsers: number | null;
+  /** Sessions over the same window; omitted by legacy/test queriers. */
+  sessions?: number;
+  /** SightMap event totals over the same window. */
+  sightMapEvents?: Record<string, number>;
   /** Error message when activeUsers is null. */
   error?: string;
 }
 
 export type Ga4Querier = (config: Ga4Config, now: number) => Promise<Ga4QueryResult>;
 
-/** Query GA4 runReport for total activeUsers over the trailing window. */
+/** Query GA4 batchRunReports for traffic and SightMap event totals. */
 export async function queryGa4ActiveUsers(
   config: Ga4Config,
   now: number = Date.now(),
 ): Promise<Ga4QueryResult> {
   try {
     const token = await fetchAccessToken(config, now);
-    const url = `https://analyticsdata.googleapis.com/v1beta/properties/${config.propertyId}:runReport`;
+    const url = `https://analyticsdata.googleapis.com/v1beta/properties/${config.propertyId}:batchRunReports`;
     const { status, body } = await fetchJson(url, {
       method: "POST",
       headers: {
@@ -252,8 +291,23 @@ export async function queryGa4ActiveUsers(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        dateRanges: [{ startDate: WINDOW_START, endDate: WINDOW_END }],
-        metrics: [{ name: "activeUsers" }],
+        requests: [
+          {
+            dateRanges: [{ startDate: WINDOW_START, endDate: WINDOW_END }],
+            metrics: [{ name: "activeUsers" }, { name: "sessions" }],
+          },
+          {
+            dateRanges: [{ startDate: WINDOW_START, endDate: WINDOW_END }],
+            dimensions: [{ name: "eventName" }],
+            metrics: [{ name: "eventCount" }],
+            dimensionFilter: {
+              filter: {
+                fieldName: "eventName",
+                inListFilter: { values: SIGHTMAP_EVENTS },
+              },
+            },
+          },
+        ],
       }),
     });
     if (status !== 200) {
@@ -262,24 +316,38 @@ export async function queryGa4ActiveUsers(
         "no body";
       return {
         activeUsers: null,
-        error: `GA4 runReport failed (HTTP ${status}): ${String(message)}`,
+        error: `GA4 batchRunReports failed (HTTP ${status}): ${String(message)}`,
       };
     }
-    // A property with zero rows in range returns no `rows` at all — that IS
-    // a definitive zero, not an error.
-    const rows = (body as { rows?: unknown[] } | null)?.rows;
-    if (!Array.isArray(rows) || rows.length === 0) return { activeUsers: 0 };
-    const value = (
-      rows[0] as { metricValues?: { value?: unknown }[] }
-    )?.metricValues?.[0]?.value;
-    const count = Number(value);
-    if (!Number.isFinite(count)) {
+    const reports = (body as { reports?: unknown[] } | null)?.reports;
+    if (!Array.isArray(reports) || reports.length < 2) {
       return {
         activeUsers: null,
-        error: `GA4 runReport returned an unparseable metric value: ${JSON.stringify(value)}`,
+        error: "GA4 batchRunReports returned fewer than two reports",
       };
     }
-    return { activeUsers: count };
+    const trafficRow = (reports[0] as { rows?: Array<{ metricValues?: Array<{ value?: unknown }> }> })
+      ?.rows?.[0];
+    const activeUsers = Number(trafficRow?.metricValues?.[0]?.value ?? 0);
+    const sessions = Number(trafficRow?.metricValues?.[1]?.value ?? 0);
+    if (!Number.isFinite(activeUsers) || !Number.isFinite(sessions)) {
+      return { activeUsers: null, error: "GA4 traffic report returned unparseable metrics" };
+    }
+    const sightMapEvents = Object.fromEntries(SIGHTMAP_EVENTS.map((name) => [name, 0]));
+    const eventRows = (reports[1] as {
+      rows?: Array<{
+        dimensionValues?: Array<{ value?: unknown }>;
+        metricValues?: Array<{ value?: unknown }>;
+      }>;
+    })?.rows ?? [];
+    for (const row of eventRows) {
+      const name = row.dimensionValues?.[0]?.value;
+      const count = Number(row.metricValues?.[0]?.value);
+      if (typeof name === "string" && name in sightMapEvents && Number.isFinite(count)) {
+        sightMapEvents[name] = count;
+      }
+    }
+    return { activeUsers, sessions, sightMapEvents };
   } catch (err) {
     return {
       activeUsers: null,
@@ -346,7 +414,7 @@ export async function checkGa4DataOnce(
     return;
   }
   result = await querier(config, now);
-  if (result.activeUsers !== null && result.activeUsers <= config.minActiveUsers) {
+  if (isDefinitiveFailure(result, config)) {
     const initialActiveUsers = result.activeUsers;
     const confirmation = await querier(config, now);
     log.warn(
@@ -356,7 +424,7 @@ export async function checkGa4DataOnce(
         confirmationError: confirmation.error,
         configFingerprint: configFingerprint(config),
       },
-      confirmation.activeUsers !== null && confirmation.activeUsers > config.minActiveUsers
+      !isDefinitiveFailure(confirmation, config)
         ? "GA4 visitor-data initial low reading recovered on confirmation"
         : "GA4 visitor-data low reading confirmed by a second query",
     );
@@ -398,7 +466,10 @@ async function classify(
   let isBlindEscalation = false;
   if (result.activeUsers !== null && result.activeUsers <= minActiveUsers) {
     failureSummary = `GA4 recorded only ${result.activeUsers} active user(s) between ${WINDOW_START} and ${WINDOW_END} (alert floor: ${minActiveUsers}). The tag may look fine while consent mode, a broken GA4 stream, or a data filter drops every hit — real visitors are NOT being recorded.`;
-  } else if (errored && consecutiveErroredRuns >= ERROR_ESCALATION_RUNS) {
+  } else if (config) {
+    failureSummary = sightMapFailureSummary(result, config);
+  }
+  if (!failureSummary && errored && consecutiveErroredRuns >= ERROR_ESCALATION_RUNS) {
     isBlindEscalation = true;
     failureSummary = `The GA4 visitor-data check has failed to complete for ${consecutiveErroredRuns} consecutive runs (${result.error ?? "unknown error"}) — the watchdog has effectively been blind for ~a day. Check the GA4 service-account credentials and property access.`;
   }
@@ -420,6 +491,8 @@ async function classify(
       log.info(
         {
           activeUsers: result.activeUsers,
+          sessions: result.sessions,
+          sightMapEvents: result.sightMapEvents,
           window: `${WINDOW_START}..${WINDOW_END}`,
           configFingerprint: fingerprint,
         },
@@ -432,6 +505,8 @@ async function classify(
   log.error(
     {
       activeUsers: result.activeUsers,
+      sessions: result.sessions,
+      sightMapEvents: result.sightMapEvents,
       error: result.error,
       configFingerprint: fingerprint,
     },
@@ -441,17 +516,50 @@ async function classify(
   try {
     // Zero-visitor FAIL and watchdog-blind escalation are different problems
     // with different fixes — separate daily dedupe slots (subKey).
-    const claimOptions = isBlindEscalation ? { subKey: "blind" } : undefined;
+    const isSightMapFailure = failureSummary.includes("SightMap");
+    const claimOptions = isBlindEscalation
+      ? { subKey: "blind" }
+      : isSightMapFailure
+        ? { subKey: "sightmap" }
+        : undefined;
     if (!(await dailyClaim.claim(log, now, claimOptions))) return;
     if (!mailerConfigured()) return;
     await sendGa4DataCheckAlert({
       summary: failureSummary,
       activeUsers: result.activeUsers,
       window: `${WINDOW_START} → ${WINDOW_END}`,
+      sessions: result.sessions,
+      sightMapEvents: result.sightMapEvents,
     });
   } catch (err) {
     log.error({ err }, "Failed to send GA4-data failure alert");
   }
+}
+
+function isDefinitiveFailure(result: Ga4QueryResult, config: Ga4Config): boolean {
+  if (result.activeUsers !== null && result.activeUsers <= config.minActiveUsers) return true;
+  return sightMapFailureSummary(result, config) !== null;
+}
+
+function sightMapFailureSummary(
+  result: Ga4QueryResult,
+  config: Ga4Config,
+): string | null {
+  if (!result.sightMapEvents) return null;
+  const tripwires = SIGHTMAP_TRIPWIRE_EVENTS.filter(
+    (name) => (result.sightMapEvents?.[name] ?? 0) > 0,
+  );
+  if (tripwires.length > 0) {
+    return `SightMap hidden-link tripwire event(s) became non-zero: ${tripwires
+      .map((name) => `${name}=${result.sightMapEvents?.[name] ?? 0}`)
+      .join(", ")}. The embed may be exposing an apply button or outbound link that should remain disabled.`;
+  }
+  if ((result.sessions ?? 0) < config.minSightMapSessions) return null;
+  const missing = REQUIRED_SIGHTMAP_EVENTS.filter(
+    (name) => (result.sightMapEvents?.[name] ?? 0) === 0,
+  );
+  if (missing.length === 0) return null;
+  return `SightMap analytics disappeared despite ${result.sessions} site sessions between ${WINDOW_START} and ${WINDOW_END}: ${missing.join(", ")} recorded zero events (quiet-traffic floor: ${config.minSightMapSessions} sessions). Check GTM, consent, the embed SDK, and the SightMap property configuration.`;
 }
 
 /**

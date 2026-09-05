@@ -447,6 +447,8 @@ export async function sendGa4DataCheckAlert(opts: {
   summary: string;
   activeUsers: number | null;
   window: string;
+  sessions?: number;
+  sightMapEvents?: Record<string, number>;
 }): Promise<void> {
   warnIfUnconfigured();
   const { subject, html: htmlBody, text: textBody } = renderGa4DataAlert(opts);
