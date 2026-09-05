@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-09-05",
+  "source": "Google Analytics Data API v1beta runReport",
+  "propertyTimeZone": "America/Denver",
+  "dateRange": {
+    "startDate": "2026-08-14",
+    "endDate": "2026-09-04",
+    "note": "Starts the day after the scripted 2026-08-13 browser verification, so counts represent subsequent traffic."
+  },
+  "events": {
+    "sightmap_impression": {
+      "eventCount": 439,
+      "totalUsers": 315
+    },
+    "sightmap_unit_selected": {
+      "eventCount": 489,
+      "totalUsers": 119
+    },
+    "sightmap_filter_change": {
+      "eventCount": 1778,
+      "totalUsers": 315
+    },
+    "generate_lead": {
+      "eventCount": 49,
+      "totalUsers": 30
+    },
+    "sightmap_apply_click": {
+      "eventCount": 0,
+      "totalUsers": 0
+    },
+    "sightmap_outbound_click": {
+      "eventCount": 0,
+      "totalUsers": 0
+    }
+  },
+  "traffic": {
+    "sessions": 3356,
+    "screenPageViews": 10226,
+    "screenPageViewsPerSession": 3.0470798569725863,
+    "activeUsers": 2634
+  },
+  "conclusion": {
+    "requiredSightMapEventsAccumulated": true,
+    "generateLeadAccumulated": true,
+    "tripwiresRemainZero": true,
+    "pageViewsNotDoubled": true,
+    "note": "3.05 page views/session is plausible browsing depth, not an across-the-board 2x duplicate pattern."
+  }
+}
