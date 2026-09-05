@@ -139,9 +139,10 @@ export function Fees() {
                   </table>
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground">
-                  Electricity is billed to the resident directly by ComEd. Internet: Exhibit is
-                  implementing bulk internet through a partnership with Zentro, with symmetrical
-                  speeds up to 2 Gig.
+                  Electricity is billed to the resident directly by ComEd. Zentro internet is
+                  active at Exhibit, with 2 Gig symmetrical download and upload delivered through
+                  a hot jack in each apartment. Residents bring their own Wi-Fi router. New-lease
+                  pricing is $75–$95/month by floor plan.
                 </p>
               </div>
               <div className="bg-white border border-border p-8">

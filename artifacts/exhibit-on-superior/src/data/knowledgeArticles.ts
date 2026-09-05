@@ -366,7 +366,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         heading: 'How to get an exact figure',
         paragraphs: [
           'Because rent varies by floor plan, floor, and move-in date, the surest way to total your move-in cost is to pick a live listing on the Available Units page and add the fixed fees to its current price.',
-          'The leasing team can build a full itemized quote for a specific home and confirm whether internet through the Zentro rollout is bundled yet. Reach them at exhibit@highlandptrs.com or 312-450-0635.',
+          'The leasing team can build a full itemized quote for a specific home, including the active Zentro internet charge for its floor plan. Reach them at exhibit@highlandptrs.com or 312-450-0635.',
         ],
       },
     ],
@@ -609,7 +609,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
         heading: 'What is provided versus what you bring',
         paragraphs: [
           'Provided in every apartment: stainless-steel kitchen appliances, quartz countertops, a tiled backsplash, an in-home washer and dryer, driftwood plank floors, and floor-to-ceiling windows. Select homes also include closet organizers and double vanities.',
-          'You bring the furniture, so plan for beds, a sofa, a dining set, and any window treatments. Because homes are wired for 1GB internet, you can set up a workspace as soon as you move in.',
+          'You bring the furniture, so plan for beds, a sofa, a dining set, and any window treatments. Active Zentro internet delivers 2 Gig symmetrical service through a hot jack in each apartment, and residents bring their own router for Wi-Fi.',
         ],
       },
       {
@@ -704,7 +704,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'Technology and comfort features',
         paragraphs: [
-          'Every apartment is wired for 1GB internet, and the building is implementing bulk internet through a partnership with Zentro with symmetrical speeds up to 2 Gig, so the homes are built for streaming and remote work. Floor-to-ceiling windows bring in daylight across each plan.',
+          'Every apartment has active Zentro internet with 2 Gig symmetrical download and upload delivered through a hot jack, so the homes are built for streaming and remote work. Floor-to-ceiling windows bring in daylight across each plan.',
           'The driftwood plank flooring runs throughout the living spaces for a consistent look, while the tiled backsplash and subway tile bath surround add texture in the kitchen and bath. Confirm which extras a specific home carries with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
         ],
       },
@@ -974,7 +974,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'Does Exhibit On Superior have work-from-home spaces?',
     category: 'Amenities',
     answer:
-      'Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7. Apartments are wired for 1GB internet, and the building is implementing bulk internet through Zentro with symmetrical speeds up to 2 Gig.',
+      'Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7. Apartments have active Zentro internet with 2 Gig symmetrical download and upload.',
     sections: [
       {
         paragraphs: [
@@ -985,7 +985,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'Internet built for remote work',
         paragraphs: [
-          'Every apartment is wired for 1GB internet, so a home office is ready from day one. The building is also implementing bulk internet through a partnership with Zentro, offering symmetrical speeds up to 2 Gig.',
+          'Every apartment has active Zentro internet with 2 Gig symmetrical download and upload delivered through a hot jack, so a home office is ready from day one. Residents bring their own router for Wi-Fi.',
           'Symmetrical speeds matter for video calls and large uploads, since the connection is as fast going out as it is coming in. Confirm the current internet setup and any included service with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
         ],
       },
@@ -2268,8 +2268,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'What about internet?',
         paragraphs: [
-          'Internet is handled separately from electricity and the bundled fee. The building is implementing bulk service through a partnership with Zentro at symmetrical speeds up to 2 Gig, and every apartment is already wired for 1GB.',
-          'Because the Zentro rollout is in progress, confirm current internet service, pricing, and setup with the leasing office. Electricity setup, by contrast, is always through your own ComEd account.',
+          'Internet is handled separately from electricity and the bundled fee. Active Zentro service provides 2 Gig symmetrical download and upload through a hot jack in each apartment, and residents bring their own router for Wi-Fi.',
+          'New-lease internet pricing is $75/month for studios and convertibles, $85/month for one-bedrooms, and $95/month for two- and three-bedrooms. Electricity setup, by contrast, is always through your own ComEd account.',
         ],
       },
     ],
@@ -2284,33 +2284,34 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     question: 'What internet options are available at Exhibit On Superior?',
     category: 'Utilities',
     answer:
-      'Exhibit On Superior is implementing bulk internet through a partnership with Zentro, offering symmetrical download and upload speeds up to 2 Gig. Apartments are wired for 1GB. Because the Zentro rollout is in progress, confirm current service, pricing, and setup with the leasing team at exhibit@highlandptrs.com or 312-450-0635.',
+      'Zentro internet is active at Exhibit On Superior, offering 2 Gig symmetrical download and upload through a hot jack in each apartment. Residents bring their own router for Wi-Fi. New-lease pricing is $75/month for studios and convertibles, $85/month for one-bedrooms, and $95/month for two- and three-bedrooms.',
     sections: [
       {
         paragraphs: [
-          'The planned Zentro bulk service delivers symmetrical speeds up to 2 Gig, meaning uploads match downloads — useful for video calls and remote work.',
-          'Every apartment is already wired for 1GB internet. Since the bulk program is still being implemented, the leasing office has the latest on availability and cost.',
+          'Active Zentro service delivers 2 Gig symmetrical download and upload, meaning uploads match downloads — useful for video calls and remote work.',
+          'The wired connection reaches each apartment through a hot jack. Residents bring their own router to create their in-home Wi-Fi network, so the router model, Wi-Fi coverage, and wireless network settings remain under the resident’s control.',
         ],
       },
       {
         heading: 'Why symmetrical speed matters',
         paragraphs: [
-          'Symmetrical service means upload speed matches download speed, so the planned Zentro connection sends data as fast as it receives it. That balance helps video calls, cloud backups, and large file transfers that many providers slow on the upload side.',
-          'At up to 2 Gig symmetrical, the bulk plan targets households with several connected people and devices at once. The existing 1GB wiring in every apartment already supports typical streaming and remote-work use while the rollout continues.',
+          'Symmetrical service means upload speed matches download speed, so the Zentro connection sends data as fast as it receives it. That balance helps video calls, cloud backups, and large file transfers that many providers slow on the upload side.',
+          'At 2 Gig symmetrical, the service supports households with several connected people and devices at once. The hot jack provides the wired handoff inside the home; the resident-owned router distributes that connection over Wi-Fi to phones, computers, televisions, and other wireless devices.',
         ],
       },
       {
         heading: 'Where to work online in the building',
         paragraphs: [
           'Beyond in-home service, residents can use private work and meeting rooms and a tech lounge with charging stations and a kitchen, all part of the indoor amenities that stay open 24/7.',
-          'Because the Zentro bulk program is still being implemented, confirm current pricing, whether the fee is bundled, and setup steps with the leasing office before you rely on it. The team can be reached at exhibit@highlandptrs.com or 312-450-0635.',
+          'For new leases, service costs $75/month for studios, junior convertibles, and convertibles; $85/month for one-bedroom homes; and $95/month for two-bedroom, two-bedroom-plus-den, and three-bedroom homes.',
+          'For existing leases, the standard charge is $75/month. It may be reduced to match the resident’s documented existing service cost, with a $45/month minimum.',
         ],
       },
       {
         heading: 'Can I use my own provider?',
         paragraphs: [
-          'Because the apartments are already wired for 1GB, residents have wiring in place regardless of the bulk program. Whether you can bring an outside provider depends on the building policy as the Zentro rollout finishes.',
-          'The leasing office can confirm which options are active today and whether internet is included in another charge. Reach them at exhibit@highlandptrs.com or 312-450-0635 before setting up service.',
+          'Residents bring their own router for Wi-Fi, but the approved service details do not say that residents may substitute another internet provider.',
+          'Ask the leasing office at exhibit@highlandptrs.com or 312-450-0635 before arranging outside service.',
         ],
       },
     ],
@@ -2337,7 +2338,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       {
         heading: 'What is not covered',
         paragraphs: [
-          'Electricity is the single utility left out of the bundle; you set up a ComEd account in your own name and pay for your own usage. Internet is also separate, with the building implementing bulk service through Zentro at symmetrical speeds up to 2 Gig.',
+          'Electricity is the single utility left out of the bundle; you set up a ComEd account in your own name and pay for your own usage. Internet is also separate, with active Zentro service providing 2 Gig symmetrical download and upload.',
           'Because the fee is flat and set by floor plan, the covered utilities do not fluctuate with your usage. That means heat in winter and air conditioning in summer never produce a surprise metered bill.',
         ],
       },

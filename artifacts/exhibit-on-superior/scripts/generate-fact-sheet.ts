@@ -77,14 +77,9 @@ const beds = new Set(plans.map((p: any) => p.category));
 const bedroomRange = CATEGORIES.filter((c: any) => beds.has(c.id))
   .map((c: any) => c.label)
   .join(', ');
-const amenities: string[] = complex.amenityFeature
-  .map((a: any) => a.name)
-  // The public site keeps its pre-launch wording until the separate go-live
-  // task. Internal fact sheets use the confirmed program below instead of
-  // repeating the legacy 1GB line beside the approved 2 Gig service.
-  .filter((name: string) => name !== 'Wired for 1GB internet');
+const amenities: string[] = complex.amenityFeature.map((a: any) => a.name);
 const generatedToday = new Date().toISOString().slice(0, 10);
-const internetNotice = internetEffectiveNotice(generatedToday);
+const internetNotice = internetEffectiveNotice();
 
 // Directory-listing phrasing (summary + every checklist range phrase like
 // "Studio–3 Bedroom", "studio–3 BR", "studios THROUGH THREE bedrooms") is

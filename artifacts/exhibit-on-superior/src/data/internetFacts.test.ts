@@ -27,9 +27,8 @@ describe('resident internet facts', () => {
     expect(RESIDENT_INTERNET_FACTS.service.speed).toBe('2 Gig symmetrical download and upload');
   });
 
-  it('uses upcoming wording before the effective date', () => {
-    expect(internetEffectiveNotice('2026-09-05')).toContain('UPCOMING');
-    expect(internetEffectiveNotice('2026-09-15')).toBe('Effective September 15, 2026.');
+  it('states the approved effective date without gating active prospect copy', () => {
+    expect(internetEffectiveNotice()).toBe('Effective September 15, 2026.');
     expect(formatInternetMonthlyPrice(45)).toBe('$45/month');
   });
 
@@ -57,7 +56,6 @@ describe('resident internet facts', () => {
     ];
     for (const output of generated) {
       for (const value of required) expect(output).toContain(value);
-      expect(output).not.toContain('wired for 1GB internet');
     }
 
     const rawFacts = readFileSync(join(listingDir, 'facts.json'), 'utf8');

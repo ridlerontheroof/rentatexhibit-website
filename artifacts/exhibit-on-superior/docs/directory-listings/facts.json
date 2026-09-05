@@ -47,6 +47,7 @@
     "In-home washer/dryer",
     "Quartz countertops",
     "Stainless-steel appliances",
+    "Active Zentro 2 Gig symmetrical internet via hot jack; resident-provided Wi-Fi router",
     "Walk Score 99 (Walker's Paradise, per Walk Score)",
     "Transit Score 100 (Rider's Paradise, per Walk Score)",
     "Bike Score 86 (Very Bikeable, per Walk Score)"
@@ -100,6 +101,6 @@
       "wifi": "Residents bring their own router for Wi-Fi (BYOR: bring your own router)."
     }
   },
-  "factsHash": "135951d42e3e05e3210ce9d7d119f168fa393bf4224cf87b44d9a1930284d04b",
+  "factsHash": "6d129396d3bfb7dcc40111b9a1b910dc945801dc267d44d2e982d64df12e7323",
   "generated": "2026-09-05"
 }

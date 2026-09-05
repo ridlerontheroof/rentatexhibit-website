@@ -85,12 +85,8 @@ const address = `${propertyConfig.nap.streetAddress}, ${propertyConfig.nap.local
 const knowledgeCount = KNOWLEDGE_ARTICLES.length;
 const faqCount = FAQ_HUB_TOPICS.reduce((sum, topic) => sum + topic.faqs.length, 0);
 const changeableCount = KNOWLEDGE_ARTICLES.filter((article) => article.changeableFacts).length;
-const internetNotice = internetEffectiveNotice(GENERATED);
-const playbookText = (value: string): string =>
-  value.replace(
-    /every apartment is wired for 1GB internet/gi,
-    `the wired internet connection reaches every unit; see the Resident Internet section for the Zentro program effective ${RESIDENT_INTERNET_FACTS.effectiveDateDisplay}`,
-  );
+const internetNotice = internetEffectiveNotice();
+const playbookText = (value: string): string => value;
 
 const quickSlugs = [
   'how-much-is-rent',

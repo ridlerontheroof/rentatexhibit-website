@@ -117,7 +117,13 @@ export function Amenities() {
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Closet Organizers In Select Units</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Double Vanities In Select Units</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Subway Tile Bath Surround</span></li>
-                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Wired For 1GB</span></li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1">•</span>
+                    <span>
+                      Active Zentro 2 Gig Symmetrical Internet Via Hot Jack; Resident-Provided
+                      Wi-Fi Router
+                    </span>
+                  </li>
                 </ul>
                 <Link href="/photo-gallery" className="btn-gold-outline inline-block">
                   View Photo Gallery

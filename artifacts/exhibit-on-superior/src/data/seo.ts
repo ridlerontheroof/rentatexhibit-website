@@ -669,7 +669,7 @@ export const PAGE_SEO: Record<string, PageSeo> = {
       },
       {
         q: 'What internet options are available?',
-        a: 'Exhibit is implementing bulk internet through a partnership with Zentro, with symmetrical download and upload speeds up to 2 Gig.',
+        a: 'Zentro internet is active at Exhibit, with 2 Gig symmetrical download and upload delivered through a hot jack in each apartment. Residents bring their own Wi-Fi router. New-lease pricing is $75–$95/month by floor plan.',
       },
       {
         q: 'Is storage available?',
@@ -1474,7 +1474,7 @@ export const APARTMENT_COMPLEX_NODE = {
     'In-home washer/dryer',
     'Quartz countertops',
     'Stainless-steel appliances',
-    'Wired for 1GB internet',
+    'Active Zentro 2 Gig symmetrical internet via hot jack; resident-provided Wi-Fi router',
     // Third-party Walk Score metrics — must match visible site copy (walkScores.ts).
     `${WALK_SCORE.name} ${WALK_SCORE.score} (${WALK_SCORE.label}, per Walk Score)`,
     `${TRANSIT_SCORE.name} ${TRANSIT_SCORE.score} (${TRANSIT_SCORE.label}, per Walk Score)`,

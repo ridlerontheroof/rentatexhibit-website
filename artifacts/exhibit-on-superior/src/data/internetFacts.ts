@@ -36,10 +36,8 @@ export const RESIDENT_INTERNET_FACTS = {
   service: INTERNET_SERVICE,
 } as const;
 
-export function internetEffectiveNotice(asOfIsoDate: string): string {
-  return asOfIsoDate < INTERNET_EFFECTIVE_DATE
-    ? `UPCOMING — effective ${INTERNET_EFFECTIVE_DATE_DISPLAY}. Do not describe this program as active before that date.`
-    : `Effective ${INTERNET_EFFECTIVE_DATE_DISPLAY}.`;
+export function internetEffectiveNotice(): string {
+  return `Effective ${INTERNET_EFFECTIVE_DATE_DISPLAY}.`;
 }
 
 export const formatInternetMonthlyPrice = (price: number): string => `$${price}/month`;

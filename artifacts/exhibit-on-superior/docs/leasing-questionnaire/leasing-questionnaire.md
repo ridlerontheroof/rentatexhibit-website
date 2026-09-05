@@ -1,6 +1,6 @@
 # Exhibit On Superior — Phone Team Property Playbook
 
-Generated 2026-09-05 · 34 website FAQs · 70 Knowledge Center answers
+Generated 2026-09-05 · 34 website FAQs · 71 Knowledge Center answers
 
 > **Internal call-team reference.** Use the short answer first, then add detail only when
 > the caller needs it. Never guess. Pricing, concessions, available units, move-in dates,
@@ -142,7 +142,7 @@ Residents at Exhibit On Superior pay rent, submit maintenance requests, and view
 
 ## Resident Internet — Zentro
 
-> **UPCOMING — effective September 15, 2026. Do not describe this program as active before that date.**
+> **Effective September 15, 2026.**
 
 ### New leases
 
@@ -550,7 +550,7 @@ Yes. The fitness center at Exhibit On Superior includes two private training roo
 
 **Does Exhibit On Superior have work-from-home spaces?**
 
-Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7, and the wired internet connection reaches every unit; see the Resident Internet section for the Zentro program effective September 15, 2026.
+Yes. Exhibit On Superior offers private work and meeting rooms, a tech lounge with charging stations and a kitchen, a library nook, and reading and charging alcoves. These indoor amenities are open 24/7. Apartments have active Zentro internet with 2 Gig symmetrical download and upload.
 
 [Open article](https://www.rentatexhibit.com/knowledge/work-from-home-spaces) · Reviewed 2026-07-26
 
@@ -735,6 +735,12 @@ Yes. Exhibit On Superior offers virtual tours through the Virtual Tour page, whi
 At Exhibit On Superior, electricity is billed to the resident directly by ComEd, separate from rent. Water, sewer, trash, heat, air conditioning, and natural gas for cooking and the clothes dryer are covered by the monthly Utility & Service Amenity fee of $95–$195 by floor plan. You set up your ComEd account in your own name.
 
 [Open article](https://www.rentatexhibit.com/knowledge/how-is-electricity-billed) · Reviewed 2026-07-26
+
+**What internet options are available at Exhibit On Superior?**
+
+Zentro internet is active at Exhibit On Superior, offering 2 Gig symmetrical download and upload through a hot jack in each apartment. Residents bring their own router for Wi-Fi. New-lease pricing is $75/month for studios and convertibles, $85/month for one-bedrooms, and $95/month for two- and three-bedrooms.
+
+[Open article](https://www.rentatexhibit.com/knowledge/internet-options) · Reviewed 2026-07-26
 
 **What does the Utility & Service fee cover?** — VERIFY LIVE
 

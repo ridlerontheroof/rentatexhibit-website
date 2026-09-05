@@ -108,7 +108,13 @@ export function ApartmentGuide() {
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Stainless-steel appliances with front-control gas range and oven, dishwasher, microwave, and garbage disposal</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Subway tile bath surround; double vanities in select units</span></li>
                   <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Closet organizers in select units</span></li>
-                  <li className="flex items-start gap-3"><span className="text-primary mt-1">•</span><span>Wired for 1GB internet</span></li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1">•</span>
+                    <span>
+                      Active Zentro 2 Gig symmetrical internet via hot jack; residents bring their
+                      own Wi-Fi router
+                    </span>
+                  </li>
                 </ul>
                 <p className="mt-6 text-sm text-muted-foreground">
                   On-site storage is available for $25 per month, more than 20% of homes are ADA
